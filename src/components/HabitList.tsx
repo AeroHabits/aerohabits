@@ -1,8 +1,17 @@
 import { HabitCard } from "./HabitCard";
+import { AddHabitForm } from "./AddHabitForm";
 import { useState } from "react";
 
+interface Habit {
+  id: number;
+  title: string;
+  description: string;
+  streak: number;
+  completed: boolean;
+}
+
 export function HabitList() {
-  const [habits, setHabits] = useState([
+  const [habits, setHabits] = useState<Habit[]>([
     {
       id: 1,
       title: "Read 20 pages",
@@ -32,18 +41,34 @@ export function HabitList() {
     ));
   };
 
+  const addHabit = ({ title, description }: { title: string; description: string }) => {
+    const newHabit: Habit = {
+      id: habits.length + 1,
+      title,
+      description,
+      streak: 0,
+      completed: false,
+    };
+    setHabits([...habits, newHabit]);
+  };
+
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {habits.map((habit) => (
-        <HabitCard
-          key={habit.id}
-          title={habit.title}
-          description={habit.description}
-          streak={habit.streak}
-          completed={habit.completed}
-          onToggle={() => toggleHabit(habit.id)}
-        />
-      ))}
+    <div className="space-y-8">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {habits.map((habit) => (
+          <HabitCard
+            key={habit.id}
+            title={habit.title}
+            description={habit.description}
+            streak={habit.streak}
+            completed={habit.completed}
+            onToggle={() => toggleHabit(habit.id)}
+          />
+        ))}
+      </div>
+      <div className="max-w-md mx-auto">
+        <AddHabitForm onAddHabit={addHabit} />
+      </div>
     </div>
   );
 }
