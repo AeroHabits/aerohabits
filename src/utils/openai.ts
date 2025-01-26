@@ -3,10 +3,24 @@ import { supabase } from "@/integrations/supabase/client";
 const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 
 async function getOpenAIKey() {
-  const { data, error } = await supabase.functions.invoke('get-openai-key');
-  if (error) throw new Error('Failed to get OpenAI key: ' + error.message);
-  if (!data?.key) throw new Error('OpenAI key not found');
-  return data.key;
+  try {
+    const { data, error } = await supabase.functions.invoke('get-openai-key');
+    
+    if (error) {
+      console.error('Failed to get OpenAI key:', error);
+      throw new Error('Failed to get OpenAI key: ' + error.message);
+    }
+    
+    if (!data?.key) {
+      console.error('OpenAI key not found in response');
+      throw new Error('OpenAI key not found in response');
+    }
+    
+    return data.key;
+  } catch (error) {
+    console.error('Error getting OpenAI key:', error);
+    throw new Error('Failed to get OpenAI key: ' + error.message);
+  }
 }
 
 export async function enhanceToSmartGoal(goal: string): Promise<string> {
@@ -20,7 +34,7 @@ export async function enhanceToSmartGoal(goal: string): Promise<string> {
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -44,7 +58,7 @@ export async function enhanceToSmartGoal(goal: string): Promise<string> {
     return data.choices[0].message.content.trim();
   } catch (error) {
     console.error('Error enhancing goal:', error);
-    throw new Error('Failed to enhance goal: ' + error.message);
+    throw new Error('Failed to enhance goal: ' + (error instanceof Error ? error.message : String(error)));
   }
 }
 
@@ -59,7 +73,7 @@ export async function suggestCategory(goal: string): Promise<string> {
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -83,6 +97,6 @@ export async function suggestCategory(goal: string): Promise<string> {
     return data.choices[0].message.content.trim();
   } catch (error) {
     console.error('Error suggesting category:', error);
-    throw new Error('Failed to suggest category: ' + error.message);
+    throw new Error('Failed to suggest category: ' + (error instanceof Error ? error.message : String(error)));
   }
 }
