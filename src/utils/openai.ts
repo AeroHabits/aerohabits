@@ -9,7 +9,7 @@ export async function enhanceToSmartGoal(goal: string): Promise<string> {
       'Authorization': `Bearer ${OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o',
+      model: 'gpt-4',
       messages: [
         {
           role: 'system',
@@ -36,7 +36,7 @@ export async function suggestCategory(goal: string): Promise<string> {
       'Authorization': `Bearer ${OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: 'gpt-4o-mini',
+      model: 'gpt-4',
       messages: [
         {
           role: 'system',
