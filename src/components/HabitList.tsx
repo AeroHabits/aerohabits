@@ -8,6 +8,7 @@ interface Habit {
   description: string;
   streak: number;
   completed: boolean;
+  category?: string;
 }
 
 export function HabitList() {
@@ -18,6 +19,7 @@ export function HabitList() {
       description: "Daily reading habit",
       streak: 5,
       completed: false,
+      category: "Learning"
     },
     {
       id: 2,
@@ -25,6 +27,7 @@ export function HabitList() {
       description: "10 minutes of mindfulness",
       streak: 3,
       completed: false,
+      category: "Self Mastery"
     },
     {
       id: 3,
@@ -32,6 +35,7 @@ export function HabitList() {
       description: "30 minutes workout",
       streak: 7,
       completed: false,
+      category: "Health & Fitness"
     },
   ]);
 
@@ -41,13 +45,14 @@ export function HabitList() {
     ));
   };
 
-  const addHabit = ({ title, description }: { title: string; description: string }) => {
+  const addHabit = ({ title, description, category }: { title: string; description: string; category?: string }) => {
     const newHabit: Habit = {
       id: habits.length + 1,
       title,
       description,
       streak: 0,
       completed: false,
+      category,
     };
     setHabits([...habits, newHabit]);
   };
