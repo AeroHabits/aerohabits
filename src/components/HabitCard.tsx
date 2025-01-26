@@ -11,7 +11,7 @@ import {
 import { motion } from "framer-motion";
 
 interface HabitCardProps {
-  id: string;  // Changed from number to string to match UUID from Supabase
+  id: string;
   title: string;
   description: string;
   streak: number;
@@ -28,11 +28,11 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
         transition={{ duration: 0.3 }}
         whileHover={{ scale: 1.02 }}
       >
-        <Card className="p-6 hover:shadow-lg transition-shadow bg-white/70 backdrop-blur-sm border-[#D3E4FD]/50 hover:border-[#33C3F0]/60">
+        <Card className="p-6 hover:shadow-lg transition-shadow bg-white/90 backdrop-blur-sm border-white/20">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h3 className="font-semibold text-lg">{title}</h3>
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <h3 className="font-semibold text-lg text-gray-900">{title}</h3>
+              <p className="text-sm text-gray-700">{description}</p>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -43,9 +43,9 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
                   onClick={onToggle}
                 >
                   {completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-[#33C3F0]" />
+                    <CheckCircle2 className="h-6 w-6 text-emerald-500" />
                   ) : (
-                    <Circle className="h-6 w-6" />
+                    <Circle className="h-6 w-6 text-gray-400" />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -54,10 +54,10 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
               </TooltipContent>
             </Tooltip>
           </div>
-          <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+          <div className="mt-4 flex items-center justify-between text-sm">
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="font-medium cursor-help">
+                <span className="font-medium cursor-help text-gray-700">
                   {streak} day streak
                 </span>
               </TooltipTrigger>
