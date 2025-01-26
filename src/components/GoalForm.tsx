@@ -34,17 +34,28 @@ export function GoalForm({ onGoalAdded }: GoalFormProps) {
     }
 
     setIsLoading(true);
+
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !sessionData.session?.user?.id) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to create goals",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
     
     const { error } = await supabase
       .from('goals')
-      .insert([
-        { 
-          title, 
-          description,
-          target_date: date?.toISOString(),
-          status: 'in_progress'
-        }
-      ]);
+      .insert({
+        title,
+        description,
+        target_date: date?.toISOString(),
+        status: 'in_progress',
+        user_id: sessionData.session.user.id
+      });
 
     setIsLoading(false);
 
