@@ -13,7 +13,7 @@ const Index = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
+    <div className="min-h-screen bg-gradient-to-br from-[#1A1F2C] via-[#2C3E50] to-[#2980B9] animate-gradient-x">
       <WelcomeTour />
       <div className={cn("container py-8 space-y-8", isMobile && "pb-24")}>
         <div className="flex justify-between items-center mb-8">
@@ -30,24 +30,24 @@ const Index = () => {
         </div>
 
         <Tabs defaultValue="habits" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-lg">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-[#1A1F2C]/20 hover:bg-[#1A1F2C]/30 transition-colors backdrop-blur-lg">
             <TabsTrigger 
               value="habits" 
-              className="data-[state=active]:bg-white/20 text-white transition-all duration-300 hover:text-white/90"
+              className="data-[state=active]:bg-[#2980B9]/20 text-white transition-all duration-300 hover:text-white/90"
             >
               Habits
             </TabsTrigger>
             <TabsTrigger 
               value="goals" 
               onClick={() => navigate("/goals")}
-              className="data-[state=active]:bg-white/20 text-white transition-all duration-300 hover:text-white/90"
+              className="data-[state=active]:bg-[#2980B9]/20 text-white transition-all duration-300 hover:text-white/90"
             >
               Goals
             </TabsTrigger>
             <TabsTrigger 
               value="journey" 
               onClick={() => navigate("/journey")}
-              className="data-[state=active]:bg-white/20 text-white transition-all duration-300 hover:text-white/90"
+              className="data-[state=active]:bg-[#2980B9]/20 text-white transition-all duration-300 hover:text-white/90"
             >
               Journey
             </TabsTrigger>
