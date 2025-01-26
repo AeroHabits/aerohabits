@@ -17,6 +17,7 @@ const Auth = () => {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isLoading) return; // Prevent multiple submissions while loading
     setIsLoading(true);
 
     try {
@@ -30,7 +31,22 @@ const Auth = () => {
             },
           },
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message.includes('rate_limit')) {
+            toast({
+              title: "Please wait",
+              description: "For security purposes, please wait 45 seconds before trying again.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Error",
+              description: error.message,
+              variant: "destructive",
+            });
+          }
+          return;
+        }
         toast({
           title: "Success!",
           description: "Please check your email to verify your account.",
@@ -40,7 +56,14 @@ const Auth = () => {
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        }
         navigate("/");
       }
     } catch (error: any) {
