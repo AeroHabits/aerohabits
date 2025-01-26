@@ -36,13 +36,13 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white/70 backdrop-blur-sm rounded-lg border border-[#D3E4FD]/50">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-card p-6 rounded-lg shadow-sm border border-border">
       <div className="space-y-2">
         <Input
           placeholder="Enter habit title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="border-[#D3E4FD]/50 focus:border-[#33C3F0]/60"
+          className="bg-background"
         />
       </div>
       <div className="space-y-2">
@@ -50,12 +50,12 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           placeholder="Enter habit description..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border-[#D3E4FD]/50 focus:border-[#33C3F0]/60"
+          className="bg-background"
         />
       </div>
       <Button 
         type="submit"
-        className="w-full bg-gradient-to-r from-[#F97316] via-[#D946EF] to-[#0EA5E9] text-white hover:opacity-90"
+        className="w-full bg-primary hover:bg-primary/90"
       >
         Add New Habit
       </Button>

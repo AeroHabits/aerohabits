@@ -43,8 +43,8 @@ const Index = () => {
           totalHabits,
           currentStreak: Math.max(...habits.map(h => h.streak || 0)),
           completionRate,
-          weeklyProgress: completionRate, // This could be enhanced with actual weekly data
-          monthlyAverage: completionRate, // This could be enhanced with actual monthly data
+          weeklyProgress: completionRate,
+          monthlyAverage: completionRate,
           bestStreak: Math.max(...habits.map(h => h.streak || 0))
         });
       }
@@ -68,55 +68,49 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
+    <div className="min-h-screen bg-background">
       <WelcomeTour />
       <div className={cn("container py-8 space-y-8", isMobile && "pb-24")}>
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-white shadow-sm">
-            AREOHABITS
+          <h1 className="text-3xl font-semibold text-foreground">
+            Your Habits
           </h1>
           <UserMenu />
         </div>
 
-        <div className="text-center space-y-4">
-          <p className="text-lg text-white font-medium max-w-2xl mx-auto animate-fade-in">
-            Transform your life through consistent daily habits. Track your progress, build streaks, and achieve your goals.
-          </p>
-        </div>
-
         <Tabs defaultValue="habits" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/20 hover:bg-white/30 transition-colors backdrop-blur-lg">
+          <TabsList className="w-full max-w-md mx-auto bg-card">
             <TabsTrigger 
               value="habits" 
-              className="data-[state=active]:bg-white/30 text-white font-medium transition-all duration-300 hover:text-white"
+              className="flex-1"
             >
               Habits
             </TabsTrigger>
             <TabsTrigger 
               value="goals" 
               onClick={() => navigate("/goals")}
-              className="data-[state=active]:bg-white/30 text-white font-medium transition-all duration-300 hover:text-white"
+              className="flex-1"
             >
               Goals
             </TabsTrigger>
             <TabsTrigger 
               value="journey" 
               onClick={() => navigate("/journey")}
-              className="data-[state=active]:bg-white/30 text-white font-medium transition-all duration-300 hover:text-white"
+              className="flex-1"
             >
               Journey
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="space-y-8 animate-fade-in">
-          <section>
-            <h2 className="text-2xl font-semibold mb-4 text-white shadow-sm">Your Progress</h2>
+        <div className="space-y-8">
+          <section className="bg-card rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-medium mb-4 text-card-foreground">Overview</h2>
             <StatsGrid {...stats} />
           </section>
 
-          <section>
-            <h2 className="text-2xl font-semibold mb-4 text-white shadow-sm">Weekly Trends</h2>
+          <section className="bg-card rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-medium mb-4 text-card-foreground">Weekly Progress</h2>
             <ProgressChart 
               data={progressData}
               title="Habit Completion Trends"
@@ -124,8 +118,8 @@ const Index = () => {
             />
           </section>
 
-          <section>
-            <h2 className="text-2xl font-semibold mb-4 text-white shadow-sm">Your Habits</h2>
+          <section className="bg-card rounded-lg p-6 shadow-sm">
+            <h2 className="text-xl font-medium mb-4 text-card-foreground">Your Habits</h2>
             <HabitList />
           </section>
         </div>

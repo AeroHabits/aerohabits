@@ -28,24 +28,24 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
         transition={{ duration: 0.3 }}
         whileHover={{ scale: 1.02 }}
       >
-        <Card className="p-6 hover:shadow-lg transition-shadow bg-white/90 backdrop-blur-sm border-white/20">
+        <Card className="p-6 bg-card shadow-sm border-border">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <h3 className="font-semibold text-lg text-gray-900">{title}</h3>
-              <p className="text-sm text-gray-700">{description}</p>
+            <div className="space-y-1.5">
+              <h3 className="font-medium text-lg text-card-foreground">{title}</h3>
+              <p className="text-sm text-muted-foreground">{description}</p>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full"
+                  className="rounded-full hover:bg-accent"
                   onClick={onToggle}
                 >
                   {completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+                    <CheckCircle2 className="h-6 w-6 text-primary" />
                   ) : (
-                    <Circle className="h-6 w-6 text-gray-400" />
+                    <Circle className="h-6 w-6 text-muted-foreground" />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -57,7 +57,7 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
           <div className="mt-4 flex items-center justify-between text-sm">
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="font-medium cursor-help text-gray-700">
+                <span className="font-medium cursor-help text-muted-foreground">
                   {streak} day streak
                 </span>
               </TooltipTrigger>
