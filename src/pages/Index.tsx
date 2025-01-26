@@ -35,24 +35,24 @@ const Index = () => {
           transition={{ delay: 0.1 }}
         >
           <Tabs defaultValue="habits" className="w-full">
-            <TabsList className="w-full max-w-md mx-auto bg-white/70 backdrop-blur-sm border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60">
+            <TabsList className="w-full max-w-md mx-auto bg-white/70 backdrop-blur-sm border border-[#D3E4FD]/50 hover:border-[#9b87f5]/60">
               <TabsTrigger 
                 value="habits" 
-                className="flex-1 data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                className="flex-1 data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
               >
                 Habits
               </TabsTrigger>
               <TabsTrigger 
                 value="goals" 
                 onClick={() => navigate("/goals")}
-                className="flex-1 data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                className="flex-1 data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
               >
                 Goals
               </TabsTrigger>
               <TabsTrigger 
                 value="journey" 
                 onClick={() => navigate("/journey")}
-                className="flex-1 data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
+                className="flex-1 data-[state=active]:bg-[#9b87f5] data-[state=active]:text-white"
               >
                 Journey
               </TabsTrigger>
@@ -64,7 +64,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white/70 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60"
+          className="bg-white/70 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-[#D3E4FD]/50 hover:border-[#9b87f5]/60"
         >
           <HabitList />
         </motion.section>
