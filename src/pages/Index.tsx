@@ -52,7 +52,7 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
+    <div className="min-h-screen bg-gradient-to-br from-[#FEF7CD] via-[#E5DEFF] to-[#D3E4FD]">
       <WelcomeTour />
       <div className={cn(
         "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
@@ -63,7 +63,7 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-between items-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-foreground tracking-tight">
+          <h1 className="text-4xl font-bold text-[#6E59A5] tracking-tight">
             Your Habits
           </h1>
           <UserMenu />
@@ -75,24 +75,24 @@ const Index = () => {
           transition={{ delay: 0.1 }}
         >
           <Tabs defaultValue="habits" className="w-full">
-            <TabsList className="w-full max-w-md mx-auto bg-card/50 backdrop-blur-sm border border-border/50">
+            <TabsList className="w-full max-w-md mx-auto bg-white/70 backdrop-blur-sm border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60">
               <TabsTrigger 
                 value="habits" 
-                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="flex-1 data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
               >
                 Habits
               </TabsTrigger>
               <TabsTrigger 
                 value="goals" 
                 onClick={() => navigate("/goals")}
-                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="flex-1 data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
               >
                 Goals
               </TabsTrigger>
               <TabsTrigger 
                 value="journey" 
                 onClick={() => navigate("/journey")}
-                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="flex-1 data-[state=active]:bg-[#8B5CF6] data-[state=active]:text-white"
               >
                 Journey
               </TabsTrigger>
@@ -105,9 +105,9 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-card/50 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
+            className="bg-white/70 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60"
           >
-            <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Overview</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-[#7E69AB]">Overview</h2>
             <StatsGrid {...stats} />
           </motion.section>
 
@@ -115,9 +115,9 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-card/50 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
+            className="bg-white/70 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60"
           >
-            <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Your Habits</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-[#7E69AB]">Your Habits</h2>
             <HabitList />
           </motion.section>
         </div>

@@ -28,24 +28,24 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
         transition={{ duration: 0.3 }}
         whileHover={{ scale: 1.02 }}
       >
-        <Card className="p-6 bg-card/50 backdrop-blur-sm shadow-lg border border-border/50 hover:bg-card/60 transition-all duration-200">
+        <Card className="p-6 bg-gradient-to-br from-[#FEF7CD]/50 to-[#E5DEFF]/50 backdrop-blur-sm shadow-lg border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60 transition-all duration-200">
           <div className="flex items-center justify-between">
             <div className="space-y-1.5">
-              <h3 className="font-semibold text-lg text-card-foreground">{title}</h3>
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <h3 className="font-semibold text-lg text-[#6E59A5]">{title}</h3>
+              <p className="text-sm text-[#7E69AB]">{description}</p>
             </div>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="rounded-full hover:bg-accent"
+                  className="rounded-full hover:bg-[#E5DEFF]"
                   onClick={onToggle}
                 >
                   {completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-primary animate-scale-in" />
+                    <CheckCircle2 className="h-6 w-6 text-[#8B5CF6] animate-scale-in" />
                   ) : (
-                    <Circle className="h-6 w-6 text-muted-foreground" />
+                    <Circle className="h-6 w-6 text-[#7E69AB]" />
                   )}
                 </Button>
               </TooltipTrigger>
@@ -57,7 +57,7 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
           <div className="mt-4 flex items-center justify-between text-sm">
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="font-medium cursor-help text-muted-foreground hover:text-foreground transition-colors">
+                <span className="font-medium cursor-help text-[#7E69AB] hover:text-[#6E59A5] transition-colors">
                   {streak} day streak
                 </span>
               </TooltipTrigger>
