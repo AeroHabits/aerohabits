@@ -10,7 +10,7 @@ export function MobileNav() {
   if (!isMobile) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-white/10 bg-gradient-to-r from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 z-50 animate-fade-in">
+    <div className="fixed bottom-0 left-0 right-0 border-t border-blue-300/10 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 z-50 animate-fade-in">
       <nav className="flex h-16 items-center justify-around px-4">
         <Link
           to="/"
