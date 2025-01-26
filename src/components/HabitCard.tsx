@@ -1,7 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Circle } from "lucide-react";
-import { AIMotivator } from "./AIMotivator";
 
 interface HabitCardProps {
   title: string;
@@ -34,9 +33,6 @@ export function HabitCard({ title, description, streak, completed, onToggle }: H
       </div>
       <div className="mt-4 flex items-center text-sm text-muted-foreground">
         <span className="font-medium">{streak} day streak</span>
-      </div>
-      <div className="mt-4">
-        <AIMotivator habitTitle={title} streak={streak} />
       </div>
     </Card>
   );
