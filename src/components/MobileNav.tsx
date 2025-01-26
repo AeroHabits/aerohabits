@@ -1,48 +1,66 @@
-import { Home, Target, TrendingUp } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Home, Target, Map } from "lucide-react";
 
-export function MobileNav() {
+export const MobileNav = () => {
   const location = useLocation();
-  const isMobile = useIsMobile();
-
-  if (!isMobile) return null;
+  const pathname = location.pathname;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-blue-300/10 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-400 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 z-50 animate-fade-in">
-      <nav className="flex h-16 items-center justify-around px-4">
-        <Link
-          to="/"
-          className={cn(
-            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
-            location.pathname === "/" && "text-white scale-105"
-          )}
-        >
-          <Home className="h-5 w-5" />
-          <span className="text-xs font-medium">Habits</span>
-        </Link>
-        <Link
-          to="/goals"
-          className={cn(
-            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
-            location.pathname === "/goals" && "text-white scale-105"
-          )}
-        >
-          <Target className="h-5 w-5" />
-          <span className="text-xs font-medium">Goals</span>
-        </Link>
-        <Link
-          to="/journey"
-          className={cn(
-            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
-            location.pathname === "/journey" && "text-white scale-105"
-          )}
-        >
-          <TrendingUp className="h-5 w-5" />
-          <span className="text-xs font-medium">Journey</span>
-        </Link>
-      </nav>
-    </div>
+    <nav className="fixed bottom-0 left-0 right-0 z-50">
+      {/* Glass effect container with gradient border */}
+      <div className="backdrop-blur-xl bg-white/10 border-t border-white/20 shadow-lg">
+        <div className="max-w-md mx-auto px-4">
+          <div className="flex justify-around items-center h-16">
+            <Link
+              to="/"
+              className={`flex flex-col items-center space-y-1 transition-all duration-200 ${
+                pathname === "/" 
+                ? "text-white scale-110" 
+                : "text-white/60 hover:text-white"
+              }`}
+            >
+              <Home className={`w-6 h-6 ${
+                pathname === "/" 
+                ? "drop-shadow-[0_0_8px_rgba(155,135,245,0.8)]" 
+                : ""
+              }`} />
+              <span className="text-xs font-medium">Habits</span>
+            </Link>
+
+            <Link
+              to="/goals"
+              className={`flex flex-col items-center space-y-1 transition-all duration-200 ${
+                pathname === "/goals" 
+                ? "text-white scale-110" 
+                : "text-white/60 hover:text-white"
+              }`}
+            >
+              <Target className={`w-6 h-6 ${
+                pathname === "/goals" 
+                ? "drop-shadow-[0_0_8px_rgba(155,135,245,0.8)]" 
+                : ""
+              }`} />
+              <span className="text-xs font-medium">Goals</span>
+            </Link>
+
+            <Link
+              to="/journey"
+              className={`flex flex-col items-center space-y-1 transition-all duration-200 ${
+                pathname === "/journey" 
+                ? "text-white scale-110" 
+                : "text-white/60 hover:text-white"
+              }`}
+            >
+              <Map className={`w-6 h-6 ${
+                pathname === "/journey" 
+                ? "drop-shadow-[0_0_8px_rgba(155,135,245,0.8)]" 
+                : ""
+              }`} />
+              <span className="text-xs font-medium">Journey</span>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
-}
+};
