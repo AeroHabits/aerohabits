@@ -1,14 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CheckCircle2, Circle } from "lucide-react";
-import { NotificationPreferences } from "./NotificationPreferences";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { NotificationPreferences } from "@/components/NotificationPreferences";
+import { Trophy } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface HabitCardProps {
   id: string;
@@ -17,58 +11,70 @@ interface HabitCardProps {
   streak: number;
   completed: boolean;
   onToggle: () => void;
+  onDelete: () => void;
 }
 
-export function HabitCard({ id, title, description, streak, completed, onToggle }: HabitCardProps) {
+export function HabitCard({
+  id,
+  title,
+  description,
+  streak,
+  completed,
+  onToggle,
+  onDelete
+}: HabitCardProps) {
   return (
-    <TooltipProvider>
+    <Card className="relative overflow-hidden p-6 bg-white/70 backdrop-blur-sm border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60 transition-all duration-200">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        whileHover={{ scale: 1.02 }}
+        initial={false}
+        animate={{
+          scale: completed ? 1 : 1,
+          opacity: completed ? 0.8 : 1
+        }}
+        transition={{ duration: 0.2 }}
+        className="space-y-4"
       >
-        <Card className="p-6 bg-gradient-to-br from-[#FEF7CD]/50 to-[#E5DEFF]/50 backdrop-blur-sm shadow-lg border border-[#D3E4FD]/50 hover:border-[#33C3F0]/60 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <div className="space-y-1.5">
-              <h3 className="font-semibold text-lg text-[#6E59A5]">{title}</h3>
-              <p className="text-sm text-[#7E69AB]">{description}</p>
-            </div>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full hover:bg-[#E5DEFF]"
-                  onClick={onToggle}
-                >
-                  {completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-[#8B5CF6] animate-scale-in" />
-                  ) : (
-                    <Circle className="h-6 w-6 text-[#7E69AB]" />
-                  )}
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{completed ? "Mark as incomplete" : "Mark as complete"}</p>
-              </TooltipContent>
-            </Tooltip>
+        <div className="flex justify-between items-start">
+          <div className="space-y-1">
+            <h3 className="font-semibold text-lg text-gray-900">{title}</h3>
+            <p className="text-sm text-gray-600">{description}</p>
           </div>
-          <div className="mt-4 flex items-center justify-between text-sm">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="font-medium cursor-help text-[#7E69AB] hover:text-[#6E59A5] transition-colors">
-                  {streak} day streak
-                </span>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Complete this habit daily to build your streak!</p>
-              </TooltipContent>
-            </Tooltip>
-            <NotificationPreferences habitId={id} />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-red-500 hover:text-red-600 hover:bg-red-50"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete();
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+            <Trophy className="h-4 w-4 text-yellow-500" />
+            <span className="text-sm font-medium">Streak: {streak}</span>
           </div>
-        </Card>
+          <NotificationPreferences habitId={id} />
+        </div>
+        
+        <motion.div
+          whileTap={{ scale: 0.95 }}
+        >
+          <Button
+            onClick={onToggle}
+            className={`w-full ${
+              completed
+                ? "bg-green-500 hover:bg-green-600"
+                : "bg-blue-500 hover:bg-blue-600"
+            } text-white transition-colors duration-200`}
+          >
+            {completed ? "Completed" : "Mark as Complete"}
+          </Button>
+        </motion.div>
       </motion.div>
-    </TooltipProvider>
+    </Card>
   );
 }
