@@ -10,12 +10,12 @@ export function MobileNav() {
   if (!isMobile) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t border-[#9F9EA1]/20 bg-gradient-to-r from-[#222222] via-[#403E43] to-[#002D62] backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 z-50 animate-fade-in">
+    <div className="fixed bottom-0 left-0 right-0 border-t border-white/10 bg-gradient-to-r from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] backdrop-blur-lg supports-[backdrop-filter]:bg-background/60 z-50 animate-fade-in">
       <nav className="flex h-16 items-center justify-around px-4">
         <Link
           to="/"
           className={cn(
-            "flex flex-col items-center gap-1 text-[#9F9EA1] transition-all duration-300 hover:text-white hover:scale-110",
+            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
             location.pathname === "/" && "text-white scale-105"
           )}
         >
@@ -25,7 +25,7 @@ export function MobileNav() {
         <Link
           to="/goals"
           className={cn(
-            "flex flex-col items-center gap-1 text-[#9F9EA1] transition-all duration-300 hover:text-white hover:scale-110",
+            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
             location.pathname === "/goals" && "text-white scale-105"
           )}
         >
@@ -35,7 +35,7 @@ export function MobileNav() {
         <Link
           to="/journey"
           className={cn(
-            "flex flex-col items-center gap-1 text-[#9F9EA1] transition-all duration-300 hover:text-white hover:scale-110",
+            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
             location.pathname === "/journey" && "text-white scale-105"
           )}
         >

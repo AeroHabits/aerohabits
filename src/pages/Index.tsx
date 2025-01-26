@@ -12,7 +12,7 @@ const Index = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#222222] via-[#403E43] to-[#002D62] animate-gradient-x">
+    <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
       <WelcomeTour />
       <div className={cn("container py-8 space-y-8", isMobile && "pb-24")}>
         <div className="flex justify-between items-center mb-8">
@@ -23,30 +23,30 @@ const Index = () => {
         </div>
 
         <div className="text-center space-y-4">
-          <p className="text-lg text-[#9F9EA1] max-w-2xl mx-auto animate-fade-in">
+          <p className="text-lg text-white/80 max-w-2xl mx-auto animate-fade-in">
             Transform your life through consistent daily habits. Track your progress, build streaks, and achieve your goals.
           </p>
         </div>
 
         <Tabs defaultValue="habits" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 bg-[#222222]/80 hover:bg-[#333333]/80 transition-colors backdrop-blur-lg">
+          <TabsList className="grid w-full grid-cols-3 mb-8 bg-white/10 hover:bg-white/20 transition-colors backdrop-blur-lg">
             <TabsTrigger 
               value="habits" 
-              className="data-[state=active]:bg-[#002D62]/80 text-white transition-all duration-300 hover:text-white/90"
+              className="data-[state=active]:bg-white/20 text-white transition-all duration-300 hover:text-white/90"
             >
               Habits
             </TabsTrigger>
             <TabsTrigger 
               value="goals" 
               onClick={() => navigate("/goals")}
-              className="data-[state=active]:bg-[#002D62]/80 text-white transition-all duration-300 hover:text-white/90"
+              className="data-[state=active]:bg-white/20 text-white transition-all duration-300 hover:text-white/90"
             >
               Goals
             </TabsTrigger>
             <TabsTrigger 
               value="journey" 
               onClick={() => navigate("/journey")}
-              className="data-[state=active]:bg-[#002D62]/80 text-white transition-all duration-300 hover:text-white/90"
+              className="data-[state=active]:bg-white/20 text-white transition-all duration-300 hover:text-white/90"
             >
               Journey
             </TabsTrigger>
