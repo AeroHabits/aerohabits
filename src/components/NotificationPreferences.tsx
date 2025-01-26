@@ -24,7 +24,7 @@ export function NotificationPreferences({ habitId }: NotificationPreferencesProp
         .select()
         .eq('habit_id', habitId)
         .eq('user_id', session.session.user.id)
-        .single();
+        .maybeSingle();
 
       if (existingNotification) {
         setIsEnabled(existingNotification.is_enabled);
@@ -52,7 +52,7 @@ export function NotificationPreferences({ habitId }: NotificationPreferencesProp
         .select()
         .eq('habit_id', habitId)
         .eq('user_id', session.session.user.id)
-        .single();
+        .maybeSingle();
 
       if (existingNotification) {
         // Update existing notification
