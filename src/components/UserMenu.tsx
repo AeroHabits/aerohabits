@@ -11,17 +11,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { User } from "@supabase/supabase-js";
-import { ProfileEditor } from "./ProfileEditor";
 import { AvatarUploader } from "./AvatarUploader";
+import { UserProfile } from "./UserProfile";
 
 export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<{ full_name: string; avatar_url: string | null } | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -56,31 +53,6 @@ export function UserMenu() {
     setProfile(data);
   };
 
-  const handleUpdateName = async (newName: string) => {
-    if (!user) return;
-
-    const { error } = await supabase
-      .from("profiles")
-      .update({ full_name: newName })
-      .eq("id", user.id);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update name",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setProfile((prev) => prev ? { ...prev, full_name: newName } : null);
-    setIsEditing(false);
-    toast({
-      title: "Success",
-      description: "Name updated successfully",
-    });
-  };
-
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate("/auth");
@@ -108,25 +80,11 @@ export function UserMenu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuLabel>
-          {isEditing ? (
-            <ProfileEditor
-              initialName={profile?.full_name || ""}
-              onSave={handleUpdateName}
-              onCancel={() => setIsEditing(false)}
-            />
-          ) : (
-            <div className="flex justify-between items-center">
-              <span>{profile?.full_name || user.email}</span>
-              <Button
-                onClick={() => setIsEditing(true)}
-                variant="ghost"
-                size="sm"
-                className="h-6 px-2"
-              >
-                Edit
-              </Button>
-            </div>
-          )}
+          <UserProfile 
+            user={user}
+            profile={profile}
+            setProfile={setProfile}
+          />
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <AvatarUploader 
