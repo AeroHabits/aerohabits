@@ -24,7 +24,7 @@ export function HabitCard({
   onDelete
 }: HabitCardProps) {
   return (
-    <Card className="relative overflow-hidden p-6 bg-gradient-to-br from-blue-400/20 to-purple-400/10 backdrop-blur-sm border border-purple-300/20 hover:border-purple-300/30 transition-all duration-200">
+    <Card className="relative overflow-hidden p-6 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-200">
       <motion.div
         initial={false}
         animate={{
@@ -53,7 +53,7 @@ export function HabitCard({
         </div>
         
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-500/20 to-purple-400/20 rounded-full px-4 py-2">
+          <div className="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
             {streak > 0 ? (
               <Flame className="h-5 w-5 text-orange-400" />
             ) : (
@@ -73,8 +73,8 @@ export function HabitCard({
             onClick={onToggle}
             className={`w-full ${
               completed
-                ? "bg-gradient-to-r from-blue-500/50 to-purple-400/30 hover:from-blue-500/60 hover:to-purple-400/40"
-                : "bg-gradient-to-r from-blue-400/30 to-purple-400/20 hover:from-blue-400/40 hover:to-purple-400/30"
+                ? "bg-white/20 hover:bg-white/30"
+                : "bg-white/10 hover:bg-white/20"
             } text-white font-medium shadow-sm transition-colors duration-200`}
           >
             {completed ? "Completed Today! 🎉" : "Mark as Complete"}
