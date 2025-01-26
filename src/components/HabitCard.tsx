@@ -28,10 +28,10 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
         transition={{ duration: 0.3 }}
         whileHover={{ scale: 1.02 }}
       >
-        <Card className="p-6 bg-card shadow-sm border-border">
+        <Card className="p-6 bg-card/50 backdrop-blur-sm shadow-lg border border-border/50 hover:bg-card/60 transition-all duration-200">
           <div className="flex items-center justify-between">
             <div className="space-y-1.5">
-              <h3 className="font-medium text-lg text-card-foreground">{title}</h3>
+              <h3 className="font-semibold text-lg text-card-foreground">{title}</h3>
               <p className="text-sm text-muted-foreground">{description}</p>
             </div>
             <Tooltip>
@@ -43,7 +43,7 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
                   onClick={onToggle}
                 >
                   {completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-primary" />
+                    <CheckCircle2 className="h-6 w-6 text-primary animate-scale-in" />
                   ) : (
                     <Circle className="h-6 w-6 text-muted-foreground" />
                   )}
@@ -57,7 +57,7 @@ export function HabitCard({ id, title, description, streak, completed, onToggle 
           <div className="mt-4 flex items-center justify-between text-sm">
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="font-medium cursor-help text-muted-foreground">
+                <span className="font-medium cursor-help text-muted-foreground hover:text-foreground transition-colors">
                   {streak} day streak
                 </span>
               </TooltipTrigger>

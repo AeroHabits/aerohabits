@@ -9,6 +9,7 @@ import { StatsGrid } from "@/components/StatsGrid";
 import { ProgressChart } from "@/components/ProgressChart";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -68,60 +69,88 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5">
       <WelcomeTour />
-      <div className={cn("container py-8 space-y-8", isMobile && "pb-24")}>
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-semibold text-foreground">
+      <div className={cn(
+        "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+        isMobile && "pb-24"
+      )}>
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-between items-center mb-8"
+        >
+          <h1 className="text-4xl font-bold text-foreground tracking-tight">
             Your Habits
           </h1>
           <UserMenu />
-        </div>
+        </motion.div>
 
-        <Tabs defaultValue="habits" className="w-full">
-          <TabsList className="w-full max-w-md mx-auto bg-card">
-            <TabsTrigger 
-              value="habits" 
-              className="flex-1"
-            >
-              Habits
-            </TabsTrigger>
-            <TabsTrigger 
-              value="goals" 
-              onClick={() => navigate("/goals")}
-              className="flex-1"
-            >
-              Goals
-            </TabsTrigger>
-            <TabsTrigger 
-              value="journey" 
-              onClick={() => navigate("/journey")}
-              className="flex-1"
-            >
-              Journey
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <Tabs defaultValue="habits" className="w-full">
+            <TabsList className="w-full max-w-md mx-auto bg-card/50 backdrop-blur-sm border border-border/50">
+              <TabsTrigger 
+                value="habits" 
+                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Habits
+              </TabsTrigger>
+              <TabsTrigger 
+                value="goals" 
+                onClick={() => navigate("/goals")}
+                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Goals
+              </TabsTrigger>
+              <TabsTrigger 
+                value="journey" 
+                onClick={() => navigate("/journey")}
+                className="flex-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+              >
+                Journey
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </motion.div>
 
         <div className="space-y-8">
-          <section className="bg-card rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-medium mb-4 text-card-foreground">Overview</h2>
+          <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-card/50 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
+          >
+            <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Overview</h2>
             <StatsGrid {...stats} />
-          </section>
+          </motion.section>
 
-          <section className="bg-card rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-medium mb-4 text-card-foreground">Weekly Progress</h2>
+          <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-card/50 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
+          >
+            <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Weekly Progress</h2>
             <ProgressChart 
               data={progressData}
               title="Habit Completion Trends"
               description="Your habit completion rate over the past week"
             />
-          </section>
+          </motion.section>
 
-          <section className="bg-card rounded-lg p-6 shadow-sm">
-            <h2 className="text-xl font-medium mb-4 text-card-foreground">Your Habits</h2>
+          <motion.section 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-card/50 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
+          >
+            <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Your Habits</h2>
             <HabitList />
-          </section>
+          </motion.section>
         </div>
       </div>
     </div>
