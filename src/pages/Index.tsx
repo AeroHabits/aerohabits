@@ -12,7 +12,7 @@ const Index = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90">
       <WelcomeTour />
       <div className={cn(
         "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
@@ -23,7 +23,7 @@ const Index = () => {
           animate={{ opacity: 1, y: 0 }}
           className="flex justify-between items-center mb-8"
         >
-          <h1 className="text-4xl font-bold text-white tracking-tight drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-100">
+          <h1 className="text-4xl font-bold text-white tracking-tight drop-shadow-lg">
             AREOHABITS
           </h1>
           <UserMenu />
@@ -35,24 +35,24 @@ const Index = () => {
           transition={{ delay: 0.1 }}
         >
           <Tabs defaultValue="habits" className="w-full">
-            <TabsList className="w-full max-w-md mx-auto bg-white/10 backdrop-blur-sm border border-white/20">
+            <TabsList className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-sm border border-white/30">
               <TabsTrigger 
                 value="habits" 
-                className="flex-1 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80 font-medium"
+                className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
               >
                 Habits
               </TabsTrigger>
               <TabsTrigger 
                 value="goals" 
                 onClick={() => navigate("/goals")}
-                className="flex-1 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80 font-medium"
+                className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
               >
                 Goals
               </TabsTrigger>
               <TabsTrigger 
                 value="journey" 
                 onClick={() => navigate("/journey")}
-                className="flex-1 data-[state=active]:bg-white/20 data-[state=active]:text-white text-white/80 font-medium"
+                className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
               >
                 Journey
               </TabsTrigger>
@@ -64,7 +64,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20"
+          className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30"
         >
           <HabitList />
         </motion.section>

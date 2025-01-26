@@ -36,13 +36,13 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-gradient-to-br from-blue-400/20 to-purple-400/10 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-purple-300/20 hover:border-purple-300/30">
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white/20 backdrop-blur-sm p-6 rounded-lg shadow-lg border border-white/30 hover:border-white/40">
       <div className="space-y-2">
         <Input
           placeholder="Enter habit title..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="bg-gradient-to-r from-blue-500/10 to-purple-400/10 border-purple-300/30 focus:border-purple-300/50 text-white placeholder:text-white/70 text-lg font-medium"
+          className="bg-white/20 border-white/30 focus:border-white/50 text-white placeholder:text-white/70 text-lg font-medium"
         />
       </div>
       <div className="space-y-2">
@@ -50,12 +50,12 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           placeholder="Enter habit description..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="bg-gradient-to-r from-blue-500/10 to-purple-400/10 border-purple-300/30 focus:border-purple-300/50 text-white placeholder:text-white/70 text-base"
+          className="bg-white/20 border-white/30 focus:border-white/50 text-white placeholder:text-white/70 text-base"
         />
       </div>
       <Button 
         type="submit"
-        className="w-full bg-gradient-to-r from-blue-500/30 to-purple-400/20 hover:from-blue-500/40 hover:to-purple-400/30 text-white font-medium shadow-sm transition-colors"
+        className="w-full bg-blue-600/40 hover:bg-blue-600/50 text-white font-medium shadow-sm transition-colors border border-white/20"
       >
         Add New Habit
       </Button>

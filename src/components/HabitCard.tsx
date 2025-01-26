@@ -24,7 +24,7 @@ export function HabitCard({
   onDelete
 }: HabitCardProps) {
   return (
-    <Card className="relative overflow-hidden p-6 bg-gradient-to-br from-white/20 to-white/5 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-200">
+    <Card className="relative overflow-hidden p-6 bg-white/30 backdrop-blur-sm border border-white/40 hover:border-white/50 transition-all duration-200 shadow-lg">
       <motion.div
         initial={false}
         animate={{
@@ -37,12 +37,12 @@ export function HabitCard({
         <div className="flex justify-between items-start">
           <div className="space-y-1">
             <h3 className="font-semibold text-xl text-white drop-shadow-sm">{title}</h3>
-            <p className="text-base text-white/90 drop-shadow-sm">{description}</p>
+            <p className="text-base text-white/90">{description}</p>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="text-white hover:text-red-200 hover:bg-red-500/20"
+            className="text-white/90 hover:text-red-200 hover:bg-red-500/20"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
@@ -53,13 +53,13 @@ export function HabitCard({
         </div>
         
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
+          <div className="flex items-center space-x-2 bg-white/20 rounded-full px-4 py-2">
             {streak > 0 ? (
-              <Flame className="h-5 w-5 text-orange-400" />
+              <Flame className="h-5 w-5 text-amber-400" />
             ) : (
-              <Trophy className="h-5 w-5 text-yellow-300" />
+              <Trophy className="h-5 w-5 text-amber-300" />
             )}
-            <span className="text-base font-medium text-white drop-shadow-sm">
+            <span className="text-base font-medium text-white">
               {streak} Day{streak !== 1 ? 's' : ''} Streak
             </span>
           </div>
@@ -73,9 +73,9 @@ export function HabitCard({
             onClick={onToggle}
             className={`w-full ${
               completed
-                ? "bg-white/20 hover:bg-white/30"
-                : "bg-white/10 hover:bg-white/20"
-            } text-white font-medium shadow-sm transition-colors duration-200`}
+                ? "bg-blue-500/40 hover:bg-blue-500/50"
+                : "bg-blue-600/30 hover:bg-blue-600/40"
+            } text-white font-medium shadow-sm transition-colors duration-200 border border-white/20`}
           >
             {completed ? "Completed Today! 🎉" : "Mark as Complete"}
           </Button>
