@@ -63,6 +63,7 @@ export function HabitList() {
         {habits.map((habit) => (
           <HabitCard
             key={habit.id}
+            id={habit.id}
             title={habit.title}
             description={habit.description}
             streak={habit.streak}
