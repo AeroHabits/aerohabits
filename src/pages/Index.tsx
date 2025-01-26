@@ -1,9 +1,12 @@
 import { Stats } from "@/components/Stats";
 import { HabitList } from "@/components/HabitList";
 import { UserMenu } from "@/components/UserMenu";
-import { JourneyChart } from "@/components/JourneyChart";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#D3E4FD]/90 via-[#E5DEFF]/80 to-[#FDE1D3]/70">
       <div className="container py-8 space-y-8">
@@ -20,15 +23,17 @@ const Index = () => {
           </p>
         </div>
 
+        <Tabs defaultValue="habits" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger value="habits">Habits</TabsTrigger>
+            <TabsTrigger value="journey" onClick={() => navigate("/journey")}>Journey</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <div className="space-y-8 animate-fade-in">
           <section>
             <h2 className="text-2xl font-semibold mb-4">Your Stats</h2>
             <Stats />
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Your Journey</h2>
-            <JourneyChart />
           </section>
 
           <section>
