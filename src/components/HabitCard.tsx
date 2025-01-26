@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Circle } from "lucide-react";
@@ -13,7 +12,7 @@ interface HabitCardProps {
 
 export function HabitCard({ title, description, streak, completed, onToggle }: HabitCardProps) {
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow animate-fade-in">
+    <Card className="p-6 hover:shadow-lg transition-shadow animate-fade-in bg-white/50 backdrop-blur-sm">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h3 className="font-semibold text-lg">{title}</h3>
@@ -26,7 +25,7 @@ export function HabitCard({ title, description, streak, completed, onToggle }: H
           onClick={onToggle}
         >
           {completed ? (
-            <CheckCircle2 className="h-6 w-6 text-green-500" />
+            <CheckCircle2 className="h-6 w-6 text-violet-500" />
           ) : (
             <Circle className="h-6 w-6" />
           )}

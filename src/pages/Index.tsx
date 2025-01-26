@@ -3,10 +3,10 @@ import { HabitList } from "@/components/HabitList";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-violet-100 to-fuchsia-100">
       <div className="container py-8 space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent animate-fade-in">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent animate-fade-in">
             AREOHABITS
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-in">
