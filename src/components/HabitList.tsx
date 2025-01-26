@@ -3,10 +3,11 @@ import { AddHabitForm } from "./AddHabitForm";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { FileX } from "lucide-react";
+import { HabitStats } from "./HabitStats";
+import { HabitListEmpty } from "./HabitListEmpty";
+import { HabitListLoading } from "./HabitListLoading";
 
 interface Habit {
   id: string;
@@ -45,19 +46,11 @@ export function HabitList() {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching habits:', error);
-        toast({
-          title: "Error",
-          description: "Failed to load habits",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (error) throw error;
 
       setHabits(data || []);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching habits:', error);
       toast({
         title: "Error",
         description: "Failed to load habits",
@@ -167,40 +160,18 @@ export function HabitList() {
   };
 
   if (isLoading) {
-    return (
-      <div className="space-y-8">
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="p-6 bg-white/70 backdrop-blur-sm rounded-lg border border-[#D3E4FD]/50">
-              <Skeleton className="h-6 w-3/4 mb-4" />
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-2/3" />
-            </div>
-          ))}
-        </div>
-      </div>
-    );
+    return <HabitListLoading />;
   }
 
+  const totalStreaks = habits.reduce((acc, habit) => acc + (habit.streak || 0), 0);
+
   if (habits.length === 0) {
-    return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-center py-12"
-      >
-        <FileX className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-4 text-lg font-semibold text-gray-900">No habits yet</h3>
-        <p className="mt-2 text-sm text-gray-600">Get started by creating your first habit!</p>
-        <div className="mt-8 max-w-md mx-auto">
-          <AddHabitForm onAddHabit={addHabit} />
-        </div>
-      </motion.div>
-    );
+    return <HabitListEmpty onAddHabit={addHabit} />;
   }
 
   return (
     <div className="space-y-8">
+      <HabitStats totalHabits={habits.length} totalStreaks={totalStreaks} />
       <AnimatePresence>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {habits.map((habit) => (
