@@ -6,7 +6,6 @@ import { WelcomeTour } from "@/components/WelcomeTour";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { StatsGrid } from "@/components/StatsGrid";
-import { ProgressChart } from "@/components/ProgressChart";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -22,11 +21,9 @@ const Index = () => {
     monthlyAverage: 0,
     bestStreak: 0
   });
-  const [progressData, setProgressData] = useState([]);
 
   useEffect(() => {
     fetchStats();
-    fetchProgressData();
   }, []);
 
   const fetchStats = async () => {
@@ -52,20 +49,6 @@ const Index = () => {
     } catch (error) {
       console.error('Error fetching stats:', error);
     }
-  };
-
-  const fetchProgressData = async () => {
-    // This is sample data - you could enhance this with real data from your database
-    const sampleData = [
-      { date: "Mon", completed: 85, total: 100 },
-      { date: "Tue", completed: 75, total: 95 },
-      { date: "Wed", completed: 90, total: 100 },
-      { date: "Thu", completed: 80, total: 90 },
-      { date: "Fri", completed: 85, total: 95 },
-      { date: "Sat", completed: 70, total: 85 },
-      { date: "Sun", completed: 95, total: 100 }
-    ];
-    setProgressData(sampleData);
   };
 
   return (
@@ -126,20 +109,6 @@ const Index = () => {
           >
             <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Overview</h2>
             <StatsGrid {...stats} />
-          </motion.section>
-
-          <motion.section 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-card/50 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-border/50"
-          >
-            <h2 className="text-2xl font-semibold mb-6 text-card-foreground">Weekly Progress</h2>
-            <ProgressChart 
-              data={progressData}
-              title="Habit Completion Trends"
-              description="Your habit completion rate over the past week"
-            />
           </motion.section>
 
           <motion.section 
