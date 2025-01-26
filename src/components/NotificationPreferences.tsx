@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,12 +13,45 @@ export function NotificationPreferences({ habitId }: NotificationPreferencesProp
   const [reminderTime, setReminderTime] = useState("09:00");
   const { toast } = useToast();
 
-  const handleToggleNotifications = async () => {
-    try {
+  useEffect(() => {
+    // Fetch existing notification preferences
+    const fetchNotificationPreferences = async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.user) return;
+
       const { data: existingNotification } = await supabase
         .from('habit_notifications')
         .select()
         .eq('habit_id', habitId)
+        .eq('user_id', session.session.user.id)
+        .single();
+
+      if (existingNotification) {
+        setIsEnabled(existingNotification.is_enabled);
+        setReminderTime(existingNotification.reminder_time);
+      }
+    };
+
+    fetchNotificationPreferences();
+  }, [habitId]);
+
+  const handleToggleNotifications = async () => {
+    try {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session?.session?.user) {
+        toast({
+          title: "Error",
+          description: "You must be logged in to manage notifications",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data: existingNotification } = await supabase
+        .from('habit_notifications')
+        .select()
+        .eq('habit_id', habitId)
+        .eq('user_id', session.session.user.id)
         .single();
 
       if (existingNotification) {
@@ -36,6 +68,7 @@ export function NotificationPreferences({ habitId }: NotificationPreferencesProp
           .from('habit_notifications')
           .insert({
             habit_id: habitId,
+            user_id: session.session.user.id,
             reminder_time: reminderTime,
             is_enabled: true
           });
