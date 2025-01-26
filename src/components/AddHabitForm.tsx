@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { enhanceToSmartGoal, suggestCategory } from "@/utils/openai";
-import { ApiKeyInput } from "./ApiKeyInput";
 import { Loader2 } from "lucide-react";
 
 interface AddHabitFormProps {
@@ -45,7 +44,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to categorize habit. Please check your API key.",
+        description: "Failed to categorize habit.",
         variant: "destructive",
       });
     }
@@ -72,7 +71,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to enhance goal. Please check your API key.",
+        description: "Failed to enhance goal.",
         variant: "destructive",
       });
     } finally {
@@ -82,7 +81,6 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white/70 backdrop-blur-sm rounded-lg border border-[#D3E4FD]/50">
-      <ApiKeyInput />
       <div className="space-y-2">
         <Input
           placeholder="Enter habit title..."

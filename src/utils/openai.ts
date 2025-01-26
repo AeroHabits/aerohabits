@@ -1,16 +1,12 @@
 const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
+const OPENAI_API_KEY = 'YOUR_API_KEY_HERE'; // Replace this with your actual API key
 
 export async function enhanceToSmartGoal(goal: string): Promise<string> {
-  const apiKey = localStorage.getItem('openai_api_key');
-  if (!apiKey) {
-    throw new Error('OpenAI API key not found');
-  }
-
   const response = await fetch(OPENAI_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
+      'Authorization': `Bearer ${OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
       model: 'gpt-4o',
@@ -33,16 +29,11 @@ export async function enhanceToSmartGoal(goal: string): Promise<string> {
 }
 
 export async function suggestCategory(goal: string): Promise<string> {
-  const apiKey = localStorage.getItem('openai_api_key');
-  if (!apiKey) {
-    throw new Error('OpenAI API key not found');
-  }
-
   const response = await fetch(OPENAI_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
+      'Authorization': `Bearer ${OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
