@@ -1,6 +1,7 @@
 import { Stats } from "@/components/Stats";
 import { HabitList } from "@/components/HabitList";
 import { UserMenu } from "@/components/UserMenu";
+import { JourneyChart } from "@/components/JourneyChart";
 
 const Index = () => {
   return (
@@ -23,6 +24,11 @@ const Index = () => {
           <section>
             <h2 className="text-2xl font-semibold mb-4">Your Stats</h2>
             <Stats />
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">Your Journey</h2>
+            <JourneyChart />
           </section>
 
           <section>
