@@ -12,7 +12,7 @@ interface HabitCardProps {
 
 export function HabitCard({ title, description, streak, completed, onToggle }: HabitCardProps) {
   return (
-    <Card className="p-6 hover:shadow-lg transition-shadow animate-fade-in bg-white/70 backdrop-blur-sm border-violet-200/50 hover:border-violet-300/60">
+    <Card className="p-6 hover:shadow-lg transition-shadow animate-fade-in bg-white/70 backdrop-blur-sm border-[#D3E4FD]/50 hover:border-[#33C3F0]/60">
       <div className="flex items-center justify-between">
         <div className="space-y-1">
           <h3 className="font-semibold text-lg">{title}</h3>
@@ -25,7 +25,7 @@ export function HabitCard({ title, description, streak, completed, onToggle }: H
           onClick={onToggle}
         >
           {completed ? (
-            <CheckCircle2 className="h-6 w-6 text-violet-600" />
+            <CheckCircle2 className="h-6 w-6 text-[#33C3F0]" />
           ) : (
             <Circle className="h-6 w-6" />
           )}
