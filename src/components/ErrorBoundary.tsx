@@ -1,4 +1,5 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
+import * as Sentry from "@sentry/react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { RefreshCw } from "lucide-react";
@@ -23,12 +24,16 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    Sentry.captureException(error, { extra: errorInfo });
   }
 
   private handleReset = () => {
     this.setState({ hasError: false, error: null });
     window.location.reload();
+  };
+
+  private handleReport = () => {
+    Sentry.showReportDialog();
   };
 
   public render() {
@@ -40,13 +45,22 @@ export class ErrorBoundary extends Component<Props, State> {
             <AlertDescription className="mt-2 text-gray-600">
               {this.state.error?.message || 'An unexpected error occurred'}
             </AlertDescription>
-            <Button
-              onClick={this.handleReset}
-              className="mt-4 bg-[#8B5CF6] hover:bg-[#7E69AB] text-white"
-            >
-              <RefreshCw className="mr-2 h-4 w-4" />
-              Try Again
-            </Button>
+            <div className="mt-4 flex space-x-4">
+              <Button
+                onClick={this.handleReset}
+                className="bg-[#8B5CF6] hover:bg-[#7E69AB] text-white"
+              >
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Try Again
+              </Button>
+              <Button
+                onClick={this.handleReport}
+                variant="outline"
+                className="border-[#8B5CF6] text-[#8B5CF6] hover:bg-[#8B5CF6]/10"
+              >
+                Report Feedback
+              </Button>
+            </div>
           </Alert>
         </div>
       );
