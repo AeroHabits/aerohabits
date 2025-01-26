@@ -24,7 +24,7 @@ export function HabitCard({
   onDelete
 }: HabitCardProps) {
   return (
-    <Card className="relative overflow-hidden p-6 bg-white/10 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-200">
+    <Card className="relative overflow-hidden p-6 bg-white/20 backdrop-blur-sm border border-white/20 hover:border-white/30 transition-all duration-200">
       <motion.div
         initial={false}
         animate={{
@@ -36,13 +36,13 @@ export function HabitCard({
       >
         <div className="flex justify-between items-start">
           <div className="space-y-1">
-            <h3 className="font-semibold text-lg text-white">{title}</h3>
-            <p className="text-sm text-white/80">{description}</p>
+            <h3 className="font-semibold text-xl text-white drop-shadow-sm">{title}</h3>
+            <p className="text-base text-white/90 drop-shadow-sm">{description}</p>
           </div>
           <Button
             variant="ghost"
             size="sm"
-            className="text-red-300 hover:text-red-200 hover:bg-red-500/20"
+            className="text-white hover:text-red-200 hover:bg-red-500/20"
             onClick={(e) => {
               e.stopPropagation();
               onDelete();
@@ -54,8 +54,8 @@ export function HabitCard({
         
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-            <Trophy className="h-4 w-4 text-yellow-300" />
-            <span className="text-sm font-medium text-white/80">Streak: {streak}</span>
+            <Trophy className="h-5 w-5 text-yellow-300" />
+            <span className="text-base font-medium text-white drop-shadow-sm">Streak: {streak}</span>
           </div>
           <NotificationPreferences habitId={id} />
         </div>
@@ -67,9 +67,9 @@ export function HabitCard({
             onClick={onToggle}
             className={`w-full ${
               completed
-                ? "bg-white/20 hover:bg-white/30"
-                : "bg-white/20 hover:bg-white/30"
-            } text-white transition-colors duration-200`}
+                ? "bg-white/30 hover:bg-white/40"
+                : "bg-white/30 hover:bg-white/40"
+            } text-white font-medium shadow-sm transition-colors duration-200`}
           >
             {completed ? "Completed" : "Mark as Complete"}
           </Button>
