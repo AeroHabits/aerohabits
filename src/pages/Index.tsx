@@ -3,17 +3,9 @@ import { HabitList } from "@/components/HabitList";
 import { UserMenu } from "@/components/UserMenu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
-import { GoalForm } from "@/components/GoalForm";
-import { GoalList } from "@/components/GoalList";
-import { useState } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
-  const [refreshStats, setRefreshStats] = useState(0);
-
-  const handleGoalChange = () => {
-    setRefreshStats(prev => prev + 1);
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#D3E4FD]/90 via-[#E5DEFF]/80 to-[#FDE1D3]/70">
@@ -32,8 +24,9 @@ const Index = () => {
         </div>
 
         <Tabs defaultValue="habits" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsList className="grid w-full grid-cols-3 mb-8">
             <TabsTrigger value="habits">Habits</TabsTrigger>
+            <TabsTrigger value="goals" onClick={() => navigate("/goals")}>Goals</TabsTrigger>
             <TabsTrigger value="journey" onClick={() => navigate("/journey")}>Journey</TabsTrigger>
           </TabsList>
         </Tabs>
@@ -41,15 +34,7 @@ const Index = () => {
         <div className="space-y-8 animate-fade-in">
           <section>
             <h2 className="text-2xl font-semibold mb-4">Your Stats</h2>
-            <Stats key={refreshStats} />
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-semibold mb-4">Your Goals</h2>
-            <div className="space-y-6">
-              <GoalForm onGoalAdded={handleGoalChange} />
-              <GoalList onGoalUpdated={handleGoalChange} />
-            </div>
+            <Stats />
           </section>
 
           <section>
