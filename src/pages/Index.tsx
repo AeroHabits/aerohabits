@@ -1,4 +1,3 @@
-import { Stats } from "@/components/Stats";
 import { HabitList } from "@/components/HabitList";
 import { UserMenu } from "@/components/UserMenu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,10 +5,67 @@ import { useNavigate } from "react-router-dom";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { StatsGrid } from "@/components/StatsGrid";
+import { ProgressChart } from "@/components/ProgressChart";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [stats, setStats] = useState({
+    totalHabits: 0,
+    currentStreak: 0,
+    completionRate: 0,
+    weeklyProgress: 0,
+    monthlyAverage: 0,
+    bestStreak: 0
+  });
+  const [progressData, setProgressData] = useState([]);
+
+  useEffect(() => {
+    fetchStats();
+    fetchProgressData();
+  }, []);
+
+  const fetchStats = async () => {
+    try {
+      const { data: habits } = await supabase
+        .from('habits')
+        .select('*');
+
+      if (habits) {
+        const completedHabits = habits.filter(h => h.completed).length;
+        const totalHabits = habits.length;
+        const completionRate = totalHabits > 0 ? Math.round((completedHabits / totalHabits) * 100) : 0;
+
+        setStats({
+          totalHabits,
+          currentStreak: Math.max(...habits.map(h => h.streak || 0)),
+          completionRate,
+          weeklyProgress: completionRate, // This could be enhanced with actual weekly data
+          monthlyAverage: completionRate, // This could be enhanced with actual monthly data
+          bestStreak: Math.max(...habits.map(h => h.streak || 0))
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    }
+  };
+
+  const fetchProgressData = async () => {
+    // This is sample data - you could enhance this with real data from your database
+    const sampleData = [
+      { date: "Mon", completed: 85, total: 100 },
+      { date: "Tue", completed: 75, total: 95 },
+      { date: "Wed", completed: 90, total: 100 },
+      { date: "Thu", completed: 80, total: 90 },
+      { date: "Fri", completed: 85, total: 95 },
+      { date: "Sat", completed: 70, total: 85 },
+      { date: "Sun", completed: 95, total: 100 }
+    ];
+    setProgressData(sampleData);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
@@ -55,8 +111,17 @@ const Index = () => {
 
         <div className="space-y-8 animate-fade-in">
           <section>
-            <h2 className="text-2xl font-semibold mb-4 text-white shadow-sm">Your Stats</h2>
-            <Stats />
+            <h2 className="text-2xl font-semibold mb-4 text-white shadow-sm">Your Progress</h2>
+            <StatsGrid {...stats} />
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4 text-white shadow-sm">Weekly Trends</h2>
+            <ProgressChart 
+              data={progressData}
+              title="Habit Completion Trends"
+              description="Your habit completion rate over the past week"
+            />
           </section>
 
           <section>
