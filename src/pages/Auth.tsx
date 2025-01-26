@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,7 @@ const Auth = () => {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isLoading) return; // Prevent multiple submissions while loading
+    if (isLoading) return;
     setIsLoading(true);
 
     try {
@@ -29,6 +29,7 @@ const Auth = () => {
             data: {
               full_name: fullName,
             },
+            emailRedirectTo: window.location.origin,
           },
         });
         if (error) {
