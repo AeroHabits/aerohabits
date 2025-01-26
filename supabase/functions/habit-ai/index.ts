@@ -13,17 +13,16 @@ serve(async (req) => {
   }
 
   try {
-    const { action, input } = await req.json();
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-
     if (!openAIApiKey) {
       console.error('OpenAI API key not found in environment variables');
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log(`Processing ${action} request with input: ${input}`);
+    const { action, input } = await req.json();
+    console.log(`Processing ${action} request with input:`, input);
 
-    let systemPrompt = '';
+    let systemPrompt;
     switch (action) {
       case 'enhance':
         systemPrompt = 'You are an AI assistant that helps users create better habit descriptions. Make suggestions more specific, measurable, and actionable. Keep responses concise.';
@@ -35,6 +34,7 @@ serve(async (req) => {
         throw new Error('Invalid action');
     }
 
+    console.log('Making OpenAI API request...');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -61,19 +61,19 @@ serve(async (req) => {
     const data = await response.json();
     console.log('OpenAI API response:', data);
 
-    return new Response(JSON.stringify({
-      result: data.choices[0].message.content
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ result: data.choices[0].message.content }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
   } catch (error) {
     console.error('Error in habit-ai function:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message || 'An unexpected error occurred'
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: error.message || 'An unexpected error occurred' }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
