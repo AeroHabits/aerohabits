@@ -5,10 +5,12 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 
+type Profile = { full_name: string; avatar_url: string | null } | null;
+
 interface UserProfileProps {
   user: User;
-  profile: { full_name: string; avatar_url: string | null } | null;
-  setProfile: (profile: { full_name: string; avatar_url: string | null } | null) => void;
+  profile: Profile;
+  setProfile: React.Dispatch<React.SetStateAction<Profile>>;
 }
 
 export function UserProfile({ user, profile, setProfile }: UserProfileProps) {
