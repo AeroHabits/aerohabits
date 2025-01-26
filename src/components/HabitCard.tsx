@@ -11,7 +11,7 @@ import {
 import { motion } from "framer-motion";
 
 interface HabitCardProps {
-  id: string;
+  id: string;  // Changed from number to string to match UUID from Supabase
   title: string;
   description: string;
   streak: number;
