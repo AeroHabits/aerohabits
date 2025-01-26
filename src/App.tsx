@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Journey from "./pages/Journey";
 import Goals from "./pages/Goals";
 import Auth from "./pages/Auth";
+import { MobileNav } from "./components/MobileNav";
 
 const queryClient = new QueryClient();
 
@@ -31,7 +32,14 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" />;
+  return isAuthenticated ? (
+    <>
+      {children}
+      <MobileNav />
+    </>
+  ) : (
+    <Navigate to="/auth" />
+  );
 };
 
 const App = () => (
