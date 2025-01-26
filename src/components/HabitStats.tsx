@@ -8,19 +8,19 @@ interface HabitStatsProps {
 export function HabitStats({ totalHabits, totalStreaks }: HabitStatsProps) {
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-[#D3E4FD]/50 hover:border-[#9b87f5]/60 flex items-center justify-between">
+      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20 hover:border-white/30 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-[#7E69AB]">Total Habits</h3>
-          <p className="text-3xl font-bold text-[#6E59A5]">{totalHabits}</p>
+          <h3 className="text-lg font-semibold text-white">Total Habits</h3>
+          <p className="text-3xl font-bold text-white">{totalHabits}</p>
         </div>
-        <Target className="h-12 w-12 text-[#8B5CF6] opacity-75" />
+        <Target className="h-12 w-12 text-white opacity-75" />
       </div>
-      <div className="bg-white/70 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-[#D3E4FD]/50 hover:border-[#9b87f5]/60 flex items-center justify-between">
+      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20 hover:border-white/30 flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-[#7E69AB]">Total Streaks</h3>
-          <p className="text-3xl font-bold text-[#6E59A5]">{totalStreaks}</p>
+          <h3 className="text-lg font-semibold text-white">Total Streaks</h3>
+          <p className="text-3xl font-bold text-white">{totalStreaks}</p>
         </div>
-        <Trophy className="h-12 w-12 text-[#8B5CF6] opacity-75" />
+        <Trophy className="h-12 w-12 text-yellow-300 opacity-75" />
       </div>
     </section>
   );
