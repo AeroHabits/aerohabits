@@ -20,6 +20,10 @@ serve(async (req) => {
 
     // Get habits data from request
     const { habits } = await req.json();
+    
+    if (!habits || !Array.isArray(habits)) {
+      throw new Error('Invalid habits data received');
+    }
 
     // Prepare the habits data for analysis
     const totalHabits = habits.length;
@@ -27,6 +31,8 @@ serve(async (req) => {
     const streaks = habits.map((h: any) => h.streak || 0);
     const avgStreak = streaks.reduce((a: number, b: number) => a + b, 0) / streaks.length || 0;
     const maxStreak = Math.max(...streaks);
+
+    console.log('Analyzing habits:', { totalHabits, completedHabits, avgStreak, maxStreak });
 
     // Create a prompt for GPT
     const prompt = `As a habit tracking assistant, analyze this data about the user's habits:
@@ -45,15 +51,29 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: 'You are a supportive habit tracking assistant.' },
           { role: 'user', content: prompt }
         ],
+        max_tokens: 150,
+        temperature: 0.7,
       }),
     });
 
+    if (!openAIResponse.ok) {
+      const errorData = await openAIResponse.text();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${errorData}`);
+    }
+
     const aiData = await openAIResponse.json();
+    console.log('OpenAI response:', aiData);
+
+    if (!aiData.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI API');
+    }
+
     const analysis = aiData.choices[0].message.content;
 
     return new Response(
