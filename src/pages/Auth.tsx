@@ -38,6 +38,12 @@ const Auth = () => {
               description: "For security purposes, please wait 45 seconds before trying again.",
               variant: "destructive",
             });
+          } else if (error.message.includes('Email signups are disabled')) {
+            toast({
+              title: "Sign up disabled",
+              description: "Email signups are currently disabled. Please contact the administrator.",
+              variant: "destructive",
+            });
           } else {
             toast({
               title: "Error",
