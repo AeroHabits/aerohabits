@@ -1,12 +1,21 @@
+import { supabase } from "@/integrations/supabase/client";
+
 const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
-const OPENAI_API_KEY = 'YOUR_API_KEY_HERE'; // Replace this with your actual API key
+
+async function getOpenAIKey() {
+  const { data, error } = await supabase.functions.invoke('get-openai-key');
+  if (error) throw error;
+  return data.key;
+}
 
 export async function enhanceToSmartGoal(goal: string): Promise<string> {
+  const apiKey = await getOpenAIKey();
+  
   const response = await fetch(OPENAI_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: 'gpt-4',
@@ -29,11 +38,13 @@ export async function enhanceToSmartGoal(goal: string): Promise<string> {
 }
 
 export async function suggestCategory(goal: string): Promise<string> {
+  const apiKey = await getOpenAIKey();
+
   const response = await fetch(OPENAI_ENDPOINT, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      'Authorization': `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: 'gpt-4',
