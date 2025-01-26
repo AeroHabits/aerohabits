@@ -1,9 +1,11 @@
 import { HabitCard } from "./HabitCard";
 import { AddHabitForm } from "./AddHabitForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface Habit {
-  id: number;
+  id: string;
   title: string;
   description: string;
   streak: number;
@@ -12,49 +14,102 @@ interface Habit {
 }
 
 export function HabitList() {
-  const [habits, setHabits] = useState<Habit[]>([
-    {
-      id: 1,
-      title: "Read 5 pages",
-      description: "Daily reading habit",
-      streak: 5,
-      completed: false,
-      category: "Learning"
-    },
-    {
-      id: 2,
-      title: "Meditate",
-      description: "10 minutes of mindfulness",
-      streak: 3,
-      completed: false,
-      category: "Self Mastery"
-    },
-    {
-      id: 3,
-      title: "Exercise",
-      description: "30 minutes workout",
-      streak: 7,
-      completed: false,
-      category: "Health & Fitness"
-    },
-  ]);
+  const [habits, setHabits] = useState<Habit[]>([]);
+  const { toast } = useToast();
 
-  const toggleHabit = (id: number) => {
-    setHabits(habits.map(habit => 
-      habit.id === id ? { ...habit, completed: !habit.completed } : habit
-    ));
+  useEffect(() => {
+    fetchHabits();
+  }, []);
+
+  const fetchHabits = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('habits')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching habits:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load habits",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setHabits(data || []);
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load habits",
+        variant: "destructive",
+      });
+    }
   };
 
-  const addHabit = ({ title, description, category }: { title: string; description: string; category?: string }) => {
-    const newHabit: Habit = {
-      id: habits.length + 1,
-      title,
-      description,
-      streak: 0,
-      completed: false,
-      category,
-    };
-    setHabits([...habits, newHabit]);
+  const toggleHabit = async (id: string) => {
+    const habit = habits.find(h => h.id === id);
+    if (!habit) return;
+
+    try {
+      const { error } = await supabase
+        .from('habits')
+        .update({ completed: !habit.completed })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setHabits(habits.map(habit => 
+        habit.id === id ? { ...habit, completed: !habit.completed } : habit
+      ));
+
+      toast({
+        title: "Success",
+        description: `Habit marked as ${!habit.completed ? 'completed' : 'incomplete'}`,
+      });
+    } catch (error) {
+      console.error('Error toggling habit:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update habit",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const addHabit = async ({ title, description, category }: { title: string; description: string; category?: string }) => {
+    try {
+      const { data, error } = await supabase
+        .from('habits')
+        .insert([
+          {
+            title,
+            description,
+            category,
+            streak: 0,
+            completed: false,
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setHabits([data, ...habits]);
+      toast({
+        title: "Success",
+        description: "New habit added successfully!",
+      });
+    } catch (error) {
+      console.error('Error adding habit:', error);
+      toast({
+        title: "Error",
+        description: "Failed to add habit",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

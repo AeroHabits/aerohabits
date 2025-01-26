@@ -11,7 +11,7 @@ import {
 import { motion } from "framer-motion";
 
 interface HabitCardProps {
-  id: number;
+  id: string;
   title: string;
   description: string;
   streak: number;
