@@ -19,7 +19,10 @@ export function Stats() {
         </div>
       </Card>
       <Card className="p-6 flex items-center space-x-4 bg-white/70 backdrop-blur-sm border-[#D3E4FD]/50 hover:border-[#33C3F0]/60">
-        <Target className="h-10 w-10 text-[#403E43]" />
+        <Target className="h-10 w-10" style={{ 
+          color: '#8B5CF6',
+          filter: 'drop-shadow(0 0 2px rgba(139, 92, 246, 0.3))'
+        }} />
         <div>
           <h3 className="font-semibold">Completion Rate</h3>
           <p className="text-2xl font-bold">85%</p>
