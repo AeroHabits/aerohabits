@@ -16,6 +16,12 @@ async function getOpenAIKey() {
       throw new Error('OpenAI key not found in response');
     }
     
+    // Validate key format (should start with 'sk-')
+    if (!data.key.startsWith('sk-')) {
+      console.error('Invalid OpenAI key format');
+      throw new Error('Invalid OpenAI key format - should start with sk-');
+    }
+    
     return data.key;
   } catch (error) {
     console.error('Error getting OpenAI key:', error);
@@ -26,6 +32,7 @@ async function getOpenAIKey() {
 export async function enhanceToSmartGoal(goal: string): Promise<string> {
   try {
     const apiKey = await getOpenAIKey();
+    console.log('Making OpenAI API request for goal enhancement...');
     
     const response = await fetch(OPENAI_ENDPOINT, {
       method: 'POST',
@@ -67,6 +74,7 @@ export async function enhanceToSmartGoal(goal: string): Promise<string> {
 export async function suggestCategory(goal: string): Promise<string> {
   try {
     const apiKey = await getOpenAIKey();
+    console.log('Making OpenAI API request for category suggestion...');
 
     const response = await fetch(OPENAI_ENDPOINT, {
       method: 'POST',
