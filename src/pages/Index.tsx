@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { MobileNav } from "@/components/MobileNav";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const navigate = useNavigate();
