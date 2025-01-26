@@ -6,7 +6,7 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-[#D3E4FD]/90 via-[#E5DEFF]/80 to-[#FDE1D3]/70">
       <div className="container py-8 space-y-8">
         <div className="text-center space-y-4">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#403E43] via-[#8A898C] to-[#33C3F0] bg-clip-text text-transparent animate-fade-in">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#F97316] via-[#D946EF] to-[#0EA5E9] bg-clip-text text-transparent animate-fade-in">
             AREOHABITS
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-in">
