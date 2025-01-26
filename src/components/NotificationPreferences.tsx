@@ -3,7 +3,7 @@ import { Bell } from "lucide-react";
 import { useNotificationPreferences } from "@/hooks/useNotificationPreferences";
 
 interface NotificationPreferencesProps {
-  habitId: number;
+  habitId: string;  // Changed from number to string to match UUID from Supabase
 }
 
 export function NotificationPreferences({ habitId }: NotificationPreferencesProps) {
