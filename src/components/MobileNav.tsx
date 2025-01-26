@@ -10,37 +10,37 @@ export function MobileNav() {
   if (!isMobile) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 animate-fade-in">
+    <div className="fixed bottom-0 left-0 right-0 border-t bg-gradient-to-r from-[#9b87f5]/90 via-[#D946EF]/80 to-[#F97316]/70 backdrop-blur supports-[backdrop-filter]:bg-background/60 z-50 animate-fade-in">
       <nav className="flex h-16 items-center justify-around px-4">
         <Link
           to="/"
           className={cn(
-            "flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground",
-            location.pathname === "/" && "text-foreground"
+            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
+            location.pathname === "/" && "text-white scale-105"
           )}
         >
           <Home className="h-5 w-5" />
-          <span className="text-xs">Habits</span>
+          <span className="text-xs font-medium">Habits</span>
         </Link>
         <Link
           to="/goals"
           className={cn(
-            "flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground",
-            location.pathname === "/goals" && "text-foreground"
+            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
+            location.pathname === "/goals" && "text-white scale-105"
           )}
         >
           <Target className="h-5 w-5" />
-          <span className="text-xs">Goals</span>
+          <span className="text-xs font-medium">Goals</span>
         </Link>
         <Link
           to="/journey"
           className={cn(
-            "flex flex-col items-center gap-1 text-muted-foreground transition-colors hover:text-foreground",
-            location.pathname === "/journey" && "text-foreground"
+            "flex flex-col items-center gap-1 text-white/70 transition-all duration-300 hover:text-white hover:scale-110",
+            location.pathname === "/journey" && "text-white scale-105"
           )}
         >
           <TrendingUp className="h-5 w-5" />
-          <span className="text-xs">Journey</span>
+          <span className="text-xs font-medium">Journey</span>
         </Link>
       </nav>
     </div>
