@@ -24,11 +24,16 @@ export function HabitList() {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
 
+  const completedHabits = habits.filter(habit => habit.completed);
   const totalStreaks = habits.reduce((acc, habit) => acc + (habit.streak || 0), 0);
 
   return (
     <div className="space-y-8">
-      <HabitStats totalHabits={habits.length} totalStreaks={totalStreaks} />
+      <HabitStats 
+        totalHabits={habits.length} 
+        totalStreaks={totalStreaks}
+        completedToday={completedHabits.length}
+      />
       <HabitListContent
         habits={habits}
         onToggle={toggleHabit}
