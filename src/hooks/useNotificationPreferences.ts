@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-export function useNotificationPreferences(habitId: number) {
+export function useNotificationPreferences(habitId: string) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [reminderTime, setReminderTime] = useState("09:00");
   const { toast } = useToast();

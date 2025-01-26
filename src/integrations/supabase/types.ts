@@ -45,7 +45,7 @@ export type Database = {
       habit_notifications: {
         Row: {
           created_at: string
-          habit_id: number
+          habit_id: string
           id: string
           is_enabled: boolean
           reminder_time: string
@@ -54,7 +54,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          habit_id: number
+          habit_id: string
           id?: string
           is_enabled?: boolean
           reminder_time?: string
@@ -63,14 +63,22 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          habit_id?: number
+          habit_id?: string
           id?: string
           is_enabled?: boolean
           reminder_time?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "habit_notifications_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       habits: {
         Row: {
