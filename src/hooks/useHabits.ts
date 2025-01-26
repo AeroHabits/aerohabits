@@ -63,17 +63,38 @@ export function useHabits() {
     if (!habit) return;
 
     try {
-      const { error } = await supabase
-        .from('habits')
-        .update({ completed: !habit.completed })
-        .eq('id', id);
+      // Get today's date at midnight UTC
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      
+      // If the habit was already completed today, uncomplete it and decrease streak
+      if (habit.completed) {
+        const { error } = await supabase
+          .from('habits')
+          .update({ 
+            completed: false,
+            streak: Math.max(0, (habit.streak || 0) - 1)
+          })
+          .eq('id', id);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // If completing the habit, increase the streak
+        const { error } = await supabase
+          .from('habits')
+          .update({ 
+            completed: true,
+            streak: (habit.streak || 0) + 1
+          })
+          .eq('id', id);
+
+        if (error) throw error;
+      }
 
       refetch();
       toast({
         title: "Success",
-        description: `Habit marked as ${!habit.completed ? 'completed' : 'incomplete'}`,
+        description: `Habit ${!habit.completed ? 'completed' : 'uncompleted'} for today!`,
       });
     } catch (error) {
       console.error('Error toggling habit:', error);

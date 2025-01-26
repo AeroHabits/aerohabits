@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { NotificationPreferences } from "@/components/NotificationPreferences";
-import { Trophy } from "lucide-react";
+import { Trophy, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -53,9 +53,15 @@ export function HabitCard({
         </div>
         
         <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <Trophy className="h-5 w-5 text-yellow-300" />
-            <span className="text-base font-medium text-white drop-shadow-sm">Streak: {streak}</span>
+          <div className="flex items-center space-x-2 bg-white/10 rounded-full px-4 py-2">
+            {streak > 0 ? (
+              <Flame className="h-5 w-5 text-orange-400" />
+            ) : (
+              <Trophy className="h-5 w-5 text-yellow-300" />
+            )}
+            <span className="text-base font-medium text-white drop-shadow-sm">
+              {streak} Day{streak !== 1 ? 's' : ''} Streak
+            </span>
           </div>
           <NotificationPreferences habitId={id} />
         </div>
@@ -67,11 +73,11 @@ export function HabitCard({
             onClick={onToggle}
             className={`w-full ${
               completed
-                ? "bg-white/30 hover:bg-white/40"
+                ? "bg-green-500/50 hover:bg-green-500/60"
                 : "bg-white/30 hover:bg-white/40"
             } text-white font-medium shadow-sm transition-colors duration-200`}
           >
-            {completed ? "Completed" : "Mark as Complete"}
+            {completed ? "Completed Today! 🎉" : "Mark as Complete"}
           </Button>
         </motion.div>
       </motion.div>
