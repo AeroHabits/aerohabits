@@ -6,9 +6,12 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { Footer } from "./components/Footer";
 import Index from "./pages/Index";
 import Journey from "./pages/Journey";
 import Goals from "./pages/Goals";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
 import Auth from "./pages/Auth";
 import { MobileNav } from "./components/MobileNav";
 
@@ -59,37 +62,42 @@ const App = () => (
   <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/auth" element={<Auth />} />
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Index />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/journey"
-              element={
-                <ProtectedRoute>
-                  <Journey />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/goals"
-              element={
-                <ProtectedRoute>
-                  <Goals />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+        <div className="min-h-screen flex flex-col">
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/terms" element={<Terms />} />
+              <Route path="/privacy" element={<Privacy />} />
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Index />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/journey"
+                element={
+                  <ProtectedRoute>
+                    <Journey />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/goals"
+                element={
+                  <ProtectedRoute>
+                    <Goals />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+            <Footer />
+          </BrowserRouter>
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   </ErrorBoundary>
