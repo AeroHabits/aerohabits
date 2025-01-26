@@ -24,7 +24,7 @@ const Index = () => {
           className="flex justify-between items-center mb-8"
         >
           <h1 className="text-4xl font-bold text-[#6E59A5] tracking-tight">
-            Your Habits
+            AREOHABITS
           </h1>
           <UserMenu />
         </motion.div>
