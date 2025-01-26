@@ -51,7 +51,9 @@ export async function enhanceToSmartGoal(goal: string): Promise<string> {
     });
 
     if (!response.ok) {
-      throw new Error('OpenAI API request failed: ' + response.statusText);
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API request failed: ${response.statusText}`);
     }
 
     const data = await response.json();
@@ -90,7 +92,9 @@ export async function suggestCategory(goal: string): Promise<string> {
     });
 
     if (!response.ok) {
-      throw new Error('OpenAI API request failed: ' + response.statusText);
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API request failed: ${response.statusText}`);
     }
 
     const data = await response.json();
