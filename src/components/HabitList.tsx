@@ -14,7 +14,7 @@ export function HabitList() {
   const [habits, setHabits] = useState<Habit[]>([
     {
       id: 1,
-      title: "Read 20 pages",
+      title: "Read 5 pages",
       description: "Daily reading habit",
       streak: 5,
       completed: false,
