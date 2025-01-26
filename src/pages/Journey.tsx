@@ -1,4 +1,4 @@
-import { JourneyChart } from "@/components/JourneyChart";
+import { WeeklyProgress } from "@/components/WeeklyProgress";
 
 const Journey = () => {
   return (
@@ -17,14 +17,11 @@ const Journey = () => {
         </div>
 
         <div className="space-y-8 animate-fade-in">
-          <section>
-            <h2 className="text-2xl font-semibold mb-4 text-white">Your Journey</h2>
-            <JourneyChart />
-          </section>
+          <WeeklyProgress />
         </div>
       </div>
     </div>
   );
-};
+}
 
 export default Journey;
