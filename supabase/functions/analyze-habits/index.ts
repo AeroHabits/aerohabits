@@ -1,0 +1,73 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    );
+
+    // Get habits data from request
+    const { habits } = await req.json();
+
+    // Prepare the habits data for analysis
+    const totalHabits = habits.length;
+    const completedHabits = habits.filter((h: any) => h.completed).length;
+    const streaks = habits.map((h: any) => h.streak || 0);
+    const avgStreak = streaks.reduce((a: number, b: number) => a + b, 0) / streaks.length || 0;
+    const maxStreak = Math.max(...streaks);
+
+    // Create a prompt for GPT
+    const prompt = `As a habit tracking assistant, analyze this data about the user's habits:
+    - Total Habits: ${totalHabits}
+    - Completed Habits: ${completedHabits}
+    - Average Streak: ${avgStreak.toFixed(1)}
+    - Highest Streak: ${maxStreak}
+
+    Provide a brief, encouraging analysis (max 2-3 sentences) of their progress. Focus on motivation and actionable insights.`;
+
+    // Call OpenAI API
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [
+          { role: 'system', content: 'You are a supportive habit tracking assistant.' },
+          { role: 'user', content: prompt }
+        ],
+      }),
+    });
+
+    const aiData = await openAIResponse.json();
+    const analysis = aiData.choices[0].message.content;
+
+    return new Response(
+      JSON.stringify({ analysis }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
+  } catch (error) {
+    console.error('Error in analyze-habits function:', error);
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
+  }
+});

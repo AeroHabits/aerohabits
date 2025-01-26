@@ -1,5 +1,6 @@
 import { WeeklyProgress } from "@/components/WeeklyProgress";
 import { StatsGrid } from "@/components/StatsGrid";
+import { AIInsights } from "@/components/AIInsights";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -28,7 +29,7 @@ const Journey = () => {
   const currentStreak = habits?.filter(habit => habit.streak > 0)?.length || 0;
   
   // Calculate weekly progress
-  const weeklyProgress = completionRate; // This could be more sophisticated
+  const weeklyProgress = completionRate;
   
   // Calculate monthly average (simplified)
   const monthlyAverage = completionRate;
@@ -62,6 +63,7 @@ const Journey = () => {
             monthlyAverage={monthlyAverage}
             bestStreak={bestStreak}
           />
+          <AIInsights />
           <WeeklyProgress />
         </div>
       </div>
