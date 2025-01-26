@@ -23,6 +23,16 @@ export function HabitList() {
 
   const fetchHabits = async () => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "User not authenticated",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data, error } = await supabase
         .from('habits')
         .select('*')
@@ -81,6 +91,16 @@ export function HabitList() {
 
   const addHabit = async ({ title, description, category }: { title: string; description: string; category?: string }) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Error",
+          description: "User not authenticated",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data, error } = await supabase
         .from('habits')
         .insert([
@@ -90,6 +110,7 @@ export function HabitList() {
             category,
             streak: 0,
             completed: false,
+            user_id: user.id
           }
         ])
         .select()
