@@ -1,38 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Card } from "./ui/card";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
-export function AIInsights() {
-  const { data: habits } = useQuery({
-    queryKey: ["habits"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("habits")
-        .select("*")
-        .order("created_at", { ascending: false });
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
+export function AIInsights({ habits }: { habits: any[] }) {
   const { data: analysis, isLoading } = useQuery({
-    queryKey: ["habits-analysis", habits?.length],
+    queryKey: ["habits-analysis", habits.length],
     queryFn: async () => {
-      if (!habits?.length) return null;
-      
-      const { data } = await supabase.functions.invoke('analyze-habits', {
+      const { data, error } = await supabase.functions.invoke("analyze-habits", {
         body: { habits },
       });
-      
+
+      if (error) {
+        console.error("Error analyzing habits:", error);
+        throw error;
+      }
+
       return data.analysis;
     },
-    enabled: !!habits?.length,
+    enabled: habits.length > 0,
   });
 
-  if (!habits?.length || isLoading) return null;
+  if (isLoading || !analysis) {
+    return null;
+  }
 
   return (
     <motion.div
@@ -41,12 +32,14 @@ export function AIInsights() {
       transition={{ duration: 0.3 }}
     >
       <Card className="p-6 bg-white/90 backdrop-blur-sm border-white/20">
-        <div className="flex items-start space-x-4">
-          <Sparkles className="h-6 w-6 text-purple-500 mt-1" />
+        <div className="space-y-4">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">AI Insights</h3>
-            <p className="text-gray-700">{analysis}</p>
+            <h3 className="text-lg font-semibold text-gray-900">AI Insights</h3>
+            <p className="text-sm text-gray-600">
+              Here's what our AI assistant thinks about your progress
+            </p>
           </div>
+          <p className="text-gray-700">{analysis}</p>
         </div>
       </Card>
     </motion.div>
