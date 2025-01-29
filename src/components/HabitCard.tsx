@@ -3,6 +3,7 @@ import { NotificationPreferences } from "@/components/NotificationPreferences";
 import { Trophy, Flame } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { trackHabitAction } from "@/lib/analytics";
 
 interface HabitCardProps {
   id: string;
@@ -23,6 +24,17 @@ export function HabitCard({
   onToggle,
   onDelete
 }: HabitCardProps) {
+  const handleToggle = () => {
+    trackHabitAction('complete', title);
+    onToggle();
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    trackHabitAction('delete', title);
+    onDelete();
+  };
+
   return (
     <Card className="relative overflow-hidden p-6 bg-white/90 backdrop-blur-sm border border-white/40 hover:border-white/50 transition-all duration-200 shadow-lg">
       <motion.div
@@ -43,10 +55,7 @@ export function HabitCard({
             variant="ghost"
             size="sm"
             className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
+            onClick={handleDelete}
           >
             Delete
           </Button>
@@ -70,7 +79,7 @@ export function HabitCard({
           whileTap={{ scale: 0.95 }}
         >
           <Button
-            onClick={onToggle}
+            onClick={handleToggle}
             className={`w-full ${
               completed
                 ? "bg-green-600 hover:bg-green-700"

@@ -2,11 +2,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, useLocation } from "react-router-dom";
 import * as Sentry from "@sentry/react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
+import { useEffect } from "react";
+import { trackPageView } from "./lib/analytics";
 
 // Initialize Sentry
 Sentry.init({
@@ -37,6 +39,17 @@ const SentryErrorBoundary = Sentry.withErrorBoundary(ErrorBoundary, {
   showDialog: true,
 });
 
+// Analytics tracker component
+const AnalyticsTracker = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackPageView(location.pathname);
+  }, [location]);
+
+  return null;
+};
+
 const App = () => (
   <SentryErrorBoundary>
     <QueryClientProvider client={queryClient}>
@@ -45,6 +58,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <AnalyticsTracker />
             <AppRoutes />
             <Footer />
           </BrowserRouter>
