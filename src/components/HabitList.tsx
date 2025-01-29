@@ -21,7 +21,7 @@ export function HabitList() {
   }
 
   if (habits.length === 0) {
-    return <HabitListEmpty onAddHabit={addHabit} />;
+    return <HabitListEmpty onAddHabit={() => addHabit({ title: "", description: "" })} />;
   }
 
   const completedHabits = habits.filter(habit => habit.completed);
