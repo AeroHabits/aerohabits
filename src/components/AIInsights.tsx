@@ -2,11 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { Habit } from "@/types";
 
-export function AIInsights({ habits }: { habits: any[] }) {
+export function AIInsights({ habits }: { habits: Habit[] }) {
   const { data: analysis, isLoading } = useQuery({
     queryKey: ["habits-analysis", habits.length],
     queryFn: async () => {
+      if (habits.length === 0) return null;
+
       const { data, error } = await supabase.functions.invoke("analyze-habits", {
         body: { habits },
       });
@@ -21,7 +24,7 @@ export function AIInsights({ habits }: { habits: any[] }) {
     enabled: habits.length > 0,
   });
 
-  if (isLoading || !analysis) {
+  if (isLoading || !analysis || habits.length === 0) {
     return null;
   }
 

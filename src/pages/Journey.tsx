@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const Journey = () => {
-  const { data: habits } = useQuery({
+  const { data: habits = [] } = useQuery({
     queryKey: ["habits"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -14,7 +14,7 @@ const Journey = () => {
         .order("created_at", { ascending: false });
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 
@@ -63,7 +63,7 @@ const Journey = () => {
             monthlyAverage={monthlyAverage}
             bestStreak={bestStreak}
           />
-          <AIInsights />
+          <AIInsights habits={habits} />
           <WeeklyProgress />
         </div>
       </div>
