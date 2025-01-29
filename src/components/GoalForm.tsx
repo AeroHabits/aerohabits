@@ -2,131 +2,47 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { cn } from "@/lib/utils";
+import { trackGoalAction } from "@/lib/analytics";
 
 interface GoalFormProps {
-  onGoalAdded: () => void;
+  onSubmit: (goal: { title: string; description: string }) => void;
 }
 
-export function GoalForm({ onGoalAdded }: GoalFormProps) {
+export function GoalForm({ onSubmit }: GoalFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [date, setDate] = useState<Date>();
-  const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!title.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a goal title",
-        variant: "destructive",
-      });
-      return;
+    if (title.trim()) {
+      trackGoalAction('create', title);
+      onSubmit({ title, description });
+      setTitle("");
+      setDescription("");
     }
-
-    setIsLoading(true);
-
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    
-    if (sessionError || !sessionData.session?.user?.id) {
-      toast({
-        title: "Error",
-        description: "You must be logged in to create goals",
-        variant: "destructive",
-      });
-      setIsLoading(false);
-      return;
-    }
-    
-    const { error } = await supabase
-      .from('goals')
-      .insert({
-        title,
-        description,
-        target_date: date?.toISOString(),
-        status: 'in_progress',
-        user_id: sessionData.session.user.id
-      });
-
-    setIsLoading(false);
-
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to create goal. Please try again.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setTitle("");
-    setDescription("");
-    setDate(undefined);
-    onGoalAdded();
-    
-    toast({
-      title: "Success",
-      description: "New goal added successfully!",
-    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 p-6 bg-white/70 backdrop-blur-sm rounded-lg border border-[#D3E4FD]/50">
-      <div className="space-y-2">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
         <Input
-          placeholder="Enter goal title..."
+          type="text"
+          placeholder="Enter your goal"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="border-[#D3E4FD]/50 focus:border-[#33C3F0]/60"
+          className="w-full"
         />
       </div>
-      <div className="space-y-2">
+      <div>
         <Textarea
-          placeholder="Enter goal description..."
+          placeholder="Describe your goal (optional)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className="border-[#D3E4FD]/50 focus:border-[#33C3F0]/60"
+          className="w-full"
         />
       </div>
-      <div className="space-y-2">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"outline"}
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Pick a target date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-      <Button 
-        type="submit"
-        disabled={isLoading}
-        className="w-full bg-gradient-to-r from-[#F97316] via-[#D946EF] to-[#0EA5E9] text-white hover:opacity-90"
-      >
-        {isLoading ? "Adding..." : "Add New Goal"}
+      <Button type="submit" className="w-full">
+        Add Goal
       </Button>
     </form>
   );
