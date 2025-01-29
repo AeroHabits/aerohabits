@@ -62,7 +62,7 @@ const Goals = () => {
             <h2 className="text-2xl font-semibold mb-4 text-white">Your Goals</h2>
             <div className="space-y-6">
               <GoalForm onSubmit={handleGoalChange} />
-              <GoalList onGoalChange={handleGoalChange} />
+              <GoalList onGoalUpdated={handleGoalChange} />
             </div>
           </section>
         </div>
