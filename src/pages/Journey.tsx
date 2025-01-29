@@ -1,6 +1,5 @@
 import { WeeklyProgress } from "@/components/WeeklyProgress";
 import { StatsGrid } from "@/components/StatsGrid";
-import { AIInsights } from "@/components/AIInsights";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -63,7 +62,6 @@ const Journey = () => {
             monthlyAverage={monthlyAverage}
             bestStreak={bestStreak}
           />
-          <AIInsights habits={habits} />
           <WeeklyProgress />
         </div>
       </div>
