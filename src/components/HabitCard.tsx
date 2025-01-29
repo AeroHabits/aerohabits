@@ -1,14 +1,13 @@
 import { Card } from "@/components/ui/card";
-import { NotificationPreferences } from "@/components/NotificationPreferences";
-import { Trophy, Flame } from "lucide-react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { trackHabitAction } from "@/lib/analytics";
+import { Trash2, Star, Trophy } from "lucide-react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 interface HabitCardProps {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   streak: number;
   completed: boolean;
   onToggle: () => void;
@@ -22,74 +21,77 @@ export function HabitCard({
   streak,
   completed,
   onToggle,
-  onDelete
+  onDelete,
 }: HabitCardProps) {
-  const handleToggle = () => {
-    trackHabitAction('complete', title);
-    onToggle();
-  };
-
-  const handleDelete = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    trackHabitAction('delete', title);
-    onDelete();
-  };
-
   return (
-    <Card className="relative overflow-hidden p-6 bg-white/90 backdrop-blur-sm border border-white/40 hover:border-white/50 transition-all duration-200 shadow-lg">
-      <motion.div
-        initial={false}
-        animate={{
-          scale: completed ? 1 : 1,
-          opacity: completed ? 0.8 : 1
-        }}
-        transition={{ duration: 0.2 }}
-        className="space-y-4"
-      >
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <h3 className="font-semibold text-xl text-gray-900">{title}</h3>
-            <p className="text-base text-gray-700">{description}</p>
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className={cn(
+        "relative overflow-hidden transition-all duration-300",
+        completed ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20" : "bg-white/90",
+        "hover:shadow-lg border-2",
+        completed ? "border-green-500/30" : "border-blue-500/30"
+      )}>
+        <div className="p-6">
+          <div className="flex justify-between items-start mb-4">
+            <div className="space-y-1">
+              <h3 className="font-semibold text-lg text-gray-900">{title}</h3>
+              {description && (
+                <p className="text-sm text-gray-500">{description}</p>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-red-500 hover:text-red-700 hover:bg-red-100"
+              onClick={onDelete}
+            >
+              <Trash2 className="h-5 w-5" />
+            </Button>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            onClick={handleDelete}
-          >
-            Delete
-          </Button>
+          
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              {streak > 0 && (
+                <div className="flex items-center space-x-1 text-amber-500">
+                  <Trophy className="h-5 w-5" />
+                  <span className="font-medium">{streak} day streak!</span>
+                </div>
+              )}
+            </div>
+            <Button
+              onClick={onToggle}
+              variant={completed ? "secondary" : "default"}
+              className={cn(
+                "transition-all duration-300",
+                completed && "bg-green-500 hover:bg-green-600 text-white"
+              )}
+            >
+              {completed ? (
+                <div className="flex items-center space-x-2">
+                  <Star className="h-5 w-5" />
+                  <span>Completed!</span>
+                </div>
+              ) : (
+                "Complete"
+              )}
+            </Button>
+          </div>
         </div>
         
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2 bg-blue-100 rounded-full px-4 py-2">
-            {streak > 0 ? (
-              <Flame className="h-5 w-5 text-amber-500" />
-            ) : (
-              <Trophy className="h-5 w-5 text-amber-500" />
-            )}
-            <span className="text-base font-medium text-gray-900">
-              {streak} Day{streak !== 1 ? 's' : ''} Streak
-            </span>
+        {/* Achievement ribbon for streaks */}
+        {streak >= 7 && (
+          <div className="absolute -right-12 top-6 bg-amber-500 text-white px-12 py-1 rotate-45 transform text-sm font-semibold">
+            Champion!
           </div>
-          <NotificationPreferences habitId={id} />
-        </div>
-        
-        <motion.div
-          whileTap={{ scale: 0.95 }}
-        >
-          <Button
-            onClick={handleToggle}
-            className={`w-full ${
-              completed
-                ? "bg-green-600 hover:bg-green-700"
-                : "bg-blue-600 hover:bg-blue-700"
-            } text-white font-medium shadow-sm transition-colors duration-200`}
-          >
-            {completed ? "Completed Today! 🎉" : "Mark as Complete"}
-          </Button>
-        </motion.div>
-      </motion.div>
-    </Card>
+        )}
+      </Card>
+    </motion.div>
   );
 }
