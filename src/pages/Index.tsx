@@ -1,7 +1,7 @@
 import { HabitList } from "@/components/HabitList";
 import { ChallengeList } from "@/components/ChallengeList";
 import { UserMenu } from "@/components/UserMenu";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -82,17 +82,17 @@ const Index = () => {
               transition={{ delay: 0.3 }}
               className="mt-6"
             >
-              <Tabs.Content value="habits">
+              <TabsContent value="habits">
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
                   <HabitList />
                 </div>
-              </Tabs.Content>
+              </TabsContent>
               
-              <Tabs.Content value="challenges">
+              <TabsContent value="challenges">
                 <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
                   <ChallengeList />
                 </div>
-              </Tabs.Content>
+              </TabsContent>
             </motion.div>
           </Tabs>
         </motion.div>
