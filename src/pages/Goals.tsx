@@ -1,32 +1,49 @@
 import { GoalForm } from "@/components/GoalForm";
 import { GoalList } from "@/components/GoalList";
-import { UserMenu } from "@/components/UserMenu";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { StatsGrid } from "@/components/StatsGrid";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const Goals = () => {
-  const [refreshStats, setRefreshStats] = useState(0);
+  const isMobile = useIsMobile();
+  
+  const { data: goals, refetch } = useQuery({
+    queryKey: ["goals"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("goals")
+        .select("*")
+        .order("created_at", { ascending: false });
+      
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const handleGoalChange = () => {
-    setRefreshStats(prev => prev + 1);
+    refetch();
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
-      <div className="container py-8 space-y-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-white">
-            AREOHABITS
-          </h1>
-          <UserMenu />
-        </div>
-
-        <div className="text-center space-y-4">
-          <p className="text-lg text-white/80 max-w-2xl mx-auto animate-fade-in">
-            Set and track your goals to achieve lasting change.
-          </p>
-        </div>
-
-        <div className="space-y-8 animate-fade-in">
+    <div className={cn(
+      "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+      isMobile && "pb-24"
+    )}>
+      <div className="space-y-8">
+        {goals && (
+          <StatsGrid
+            totalHabits={goals.length}
+            currentStreak={0}
+            completionRate={0}
+            weeklyProgress={0}
+            monthlyAverage={0}
+            bestStreak={0}
+          />
+        )}
+        
+        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-white">Your Goals</h2>
             <div className="space-y-6">
