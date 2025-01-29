@@ -1,4 +1,5 @@
 import { HabitList } from "@/components/HabitList";
+import { ChallengeList } from "@/components/ChallengeList";
 import { UserMenu } from "@/components/UserMenu";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
@@ -54,6 +55,12 @@ const Index = () => {
                 Habits
               </TabsTrigger>
               <TabsTrigger 
+                value="challenges" 
+                className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
+              >
+                Challenges
+              </TabsTrigger>
+              <TabsTrigger 
                 value="goals" 
                 onClick={() => navigate("/goals")}
                 className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
@@ -68,17 +75,27 @@ const Index = () => {
                 Journey
               </TabsTrigger>
             </TabsList>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-6"
+            >
+              <Tabs.Content value="habits">
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
+                  <HabitList />
+                </div>
+              </Tabs.Content>
+              
+              <Tabs.Content value="challenges">
+                <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
+                  <ChallengeList />
+                </div>
+              </Tabs.Content>
+            </motion.div>
           </Tabs>
         </motion.div>
-
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30"
-        >
-          <HabitList />
-        </motion.section>
       </div>
     </div>
   );
