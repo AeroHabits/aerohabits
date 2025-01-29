@@ -33,6 +33,17 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
+          className="text-center space-y-4"
+        >
+          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+            Track your habits, build streaks, and achieve your goals.
+          </p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
         >
           <Tabs defaultValue="habits" className="w-full">
             <TabsList className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-sm border border-white/30">
@@ -63,7 +74,7 @@ const Index = () => {
         <motion.section 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          transition={{ delay: 0.3 }}
           className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30"
         >
           <HabitList />
