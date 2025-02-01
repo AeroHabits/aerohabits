@@ -6,11 +6,8 @@ interface ChallengeDifficultyTabsProps {
 
 export function ChallengeDifficultyTabs({ onDifficultyChange }: ChallengeDifficultyTabsProps) {
   return (
-    <Tabs defaultValue="all" className="w-full">
-      <TabsList className="grid w-full grid-cols-5">
-        <TabsTrigger value="all" onClick={() => onDifficultyChange("all")}>
-          All
-        </TabsTrigger>
+    <Tabs defaultValue="easy" className="w-full">
+      <TabsList className="grid w-full grid-cols-4">
         <TabsTrigger value="easy" onClick={() => onDifficultyChange("easy")}>
           Easy
         </TabsTrigger>

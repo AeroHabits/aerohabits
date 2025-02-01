@@ -6,7 +6,7 @@ import { ChallengeDifficultyTabs } from "./challenge/ChallengeDifficultyTabs";
 import { ChallengeGrid } from "./challenge/ChallengeGrid";
 
 export function ChallengeList() {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
   const queryClient = useQueryClient();
 
   const { data: challenges, isLoading } = useQuery({
@@ -66,7 +66,7 @@ export function ChallengeList() {
   });
 
   const filteredChallenges = challenges?.filter(challenge => 
-    selectedDifficulty === "all" || challenge.difficulty === selectedDifficulty
+    challenge.difficulty === selectedDifficulty
   );
 
   if (isLoading) {
