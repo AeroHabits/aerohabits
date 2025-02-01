@@ -31,6 +31,7 @@ interface ChallengeCardProps {
 export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [userChallengeId, setUserChallengeId] = useState<string | null>(null);
   const [progressData, setProgressData] = useState<{
     daysCompleted: number;
     startDate: string | null;
@@ -57,12 +58,14 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
       .single();
 
     if (data) {
-      const startDate = new Date(data.start_date);
-      const currentDate = new Date();
-      const daysDiff = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
-      
+      const { data: completions } = await supabase
+        .from('challenge_completions')
+        .select('*')
+        .eq('user_challenge_id', data.id);
+
+      setUserChallengeId(data.id);
       setProgressData({
-        daysCompleted: Math.min(daysDiff + 1, challenge.duration_days),
+        daysCompleted: completions?.length || 0,
         startDate: data.start_date,
       });
     }
@@ -108,11 +111,13 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">{challenge.description}</p>
           
-          {isJoined && (
+          {isJoined && userChallengeId && (
             <ChallengeProgress
               daysCompleted={progressData.daysCompleted}
               totalDays={challenge.duration_days}
               startDate={progressData.startDate}
+              userChallengeId={userChallengeId}
+              onProgressUpdate={fetchProgress}
             />
           )}
 

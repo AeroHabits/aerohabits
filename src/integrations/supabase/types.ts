@@ -9,6 +9,35 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      challenge_completions: {
+        Row: {
+          completed_date: string
+          created_at: string
+          id: string
+          user_challenge_id: string
+        }
+        Insert: {
+          completed_date?: string
+          created_at?: string
+          id?: string
+          user_challenge_id: string
+        }
+        Update: {
+          completed_date?: string
+          created_at?: string
+          id?: string
+          user_challenge_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_completions_user_challenge_id_fkey"
+            columns: ["user_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "user_challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       challenges: {
         Row: {
           category: string | null
