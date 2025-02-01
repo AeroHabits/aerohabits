@@ -42,7 +42,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           {
             role: 'system',
@@ -63,15 +63,22 @@ serve(async (req) => {
           }
         ],
         temperature: 0.7,
+        max_tokens: 1000
       }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      console.error('OpenAI API error:', response.status, errorData);
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
 
     const data = await response.json();
     console.log('OpenAI response received');
 
     if (!data.choices?.[0]?.message?.content) {
-      console.error('Invalid response from OpenAI:', data);
-      throw new Error('Invalid response from OpenAI');
+      console.error('Invalid response structure from OpenAI:', data);
+      throw new Error('Invalid response structure from OpenAI');
     }
 
     const coaching = data.choices[0].message.content;
