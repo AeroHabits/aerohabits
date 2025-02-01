@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { HabitCard } from "./HabitCard";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import type { Habit } from "@/hooks/useHabits";
 
 interface HabitListContentProps {
@@ -28,31 +27,7 @@ export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete 
             streak={habit.streak}
             completed={habit.completed}
             onToggle={() => onToggle(habit.id)}
-            onDelete={() => (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <button onClick={() => setHabitToDelete(habit.id)}>Delete</button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action cannot be undone. This will permanently delete your habit
-                      and remove it from our servers.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={() => habit.id && onDelete(habit.id)}
-                      className="bg-red-500 hover:bg-red-600"
-                    >
-                      Delete
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
+            onDelete={() => onDelete(habit.id)}
           />
         </motion.div>
       ))}
