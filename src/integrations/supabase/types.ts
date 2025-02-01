@@ -65,6 +65,8 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          milestones: Json | null
+          progress: number | null
           status: string | null
           target_date: string | null
           title: string
@@ -75,6 +77,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          milestones?: Json | null
+          progress?: number | null
           status?: string | null
           target_date?: string | null
           title: string
@@ -85,6 +89,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          milestones?: Json | null
+          progress?: number | null
           status?: string | null
           target_date?: string | null
           title?: string

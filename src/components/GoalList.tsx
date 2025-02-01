@@ -5,12 +5,19 @@ import { GoalItem } from "./goals/GoalItem";
 import { GoalListEmpty } from "./goals/GoalListEmpty";
 import { GoalListLoading } from "./goals/GoalListLoading";
 
+interface Milestone {
+  title: string;
+  completed: boolean;
+}
+
 interface Goal {
   id: string;
   title: string;
   description: string | null;
   target_date: string | null;
   status: string;
+  progress: number;
+  milestones: Milestone[];
 }
 
 interface GoalListProps {
@@ -62,16 +69,25 @@ export function GoalList({ onGoalUpdated }: GoalListProps) {
 
   const handleStatusUpdate = async (id: string) => {
     try {
+      const goal = goals.find(g => g.id === id);
+      if (!goal) return;
+
+      const newStatus = goal.status === 'completed' ? 'in_progress' : 'completed';
+      const newProgress = newStatus === 'completed' ? 100 : 0;
+
       const { error } = await supabase
         .from('goals')
-        .update({ status: 'completed' })
+        .update({ 
+          status: newStatus,
+          progress: newProgress
+        })
         .eq('id', id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Goal marked as completed!",
+        description: `Goal ${newStatus === 'completed' ? 'completed' : 'reopened'}!`,
       });
       
       fetchGoals();
