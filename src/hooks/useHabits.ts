@@ -16,7 +16,7 @@ export function useHabits() {
   const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
   const { toast } = useToast();
 
-  const { data: habits = [], isLoading, error, refetch } = useQuery({
+  const { data: habits = [], isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["habits"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -152,5 +152,7 @@ export function useHabits() {
     deleteHabit,
     toggleHabit,
     addHabit,
+    refetch,
+    isFetching,
   };
 }
