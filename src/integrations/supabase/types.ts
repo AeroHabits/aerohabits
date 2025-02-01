@@ -12,31 +12,49 @@ export type Database = {
       challenges: {
         Row: {
           category: string | null
+          completion_criteria: string | null
           created_at: string
           description: string | null
           difficulty: string
           duration_days: number
           id: string
+          is_premium: boolean | null
+          milestones: Json | null
+          motivation_text: string | null
+          reward_points: number | null
+          tips: string[] | null
           title: string
           updated_at: string
         }
         Insert: {
           category?: string | null
+          completion_criteria?: string | null
           created_at?: string
           description?: string | null
           difficulty?: string
           duration_days?: number
           id?: string
+          is_premium?: boolean | null
+          milestones?: Json | null
+          motivation_text?: string | null
+          reward_points?: number | null
+          tips?: string[] | null
           title: string
           updated_at?: string
         }
         Update: {
           category?: string | null
+          completion_criteria?: string | null
           created_at?: string
           description?: string | null
           difficulty?: string
           duration_days?: number
           id?: string
+          is_premium?: boolean | null
+          milestones?: Json | null
+          motivation_text?: string | null
+          reward_points?: number | null
+          tips?: string[] | null
           title?: string
           updated_at?: string
         }
