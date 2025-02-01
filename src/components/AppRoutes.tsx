@@ -6,6 +6,7 @@ import Goals from "@/pages/Goals";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Auth from "@/pages/Auth";
+import Calendar from "@/pages/Calendar";
 
 export const AppRoutes = () => (
   <Routes>
@@ -33,6 +34,14 @@ export const AppRoutes = () => (
       element={
         <ProtectedRoute>
           <Goals />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/calendar"
+      element={
+        <ProtectedRoute>
+          <Calendar />
         </ProtectedRoute>
       }
     />
