@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Trophy, Target, Lock, Sparkles, CheckCircle2, Flame, Star, Award } from "lucide-react";
+import { Trophy, Target, Lock, Sparkles, CheckCircle2, Flame, Star, Award, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChallengeCardProps {
   challenge: {
@@ -29,6 +30,42 @@ interface ChallengeCardProps {
 export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [progressData, setProgressData] = useState<{
+    daysCompleted: number;
+    startDate: string | null;
+  }>({
+    daysCompleted: 0,
+    startDate: null,
+  });
+
+  useEffect(() => {
+    if (isJoined) {
+      fetchProgress();
+    }
+  }, [isJoined, challenge.id]);
+
+  const fetchProgress = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('user_challenges')
+      .select('*')
+      .eq('challenge_id', challenge.id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (data) {
+      const startDate = new Date(data.start_date);
+      const currentDate = new Date();
+      const daysDiff = Math.floor((currentDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      setProgressData({
+        daysCompleted: Math.min(daysDiff + 1, challenge.duration_days),
+        startDate: data.start_date,
+      });
+    }
+  };
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
@@ -73,7 +110,8 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
     }
   };
 
-  const progressValue = isJoined ? 0 : 100; // This should be calculated based on actual progress
+  const progressValue = (progressData.daysCompleted / challenge.duration_days) * 100;
+  const daysRemaining = challenge.duration_days - progressData.daysCompleted;
 
   return (
     <motion.div
@@ -123,6 +161,29 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-muted-foreground">{challenge.description}</p>
+          
+          {isJoined && progressData.startDate && (
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-sm text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  Day {progressData.daysCompleted} of {challenge.duration_days}
+                </span>
+                <span>{Math.round(progressValue)}% Complete</span>
+              </div>
+              <Progress value={progressValue} className="h-2" />
+              {daysRemaining > 0 ? (
+                <p className="text-sm text-blue-600">
+                  {daysRemaining} days remaining to complete this challenge!
+                </p>
+              ) : (
+                <p className="text-sm text-green-600 font-medium">
+                  Challenge completed! 🎉
+                </p>
+              )}
+            </div>
+          )}
+
           {challenge.motivation_text && (
             <motion.div
               initial={{ opacity: 0.8 }}
@@ -132,25 +193,11 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
               <p className="italic text-sm text-primary">{challenge.motivation_text}</p>
             </motion.div>
           )}
-          <div className="space-y-2">
-            {challenge.completion_criteria && (
-              <div className="flex items-start gap-2 text-sm">
-                <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500" />
-                <span>{challenge.completion_criteria}</span>
-              </div>
-            )}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Target className="h-4 w-4" />
-              <span>{challenge.duration_days} days</span>
-            </div>
-          </div>
-          {isJoined && (
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm text-muted-foreground">
-                <span>Progress</span>
-                <span>{progressValue}%</span>
-              </div>
-              <Progress value={progressValue} className="h-2" />
+
+          {challenge.completion_criteria && (
+            <div className="flex items-start gap-2 text-sm">
+              <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500" />
+              <span>{challenge.completion_criteria}</span>
             </div>
           )}
           {challenge.tips && challenge.tips.length > 0 && (
