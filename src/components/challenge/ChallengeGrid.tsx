@@ -1,4 +1,4 @@
-import { ChallengeCard } from "../../ChallengeCard";
+import { ChallengeCard } from "../ChallengeCard";
 
 interface ChallengeGridProps {
   challenges: any[];
