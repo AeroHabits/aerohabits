@@ -32,7 +32,7 @@ export function ChallengeProgress({
       .select('*')
       .eq('user_challenge_id', userChallengeId)
       .eq('completed_date', today)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Error checking completion:', error);
