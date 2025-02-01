@@ -35,46 +35,50 @@ serve(async (req) => {
 
     console.log('Sending request to OpenAI with habits:', habits.length);
 
+    const openAIRequest = {
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `You are an AI Habit Coach, an expert in habit formation, behavior change, and personal development. 
+          Analyze the user's habits and provide personalized, actionable insights. Be encouraging but realistic. 
+          Focus on patterns, suggest improvements, and offer specific strategies for success. Keep responses concise and actionable.`
+        },
+        {
+          role: 'user',
+          content: `Please analyze these habits and provide personalized coaching:
+          ${habitAnalysis}
+          
+          Focus on:
+          1. Pattern recognition
+          2. Specific improvement suggestions
+          3. One key action item for today
+          4. Words of encouragement`
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 1000
+    };
+
+    console.log('OpenAI request payload:', JSON.stringify(openAIRequest, null, 2));
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: `You are an AI Habit Coach, an expert in habit formation, behavior change, and personal development. 
-            Analyze the user's habits and provide personalized, actionable insights. Be encouraging but realistic. 
-            Focus on patterns, suggest improvements, and offer specific strategies for success. Keep responses concise and actionable.`
-          },
-          {
-            role: 'user',
-            content: `Please analyze these habits and provide personalized coaching:
-            ${habitAnalysis}
-            
-            Focus on:
-            1. Pattern recognition
-            2. Specific improvement suggestions
-            3. One key action item for today
-            4. Words of encouragement`
-          }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000
-      }),
+      body: JSON.stringify(openAIRequest),
     });
 
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error:', response.status, errorData);
-      throw new Error(`OpenAI API error: ${response.status}`);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorData}`);
     }
 
     const data = await response.json();
-    console.log('OpenAI response received');
+    console.log('OpenAI response received:', JSON.stringify(data, null, 2));
 
     if (!data.choices?.[0]?.message?.content) {
       console.error('Invalid response structure from OpenAI:', data);
@@ -96,7 +100,8 @@ serve(async (req) => {
     console.error('Error in habit-coach function:', error);
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'An error occurred while processing your request'
+        error: error.message || 'An error occurred while processing your request',
+        details: error.toString()
       }),
       {
         status: 500,
