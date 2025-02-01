@@ -3,6 +3,7 @@ import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
 import { HabitStats } from "./HabitStats";
 import { HabitListContent } from "./HabitListContent";
+import { AIHabitCoach } from "./AIHabitCoach";
 import { useHabits } from "@/hooks/useHabits";
 
 export function HabitList() {
@@ -34,6 +35,7 @@ export function HabitList() {
         totalStreaks={totalStreaks}
         completedToday={completedHabits.length}
       />
+      <AIHabitCoach habits={habits} />
       <HabitListContent
         habits={habits}
         onToggle={toggleHabit}
