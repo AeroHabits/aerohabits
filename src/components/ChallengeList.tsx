@@ -17,7 +17,16 @@ export function ChallengeList() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data;
+      
+      // Transform the data to ensure milestones is always an array
+      return data.map(challenge => ({
+        ...challenge,
+        milestones: Array.isArray(challenge.milestones) 
+          ? challenge.milestones 
+          : challenge.milestones 
+            ? JSON.parse(challenge.milestones as string)
+            : []
+      }));
     },
   });
 

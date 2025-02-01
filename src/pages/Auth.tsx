@@ -65,7 +65,9 @@ const Auth = () => {
           email,
           password,
           options: {
-            persistSession: rememberMe
+            data: {
+              persistSession: rememberMe
+            }
           }
         });
         if (error) {
