@@ -18,7 +18,9 @@ export function AppHero() {
         }}
         className="text-3xl md:text-4xl font-bold text-white/95 tracking-wide"
       >
-        Journey To Self-Mastery
+        <span className="bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent animate-gradient-x">
+          Journey To Self-Mastery
+        </span>
       </motion.h2>
       <div className="h-1 w-32 mx-auto bg-gradient-to-r from-white/0 via-white/80 to-white/0 animate-pulse" />
       <p className="text-lg text-white/80 max-w-2xl mx-auto">
