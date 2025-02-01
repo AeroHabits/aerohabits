@@ -6,6 +6,7 @@ import Goals from "@/pages/Goals";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Auth from "@/pages/Auth";
+import Challenges from "@/pages/Challenges";
 
 export const AppRoutes = () => (
   <Routes>
@@ -17,6 +18,14 @@ export const AppRoutes = () => (
       element={
         <ProtectedRoute>
           <Index />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/challenges"
+      element={
+        <ProtectedRoute>
+          <Challenges />
         </ProtectedRoute>
       }
     />

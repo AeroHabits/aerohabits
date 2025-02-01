@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Target, Map } from "lucide-react";
+import { Home, Target, Map, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const MobileNav = () => {
@@ -39,6 +39,31 @@ export const MobileNav = () => {
                 )}
               </div>
               <span className="text-xs font-medium">Habits</span>
+            </Link>
+
+            <Link
+              to="/challenges"
+              className={`flex flex-col items-center space-y-1 transition-all duration-200 ${
+                pathname === "/challenges" 
+                ? "text-white scale-110" 
+                : "text-white/70 hover:text-white"
+              }`}
+            >
+              <div className="relative">
+                <Trophy className={`w-6 h-6 ${
+                  pathname === "/challenges" 
+                  ? "drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]" 
+                  : ""
+                }`} />
+                {pathname === "/challenges" && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute -bottom-2 left-1/2 w-1 h-1 bg-white rounded-full -translate-x-1/2"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+              </div>
+              <span className="text-xs font-medium">Challenges</span>
             </Link>
 
             <Link
