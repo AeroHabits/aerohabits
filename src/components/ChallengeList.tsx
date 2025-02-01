@@ -17,7 +17,12 @@ export function ChallengeList() {
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching challenges:", error);
+        throw error;
+      }
+      
+      console.log("Fetched challenges:", data); // Debug log
       
       return data.map(challenge => ({
         ...challenge,
@@ -66,8 +71,11 @@ export function ChallengeList() {
   });
 
   const filteredChallenges = challenges?.filter(challenge => 
-    challenge.difficulty === selectedDifficulty
+    challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
   );
+
+  console.log("Selected difficulty:", selectedDifficulty); // Debug log
+  console.log("Filtered challenges:", filteredChallenges); // Debug log
 
   if (isLoading) {
     return <div className="text-center">Loading challenges...</div>;
