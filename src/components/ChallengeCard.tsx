@@ -96,8 +96,9 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
       whileHover={{ scale: 1.02 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
+      className="h-full"
     >
-      <Card className="overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
+      <Card className="h-full overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
         <CardHeader>
           <ChallengeHeader
             title={challenge.title}
@@ -108,8 +109,8 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
             isHovered={isHovered}
           />
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-muted-foreground">{challenge.description}</p>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground line-clamp-2">{challenge.description}</p>
           
           {isJoined && userChallengeId && (
             <ChallengeProgress
@@ -125,20 +126,20 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
             <motion.div
               initial={{ opacity: 0.8 }}
               animate={{ opacity: isHovered ? 1 : 0.8 }}
-              className="p-3 bg-primary/5 rounded-lg border border-primary/10"
+              className="p-2 bg-primary/5 rounded-lg border border-primary/10"
             >
-              <p className="italic text-sm text-primary">{challenge.motivation_text}</p>
+              <p className="italic text-xs text-primary line-clamp-2">{challenge.motivation_text}</p>
             </motion.div>
           )}
 
           {challenge.completion_criteria && (
-            <div className="flex items-start gap-2 text-sm">
-              <CheckCircle2 className="h-4 w-4 mt-0.5 text-green-500" />
-              <span>{challenge.completion_criteria}</span>
+            <div className="flex items-start gap-2 text-xs">
+              <CheckCircle2 className="h-3 w-3 mt-0.5 text-green-500 shrink-0" />
+              <span className="line-clamp-2">{challenge.completion_criteria}</span>
             </div>
           )}
 
-          {challenge.tips && (
+          {challenge.tips && isHovered && (
             <ChallengeTips tips={challenge.tips} isHovered={isHovered} />
           )}
         </CardContent>

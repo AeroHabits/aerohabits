@@ -15,13 +15,13 @@ export function ChallengeTips({ tips, isHovered }: ChallengeTipsProps) {
       transition={{ duration: 0.3 }}
       className="overflow-hidden"
     >
-      <div className="mt-4 space-y-2 bg-blue-50/50 p-3 rounded-lg">
-        <h4 className="text-sm font-semibold text-blue-700">Tips for Success:</h4>
-        <ul className="text-sm text-blue-600/80 space-y-1">
-          {tips.map((tip, index) => (
-            <li key={index} className="flex items-start gap-2">
-              <span className="text-blue-400">•</span>
-              {tip}
+      <div className="mt-2 space-y-1 bg-blue-50/50 p-2 rounded-lg">
+        <h4 className="text-xs font-semibold text-blue-700">Tips:</h4>
+        <ul className="text-xs text-blue-600/80 space-y-0.5">
+          {tips.slice(0, 3).map((tip, index) => (
+            <li key={index} className="flex items-start gap-1">
+              <span className="text-blue-400 shrink-0">•</span>
+              <span className="line-clamp-1">{tip}</span>
             </li>
           ))}
         </ul>
