@@ -1,20 +1,12 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
-import { AvatarUploader } from "./AvatarUploader";
-import { UserProfile } from "./UserProfile";
 import { UserPoints } from "./user/UserPoints";
+import { UserAvatar } from "./user/UserAvatar";
+import { UserDropdownContent } from "./user/UserDropdownContent";
 
 export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
@@ -78,34 +70,15 @@ export function UserMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-            <Avatar>
-              <AvatarImage src={profile?.avatar_url || ""} />
-              <AvatarFallback>
-                {profile?.full_name?.charAt(0) || user.email?.charAt(0)}
-              </AvatarFallback>
-            </Avatar>
+            <UserAvatar user={user} profile={profile} />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end">
-          <DropdownMenuLabel>
-            <UserProfile 
-              user={user}
-              profile={profile}
-              setProfile={setProfile}
-            />
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <AvatarUploader 
-            userId={user.id}
-            onAvatarUpdate={(url) => setProfile(prev => prev ? { ...prev, avatar_url: url } : null)}
-          />
-          <DropdownMenuItem
-            className="text-red-600 cursor-pointer"
-            onClick={handleSignOut}
-          >
-            Sign Out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
+        <UserDropdownContent 
+          user={user}
+          profile={profile}
+          setProfile={setProfile}
+          onSignOut={handleSignOut}
+        />
       </DropdownMenu>
     </div>
   );
