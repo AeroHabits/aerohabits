@@ -22,7 +22,10 @@ export function ChallengeCompletion({ userChallengeId, onComplete, isCompleted }
           user_challenge_id: userChallengeId,
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error marking completion:', error);
+        throw error;
+      }
       
       toast.success("Great job! You've completed today's challenge! 🎉");
       onComplete();
