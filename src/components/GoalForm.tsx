@@ -3,22 +3,62 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { trackGoalAction } from "@/lib/analytics";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/components/ui/use-toast";
 
 interface GoalFormProps {
-  onSubmit: (goal: { title: string; description: string }) => void;
+  onSubmit: () => void;
 }
 
 export function GoalForm({ onSubmit }: GoalFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
-      trackGoalAction('create', title);
-      onSubmit({ title, description });
-      setTitle("");
-      setDescription("");
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast({
+            title: "Error",
+            description: "You must be logged in to create goals",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        const { error } = await supabase
+          .from('goals')
+          .insert([
+            {
+              title,
+              description: description.trim() || null,
+              user_id: user.id,
+              status: 'in_progress'
+            }
+          ]);
+
+        if (error) throw error;
+
+        trackGoalAction('create', title);
+        onSubmit();
+        setTitle("");
+        setDescription("");
+        
+        toast({
+          title: "Success",
+          description: "Goal created successfully!",
+        });
+      } catch (error) {
+        console.error('Error creating goal:', error);
+        toast({
+          title: "Error",
+          description: "Failed to create goal",
+          variant: "destructive",
+        });
+      }
     }
   };
 
