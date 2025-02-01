@@ -74,13 +74,6 @@ const Index = () => {
               >
                 Journey
               </TabsTrigger>
-              <TabsTrigger 
-                value="calendar" 
-                onClick={() => navigate("/calendar")}
-                className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
-              >
-                Calendar
-              </TabsTrigger>
             </TabsList>
 
             <motion.div
