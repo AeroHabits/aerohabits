@@ -3,6 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { ChallengeCard } from "./ChallengeCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
+import { Card } from "./ui/card";
+import { Star, Flame, Award } from "lucide-react";
 
 export function ChallengeList() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
@@ -18,7 +20,6 @@ export function ChallengeList() {
 
       if (error) throw error;
       
-      // Transform the data to ensure milestones is always an array
       return data.map(challenge => ({
         ...challenge,
         milestones: Array.isArray(challenge.milestones) 
@@ -75,6 +76,24 @@ export function ChallengeList() {
 
   return (
     <div className="space-y-6">
+      <Card className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-none">
+        <h3 className="text-lg font-semibold mb-3 text-blue-800">Challenge Difficulty Levels</h3>
+        <div className="space-y-2 text-sm text-blue-700">
+          <div className="flex items-center gap-2">
+            <Star className="h-4 w-4 text-green-500" />
+            <span><strong>Easy:</strong> Perfect for beginners. These challenges help build basic habits with manageable daily tasks.</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Flame className="h-4 w-4 text-yellow-500" />
+            <span><strong>Medium:</strong> For those ready to push themselves. These challenges require more dedication and consistency.</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Award className="h-4 w-4 text-red-500" />
+            <span><strong>Hard:</strong> Advanced challenges that test your commitment. These require significant effort and dedication.</span>
+          </div>
+        </div>
+      </Card>
+
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="all" onClick={() => setSelectedDifficulty("all")}>
