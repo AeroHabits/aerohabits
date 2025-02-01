@@ -7,6 +7,7 @@ import { User } from "@supabase/supabase-js";
 import { UserPoints } from "./user/UserPoints";
 import { UserAvatar } from "./user/UserAvatar";
 import { UserDropdownContent } from "./user/UserDropdownContent";
+import { motion } from "framer-motion";
 
 export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
@@ -57,19 +58,34 @@ export function UserMenu() {
 
   if (!user) {
     return (
-      <Button onClick={() => navigate("/auth")} variant="outline">
-        Sign In
-      </Button>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <Button 
+          onClick={() => navigate("/auth")} 
+          variant="outline"
+          className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 transition-all duration-300"
+        >
+          Sign In
+        </Button>
+      </motion.div>
     );
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <motion.div 
+      className="flex items-center gap-4"
+      initial={{ opacity: 0, y: -20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <UserPoints points={profile?.total_points || 0} />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+          <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
             <UserAvatar user={user} profile={profile} />
           </Button>
         </DropdownMenuTrigger>
@@ -80,6 +96,6 @@ export function UserMenu() {
           onSignOut={handleSignOut}
         />
       </DropdownMenu>
-    </div>
+    </motion.div>
   );
 }
