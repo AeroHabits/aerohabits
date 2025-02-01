@@ -14,8 +14,7 @@ import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
 import { AvatarUploader } from "./AvatarUploader";
 import { UserProfile } from "./UserProfile";
-import { Trophy } from "lucide-react";
-import { motion } from "framer-motion";
+import { UserPoints } from "./user/UserPoints";
 
 export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
@@ -74,17 +73,7 @@ export function UserMenu() {
 
   return (
     <div className="flex items-center gap-4">
-      {/* Points Display */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2 bg-gradient-to-r from-amber-100 to-amber-200 px-3 py-1.5 rounded-full"
-      >
-        <Trophy className="h-4 w-4 text-amber-600" />
-        <span className="font-medium text-amber-900">
-          {profile?.total_points || 0} pts
-        </span>
-      </motion.div>
+      <UserPoints points={profile?.total_points || 0} />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
