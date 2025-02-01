@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          badge_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          points_required: number
+        }
+        Insert: {
+          badge_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          points_required: number
+        }
+        Update: {
+          badge_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          points_required?: number
+        }
+        Relationships: []
+      }
       challenge_completions: {
         Row: {
           completed_date: string
@@ -207,21 +234,53 @@ export type Database = {
           avatar_url: string | null
           full_name: string | null
           id: string
+          total_points: number | null
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
           full_name?: string | null
           id: string
+          total_points?: number | null
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
           full_name?: string | null
           id?: string
+          total_points?: number | null
           updated_at?: string | null
         }
         Relationships: []
+      }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_challenges: {
         Row: {
