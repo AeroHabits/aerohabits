@@ -1,5 +1,5 @@
 import { WeeklyProgress } from "@/components/WeeklyProgress";
-import { StatsGrid } from "@/components/StatsGrid";
+import { CumulativeStats } from "@/components/CumulativeStats";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -17,27 +17,6 @@ const Journey = () => {
     },
   });
 
-  // Calculate stats from habits data
-  const totalHabits = habits?.length || 0;
-  const completedHabits = habits?.filter(habit => habit.completed)?.length || 0;
-  const completionRate = totalHabits > 0 
-    ? Math.round((completedHabits / totalHabits) * 100) 
-    : 0;
-  
-  // Calculate current streak (simplified version)
-  const currentStreak = habits?.filter(habit => habit.streak > 0)?.length || 0;
-  
-  // Calculate weekly progress
-  const weeklyProgress = completionRate;
-  
-  // Calculate monthly average (simplified)
-  const monthlyAverage = completionRate;
-  
-  // Best streak from all habits
-  const bestStreak = habits 
-    ? Math.max(...habits.map(habit => habit.streak || 0))
-    : 0;
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
       <div className="container py-8 space-y-8">
@@ -54,14 +33,7 @@ const Journey = () => {
         </div>
 
         <div className="space-y-8 animate-fade-in">
-          <StatsGrid
-            totalHabits={totalHabits}
-            currentStreak={currentStreak}
-            completionRate={completionRate}
-            weeklyProgress={weeklyProgress}
-            monthlyAverage={monthlyAverage}
-            bestStreak={bestStreak}
-          />
+          <CumulativeStats />
           <WeeklyProgress />
         </div>
       </div>
