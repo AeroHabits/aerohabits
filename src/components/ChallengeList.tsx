@@ -4,7 +4,7 @@ import { ChallengeCard } from "./ChallengeCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useState } from "react";
 import { Card } from "./ui/card";
-import { Star, Flame, Award } from "lucide-react";
+import { Star, Flame, Award, Crown } from "lucide-react";
 
 export function ChallengeList() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
@@ -91,11 +91,15 @@ export function ChallengeList() {
             <Award className="h-4 w-4 text-red-500" />
             <span><strong>Hard:</strong> Advanced challenges that test your commitment. These require significant effort and dedication.</span>
           </div>
+          <div className="flex items-center gap-2">
+            <Crown className="h-4 w-4 text-purple-500" />
+            <span><strong>Master:</strong> Elite-level challenges for those seeking the ultimate test. These challenges demand exceptional discipline and unwavering commitment.</span>
+          </div>
         </div>
       </Card>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="all" onClick={() => setSelectedDifficulty("all")}>
             All
           </TabsTrigger>
@@ -107,6 +111,9 @@ export function ChallengeList() {
           </TabsTrigger>
           <TabsTrigger value="hard" onClick={() => setSelectedDifficulty("hard")}>
             Hard
+          </TabsTrigger>
+          <TabsTrigger value="master" onClick={() => setSelectedDifficulty("master")}>
+            Master
           </TabsTrigger>
         </TabsList>
       </Tabs>

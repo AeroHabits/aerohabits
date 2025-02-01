@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { CardTitle } from "@/components/ui/card";
-import { Trophy, Sparkles, Star, Flame, Award } from "lucide-react";
+import { Trophy, Sparkles, Star, Flame, Award, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ChallengeHeaderProps {
@@ -28,6 +28,8 @@ export function ChallengeHeader({
         return 'bg-yellow-100 text-yellow-800';
       case 'hard':
         return 'bg-red-100 text-red-800';
+      case 'master':
+        return 'bg-purple-100 text-purple-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -41,6 +43,8 @@ export function ChallengeHeader({
         return <Flame className="h-3 w-3 mr-1" />;
       case 'hard':
         return <Award className="h-3 w-3 mr-1" />;
+      case 'master':
+        return <Crown className="h-3 w-3 mr-1" />;
       default:
         return null;
     }
