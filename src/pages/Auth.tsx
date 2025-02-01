@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,6 +13,7 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -62,6 +64,9 @@ const Auth = () => {
         const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
+          options: {
+            persistSession: rememberMe
+          }
         });
         if (error) {
           if (error.message.includes('Invalid login credentials')) {
@@ -140,6 +145,21 @@ const Auth = () => {
               disabled={isLoading}
             />
           </div>
+          {!isSignUp && (
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="rememberMe"
+                checked={rememberMe}
+                onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+              />
+              <label
+                htmlFor="rememberMe"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Remember me
+              </label>
+            </div>
+          )}
           <Button
             type="submit"
             className="w-full"
