@@ -1,6 +1,5 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -8,17 +7,23 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { habits, userId } = await req.json();
+    const { habits } = await req.json();
     
-    // Create a system message that explains the context and purpose
-    const systemMessage = `You are an AI Habit Coach, an expert in habit formation, behavior change, and personal development. 
-    Analyze the user's habits and provide personalized, actionable insights. Be encouraging but realistic. 
-    Focus on patterns, suggest improvements, and offer specific strategies for success. Keep responses concise and actionable.`;
+    if (!habits || !Array.isArray(habits)) {
+      console.error('Invalid habits data received:', habits);
+      throw new Error('Invalid habits data');
+    }
+
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
 
     // Create a detailed analysis of the habits
     const habitAnalysis = habits.map(h => `
@@ -28,42 +33,71 @@ serve(async (req) => {
       Status: ${h.completed ? 'Completed today' : 'Not completed today'}
     `).join('\n');
 
-    const userMessage = `Please analyze these habits and provide personalized coaching:
-    ${habitAnalysis}
-    
-    Focus on:
-    1. Pattern recognition
-    2. Specific improvement suggestions
-    3. One key action item for today
-    4. Words of encouragement`;
+    console.log('Sending request to OpenAI with habits:', habits.length);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: systemMessage },
-          { role: 'user', content: userMessage }
+          {
+            role: 'system',
+            content: `You are an AI Habit Coach, an expert in habit formation, behavior change, and personal development. 
+            Analyze the user's habits and provide personalized, actionable insights. Be encouraging but realistic. 
+            Focus on patterns, suggest improvements, and offer specific strategies for success. Keep responses concise and actionable.`
+          },
+          {
+            role: 'user',
+            content: `Please analyze these habits and provide personalized coaching:
+            ${habitAnalysis}
+            
+            Focus on:
+            1. Pattern recognition
+            2. Specific improvement suggestions
+            3. One key action item for today
+            4. Words of encouragement`
+          }
         ],
         temperature: 0.7,
       }),
     });
 
     const data = await response.json();
+    console.log('OpenAI response received:', data);
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Invalid response from OpenAI:', data);
+      throw new Error('Invalid response from OpenAI');
+    }
+
     const coaching = data.choices[0].message.content;
 
-    return new Response(JSON.stringify({ coaching }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ coaching }),
+      { 
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        } 
+      }
+    );
   } catch (error) {
     console.error('Error in habit-coach function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || 'An error occurred while processing your request'
+      }),
+      {
+        status: 500,
+        headers: { 
+          ...corsHeaders,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
   }
 });
