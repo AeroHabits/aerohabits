@@ -5,11 +5,6 @@ import { GoalItem } from "./goals/GoalItem";
 import { GoalListEmpty } from "./goals/GoalListEmpty";
 import { GoalListLoading } from "./goals/GoalListLoading";
 
-interface Milestone {
-  title: string;
-  completed: boolean;
-}
-
 interface Goal {
   id: string;
   title: string;
@@ -17,7 +12,6 @@ interface Goal {
   target_date: string | null;
   status: string;
   progress: number;
-  milestones: Milestone[];
 }
 
 interface GoalListProps {

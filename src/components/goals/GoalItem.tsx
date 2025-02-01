@@ -1,15 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Trash2, CheckCircle, Circle, Clock, ChevronUp, ChevronDown } from "lucide-react";
+import { Trash2, CheckCircle, Circle, Clock } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-
-interface Milestone {
-  title: string;
-  completed: boolean;
-}
 
 interface Goal {
   id: string;
@@ -18,7 +12,6 @@ interface Goal {
   target_date: string | null;
   status: string;
   progress: number;
-  milestones: Milestone[];
 }
 
 interface GoalItemProps {
@@ -28,8 +21,6 @@ interface GoalItemProps {
 }
 
 export function GoalItem({ goal, onStatusUpdate, onDelete }: GoalItemProps) {
-  const [showMilestones, setShowMilestones] = useState(false);
-
   return (
     <Card className="p-6 bg-white/70 backdrop-blur-sm">
       <div className="space-y-4">
@@ -82,44 +73,6 @@ export function GoalItem({ goal, onStatusUpdate, onDelete }: GoalItemProps) {
           </div>
           <Progress value={goal.progress} className="h-2" />
         </div>
-
-        {goal.milestones && goal.milestones.length > 0 && (
-          <div className="space-y-2">
-            <Button
-              variant="ghost"
-              className="w-full flex justify-between items-center py-2"
-              onClick={() => setShowMilestones(!showMilestones)}
-            >
-              <span className="text-sm font-medium">
-                Milestones ({goal.milestones.filter(m => m.completed).length}/{goal.milestones.length})
-              </span>
-              {showMilestones ? (
-                <ChevronUp className="h-4 w-4" />
-              ) : (
-                <ChevronDown className="h-4 w-4" />
-              )}
-            </Button>
-            {showMilestones && (
-              <div className="space-y-2 pl-4">
-                {goal.milestones.map((milestone, index) => (
-                  <div key={index} className="flex items-center space-x-2">
-                    {milestone.completed ? (
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                    ) : (
-                      <Circle className="h-4 w-4 text-gray-400" />
-                    )}
-                    <span className={cn(
-                      "text-sm",
-                      milestone.completed && "line-through text-muted-foreground"
-                    )}>
-                      {milestone.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </Card>
   );
