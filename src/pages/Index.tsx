@@ -20,7 +20,7 @@ const Index = () => {
           .from("user_quiz_responses")
           .select("id")
           .eq("user_id", user.id)
-          .single();
+          .maybeSingle();
         
         setShowQuiz(!quizResponse);
       }
