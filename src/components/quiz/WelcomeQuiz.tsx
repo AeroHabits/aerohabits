@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Brain, Heart, Sun, BookOpen, Award } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -10,23 +10,27 @@ import { useNavigate } from "react-router-dom";
 const questions = [
   {
     id: 1,
-    question: "What's your current fitness level?",
-    options: ["Beginner", "Intermediate", "Advanced", "Elite"],
+    question: "What area of life would you like to focus on most?",
+    options: ["Personal Growth", "Relationships", "Mental Wellness", "Life Balance"],
+    icon: Brain,
   },
   {
     id: 2,
-    question: "What's your primary fitness goal?",
-    options: ["Weight Loss", "Muscle Gain", "Endurance", "Overall Health"],
+    question: "What's your primary goal for self-improvement?",
+    options: ["Build Better Habits", "Develop New Skills", "Find Inner Peace", "Strengthen Connections"],
+    icon: Award,
   },
   {
     id: 3,
-    question: "How many days per week can you commit to?",
+    question: "How many days per week can you commit to personal development?",
     options: ["3-4 days", "4-5 days", "5-6 days", "Every day"],
+    icon: Sun,
   },
   {
     id: 4,
-    question: "What's your preferred workout duration?",
+    question: "How much time can you dedicate daily to self-improvement?",
     options: ["15-30 minutes", "30-45 minutes", "45-60 minutes", "60+ minutes"],
+    icon: BookOpen,
   },
 ];
 
@@ -44,16 +48,23 @@ export function WelcomeQuiz() {
     } else {
       // Quiz completed, determine challenge difficulty
       const difficultyMap = {
-        Beginner: "medium",
-        Intermediate: "medium",
-        Advanced: "hard",
-        Elite: "master",
+        "Personal Growth": "medium",
+        "Relationships": "medium",
+        "Mental Wellness": "hard",
+        "Life Balance": "master",
       };
       
-      const fitnessLevel = newAnswers[0];
-      const difficulty = difficultyMap[fitnessLevel as keyof typeof difficultyMap];
+      const focusArea = newAnswers[0];
+      const difficulty = difficultyMap[focusArea as keyof typeof difficultyMap];
       
       try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          toast.error("Please sign in to save your quiz results");
+          return;
+        }
+
         // Get a random challenge of the determined difficulty
         const { data: challenges, error: challengeError } = await supabase
           .from("challenges")
@@ -67,7 +78,8 @@ export function WelcomeQuiz() {
           const { error: responseError } = await supabase
             .from("user_quiz_responses")
             .insert({
-              fitness_level: fitnessLevel,
+              user_id: user.id,
+              fitness_level: focusArea,
               goals: [newAnswers[1]],
               preferred_duration: parseInt(newAnswers[3]),
               recommended_challenge_id: challenges[0].id,
@@ -85,6 +97,8 @@ export function WelcomeQuiz() {
     }
   };
 
+  const CurrentIcon = questions[currentQuestion].icon;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -95,7 +109,7 @@ export function WelcomeQuiz() {
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-2">Welcome to AREOHABITS!</h2>
           <p className="text-muted-foreground">
-            Let's find the perfect challenge for you
+            Let's discover your path to personal growth
           </p>
         </div>
 
@@ -107,7 +121,10 @@ export function WelcomeQuiz() {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-4"
           >
-            <h3 className="text-xl font-semibold">
+            <div className="flex items-center justify-center mb-4">
+              <CurrentIcon className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold text-center">
               {questions[currentQuestion].question}
             </h3>
             <div className="grid gap-3">
