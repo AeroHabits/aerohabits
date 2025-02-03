@@ -11,7 +11,7 @@ const questions = [
   {
     id: 1,
     question: "What area of life would you like to focus on most?",
-    options: ["Personal Growth", "Relationships", "Mental Wellness", "Life Balance"],
+    options: ["Personal Growth", "Fitness", "Mental Wellness", "Life Balance"],
     icon: Brain,
   },
   {
@@ -49,7 +49,7 @@ export function WelcomeQuiz() {
       // Quiz completed, determine challenge difficulty
       const difficultyMap = {
         "Personal Growth": "medium",
-        "Relationships": "medium",
+        "Fitness": "medium",
         "Mental Wellness": "hard",
         "Life Balance": "master",
       };
