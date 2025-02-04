@@ -7,6 +7,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -30,22 +31,76 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90 overflow-x-hidden">
+    <div className="relative min-h-screen overflow-x-hidden">
+      {/* Animated background gradients */}
+      <div className="fixed inset-0 bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90">
+        <motion.div
+          className="absolute inset-0 opacity-50"
+          animate={{
+            background: [
+              "radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
+              "radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)",
+              "radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
+              "radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)",
+            ],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
+        
+        {/* Floating particles */}
+        <div className="absolute inset-0 overflow-hidden">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-white/10 rounded-full"
+              initial={{
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+              }}
+              animate={{
+                x: Math.random() * window.innerWidth,
+                y: Math.random() * window.innerHeight,
+                scale: [1, 1.5, 1],
+                opacity: [0.2, 0.5, 0.2],
+              }}
+              transition={{
+                duration: Math.random() * 10 + 10,
+                repeat: Infinity,
+                repeatType: "reverse",
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
       <WelcomeTour />
-      <div className={cn(
-        "min-h-screen w-full py-4 md:py-8 space-y-6 md:space-y-8",
-        isMobile ? "px-4" : "container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-      )}>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className={cn(
+          "relative min-h-screen w-full py-4 md:py-8 space-y-6 md:space-y-8",
+          isMobile ? "px-4" : "container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        )}
+      >
         <AppHeader />
         {showQuiz ? (
           <WelcomeQuiz />
         ) : (
-          <>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
             <AppHero />
             <AppTabs />
-          </>
+          </motion.div>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 };
