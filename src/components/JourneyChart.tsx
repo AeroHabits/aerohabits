@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts";
+import { motion } from "framer-motion";
 
 interface JourneyChartProps {
   data: {
@@ -16,36 +17,46 @@ export function JourneyChart({ data }: JourneyChartProps) {
     completed: {
       label: "Completed Habits",
       theme: {
-        light: "#3B82F6",
-        dark: "#60A5FA",
+        light: "#8B5CF6",
+        dark: "#9b87f5",
       },
     },
     total: {
       label: "Total Habits",
       theme: {
-        light: "#E2E8F0",
-        dark: "#475569",
+        light: "#E5DEFF",
+        dark: "#7E69AB",
       },
     },
   };
 
   return (
-    <div className="h-[200px]">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.2 }}
+      className="h-[200px]"
+    >
       <ChartContainer config={config}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="completed" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity={0} />
+                <stop offset="0%" stopColor="#8B5CF6" stopOpacity={0.4} />
+                <stop offset="100%" stopColor="#8B5CF6" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="total" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#E2E8F0" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#E2E8F0" stopOpacity={0} />
+                <stop offset="0%" stopColor="#E5DEFF" stopOpacity={0.4} />
+                <stop offset="100%" stopColor="#E5DEFF" stopOpacity={0} />
               </linearGradient>
             </defs>
             
-            <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" opacity={0.3} />
+            <CartesianGrid 
+              strokeDasharray="3 3" 
+              stroke="#E2E8F0" 
+              opacity={0.2}
+              className="animate-fade-in" 
+            />
             
             <XAxis
               dataKey="day"
@@ -54,6 +65,7 @@ export function JourneyChart({ data }: JourneyChartProps) {
               tickLine={false}
               axisLine={false}
               dy={10}
+              tick={{ fill: '#64748B' }}
             />
             
             <YAxis
@@ -63,26 +75,33 @@ export function JourneyChart({ data }: JourneyChartProps) {
               axisLine={false}
               tickFormatter={(value) => `${value}`}
               dx={-10}
+              tick={{ fill: '#64748B' }}
             />
             
             <ChartTooltip 
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   return (
-                    <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-xl border border-purple-100"
+                    >
+                      <p className="text-sm font-medium text-purple-900">
                         {payload[0].payload.day}
                       </p>
-                      <p className="text-sm text-blue-600">
+                      <p className="text-sm text-purple-600 font-medium">
                         Completed: {payload[0].payload.completed}
                       </p>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-purple-400">
                         Total: {payload[0].payload.total}
                       </p>
-                      <p className="text-sm font-medium text-indigo-600">
-                        {payload[0].payload.percentage}% Complete
-                      </p>
-                    </div>
+                      <div className="mt-1 pt-1 border-t border-purple-100">
+                        <p className="text-sm font-medium text-purple-700">
+                          {payload[0].payload.percentage}% Complete
+                        </p>
+                      </div>
+                    </motion.div>
                   );
                 }
                 return null;
@@ -92,23 +111,25 @@ export function JourneyChart({ data }: JourneyChartProps) {
             <Area
               type="monotone"
               dataKey="total"
-              stroke="#E2E8F0"
+              stroke="#E5DEFF"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#total)"
+              className="animate-fade-in"
             />
             
             <Area
               type="monotone"
               dataKey="completed"
-              stroke="#3B82F6"
+              stroke="#8B5CF6"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#completed)"
+              className="animate-fade-in"
             />
           </AreaChart>
         </ResponsiveContainer>
       </ChartContainer>
-    </div>
+    </motion.div>
   );
 }
