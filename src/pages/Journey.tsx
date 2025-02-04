@@ -8,7 +8,7 @@ const Journey = () => {
   const { stats } = useJourneyStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
+    <div className="min-h-screen bg-gradient-to-br from-[#0EA5E9] via-[#0EA5E9] to-[#0EA5E9]/90 animate-gradient-x">
       <div className="container py-12 space-y-12">
         <JourneyHero />
 
