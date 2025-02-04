@@ -1,5 +1,4 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
@@ -8,6 +7,9 @@ import { ChallengeHeader } from "./challenge/ChallengeHeader";
 import { ChallengeProgress } from "./challenge/ChallengeProgress";
 import { ChallengeTips } from "./challenge/ChallengeTips";
 import { ChallengeActions } from "./challenge/ChallengeActions";
+import { ChallengePointsMessage } from "./challenge/ChallengePointsMessage";
+import { ChallengeMotivation } from "./challenge/ChallengeMotivation";
+import { ChallengeCompletionCriteria } from "./challenge/ChallengeCompletionCriteria";
 
 interface ChallengeCardProps {
   challenge: {
@@ -88,14 +90,6 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
     }
   };
 
-  const getPointsMessage = () => {
-    if (!challenge.reward_points) return null;
-    if (progressData.daysCompleted === challenge.duration_days) {
-      return `You've earned ${challenge.reward_points} points for completing this challenge!`;
-    }
-    return `Complete all ${challenge.duration_days} days to earn ${challenge.reward_points} points!`;
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -129,30 +123,22 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
                 userChallengeId={userChallengeId}
                 onProgressUpdate={fetchProgress}
               />
-              {challenge.reward_points && (
-                <p className="text-sm font-medium text-primary">
-                  {getPointsMessage()}
-                </p>
-              )}
+              <ChallengePointsMessage
+                rewardPoints={challenge.reward_points}
+                daysCompleted={progressData.daysCompleted}
+                totalDays={challenge.duration_days}
+              />
             </>
           )}
 
-          {challenge.motivation_text && (
-            <motion.div
-              initial={{ opacity: 0.8 }}
-              animate={{ opacity: isHovered ? 1 : 0.8 }}
-              className="p-2 bg-primary/5 rounded-lg border border-primary/10"
-            >
-              <p className="italic text-xs text-primary line-clamp-2">{challenge.motivation_text}</p>
-            </motion.div>
-          )}
+          <ChallengeMotivation 
+            motivationText={challenge.motivation_text}
+            isHovered={isHovered}
+          />
 
-          {challenge.completion_criteria && (
-            <div className="flex items-start gap-2 text-xs">
-              <CheckCircle2 className="h-3 w-3 mt-0.5 text-green-500 shrink-0" />
-              <span className="line-clamp-2">{challenge.completion_criteria}</span>
-            </div>
-          )}
+          <ChallengeCompletionCriteria 
+            criteria={challenge.completion_criteria}
+          />
 
           {challenge.tips && isHovered && (
             <ChallengeTips tips={challenge.tips} isHovered={isHovered} />
