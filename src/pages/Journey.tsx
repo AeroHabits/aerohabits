@@ -1,5 +1,4 @@
 import { WeeklyProgress } from "@/components/WeeklyProgress";
-import { CumulativeStats } from "@/components/CumulativeStats";
 import { StatsGrid } from "@/components/StatsGrid";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,14 +60,6 @@ const Journey = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <CumulativeStats />
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
           >
             <WeeklyProgress />
           </motion.div>
