@@ -13,7 +13,7 @@ interface Testimonial {
   profiles: {
     full_name: string | null;
     avatar_url: string | null;
-  };
+  } | null;
 }
 
 export function TestimonialList() {
@@ -32,7 +32,7 @@ export function TestimonialList() {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Testimonial[];
+      return data as unknown as Testimonial[];
     },
   });
 
@@ -61,17 +61,17 @@ export function TestimonialList() {
             <Card className="h-full">
               <CardHeader className="flex flex-row items-center gap-4">
                 <Avatar>
-                  <AvatarImage src={testimonial.profiles.avatar_url || undefined} />
+                  <AvatarImage src={testimonial.profiles?.avatar_url || undefined} />
                   <AvatarFallback>
-                    {testimonial.profiles.full_name?.[0] || "U"}
+                    {testimonial.profiles?.full_name?.[0] || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
                   <div className="font-semibold">
-                    {testimonial.profiles.full_name || "Anonymous User"}
+                    {testimonial.profiles?.full_name || "Anonymous User"}
                   </div>
                   <div className="flex items-center mt-1">
-                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                    {Array.from({ length: testimonial.rating || 0 }).map((_, i) => (
                       <Star
                         key={i}
                         className="h-4 w-4 fill-yellow-400 text-yellow-400"

@@ -1,6 +1,8 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HabitList } from "@/components/HabitList";
 import { ChallengeList } from "@/components/ChallengeList";
+import { PricingTiers } from "@/components/pricing/PricingTiers";
+import { TestimonialList } from "@/components/testimonials/TestimonialList";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 

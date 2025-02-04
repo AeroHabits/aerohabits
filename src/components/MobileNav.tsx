@@ -120,4 +120,4 @@ export const MobileNav = () => {
       </div>
     </motion.nav>
   );
-};
+}
