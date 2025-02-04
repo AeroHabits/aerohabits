@@ -10,6 +10,7 @@ interface Testimonial {
   content: string;
   rating: number;
   created_at: string;
+  user_id: string;
   profiles: {
     full_name: string | null;
     avatar_url: string | null;
@@ -24,10 +25,7 @@ export function TestimonialList() {
         .from("testimonials")
         .select(`
           *,
-          profiles:user_id (
-            full_name,
-            avatar_url
-          )
+          profiles(full_name, avatar_url)
         `)
         .order("created_at", { ascending: false });
 
