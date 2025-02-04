@@ -3,6 +3,7 @@ import { AppHero } from "@/components/layout/AppHero";
 import { AppTabs } from "@/components/layout/AppTabs";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { WelcomeQuiz } from "@/components/quiz/WelcomeQuiz";
+import { BottomNav } from "@/components/layout/BottomNav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -46,6 +47,7 @@ const Index = () => {
           </>
         )}
       </div>
+      <BottomNav />
     </div>
   );
 };
