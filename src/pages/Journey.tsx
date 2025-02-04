@@ -1,7 +1,9 @@
 import { WeeklyProgress } from "@/components/WeeklyProgress";
 import { CumulativeStats } from "@/components/CumulativeStats";
+import { StatsGrid } from "@/components/StatsGrid";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 
 const Journey = () => {
   const { data: habits = [] } = useQuery({
@@ -17,24 +19,59 @@ const Journey = () => {
     },
   });
 
+  // Calculate stats
+  const totalHabits = habits.length;
+  const completedHabits = habits.filter(h => h.completed).length;
+  const currentStreak = Math.max(...habits.map(h => h.streak || 0), 0);
+  const completionRate = totalHabits > 0 
+    ? Math.round((completedHabits / totalHabits) * 100) 
+    : 0;
+  const weeklyProgress = 65; // This would be calculated based on actual data
+  const monthlyAverage = 78; // This would be calculated based on actual data
+  const bestStreak = Math.max(...habits.map(h => h.streak || 0), 0);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#8B5CF6] via-[#D946EF] to-[#0EA5E9] animate-gradient-x">
-      <div className="container py-8 space-y-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-white">
-            AREOHABITS
+      <div className="container py-12 space-y-12">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center space-y-6"
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-white">
+            Your Habit Journey
           </h1>
-        </div>
-
-        <div className="text-center space-y-4">
-          <p className="text-lg text-white/80 max-w-2xl mx-auto animate-fade-in">
-            Track your progress and visualize your habit-building journey.
+          <p className="text-xl text-white/80 max-w-2xl mx-auto">
+            Track your progress and celebrate your achievements along the way
           </p>
-        </div>
+        </motion.div>
 
-        <div className="space-y-8 animate-fade-in">
-          <CumulativeStats />
-          <WeeklyProgress />
+        <div className="space-y-8">
+          <StatsGrid
+            totalHabits={totalHabits}
+            currentStreak={currentStreak}
+            completionRate={completionRate}
+            weeklyProgress={weeklyProgress}
+            monthlyAverage={monthlyAverage}
+            bestStreak={bestStreak}
+          />
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <CumulativeStats />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <WeeklyProgress />
+          </motion.div>
         </div>
       </div>
     </div>
