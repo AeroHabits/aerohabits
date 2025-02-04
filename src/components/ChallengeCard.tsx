@@ -88,6 +88,14 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
     }
   };
 
+  const getPointsMessage = () => {
+    if (!challenge.reward_points) return null;
+    if (progressData.daysCompleted === challenge.duration_days) {
+      return `You've earned ${challenge.reward_points} points for completing this challenge!`;
+    }
+    return `Complete all ${challenge.duration_days} days to earn ${challenge.reward_points} points!`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -113,13 +121,20 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
           <p className="text-sm text-muted-foreground line-clamp-2">{challenge.description}</p>
           
           {isJoined && userChallengeId && (
-            <ChallengeProgress
-              daysCompleted={progressData.daysCompleted}
-              totalDays={challenge.duration_days}
-              startDate={progressData.startDate}
-              userChallengeId={userChallengeId}
-              onProgressUpdate={fetchProgress}
-            />
+            <>
+              <ChallengeProgress
+                daysCompleted={progressData.daysCompleted}
+                totalDays={challenge.duration_days}
+                startDate={progressData.startDate}
+                userChallengeId={userChallengeId}
+                onProgressUpdate={fetchProgress}
+              />
+              {challenge.reward_points && (
+                <p className="text-sm font-medium text-primary">
+                  {getPointsMessage()}
+                </p>
+              )}
+            </>
           )}
 
           {challenge.motivation_text && (
