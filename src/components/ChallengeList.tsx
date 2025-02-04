@@ -6,8 +6,9 @@ import { ChallengeDifficultyTabs } from "./challenge/ChallengeDifficultyTabs";
 import { ChallengeGrid } from "./challenge/ChallengeGrid";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Trophy, Zap, Target } from "lucide-react";
 import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 
 export function ChallengeList() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
@@ -128,24 +129,56 @@ export function ChallengeList() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative p-6 rounded-lg bg-gradient-to-r from-purple-500/10 to-blue-500/10 backdrop-blur-sm border border-purple-500/20 mb-8"
+          className="relative p-6 rounded-lg bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-purple-500/20 mb-8 overflow-hidden"
         >
-          <div className="flex items-center justify-between">
-            <div className="space-y-2">
-              <h3 className="text-lg font-semibold text-purple-500 flex items-center gap-2">
-                <Sparkles className="h-5 w-5" />
-                Unlock Premium Challenges
-              </h3>
-              <p className="text-sm text-muted-foreground max-w-md">
-                Get full access to our curated collection of premium challenges designed to push your limits and accelerate your growth.
-              </p>
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 animate-gradient-x" />
+          <div className="relative z-10">
+            <div className="flex items-center justify-between">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold text-purple-500 flex items-center gap-2">
+                    <Sparkles className="h-5 w-5" />
+                    Unlock Premium Features
+                  </h3>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    Take your personal growth to the next level with premium challenges and exclusive features.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-yellow-500" />
+                    <span className="text-sm">Advanced Challenges</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Zap className="h-4 w-4 text-blue-500" />
+                    <span className="text-sm">Personalized Progress</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Target className="h-4 w-4 text-green-500" />
+                    <span className="text-sm">Expert Guidance</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Badge variant="secondary" className="bg-purple-500/10 text-purple-500 border-purple-500/20">
+                    Medium Challenges
+                  </Badge>
+                  <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+                    Hard Challenges
+                  </Badge>
+                  <Badge variant="secondary" className="bg-indigo-500/10 text-indigo-500 border-indigo-500/20">
+                    Master Challenges
+                  </Badge>
+                </div>
+              </div>
+              <div className="hidden md:block">
+                <Button 
+                  className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg"
+                  onClick={() => toast.info("Premium features coming soon!")}
+                >
+                  Upgrade to Premium
+                </Button>
+              </div>
             </div>
-            <Button 
-              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg"
-              onClick={() => toast.info("Premium features coming soon!")}
-            >
-              Upgrade to Premium
-            </Button>
           </div>
         </motion.div>
       )}
@@ -155,6 +188,22 @@ export function ChallengeList() {
         userChallenges={userChallenges || []}
         onJoinChallenge={(challengeId) => joinChallengeMutation.mutate(challengeId)}
       />
+
+      {/* Mobile upgrade button */}
+      {!userProfile?.is_premium && selectedDifficulty.toLowerCase() !== 'easy' && (
+        <motion.div 
+          className="md:hidden fixed bottom-4 left-4 right-4 z-50"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <Button 
+            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg"
+            onClick={() => toast.info("Premium features coming soon!")}
+          >
+            Upgrade to Premium
+          </Button>
+        </motion.div>
+      )}
     </div>
   );
 }
