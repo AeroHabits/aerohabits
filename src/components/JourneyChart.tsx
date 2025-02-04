@@ -25,8 +25,8 @@ export function JourneyChart({ data }: JourneyChartProps) {
     total: {
       label: "Total Habits",
       theme: {
-        light: "#E5E7EB",
-        dark: "#374151",
+        light: "#94A3B8",
+        dark: "#94A3B8",
       },
     },
   };
@@ -46,7 +46,7 @@ export function JourneyChart({ data }: JourneyChartProps) {
             <CartesianGrid 
               strokeDasharray="3 3" 
               stroke="#FFFFFF" 
-              opacity={0.2}
+              opacity={0.3}
               className="animate-fade-in" 
             />
             
@@ -75,7 +75,7 @@ export function JourneyChart({ data }: JourneyChartProps) {
             <Area
               type="monotone"
               dataKey="total"
-              stroke="#E5E7EB"
+              stroke="#94A3B8"
               strokeWidth={2}
               fillOpacity={1}
               fill="url(#total)"
