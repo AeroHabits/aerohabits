@@ -4,10 +4,28 @@ import { useState } from "react";
 import { ChallengeDifficultyGuide } from "./challenge/ChallengeDifficultyGuide";
 import { ChallengeDifficultyTabs } from "./challenge/ChallengeDifficultyTabs";
 import { ChallengeGrid } from "./challenge/ChallengeGrid";
+import { toast } from "sonner";
 
 export function ChallengeList() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
   const queryClient = useQueryClient();
+
+  // Add a query to check if user has premium subscription
+  const { data: userProfile } = useQuery({
+    queryKey: ["user-profile"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
+
+      return data;
+    },
+  });
 
   const { data: challenges, isLoading } = useQuery({
     queryKey: ["challenges"],
@@ -22,7 +40,7 @@ export function ChallengeList() {
         throw error;
       }
       
-      console.log("Fetched challenges:", data); // Debug log
+      console.log("Fetched challenges:", data);
       
       return data.map(challenge => ({
         ...challenge,
@@ -70,21 +88,43 @@ export function ChallengeList() {
     },
   });
 
-  const filteredChallenges = challenges?.filter(challenge => 
-    challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
-  );
+  const filteredChallenges = challenges?.filter(challenge => {
+    const difficultyMatch = challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase();
+    
+    // If it's an easy challenge, show it to everyone
+    if (challenge.difficulty.toLowerCase() === 'easy') {
+      return difficultyMatch;
+    }
+    
+    // For medium, hard, and master challenges, check if user has premium access
+    const hasPremiumAccess = userProfile?.is_premium;
+    
+    if (!hasPremiumAccess) {
+      return false;
+    }
+    
+    return difficultyMatch;
+  });
 
-  console.log("Selected difficulty:", selectedDifficulty); // Debug log
-  console.log("Filtered challenges:", filteredChallenges); // Debug log
+  console.log("Selected difficulty:", selectedDifficulty);
+  console.log("Filtered challenges:", filteredChallenges);
 
   if (isLoading) {
     return <div className="text-center">Loading challenges...</div>;
   }
 
+  const handleDifficultyChange = (difficulty: string) => {
+    if (difficulty.toLowerCase() !== 'easy' && !userProfile?.is_premium) {
+      toast.error("Premium subscription required for advanced challenges");
+      return;
+    }
+    setSelectedDifficulty(difficulty);
+  };
+
   return (
     <div className="space-y-6">
       <ChallengeDifficultyGuide />
-      <ChallengeDifficultyTabs onDifficultyChange={setSelectedDifficulty} />
+      <ChallengeDifficultyTabs onDifficultyChange={handleDifficultyChange} />
       <ChallengeGrid 
         challenges={filteredChallenges || []}
         userChallenges={userChallenges || []}
