@@ -1,7 +1,8 @@
-import { Card } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts";
 import { motion } from "framer-motion";
+import { ChartGradients } from "./journey/ChartGradients";
+import { ChartTooltip as CustomTooltip } from "./journey/ChartTooltip";
 
 interface JourneyChartProps {
   data: {
@@ -40,16 +41,7 @@ export function JourneyChart({ data }: JourneyChartProps) {
       <ChartContainer config={config}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="completed" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#0EA5E9" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#0EA5E9" stopOpacity={0} />
-              </linearGradient>
-              <linearGradient id="total" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#E5E7EB" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#E5E7EB" stopOpacity={0} />
-              </linearGradient>
-            </defs>
+            <ChartGradients />
             
             <CartesianGrid 
               strokeDasharray="3 3" 
@@ -78,35 +70,7 @@ export function JourneyChart({ data }: JourneyChartProps) {
               tick={{ fill: '#000000' }}
             />
             
-            <ChartTooltip 
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
-                  return (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.95 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-xl border border-[#0EA5E9]/20"
-                    >
-                      <p className="text-sm font-medium text-black">
-                        {payload[0].payload.day}
-                      </p>
-                      <p className="text-sm text-[#0EA5E9] font-medium">
-                        Completed: {payload[0].payload.completed}
-                      </p>
-                      <p className="text-sm text-gray-600">
-                        Total: {payload[0].payload.total}
-                      </p>
-                      <div className="mt-1 pt-1 border-t border-[#0EA5E9]/10">
-                        <p className="text-sm font-medium text-black">
-                          {payload[0].payload.percentage}% Complete
-                        </p>
-                      </div>
-                    </motion.div>
-                  );
-                }
-                return null;
-              }}
-            />
+            <ChartTooltip content={CustomTooltip} />
             
             <Area
               type="monotone"

@@ -19,7 +19,6 @@ export function WeeklyProgress() {
     },
   });
 
-  // Calculate weekly progress data
   const weeklyData = Array(7)
     .fill(0)
     .map((_, index) => {
@@ -46,7 +45,6 @@ export function WeeklyProgress() {
     })
     .reverse();
 
-  // Calculate week's performance
   const totalCompleted = weeklyData.reduce((sum, day) => sum + day.completed, 0);
   const totalHabits = weeklyData.reduce((sum, day) => sum + day.total, 0);
   const weeklyPercentage = totalHabits > 0 
@@ -59,20 +57,20 @@ export function WeeklyProgress() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="p-6 bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-sm border-white/20 shadow-xl">
+      <Card className="p-6 bg-white/90 backdrop-blur-sm border-white/20 shadow-xl">
         <div className="space-y-6">
           <div className="flex items-start justify-between">
             <div>
-              <h3 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-blue-500" />
+              <h3 className="text-xl font-semibold text-black flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-[#0EA5E9]" />
                 Weekly Progress
               </h3>
               <p className="text-sm text-gray-600 mt-1">
                 Track your completed habits over the past week
               </p>
             </div>
-            <div className="bg-blue-50 px-4 py-2 rounded-full">
-              <span className="text-sm font-medium text-blue-700">
+            <div className="bg-[#0EA5E9]/10 px-4 py-2 rounded-full">
+              <span className="text-sm font-medium text-[#0EA5E9]">
                 {weeklyPercentage}% Complete
               </span>
             </div>
@@ -83,13 +81,13 @@ export function WeeklyProgress() {
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-green-50 rounded-lg p-4">
-              <p className="text-sm text-green-700 font-medium">Completed</p>
-              <p className="text-2xl font-bold text-green-800">{totalCompleted}</p>
+            <div className="bg-[#0EA5E9]/10 rounded-lg p-4">
+              <p className="text-sm text-[#0EA5E9] font-medium">Completed</p>
+              <p className="text-2xl font-bold text-black">{totalCompleted}</p>
             </div>
-            <div className="bg-blue-50 rounded-lg p-4">
-              <p className="text-sm text-blue-700 font-medium">Total Habits</p>
-              <p className="text-2xl font-bold text-blue-800">{totalHabits}</p>
+            <div className="bg-[#0EA5E9]/10 rounded-lg p-4">
+              <p className="text-sm text-[#0EA5E9] font-medium">Total Habits</p>
+              <p className="text-2xl font-bold text-black">{totalHabits}</p>
             </div>
           </div>
         </div>
