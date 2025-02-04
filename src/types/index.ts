@@ -43,4 +43,6 @@ export interface Profile {
   full_name?: string;
   avatar_url?: string;
   updated_at?: string;
+  total_points?: number;
+  is_premium?: boolean;
 }
