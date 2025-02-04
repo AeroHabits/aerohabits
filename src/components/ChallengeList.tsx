@@ -97,24 +97,20 @@ export function ChallengeList() {
       return difficultyMatch;
     }
     
-    // Show a preview of medium challenges even for non-premium users
-    if (challenge.difficulty.toLowerCase() === 'medium' && !hasPremiumAccess) {
-      return difficultyMatch;
+    // For medium and above difficulties, check if user has premium access
+    if (challenge.difficulty.toLowerCase() === 'medium' || 
+        challenge.difficulty.toLowerCase() === 'hard' || 
+        challenge.difficulty.toLowerCase() === 'master') {
+      return hasPremiumAccess && difficultyMatch;
     }
     
-    // For premium challenges, check if user has premium access
-    return hasPremiumAccess && difficultyMatch;
+    return false;
   });
 
   const handleDifficultyChange = (difficulty: string) => {
     if (difficulty.toLowerCase() !== 'easy' && !userProfile?.is_premium) {
-      if (difficulty.toLowerCase() === 'medium') {
-        toast.info("Upgrade to premium to unlock all medium challenges!", {
-          duration: 5000,
-        });
-      } else {
-        toast.error("Premium subscription required for advanced challenges");
-      }
+      toast.error("Premium subscription required for advanced challenges");
+      return;
     }
     setSelectedDifficulty(difficulty);
   };
@@ -123,14 +119,12 @@ export function ChallengeList() {
     return <div className="text-center">Loading challenges...</div>;
   }
 
-  const showPremiumTeaser = selectedDifficulty === 'medium' && !userProfile?.is_premium;
-
   return (
     <div className="space-y-6">
       <ChallengeDifficultyGuide />
       <ChallengeDifficultyTabs onDifficultyChange={handleDifficultyChange} />
       
-      {showPremiumTeaser && (
+      {!userProfile?.is_premium && selectedDifficulty.toLowerCase() !== 'easy' && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -140,10 +134,10 @@ export function ChallengeList() {
             <div className="space-y-2">
               <h3 className="text-lg font-semibold text-purple-500 flex items-center gap-2">
                 <Sparkles className="h-5 w-5" />
-                Unlock All Medium Challenges
+                Unlock Premium Challenges
               </h3>
               <p className="text-sm text-muted-foreground max-w-md">
-                Get full access to our curated collection of medium-difficulty challenges designed to push your limits and accelerate your growth.
+                Get full access to our curated collection of premium challenges designed to push your limits and accelerate your growth.
               </p>
             </div>
             <Button 
@@ -156,17 +150,11 @@ export function ChallengeList() {
         </motion.div>
       )}
 
-      <div className={`relative ${showPremiumTeaser ? 'group' : ''}`}>
-        <ChallengeGrid 
-          challenges={filteredChallenges || []}
-          userChallenges={userChallenges || []}
-          onJoinChallenge={(challengeId) => joinChallengeMutation.mutate(challengeId)}
-        />
-        
-        {showPremiumTeaser && filteredChallenges && filteredChallenges.length > 2 && (
-          <div className="absolute bottom-0 left-0 right-0 h-72 bg-gradient-to-t from-background to-transparent pointer-events-none" />
-        )}
-      </div>
+      <ChallengeGrid 
+        challenges={filteredChallenges || []}
+        userChallenges={userChallenges || []}
+        onJoinChallenge={(challengeId) => joinChallengeMutation.mutate(challengeId)}
+      />
     </div>
   );
 }
