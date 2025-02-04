@@ -58,8 +58,13 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
   
   return (
-    <div className={cn("min-h-screen flex flex-col", isMobile && "pb-16")}>
-      {children}
+    <div className={cn(
+      "min-h-screen flex flex-col",
+      isMobile && "pb-16" // Add padding at the bottom on mobile to account for the navigation bar
+    )}>
+      <div className="flex-1">
+        {children}
+      </div>
       <Footer />
       <BottomNav />
     </div>
