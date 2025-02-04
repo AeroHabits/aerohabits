@@ -8,10 +8,9 @@ const Journey = () => {
   const { stats } = useJourneyStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0EA5E9] via-[#0EA5E9] to-[#0EA5E9]/90 animate-gradient-x">
+    <div className="min-h-screen bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90">
       <div className="container py-12 space-y-12">
         <JourneyHero />
-
         <div className="space-y-8">
           <StatsGrid
             totalHabits={stats.totalHabits}

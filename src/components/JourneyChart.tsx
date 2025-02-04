@@ -45,29 +45,29 @@ export function JourneyChart({ data }: JourneyChartProps) {
             
             <CartesianGrid 
               strokeDasharray="3 3" 
-              stroke="#E2E8F0" 
+              stroke="#FFFFFF" 
               opacity={0.2}
               className="animate-fade-in" 
             />
             
             <XAxis
               dataKey="day"
-              stroke="#000000"
+              stroke="#FFFFFF"
               fontSize={12}
               tickLine={false}
               axisLine={false}
               dy={10}
-              tick={{ fill: '#000000' }}
+              tick={{ fill: '#FFFFFF' }}
             />
             
             <YAxis
-              stroke="#000000"
+              stroke="#FFFFFF"
               fontSize={12}
               tickLine={false}
               axisLine={false}
               tickFormatter={(value) => `${value}`}
               dx={-10}
-              tick={{ fill: '#000000' }}
+              tick={{ fill: '#FFFFFF' }}
             />
             
             <ChartTooltip content={CustomTooltip} />
