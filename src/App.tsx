@@ -7,8 +7,11 @@ import * as Sentry from "@sentry/react";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
+import { BottomNav } from "./components/layout/BottomNav";
 import { useEffect } from "react";
 import { trackPageView } from "./lib/analytics";
+import { useIsMobile } from "./hooks/use-mobile";
+import { cn } from "./lib/utils";
 
 // Initialize Sentry
 Sentry.init({
@@ -50,19 +53,31 @@ const AnalyticsTracker = () => {
   return null;
 };
 
+// Layout component to handle common layout elements
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  const isMobile = useIsMobile();
+  
+  return (
+    <div className={cn("min-h-screen flex flex-col", isMobile && "pb-16")}>
+      {children}
+      <Footer />
+      <BottomNav />
+    </div>
+  );
+};
+
 const App = () => (
   <SentryErrorBoundary>
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen flex flex-col">
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AnalyticsTracker />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AnalyticsTracker />
+          <Layout>
             <AppRoutes />
-            <Footer />
-          </BrowserRouter>
-        </div>
+          </Layout>
+        </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
   </SentryErrorBoundary>

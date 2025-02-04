@@ -3,7 +3,6 @@ import { AppHero } from "@/components/layout/AppHero";
 import { AppTabs } from "@/components/layout/AppTabs";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { WelcomeQuiz } from "@/components/quiz/WelcomeQuiz";
-import { BottomNav } from "@/components/layout/BottomNav";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
@@ -35,7 +34,7 @@ const Index = () => {
       <WelcomeTour />
       <div className={cn(
         "min-h-screen w-full py-4 md:py-8 space-y-6 md:space-y-8",
-        isMobile ? "px-4 pb-24" : "container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+        isMobile ? "px-4" : "container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
       )}>
         <AppHeader />
         {showQuiz ? (
@@ -47,7 +46,6 @@ const Index = () => {
           </>
         )}
       </div>
-      <BottomNav />
     </div>
   );
 };
