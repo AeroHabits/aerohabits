@@ -31,52 +31,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
-      {/* Animated background gradients */}
-      <div className="fixed inset-0 bg-gradient-to-br from-[#1A1F2C] via-[#2C1F3C] to-[#1F2C3C]">
-        <motion.div
-          className="absolute inset-0 opacity-30"
-          animate={{
-            background: [
-              "radial-gradient(circle at 0% 0%, rgba(155, 135, 245, 0.15) 0%, transparent 50%)",
-              "radial-gradient(circle at 100% 100%, rgba(126, 105, 171, 0.15) 0%, transparent 50%)",
-              "radial-gradient(circle at 0% 100%, rgba(155, 135, 245, 0.15) 0%, transparent 50%)",
-              "radial-gradient(circle at 100% 0%, rgba(126, 105, 171, 0.15) 0%, transparent 50%)",
-            ],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
-        
-        {/* Floating particles */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 bg-white/5 rounded-full"
-              initial={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-              }}
-              animate={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                scale: [1, 1.5, 1],
-                opacity: [0.2, 0.5, 0.2],
-              }}
-              transition={{
-                duration: Math.random() * 10 + 10,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
+    <div className="relative min-h-screen">
       <WelcomeTour />
       <motion.div
         initial={{ opacity: 0 }}
