@@ -12,17 +12,17 @@ export function UserPoints({ points }: UserPointsProps) {
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
-      className="flex items-center gap-2 bg-gradient-to-r from-amber-100 via-amber-200 to-amber-100 px-4 py-2 rounded-full shadow-md hover:shadow-lg transition-shadow duration-300"
+      className="flex items-center gap-1.5 bg-gradient-to-r from-amber-100/80 via-amber-200/80 to-amber-100/80 px-3 py-1.5 rounded-full shadow-sm hover:shadow-md transition-shadow duration-300"
     >
       <motion.div
         initial={{ rotate: 0 }}
         animate={{ rotate: [0, -10, 10, -10, 0] }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Trophy className="h-5 w-5 text-amber-600" />
+        <Trophy className="h-4 w-4 text-amber-600" />
       </motion.div>
       <motion.span 
-        className="font-semibold text-amber-900"
+        className="font-medium text-sm text-amber-900"
         initial={{ y: 10 }}
         animate={{ y: 0 }}
         transition={{ type: "spring", stiffness: 300, damping: 20 }}
