@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { JourneyChart } from "./JourneyChart";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
-import { TrendingUp } from "lucide-react";
+import { BarChart3 } from "lucide-react";
 import { format, subDays, isSameDay } from "date-fns";
 
 export function WeeklyProgress() {
@@ -53,19 +53,19 @@ export function WeeklyProgress() {
     >
       <Card className="p-6 bg-white/20 backdrop-blur-sm border-white/30 shadow-xl">
         <div className="space-y-6">
-          <div className="flex items-start justify-between">
-            <div>
-              <h3 className="text-xl font-semibold text-white flex items-center gap-2">
-                <TrendingUp className="w-5 h-5 text-[#0EA5E9]" />
-                Weekly Progress
-              </h3>
-              <p className="text-sm text-white/80 mt-1">
-                Track your completed habits over the past week
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
+                <BarChart3 className="w-6 h-6" />
+                Habit Completion Analysis
+              </h2>
+              <p className="text-sm text-white/80">
+                7-Day Performance Overview
               </p>
             </div>
-            <div className="bg-[#0EA5E9]/20 px-4 py-2 rounded-full">
+            <div className="bg-white/10 px-4 py-2 rounded-lg">
               <span className="text-sm font-medium text-white">
-                {weeklyPercentage}% Complete
+                {weeklyPercentage}% Success Rate
               </span>
             </div>
           </div>
@@ -75,12 +75,12 @@ export function WeeklyProgress() {
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-[#0EA5E9]/20 rounded-lg p-4">
-              <p className="text-sm text-white font-medium">Completed</p>
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-sm text-white font-medium">Completed Tasks</p>
               <p className="text-2xl font-bold text-white">{totalCompleted}</p>
             </div>
-            <div className="bg-[#0EA5E9]/20 rounded-lg p-4">
-              <p className="text-sm text-white font-medium">Total Habits</p>
+            <div className="bg-white/10 rounded-lg p-4">
+              <p className="text-sm text-white font-medium">Total Tasks</p>
               <p className="text-2xl font-bold text-white">{totalHabits}</p>
             </div>
           </div>
