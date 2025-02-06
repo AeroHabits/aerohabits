@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -60,7 +61,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
 
   return (
     <>
-      <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-[#4F46E5] via-[#818CF8] to-[#6366F1] bg-clip-text text-transparent mb-8 animate-gradient-x">
+      <h1 className="text-4xl font-bold text-center bg-gradient-to-br from-[#4F46E5] via-[#818CF8] to-[#6366F1] animate-gradient-x bg-clip-text text-transparent mb-8">
         Welcome Back
       </h1>
       <form onSubmit={handleSignIn} className="space-y-6">
@@ -97,7 +98,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
         </div>
         <Button 
           type="submit" 
-          className="w-full bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:opacity-90 transition-opacity" 
+          className="w-full bg-gradient-to-br from-[#4F46E5] to-[#6366F1] hover:opacity-90 transition-opacity" 
           disabled={isLoading}
         >
           {isLoading ? "Loading..." : "Sign In"}
