@@ -5,7 +5,7 @@ import { JourneyChart } from "./JourneyChart";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { BarChart3 } from "lucide-react";
-import { format, subDays, isSameDay } from "date-fns";
+import { format, subDays, startOfDay, endOfDay } from "date-fns";
 
 export function WeeklyProgress() {
   const { data: habits } = useQuery({
@@ -23,14 +23,17 @@ export function WeeklyProgress() {
 
   // Generate an array of the last 7 days
   const weeklyData = Array.from({ length: 7 }, (_, index) => {
-    const date = subDays(new Date(), 6 - index); // This ensures we go from oldest to newest
+    const date = subDays(new Date(), 6 - index);
+    const dayStart = startOfDay(date);
+    const dayEnd = endOfDay(date);
+    
     const dayHabits = habits?.filter(habit => {
       const habitDate = new Date(habit.created_at);
-      return isSameDay(habitDate, date);
+      return habitDate >= dayStart && habitDate <= dayEnd;
     }) || [];
     
     return {
-      day: format(date, 'EEE'), // Short day name (Mon, Tue, etc.)
+      day: format(date, 'EEE'),
       completed: dayHabits.filter(habit => habit.completed).length,
       total: dayHabits.length,
       percentage: dayHabits.length > 0 
@@ -39,8 +42,16 @@ export function WeeklyProgress() {
     };
   });
 
-  const totalCompleted = weeklyData.reduce((sum, day) => sum + day.completed, 0);
-  const totalHabits = weeklyData.reduce((sum, day) => sum + day.total, 0);
+  // Calculate actual totals based on all habits within the 7-day period
+  const now = new Date();
+  const weekAgo = subDays(now, 6);
+  const weekHabits = habits?.filter(habit => {
+    const habitDate = new Date(habit.created_at);
+    return habitDate >= startOfDay(weekAgo) && habitDate <= endOfDay(now);
+  }) || [];
+
+  const totalCompleted = weekHabits.filter(habit => habit.completed).length;
+  const totalHabits = weekHabits.length;
   const weeklyPercentage = totalHabits > 0 
     ? Math.round((totalCompleted / totalHabits) * 100) 
     : 0;
