@@ -1,3 +1,4 @@
+
 import { AppHeader } from "@/components/layout/AppHeader";
 import { PricingTiers } from "@/components/pricing/PricingTiers";
 import { TestimonialList } from "@/components/testimonials/TestimonialList";
@@ -9,7 +10,7 @@ const Pricing = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className={cn(
         "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
         isMobile && "pb-24"
@@ -20,7 +21,7 @@ const Pricing = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
+          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
             <PricingTiers />
             <TestimonialList />
           </div>
