@@ -233,6 +233,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           full_name: string | null
+          has_seen_tour: boolean | null
           id: string
           is_premium: boolean | null
           total_points: number | null
@@ -241,6 +242,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           full_name?: string | null
+          has_seen_tour?: boolean | null
           id: string
           is_premium?: boolean | null
           total_points?: number | null
@@ -249,6 +251,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           full_name?: string | null
+          has_seen_tour?: boolean | null
           id?: string
           is_premium?: boolean | null
           total_points?: number | null
