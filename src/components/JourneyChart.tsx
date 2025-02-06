@@ -28,7 +28,7 @@ export function JourneyChart({ data }: JourneyChartProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="h-[200px]"
+      className="bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-lg p-6 rounded-xl shadow-2xl border border-white/20 hover:border-white/30 transition-all duration-300 h-[200px]"
     >
       <ChartContainer config={config}>
         <ResponsiveContainer width="100%" height="100%">
@@ -71,12 +71,16 @@ export function JourneyChart({ data }: JourneyChartProps) {
               
               const data = payload[0].payload;
               return (
-                <div className="bg-white/90 p-2 rounded-lg shadow-lg border border-white/20">
-                  <p className="font-medium">{data.day}</p>
-                  <p className="text-blue-600">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="bg-gradient-to-br from-blue-500/20 to-indigo-500/20 backdrop-blur-lg p-3 rounded-lg shadow-xl border border-white/30"
+                >
+                  <p className="font-medium text-white">{data.day}</p>
+                  <p className="text-blue-300">
                     Completed: {data.completed}
                   </p>
-                </div>
+                </motion.div>
               );
             }} />
             
