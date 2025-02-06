@@ -14,9 +14,9 @@ export function AppHeader() {
         animate={{ 
           scale: [1, 1.02, 1],
           textShadow: [
-            "0 0 4px rgba(255,255,255,0.5)",
-            "0 0 8px rgba(255,255,255,0.8)",
-            "0 0 4px rgba(255,255,255,0.5)"
+            "0 0 4px rgba(255,255,255,0.3)",
+            "0 0 8px rgba(255,255,255,0.5)",
+            "0 0 4px rgba(255,255,255,0.3)"
           ]
         }}
         transition={{ 
@@ -24,7 +24,7 @@ export function AppHeader() {
           repeat: Infinity,
           repeatType: "reverse"
         }}
-        className="text-xl md:text-3xl font-extrabold text-white tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-100 animate-gradient-x drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]"
+        className="text-xl md:text-3xl font-extrabold text-white tracking-wider"
       >
         AREOHABITS
       </motion.h1>

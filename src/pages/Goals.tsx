@@ -1,3 +1,4 @@
+
 import { GoalForm } from "@/components/GoalForm";
 import { GoalList } from "@/components/GoalList";
 import { useQuery } from "@tanstack/react-query";
@@ -30,24 +31,24 @@ const Goals = () => {
 
   const inspirationalCards = [
     {
-      icon: <Rocket className="w-8 h-8 text-blue-500" />,
+      icon: <Rocket className="w-8 h-8 text-gray-400" />,
       title: "Dream Big",
       description: "Your goals are the first step towards your dreams. Make them count!"
     },
     {
-      icon: <Target className="w-8 h-8 text-purple-500" />,
+      icon: <Target className="w-8 h-8 text-gray-400" />,
       title: "Stay Focused",
       description: "Break down your goals into actionable steps and track your progress."
     },
     {
-      icon: <Star className="w-8 h-8 text-yellow-500" />,
+      icon: <Star className="w-8 h-8 text-gray-400" />,
       title: "Celebrate Progress",
       description: "Every step forward is a victory. Acknowledge your achievements!"
     }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className={cn(
         "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
         isMobile && "pb-24"
@@ -60,7 +61,7 @@ const Goals = () => {
         </div>
 
         <div className="text-center space-y-4">
-          <p className="text-lg text-white/80 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-300 max-w-2xl mx-auto">
             Set and track your goals to achieve lasting change.
           </p>
         </div>
@@ -73,13 +74,13 @@ const Goals = () => {
                   {card.icon}
                 </div>
                 <h3 className="text-xl font-semibold text-white">{card.title}</h3>
-                <p className="text-white/80">{card.description}</p>
+                <p className="text-gray-300">{card.description}</p>
               </div>
             </Card>
           ))}
         </div>
         
-        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
           <section>
             <h2 className="text-2xl font-semibold mb-4 text-white">Your Goals</h2>
             <div className="space-y-6">

@@ -1,3 +1,4 @@
+
 import { AppHeader } from "@/components/layout/AppHeader";
 import { AppHero } from "@/components/layout/AppHero";
 import { AppTabs } from "@/components/layout/AppTabs";
@@ -32,16 +33,16 @@ const Index = () => {
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
-      {/* Animated background gradients */}
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90">
+      {/* Professional black and white gradient background */}
+      <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         <motion.div
-          className="absolute inset-0 opacity-50"
+          className="absolute inset-0 opacity-30"
           animate={{
             background: [
-              "radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
-              "radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)",
-              "radial-gradient(circle at 0% 100%, rgba(59, 130, 246, 0.3) 0%, transparent 50%)",
-              "radial-gradient(circle at 100% 0%, rgba(99, 102, 241, 0.3) 0%, transparent 50%)",
+              "radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)",
+              "radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)",
+              "radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)",
+              "radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.1) 0%, transparent 50%)",
             ],
           }}
           transition={{
@@ -51,12 +52,12 @@ const Index = () => {
           }}
         />
         
-        {/* Floating particles */}
+        {/* Subtle floating particles */}
         <div className="absolute inset-0 overflow-hidden">
           {[...Array(20)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-2 h-2 bg-white/10 rounded-full"
+              className="absolute w-2 h-2 bg-white/5 rounded-full"
               initial={{
                 x: Math.random() * window.innerWidth,
                 y: Math.random() * window.innerHeight,
@@ -65,7 +66,7 @@ const Index = () => {
                 x: Math.random() * window.innerWidth,
                 y: Math.random() * window.innerHeight,
                 scale: [1, 1.5, 1],
-                opacity: [0.2, 0.5, 0.2],
+                opacity: [0.1, 0.3, 0.1],
               }}
               transition={{
                 duration: Math.random() * 10 + 10,

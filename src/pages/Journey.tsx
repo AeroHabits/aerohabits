@@ -1,3 +1,4 @@
+
 import { WeeklyProgress } from "@/components/WeeklyProgress";
 import { StatsGrid } from "@/components/StatsGrid";
 import { JourneyHero } from "@/components/journey/JourneyHero";
@@ -8,7 +9,7 @@ const Journey = () => {
   const { stats } = useJourneyStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500/90 via-blue-600/80 to-indigo-600/90">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className="container py-12 space-y-12">
         <JourneyHero />
         <div className="space-y-8">
