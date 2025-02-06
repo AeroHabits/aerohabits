@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { FormInput } from "./FormInput";
-import { SocialSignIn } from "./SocialSignIn";
 
 interface SignUpFormProps {
   onToggleForm: () => void;
@@ -109,7 +108,6 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           {isLoading ? "Loading..." : "Sign Up"}
         </Button>
       </form>
-      <SocialSignIn />
       <p className="text-center text-sm">
         Already have an account?{" "}
         <button
