@@ -1,9 +1,11 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { JourneyChart } from "./JourneyChart";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { TrendingUp } from "lucide-react";
+import { format, subDays, isSameDay } from "date-fns";
 
 export function WeeklyProgress() {
   const { data: habits } = useQuery({
@@ -19,31 +21,23 @@ export function WeeklyProgress() {
     },
   });
 
-  const weeklyData = Array(7)
-    .fill(0)
-    .map((_, index) => {
-      const date = new Date();
-      date.setDate(date.getDate() - index);
-      const dayHabits = habits?.filter(habit => {
-        const habitDate = new Date(habit.created_at);
-        return (
-          habitDate.getDate() === date.getDate() &&
-          habitDate.getMonth() === date.getMonth() &&
-          habitDate.getFullYear() === date.getFullYear()
-        );
-      });
-      
-      const completed = dayHabits?.filter(habit => habit.completed)?.length || 0;
-      const total = dayHabits?.length || 0;
-      
-      return {
-        day: new Date(date).toLocaleDateString('en-US', { weekday: 'short' }),
-        completed,
-        total,
-        percentage: total > 0 ? Math.round((completed / total) * 100) : 0
-      };
-    })
-    .reverse();
+  // Generate an array of the last 7 days
+  const weeklyData = Array.from({ length: 7 }, (_, index) => {
+    const date = subDays(new Date(), 6 - index); // This ensures we go from oldest to newest
+    const dayHabits = habits?.filter(habit => {
+      const habitDate = new Date(habit.created_at);
+      return isSameDay(habitDate, date);
+    }) || [];
+    
+    return {
+      day: format(date, 'EEE'), // Short day name (Mon, Tue, etc.)
+      completed: dayHabits.filter(habit => habit.completed).length,
+      total: dayHabits.length,
+      percentage: dayHabits.length > 0 
+        ? Math.round((dayHabits.filter(habit => habit.completed).length / dayHabits.length) * 100)
+        : 0
+    };
+  });
 
   const totalCompleted = weeklyData.reduce((sum, day) => sum + day.completed, 0);
   const totalHabits = weeklyData.reduce((sum, day) => sum + day.total, 0);
