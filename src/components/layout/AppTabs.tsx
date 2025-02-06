@@ -1,3 +1,4 @@
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { HabitList } from "@/components/HabitList";
 import { ChallengeList } from "@/components/ChallengeList";
@@ -52,13 +53,13 @@ export function AppTabs() {
           className="mt-6"
         >
           <TabsContent value="habits">
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
               <HabitList />
             </div>
           </TabsContent>
           
           <TabsContent value="challenges">
-            <div className="bg-white/20 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/30">
+            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
               <ChallengeList />
             </div>
           </TabsContent>

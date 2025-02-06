@@ -32,52 +32,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden">
-      {/* Vibrant gradient background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-500">
-        <motion.div
-          className="absolute inset-0 opacity-30"
-          animate={{
-            background: [
-              "radial-gradient(circle at 0% 0%, rgba(255, 255, 255, 0.2) 0%, transparent 50%)",
-              "radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.2) 0%, transparent 50%)",
-              "radial-gradient(circle at 0% 100%, rgba(255, 255, 255, 0.2) 0%, transparent 50%)",
-              "radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.2) 0%, transparent 50%)",
-            ],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
-        
-        {/* Animated particles with new colors */}
-        <div className="absolute inset-0 overflow-hidden">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-2 h-2 bg-white/20 rounded-full"
-              initial={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-              }}
-              animate={{
-                x: Math.random() * window.innerWidth,
-                y: Math.random() * window.innerHeight,
-                scale: [1, 1.5, 1],
-                opacity: [0.2, 0.5, 0.2],
-              }}
-              transition={{
-                duration: Math.random() * 10 + 10,
-                repeat: Infinity,
-                repeatType: "reverse",
-              }}
-            />
-          ))}
-        </div>
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <WelcomeTour />
       <motion.div
         initial={{ opacity: 0 }}
@@ -107,3 +62,4 @@ const Index = () => {
 };
 
 export default Index;
+
