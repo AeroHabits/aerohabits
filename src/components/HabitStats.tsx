@@ -18,7 +18,7 @@ export function HabitStats({ totalHabits, totalStreaks, completedToday }: HabitS
         transition={{ duration: 0.3, delay: 0 }}
       >
         <Card className="p-6 flex items-center space-x-4 bg-gradient-to-br from-[#1A1F2C]/80 to-[#403E43]/80 backdrop-blur-sm border-[#8E9196]/20 hover:shadow-lg transition-all">
-          <Trophy className="h-10 w-10 text-[#9F9EA1]" />
+          <Trophy className="h-10 w-10 text-[#FFD700]" />
           <div>
             <h3 className="font-semibold text-[#C8C8C9]">Total Habits</h3>
             <p className="text-2xl font-bold text-white">{totalHabits}</p>
@@ -56,3 +56,4 @@ export function HabitStats({ totalHabits, totalStreaks, completedToday }: HabitS
     </div>
   );
 }
+
