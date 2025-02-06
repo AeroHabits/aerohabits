@@ -7,7 +7,7 @@ export function AppHeader() {
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center justify-between bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-md rounded-lg px-4 md:px-6 py-3 shadow-lg border border-white/30"
+      className="flex items-center justify-between bg-gradient-to-r from-blue-600 to-indigo-600 backdrop-blur-md rounded-lg px-4 md:px-6 py-3 shadow-lg border border-white/30"
     >
       <motion.h1 
         initial={{ scale: 1 }}
@@ -24,7 +24,7 @@ export function AppHeader() {
           repeat: Infinity,
           repeatType: "reverse"
         }}
-        className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-purple-200 tracking-wider"
+        className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200 tracking-wider"
       >
         AREOHABITS
       </motion.h1>
