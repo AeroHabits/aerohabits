@@ -61,7 +61,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
 
   return (
     <>
-      <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-[#9b87f5] via-[#0EA5E9] to-[#D6BCFA] bg-clip-text text-transparent mb-8 animate-gradient-x">
+      <h1 className="text-4xl font-bold text-center bg-gradient-to-r from-[#4F46E5] via-[#818CF8] to-[#6366F1] bg-clip-text text-transparent mb-8 animate-gradient-x">
         Welcome Back
       </h1>
       <form onSubmit={handleSignIn} className="space-y-6">
@@ -98,7 +98,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
         </div>
         <Button 
           type="submit" 
-          className="w-full bg-gradient-to-r from-[#9b87f5] to-[#0EA5E9] hover:opacity-90 transition-opacity" 
+          className="w-full bg-gradient-to-r from-[#4F46E5] to-[#6366F1] hover:opacity-90 transition-opacity" 
           disabled={isLoading}
         >
           {isLoading ? "Loading..." : "Sign In"}
@@ -108,7 +108,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
         Don't have an account?{" "}
         <button
           onClick={onToggleForm}
-          className="text-[#0EA5E9] hover:text-[#9b87f5] transition-colors duration-200"
+          className="text-[#6366F1] hover:text-[#4F46E5] transition-colors duration-200"
           type="button"
         >
           Sign Up
@@ -117,3 +117,4 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
     </>
   );
 };
+
