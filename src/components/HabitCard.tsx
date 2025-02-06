@@ -36,9 +36,9 @@ export function HabitCard({
     >
       <Card className={cn(
         "relative overflow-hidden transition-all duration-300",
-        "bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur-lg",
+        "bg-gradient-to-br from-slate-900/90 to-slate-800/90",
         "border border-white/10 hover:border-white/20",
-        "shadow-2xl"
+        "shadow-2xl hover:shadow-xl"
       )}>
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
