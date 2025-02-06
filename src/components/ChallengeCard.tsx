@@ -1,6 +1,5 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChallengeHeader } from "./challenge/ChallengeHeader";
@@ -31,7 +30,6 @@ interface ChallengeCardProps {
 }
 
 export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [userChallengeId, setUserChallengeId] = useState<string | null>(null);
   const [progressData, setProgressData] = useState<{
@@ -73,23 +71,6 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
     }
   };
 
-  const handleJoinChallenge = async () => {
-    if (challenge.is_premium) {
-      toast.error("This is a premium challenge. Premium features coming soon!");
-      return;
-    }
-    
-    setIsLoading(true);
-    try {
-      onJoin(challenge.id);
-      toast.success("Successfully joined the challenge! Let's crush this goal together! 💪");
-    } catch (error) {
-      toast.error("Failed to join the challenge");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -112,7 +93,9 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
           />
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground line-clamp-2">{challenge.description}</p>
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {challenge.description}
+          </p>
           
           {isJoined && userChallengeId && (
             <>
@@ -148,8 +131,8 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
           <ChallengeActions
             isPremium={challenge.is_premium}
             isJoined={isJoined}
-            isLoading={isLoading}
-            onJoin={handleJoinChallenge}
+            isLoading={false}
+            onJoin={() => onJoin(challenge.id)}
           />
         </CardFooter>
       </Card>
