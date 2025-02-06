@@ -116,19 +116,67 @@ export function ChallengeList() {
     setSelectedDifficulty(difficulty);
   };
 
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 }
+  };
+
   if (isLoading) {
-    return <div className="text-center">Loading challenges...</div>;
+    return (
+      <div className="flex items-center justify-center h-64">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        >
+          <Trophy className="w-12 h-12 text-blue-500" />
+        </motion.div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6">
-      <ChallengeDifficultyGuide />
-      <ChallengeDifficultyTabs onDifficultyChange={handleDifficultyChange} />
+    <motion.div 
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className="space-y-8"
+    >
+      <motion.div 
+        variants={item}
+        className="bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 p-6 rounded-lg backdrop-blur-sm border border-purple-500/20"
+      >
+        <div className="flex items-center gap-3 mb-4">
+          <Trophy className="w-8 h-8 text-yellow-500" />
+          <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-blue-500">
+            Epic Challenges Await!
+          </h2>
+        </div>
+        <p className="text-muted-foreground">
+          Push your limits, achieve greatness, and unlock rewards along the way.
+        </p>
+      </motion.div>
+
+      <motion.div variants={item}>
+        <ChallengeDifficultyGuide />
+      </motion.div>
+
+      <motion.div variants={item}>
+        <ChallengeDifficultyTabs onDifficultyChange={handleDifficultyChange} />
+      </motion.div>
       
       {!userProfile?.is_premium && selectedDifficulty.toLowerCase() !== 'easy' && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          variants={item}
           className="relative p-6 rounded-lg bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-sm border border-purple-500/20 mb-8 overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-blue-500/5 animate-gradient-x" />
@@ -183,11 +231,13 @@ export function ChallengeList() {
         </motion.div>
       )}
 
-      <ChallengeGrid 
-        challenges={filteredChallenges || []}
-        userChallenges={userChallenges || []}
-        onJoinChallenge={(challengeId) => joinChallengeMutation.mutate(challengeId)}
-      />
+      <motion.div variants={item}>
+        <ChallengeGrid 
+          challenges={filteredChallenges || []}
+          userChallenges={userChallenges || []}
+          onJoinChallenge={(challengeId) => joinChallengeMutation.mutate(challengeId)}
+        />
+      </motion.div>
 
       {/* Mobile upgrade button */}
       {!userProfile?.is_premium && selectedDifficulty.toLowerCase() !== 'easy' && (
@@ -204,6 +254,6 @@ export function ChallengeList() {
           </Button>
         </motion.div>
       )}
-    </div>
+    </motion.div>
   );
 }
