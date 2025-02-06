@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trash2, Star, Trophy } from "lucide-react";
@@ -81,7 +82,7 @@ export function HabitCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {streak > 0 && (
-                <div className="flex items-center space-x-1 text-amber-500">
+                <div className="flex items-center space-x-1 text-[#FFD700]">
                   <Trophy className="h-5 w-5" />
                   <span className="font-medium">{streak} day streak!</span>
                 </div>
@@ -92,7 +93,8 @@ export function HabitCard({
               variant={completed ? "secondary" : "default"}
               className={cn(
                 "transition-all duration-300",
-                completed && "bg-green-500 hover:bg-green-600 text-white"
+                completed ? "bg-gradient-to-br from-[#8B5CF6] to-[#D946EF] hover:from-[#D946EF] hover:to-[#8B5CF6] text-white" : 
+                "bg-gradient-to-br from-[#0EA5E9] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#0EA5E9] text-white"
               )}
             >
               {completed ? (
@@ -109,7 +111,7 @@ export function HabitCard({
         
         {/* Achievement ribbon for streaks */}
         {streak >= 7 && (
-          <div className="absolute -right-12 top-6 bg-amber-500 text-white px-12 py-1 rotate-45 transform text-sm font-semibold">
+          <div className="absolute -right-12 top-6 bg-[#FFD700] text-white px-12 py-1 rotate-45 transform text-sm font-semibold">
             Champion!
           </div>
         )}
