@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
 import { format } from "date-fns";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ChallengeProgressProps {
   daysCompleted: number;
