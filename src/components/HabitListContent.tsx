@@ -12,7 +12,7 @@ interface HabitListContentProps {
 
 export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete }: HabitListContentProps) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {habits.map((habit) => (
         <motion.div
           key={habit.id}

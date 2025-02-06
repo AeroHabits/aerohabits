@@ -36,16 +36,16 @@ export function HabitCard({
     >
       <Card className={cn(
         "relative overflow-hidden transition-all duration-300",
-        completed ? "bg-gradient-to-br from-green-500/20 to-emerald-500/20" : "bg-white/90",
-        "hover:shadow-lg border-2",
-        completed ? "border-green-500/30" : "border-blue-500/30"
+        "bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-lg",
+        "border border-white/20 hover:border-white/30",
+        "shadow-2xl"
       )}>
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
             <div className="space-y-1">
-              <h3 className="font-semibold text-lg text-gray-900">{title}</h3>
+              <h3 className="font-semibold text-lg text-white">{title}</h3>
               {description && (
-                <p className="text-sm text-gray-500">{description}</p>
+                <p className="text-white/70">{description}</p>
               )}
             </div>
             <AlertDialog>
@@ -53,7 +53,7 @@ export function HabitCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-red-500 hover:text-red-700 hover:bg-red-100"
+                  className="text-white/70 hover:text-red-400 hover:bg-red-400/10"
                 >
                   <Trash2 className="h-5 w-5" />
                 </Button>
@@ -82,19 +82,19 @@ export function HabitCard({
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               {streak > 0 && (
-                <div className="flex items-center space-x-1 text-[#FFD700]">
+                <div className="flex items-center space-x-1 text-blue-400">
                   <Trophy className="h-5 w-5" />
-                  <span className="font-medium">{streak} day streak!</span>
+                  <span className="font-medium text-white/90">{streak} day streak!</span>
                 </div>
               )}
             </div>
             <Button
               onClick={onToggle}
-              variant={completed ? "secondary" : "default"}
               className={cn(
                 "transition-all duration-300",
-                completed ? "bg-gradient-to-br from-[#8B5CF6] to-[#D946EF] hover:from-[#D946EF] hover:to-[#8B5CF6] text-white" : 
-                "bg-gradient-to-br from-[#0EA5E9] to-[#8B5CF6] hover:from-[#8B5CF6] hover:to-[#0EA5E9] text-white"
+                completed 
+                  ? "bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-indigo-500 hover:to-blue-500 text-white"
+                  : "bg-white/10 hover:bg-white/20 text-white border border-white/20"
               )}
             >
               {completed ? (
@@ -111,7 +111,7 @@ export function HabitCard({
         
         {/* Achievement ribbon for streaks */}
         {streak >= 7 && (
-          <div className="absolute -right-12 top-6 bg-[#FFD700] text-white px-12 py-1 rotate-45 transform text-sm font-semibold">
+          <div className="absolute -right-12 top-6 bg-gradient-to-r from-blue-400 to-indigo-400 text-white px-12 py-1 rotate-45 transform text-sm font-semibold">
             Champion!
           </div>
         )}
