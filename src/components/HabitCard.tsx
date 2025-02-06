@@ -99,7 +99,7 @@ export function HabitCard({
             >
               {completed ? (
                 <div className="flex items-center space-x-2">
-                  <Star className="h-5 w-5" />
+                  <Star className="h-5 w-5 text-blue-200" />
                   <span>Completed!</span>
                 </div>
               ) : (
