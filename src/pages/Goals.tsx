@@ -31,17 +31,17 @@ const Goals = () => {
 
   const inspirationalCards = [
     {
-      icon: <Rocket className="w-8 h-8 text-gray-400" />,
+      icon: <Rocket className="w-8 h-8 text-[#8B5CF6] transition-all duration-300 group-hover:text-[#D946EF]" />,
       title: "Dream Big",
       description: "Your goals are the first step towards your dreams. Make them count!"
     },
     {
-      icon: <Target className="w-8 h-8 text-gray-400" />,
+      icon: <Target className="w-8 h-8 text-[#F97316] transition-all duration-300 group-hover:text-[#0EA5E9]" />,
       title: "Stay Focused",
       description: "Break down your goals into actionable steps and track your progress."
     },
     {
-      icon: <Star className="w-8 h-8 text-gray-400" />,
+      icon: <Star className="w-8 h-8 text-[#0EA5E9] transition-all duration-300 group-hover:text-[#8B5CF6]" />,
       title: "Celebrate Progress",
       description: "Every step forward is a victory. Acknowledge your achievements!"
     }
@@ -68,7 +68,7 @@ const Goals = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {inspirationalCards.map((card, index) => (
-            <Card key={index} className="p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-colors duration-300">
+            <Card key={index} className="p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-colors duration-300 group">
               <div className="flex flex-col items-center text-center space-y-4">
                 <div className="p-3 bg-white/10 rounded-full">
                   {card.icon}
