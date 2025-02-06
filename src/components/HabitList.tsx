@@ -1,7 +1,7 @@
+
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
-import { HabitStats } from "./HabitStats";
 import { HabitListContent } from "./HabitListContent";
 import { useHabits } from "@/hooks/useHabits";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,9 +64,6 @@ export function HabitList() {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
 
-  const completedHabits = habits.filter(habit => habit.completed);
-  const totalStreaks = habits.reduce((acc, habit) => acc + (habit.streak || 0), 0);
-
   return (
     <div 
       className="space-y-8 relative"
@@ -90,11 +87,6 @@ export function HabitList() {
         )}
       </AnimatePresence>
 
-      <HabitStats 
-        totalHabits={habits.length} 
-        totalStreaks={totalStreaks}
-        completedToday={completedHabits.length}
-      />
       <HabitListContent
         habits={habits}
         onToggle={toggleHabit}
