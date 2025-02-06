@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -76,7 +77,7 @@ export function UserMenu() {
 
   return (
     <motion.div 
-      className="flex items-center gap-4"
+      className="flex items-center gap-2 md:gap-4"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -85,7 +86,7 @@ export function UserMenu() {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-10 w-10 rounded-full p-0">
+          <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full p-0">
             <UserAvatar user={user} profile={profile} />
           </Button>
         </DropdownMenuTrigger>

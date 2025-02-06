@@ -1,3 +1,4 @@
+
 import { UserMenu } from "../UserMenu";
 import { motion } from "framer-motion";
 
@@ -6,7 +7,7 @@ export function AppHeader() {
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex items-center justify-between bg-white/10 backdrop-blur-sm rounded-lg px-6 py-4 shadow-lg border border-white/20"
+      className="flex items-center justify-between bg-white/10 backdrop-blur-sm rounded-lg px-4 md:px-6 py-3 shadow-lg border border-white/20"
     >
       <motion.h1 
         initial={{ scale: 1 }}
@@ -23,7 +24,7 @@ export function AppHeader() {
           repeat: Infinity,
           repeatType: "reverse"
         }}
-        className="text-3xl font-extrabold text-white tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-100 animate-gradient-x drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]"
+        className="text-xl md:text-3xl font-extrabold text-white tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-blue-100 via-white to-blue-100 animate-gradient-x drop-shadow-[0_2px_2px_rgba(0,0,0,0.3)]"
       >
         AREOHABITS
       </motion.h1>
