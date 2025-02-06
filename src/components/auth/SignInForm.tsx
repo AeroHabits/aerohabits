@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -5,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { FormInput } from "./FormInput";
+import { SocialSignIn } from "./SocialSignIn";
 
 interface SignInFormProps {
   onToggleForm: () => void;
@@ -99,6 +101,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
           {isLoading ? "Loading..." : "Sign In"}
         </Button>
       </form>
+      <SocialSignIn />
       <p className="text-center text-sm">
         Don't have an account?{" "}
         <button
