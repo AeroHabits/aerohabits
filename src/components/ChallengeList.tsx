@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
@@ -8,9 +7,7 @@ import { ChallengeGrid } from "./challenge/ChallengeGrid";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { ChallengeHero } from "./challenge/ChallengeHero";
-import { PremiumFeatureCard } from "./challenge/PremiumFeatureCard";
 import { LoadingSpinner } from "./challenge/LoadingSpinner";
-import { MobileUpgradeButton } from "./challenge/MobileUpgradeButton";
 
 export function ChallengeList() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
@@ -91,28 +88,11 @@ export function ChallengeList() {
     },
   });
 
-  const filteredChallenges = challenges?.filter(challenge => {
-    const difficultyMatch = challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase();
-    const hasPremiumAccess = userProfile?.is_premium;
-    
-    if (challenge.difficulty.toLowerCase() === 'easy') {
-      return difficultyMatch;
-    }
-    
-    if (challenge.difficulty.toLowerCase() === 'medium' || 
-        challenge.difficulty.toLowerCase() === 'hard' || 
-        challenge.difficulty.toLowerCase() === 'master') {
-      return hasPremiumAccess && difficultyMatch;
-    }
-    
-    return false;
-  });
+  const filteredChallenges = challenges?.filter(challenge => 
+    challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
+  );
 
   const handleDifficultyChange = (difficulty: string) => {
-    if (difficulty.toLowerCase() !== 'easy' && !userProfile?.is_premium) {
-      toast.error("Premium subscription required for advanced challenges");
-      return;
-    }
     setSelectedDifficulty(difficulty);
   };
 
@@ -144,10 +124,6 @@ export function ChallengeList() {
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <ChallengeDifficultyTabs onDifficultyChange={handleDifficultyChange} />
       </motion.div>
-      
-      {!userProfile?.is_premium && selectedDifficulty.toLowerCase() !== 'easy' && (
-        <PremiumFeatureCard />
-      )}
 
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <ChallengeGrid 
@@ -156,10 +132,6 @@ export function ChallengeList() {
           onJoinChallenge={(challengeId) => joinChallengeMutation.mutate(challengeId)}
         />
       </motion.div>
-
-      {!userProfile?.is_premium && selectedDifficulty.toLowerCase() !== 'easy' && (
-        <MobileUpgradeButton />
-      )}
     </motion.div>
   );
 }
