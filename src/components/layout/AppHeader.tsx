@@ -12,7 +12,7 @@ export function AppHeader() {
       <h1 
         className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200 tracking-wider"
       >
-        AREOHABITS
+        AEROHABITS
       </h1>
       <UserMenu />
     </motion.header>

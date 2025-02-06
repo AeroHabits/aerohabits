@@ -1,15 +1,16 @@
+
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.areohabits.app',
-  appName: 'AREOHABITS',
+  appId: 'com.aerohabits.app',
+  appName: 'AEROHABITS',
   webDir: 'dist',
   server: {
     url: 'https://tpthvlivzxrtkexxzqli.lovableproject.com?forceHideBadge=true',
     cleartext: true
   },
   ios: {
-    scheme: 'AREOHABITS'
+    scheme: 'AEROHABITS'
   },
   android: {
     buildOptions: {
