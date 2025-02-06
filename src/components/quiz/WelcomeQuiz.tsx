@@ -108,7 +108,7 @@ export function WelcomeQuiz() {
     >
       <Card className="p-6 space-y-6">
         <div className="text-center">
-          <h2 className="text-2xl font-bold mb-2">Welcome to AREOHABITS!</h2>
+          <h2 className="text-2xl font-bold mb-2">Welcome to AEROHABITS!</h2>
           <p className="text-muted-foreground">
             Let's discover your path to personal growth
           </p>
