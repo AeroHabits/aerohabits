@@ -20,6 +20,12 @@ interface PurchasedBadge {
   badge_id: string;
 }
 
+interface PurchaseResponse {
+  success: boolean;
+  message: string;
+  remaining_points?: number;
+}
+
 const getIcon = (iconName: string) => {
   switch (iconName) {
     case 'Trophy':
@@ -80,12 +86,13 @@ export function BadgeStore() {
       return;
     }
 
-    if (!data.success) {
-      toast.error(data.message);
+    const response = data as PurchaseResponse;
+    if (!response.success) {
+      toast.error(response.message);
       return;
     }
 
-    toast.success(data.message);
+    toast.success(response.message);
     refetchPurchased();
   };
 
