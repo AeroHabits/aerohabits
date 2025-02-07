@@ -7,7 +7,6 @@ import { ChallengeHeader } from "./challenge/ChallengeHeader";
 import { ChallengeProgressSection } from "./challenge/ChallengeProgressSection";
 import { ChallengeContent } from "./challenge/ChallengeContent";
 import { ChallengeActions } from "./challenge/ChallengeActions";
-import { ChallengeUnlockButton } from "./challenge/ChallengeUnlockButton";
 import { toast } from "sonner";
 
 interface ChallengeCardProps {
@@ -33,7 +32,6 @@ interface ChallengeCardProps {
 export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: ChallengeCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [userChallengeId, setUserChallengeId] = useState<string | null>(null);
-  const [isUnlocked, setIsUnlocked] = useState(false);
   const [progressData, setProgressData] = useState<{
     daysCompleted: number;
     startDate: string | null;
@@ -46,44 +44,7 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
     if (isJoined) {
       fetchProgress();
     }
-    if (challenge.is_premium) {
-      checkIfUnlocked();
-    }
   }, [isJoined, challenge.id]);
-
-  const checkIfUnlocked = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { data } = await supabase
-      .from('unlocked_premium_challenges')
-      .select('*')
-      .eq('challenge_id', challenge.id)
-      .eq('user_id', user.id)
-      .maybeSingle(); // Changed from .single() to .maybeSingle()
-
-    setIsUnlocked(!!data);
-  };
-
-  const handleUnlock = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { error } = await supabase
-      .from('unlocked_premium_challenges')
-      .insert({
-        user_id: user.id,
-        challenge_id: challenge.id
-      });
-
-    if (error) {
-      toast.error("Failed to unlock challenge");
-      return;
-    }
-
-    setIsUnlocked(true);
-    toast.success("Challenge unlocked successfully!");
-  };
 
   const fetchProgress = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -94,7 +55,7 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
       .select('*')
       .eq('challenge_id', challenge.id)
       .eq('user_id', user.id)
-      .maybeSingle(); // Changed from .single() to .maybeSingle()
+      .maybeSingle();
 
     if (data) {
       const { data: completions } = await supabase
@@ -107,19 +68,6 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
         daysCompleted: completions?.length || 0,
         startDate: data.start_date,
       });
-    }
-  };
-
-  const getPointsRequired = (difficulty: string) => {
-    switch (difficulty.toLowerCase()) {
-      case 'medium':
-        return 1000;
-      case 'hard':
-        return 1500;
-      case 'master':
-        return 4000;
-      default:
-        return 0;
     }
   };
 
@@ -165,25 +113,14 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
           )}
         </CardContent>
         <CardFooter>
-          {challenge.is_premium && !isUnlocked ? (
-            <ChallengeUnlockButton
-              pointsRequired={getPointsRequired(challenge.difficulty)}
-              userPoints={userPoints}
-              onUnlock={handleUnlock}
-              isLoading={false}
-            />
-          ) : (
-            <ChallengeActions
-              isPremium={challenge.is_premium}
-              isJoined={isJoined}
-              isLoading={false}
-              onJoin={() => onJoin(challenge.id)}
-              difficulty={challenge.difficulty}
-              userPoints={userPoints}
-              onUnlock={handleUnlock}
-              isUnlocked={isUnlocked}
-            />
-          )}
+          <ChallengeActions
+            isPremium={challenge.is_premium}
+            isJoined={isJoined}
+            isLoading={false}
+            onJoin={() => onJoin(challenge.id)}
+            difficulty={challenge.difficulty}
+            userPoints={userPoints}
+          />
         </CardFooter>
       </Card>
     </motion.div>

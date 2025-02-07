@@ -229,6 +229,36 @@ export type Database = {
         }
         Relationships: []
       }
+      leaderboard: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_bot: boolean | null
+          points: number | null
+          updated_at: string | null
+          user_id: string | null
+          username: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_bot?: boolean | null
+          points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          username: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_bot?: boolean | null
+          points?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          username?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -282,35 +312,6 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
-      }
-      unlocked_premium_challenges: {
-        Row: {
-          challenge_id: string
-          id: string
-          unlocked_at: string
-          user_id: string
-        }
-        Insert: {
-          challenge_id: string
-          id?: string
-          unlocked_at?: string
-          user_id: string
-        }
-        Update: {
-          challenge_id?: string
-          id?: string
-          unlocked_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "unlocked_premium_challenges_challenge_id_fkey"
-            columns: ["challenge_id"]
-            isOneToOne: false
-            referencedRelation: "challenges"
-            referencedColumns: ["id"]
-          },
-        ]
       }
       user_achievements: {
         Row: {
