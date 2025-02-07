@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -65,21 +66,6 @@ export function useChallenges() {
     mutationFn: async (challengeId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
-
-      // Check if it's a premium challenge and if it's unlocked
-      const challenge = challenges?.find(c => c.id === challengeId);
-      if (challenge?.is_premium) {
-        const { data: unlockedChallenge } = await supabase
-          .from('unlocked_premium_challenges')
-          .select('*')
-          .eq('challenge_id', challengeId)
-          .eq('user_id', user.id)
-          .single();
-
-        if (!unlockedChallenge) {
-          throw new Error("You need to unlock this premium challenge first!");
-        }
-      }
 
       const { error } = await supabase
         .from("user_challenges")
