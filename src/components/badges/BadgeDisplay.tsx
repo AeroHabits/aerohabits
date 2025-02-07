@@ -22,6 +22,17 @@ interface UserBadge {
   unlocked_at: string;
 }
 
+interface PurchasedBadge {
+  badge_id: string;
+  purchased_at: string;
+  badge: {
+    id: string;
+    name: string;
+    description: string;
+    badge_type: string;
+  };
+}
+
 export function BadgeDisplay() {
   const { data: badges } = useQuery({
     queryKey: ["badges"],
@@ -52,6 +63,31 @@ export function BadgeDisplay() {
     },
   });
 
+  const { data: purchasedBadges } = useQuery({
+    queryKey: ["purchased-badges"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user found");
+
+      const { data, error } = await supabase
+        .from("purchased_badges")
+        .select(`
+          badge_id,
+          purchased_at,
+          badge:badge_store (
+            id,
+            name,
+            description,
+            badge_type
+          )
+        `)
+        .eq("user_id", user.id);
+
+      if (error) throw error;
+      return data as PurchasedBadge[];
+    },
+  });
+
   const getBadgeIcon = (type: string) => {
     switch (type) {
       case 'beginner':
@@ -68,6 +104,26 @@ export function BadgeDisplay() {
   const isUnlocked = (badgeId: string) => {
     return userBadges?.some(ub => ub.achievement_id === badgeId);
   };
+
+  // Combine achievement badges and purchased badges
+  const allBadges = [
+    ...(badges || []).map(badge => ({
+      id: badge.id,
+      name: badge.name,
+      description: badge.description,
+      badge_type: badge.badge_type,
+      isUnlocked: isUnlocked(badge.id),
+      unlockMessage: 'Unlocked!'
+    })),
+    ...(purchasedBadges || []).map(pb => ({
+      id: pb.badge.id,
+      name: pb.badge.name,
+      description: pb.badge.description,
+      badge_type: pb.badge.badge_type,
+      isUnlocked: true,
+      unlockMessage: 'Purchased!'
+    }))
+  ];
 
   return (
     <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20">
@@ -96,20 +152,20 @@ export function BadgeDisplay() {
           <TabsContent value="badges" className="mt-4">
             <div className="mb-4">
               <p className="text-sm text-white/80">
-                Your earned badges are displayed here. Each badge represents a milestone in your journey!
+                Your earned and purchased badges are displayed here. Each badge represents a milestone in your journey!
               </p>
             </div>
             <Separator className="bg-white/10 mb-4" />
             
             <div className="space-y-4">
-              {badges?.map((badge, index) => (
+              {allBadges.map((badge, index) => (
                 <motion.div
                   key={badge.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.1 }}
                   className={`relative group rounded-lg transition-all duration-300 ${
-                    isUnlocked(badge.id) 
+                    badge.isUnlocked 
                       ? 'bg-white/10' 
                       : 'bg-white/5'
                   }`}
@@ -117,11 +173,11 @@ export function BadgeDisplay() {
                   <div className="p-4">
                     <div className="flex items-center gap-4">
                       <div className={`p-2 rounded-full ${
-                        isUnlocked(badge.id) 
+                        badge.isUnlocked 
                           ? 'bg-white/10' 
                           : 'bg-white/5'
                       }`}>
-                        {isUnlocked(badge.id) 
+                        {badge.isUnlocked 
                           ? getBadgeIcon(badge.badge_type)
                           : <Lock className="h-6 w-6 text-white/50" />
                         }
@@ -129,7 +185,7 @@ export function BadgeDisplay() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-semibold">{badge.name}</span>
-                          {!isUnlocked(badge.id) && (
+                          {!badge.isUnlocked && (
                             <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/70">
                               {badge.points_required} pts needed
                             </span>
@@ -139,17 +195,17 @@ export function BadgeDisplay() {
                       </div>
                     </div>
                   </div>
-                  {isUnlocked(badge.id) && (
+                  {badge.isUnlocked && (
                     <div className="absolute top-2 right-2">
                       <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">
-                        Unlocked!
+                        {badge.unlockMessage}
                       </span>
                     </div>
                   )}
                 </motion.div>
               ))}
 
-              {badges?.length === 0 && (
+              {allBadges.length === 0 && (
                 <div className="text-center py-8 text-white/60">
                   No badges available yet. Start completing challenges to earn them!
                 </div>
