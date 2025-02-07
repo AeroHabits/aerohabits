@@ -2,8 +2,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Award, Star, Trophy } from "lucide-react";
+import { Award, Lock, Star, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
+import { Separator } from "@/components/ui/separator";
 
 interface Badge {
   id: string;
@@ -67,39 +68,70 @@ export function BadgeDisplay() {
 
   return (
     <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20">
-      <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-        <Trophy className="h-6 w-6 text-yellow-500" />
-        Badges
-      </h2>
       <div className="space-y-4">
+        <div className="flex items-center gap-2">
+          <Trophy className="h-6 w-6 text-yellow-500" />
+          <h2 className="text-2xl font-bold text-white">Your Badges</h2>
+        </div>
+        
+        <p className="text-sm text-white/80">
+          Complete challenges to earn points and unlock special badges. Each badge represents a milestone in your journey!
+        </p>
+
+        <Separator className="bg-white/10" />
+
         {badges?.map((badge, index) => (
           <motion.div
             key={badge.id}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className={`flex items-center justify-between p-4 rounded-lg transition-colors ${
+            className={`relative group rounded-lg transition-all duration-300 ${
               isUnlocked(badge.id) 
-                ? 'bg-white/10 hover:bg-white/15' 
-                : 'bg-white/5 hover:bg-white/10 opacity-50'
+                ? 'bg-white/10' 
+                : 'bg-white/5'
             }`}
           >
-            <div className="flex items-center gap-4">
-              {getBadgeIcon(badge.badge_type)}
-              <div>
-                <span className="text-white font-semibold">{badge.name}</span>
-                <p className="text-sm text-white/70">{badge.description}</p>
+            <div className="p-4">
+              <div className="flex items-center gap-4">
+                <div className={`p-2 rounded-full ${
+                  isUnlocked(badge.id) 
+                    ? 'bg-white/10' 
+                    : 'bg-white/5'
+                }`}>
+                  {isUnlocked(badge.id) 
+                    ? getBadgeIcon(badge.badge_type)
+                    : <Lock className="h-6 w-6 text-white/50" />
+                  }
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-white font-semibold">{badge.name}</span>
+                    {!isUnlocked(badge.id) && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/70">
+                        {badge.points_required} pts needed
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-white/70">{badge.description}</p>
+                </div>
               </div>
             </div>
-            <div className="text-right">
-              <span className="text-white/80 text-sm">
-                {isUnlocked(badge.id) 
-                  ? 'Unlocked!' 
-                  : `${badge.points_required} pts required`}
-              </span>
-            </div>
+            {isUnlocked(badge.id) && (
+              <div className="absolute top-2 right-2">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">
+                  Unlocked!
+                </span>
+              </div>
+            )}
           </motion.div>
         ))}
+
+        {badges?.length === 0 && (
+          <div className="text-center py-8 text-white/60">
+            No badges available yet. Start completing challenges to earn them!
+          </div>
+        )}
       </div>
     </Card>
   );
