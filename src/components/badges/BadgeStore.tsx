@@ -2,7 +2,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Trophy, Star, Award, Flame, Crown, Lock } from "lucide-react";
+import { Trophy, Star, Award, Flame, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -86,7 +86,7 @@ export function BadgeStore() {
       return;
     }
 
-    const response = data as PurchaseResponse;
+    const response = data as unknown as PurchaseResponse;
     if (!response.success) {
       toast.error(response.message);
       return;

@@ -113,7 +113,8 @@ export function BadgeDisplay() {
       description: badge.description,
       badge_type: badge.badge_type,
       isUnlocked: isUnlocked(badge.id),
-      unlockMessage: 'Unlocked!'
+      unlockMessage: 'Unlocked!',
+      points_required: badge.points_required // Only include for achievement badges
     })),
     ...(purchasedBadges || []).map(pb => ({
       id: pb.badge.id,
@@ -185,7 +186,7 @@ export function BadgeDisplay() {
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <span className="text-white font-semibold">{badge.name}</span>
-                          {!badge.isUnlocked && (
+                          {'points_required' in badge && !badge.isUnlocked && (
                             <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/70">
                               {badge.points_required} pts needed
                             </span>
