@@ -8,6 +8,9 @@ import { PointsGuide } from "./PointsGuide";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BadgeStore } from "./BadgeStore";
 import { BadgesList } from "./BadgesList";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Badge {
   id: string;
@@ -34,7 +37,7 @@ interface PurchasedBadge {
 }
 
 export function BadgeDisplay() {
-  const { data: badges, isLoading: isLoadingBadges } = useQuery({
+  const { data: badges, isLoading: isLoadingBadges, error: badgesError, refetch: refetchBadges } = useQuery({
     queryKey: ["badges"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -47,7 +50,7 @@ export function BadgeDisplay() {
     },
   });
 
-  const { data: userBadges, isLoading: isLoadingUserBadges } = useQuery({
+  const { data: userBadges, isLoading: isLoadingUserBadges, error: userBadgesError, refetch: refetchUserBadges } = useQuery({
     queryKey: ["user-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -63,7 +66,7 @@ export function BadgeDisplay() {
     },
   });
 
-  const { data: purchasedBadges, isLoading: isLoadingPurchased } = useQuery({
+  const { data: purchasedBadges, isLoading: isLoadingPurchased, error: purchasedError, refetch: refetchPurchased } = useQuery({
     queryKey: ["purchased-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -93,9 +96,16 @@ export function BadgeDisplay() {
   };
 
   const isLoading = isLoadingBadges || isLoadingUserBadges || isLoadingPurchased;
+  const hasError = badgesError || userBadgesError || purchasedError;
+
+  const handleRetry = () => {
+    refetchBadges();
+    refetchUserBadges();
+    refetchPurchased();
+  };
 
   // Only combine badges when all data is loaded
-  const allBadges = !isLoading ? [
+  const allBadges = !isLoading && !hasError ? [
     ...(badges || []).map(badge => ({
       id: badge.id,
       name: badge.name,
@@ -114,6 +124,25 @@ export function BadgeDisplay() {
       unlockMessage: 'Purchased!'
     }))
   ] : [];
+
+  if (hasError) {
+    return (
+      <Alert variant="destructive" className="bg-red-500/10 border-red-500/20">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error loading badges</AlertTitle>
+        <AlertDescription>
+          There was a problem loading your badges. Please try again.
+        </AlertDescription>
+        <Button 
+          onClick={handleRetry} 
+          variant="outline" 
+          className="mt-4 bg-white/10 hover:bg-white/20 border-white/20"
+        >
+          Try Again
+        </Button>
+      </Alert>
+    );
+  }
 
   return (
     <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20">

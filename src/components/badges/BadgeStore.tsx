@@ -6,6 +6,8 @@ import { Trophy, Star, Award, Flame, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 interface StoreBadge {
   id: string;
@@ -44,7 +46,7 @@ const getIcon = (iconName: string) => {
 };
 
 export function BadgeStore() {
-  const { data: badges } = useQuery({
+  const { data: badges, isLoading: isLoadingBadges, error: badgesError, refetch: refetchBadges } = useQuery({
     queryKey: ["badge-store"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -57,7 +59,7 @@ export function BadgeStore() {
     },
   });
 
-  const { data: purchasedBadges, refetch: refetchPurchased } = useQuery({
+  const { data: purchasedBadges, isLoading: isLoadingPurchased, error: purchasedError, refetch: refetchPurchased } = useQuery({
     queryKey: ["purchased-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -78,23 +80,56 @@ export function BadgeStore() {
   };
 
   const handlePurchase = async (badgeId: string) => {
-    const { data, error } = await supabase
-      .rpc('purchase_badge', { badge_id: badgeId });
+    try {
+      const { data, error } = await supabase
+        .rpc('purchase_badge', { badge_id: badgeId });
 
-    if (error) {
-      toast.error("Failed to purchase badge");
-      return;
+      if (error) throw error;
+
+      const response = data as unknown as PurchaseResponse;
+      if (!response.success) {
+        toast.error(response.message);
+        return;
+      }
+
+      toast.success(response.message);
+      refetchPurchased();
+    } catch (error) {
+      toast.error("Failed to purchase badge. Please try again.");
     }
+  };
 
-    const response = data as unknown as PurchaseResponse;
-    if (!response.success) {
-      toast.error(response.message);
-      return;
-    }
-
-    toast.success(response.message);
+  const handleRetry = () => {
+    refetchBadges();
     refetchPurchased();
   };
+
+  if (badgesError || purchasedError) {
+    return (
+      <Alert variant="destructive" className="bg-red-500/10 border-red-500/20">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error loading badge store</AlertTitle>
+        <AlertDescription>
+          There was a problem loading the badge store. Please try again.
+        </AlertDescription>
+        <Button 
+          onClick={handleRetry} 
+          variant="outline" 
+          className="mt-4 bg-white/10 hover:bg-white/20 border-white/20"
+        >
+          Try Again
+        </Button>
+      </Alert>
+    );
+  }
+
+  if (isLoadingBadges || isLoadingPurchased) {
+    return (
+      <div className="text-center py-8 text-white/60">
+        Loading badge store...
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
