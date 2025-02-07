@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
+import { AppShowcase } from "@/components/showcase/AppShowcase";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -53,6 +54,7 @@ const Index = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <AppHero />
+            <AppShowcase />
             <AppTabs />
           </motion.div>
         )}
@@ -62,4 +64,3 @@ const Index = () => {
 };
 
 export default Index;
-
