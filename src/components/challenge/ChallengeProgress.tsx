@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
-import { format, startOfDay } from "date-fns";
+import { format, startOfDay, subDays, isAfter, parseISO } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ChallengeProgressProps {
   daysCompleted: number;
@@ -22,28 +23,56 @@ export function ChallengeProgress({
   const [isCompletedToday, setIsCompletedToday] = useState(false);
 
   useEffect(() => {
-    const checkTodayCompletion = async () => {
+    const checkProgress = async () => {
       // Format today's date in UTC to match the database format
-      const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
+      const today = startOfDay(new Date());
+      const yesterday = subDays(today, 1);
+      const todayStr = format(today, 'yyyy-MM-dd');
       
+      // Get all completions for this challenge
       const { data: completions, error } = await supabase
         .from('challenge_completions')
-        .select('*')
+        .select('completed_date')
         .eq('user_challenge_id', userChallengeId)
-        .eq('completed_date', today)
-        .single();
+        .order('completed_date', { ascending: false });
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 is the "no rows returned" error
-        console.error('Error checking completion:', error);
+      if (error) {
+        console.error('Error checking completions:', error);
+        return;
       }
 
-      setIsCompletedToday(!!completions);
+      // Check if completed today
+      const completedToday = completions?.some(c => c.completed_date === todayStr);
+      setIsCompletedToday(!!completedToday);
+
+      // If there are completions, check for missed days
+      if (completions && completions.length > 0) {
+        const lastCompletionDate = parseISO(completions[0].completed_date);
+        
+        // If the last completion was before yesterday, it means a day was missed
+        if (isAfter(yesterday, lastCompletionDate)) {
+          // Reset the challenge
+          const { error: resetError } = await supabase
+            .from('challenge_completions')
+            .delete()
+            .eq('user_challenge_id', userChallengeId);
+
+          if (resetError) {
+            console.error('Error resetting challenge:', resetError);
+            return;
+          }
+
+          // Update the UI
+          onProgressUpdate();
+          toast.error("You missed a day! Challenge progress has been reset.");
+        }
+      }
     };
 
     if (userChallengeId) {
-      checkTodayCompletion();
+      checkProgress();
     }
-  }, [userChallengeId]);
+  }, [userChallengeId, onProgressUpdate]);
 
   const progress = (daysCompleted / totalDays) * 100;
 
