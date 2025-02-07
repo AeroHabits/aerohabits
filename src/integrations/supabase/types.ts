@@ -11,6 +11,7 @@ export type Database = {
     Tables: {
       achievements: {
         Row: {
+          badge_type: string | null
           badge_url: string | null
           created_at: string
           description: string | null
@@ -19,6 +20,7 @@ export type Database = {
           points_required: number
         }
         Insert: {
+          badge_type?: string | null
           badge_url?: string | null
           created_at?: string
           description?: string | null
@@ -27,6 +29,7 @@ export type Database = {
           points_required: number
         }
         Update: {
+          badge_type?: string | null
           badge_url?: string | null
           created_at?: string
           description?: string | null
@@ -226,36 +229,6 @@ export type Database = {
           title?: string
           updated_at?: string
           user_id?: string
-        }
-        Relationships: []
-      }
-      leaderboard: {
-        Row: {
-          created_at: string | null
-          id: string
-          is_bot: boolean | null
-          points: number | null
-          updated_at: string | null
-          user_id: string | null
-          username: string
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          is_bot?: boolean | null
-          points?: number | null
-          updated_at?: string | null
-          user_id?: string | null
-          username: string
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          is_bot?: boolean | null
-          points?: number | null
-          updated_at?: string | null
-          user_id?: string | null
-          username?: string
         }
         Relationships: []
       }

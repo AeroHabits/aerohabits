@@ -4,7 +4,7 @@ import { ChallengeList } from "@/components/ChallengeList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Leaderboard } from "@/components/leaderboard/Leaderboard";
+import { BadgeDisplay } from "@/components/badges/BadgeDisplay";
 
 const Challenges = () => {
   const isMobile = useIsMobile();
@@ -32,7 +32,7 @@ const Challenges = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4 }}
           >
-            <Leaderboard />
+            <BadgeDisplay />
           </motion.div>
         </div>
       </div>
