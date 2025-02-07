@@ -232,6 +232,39 @@ export type Database = {
         }
         Relationships: []
       }
+      points_guide: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          display_order: number | null
+          icon: string | null
+          id: string
+          points_value: number | null
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          points_value?: number | null
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          display_order?: number | null
+          icon?: string | null
+          id?: string
+          points_value?: number | null
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
