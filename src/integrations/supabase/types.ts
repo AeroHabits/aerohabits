@@ -283,6 +283,35 @@ export type Database = {
         }
         Relationships: []
       }
+      unlocked_premium_challenges: {
+        Row: {
+          challenge_id: string
+          id: string
+          unlocked_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          id?: string
+          unlocked_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          id?: string
+          unlocked_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "unlocked_premium_challenges_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_achievements: {
         Row: {
           achievement_id: string

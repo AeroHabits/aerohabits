@@ -9,6 +9,7 @@ import { ChallengeActions } from "./challenge/ChallengeActions";
 import { ChallengePointsMessage } from "./challenge/ChallengePointsMessage";
 import { ChallengeMotivation } from "./challenge/ChallengeMotivation";
 import { ChallengeCompletionCriteria } from "./challenge/ChallengeCompletionCriteria";
+import { toast } from "sonner";
 
 interface ChallengeCardProps {
   challenge: {
@@ -27,11 +28,13 @@ interface ChallengeCardProps {
   };
   onJoin: (challengeId: string) => void;
   isJoined?: boolean;
+  userPoints: number;
 }
 
-export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProps) {
+export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: ChallengeCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [userChallengeId, setUserChallengeId] = useState<string | null>(null);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [progressData, setProgressData] = useState<{
     daysCompleted: number;
     startDate: string | null;
@@ -44,7 +47,44 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
     if (isJoined) {
       fetchProgress();
     }
+    if (challenge.is_premium) {
+      checkIfUnlocked();
+    }
   }, [isJoined, challenge.id]);
+
+  const checkIfUnlocked = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data } = await supabase
+      .from('unlocked_premium_challenges')
+      .select('*')
+      .eq('challenge_id', challenge.id)
+      .eq('user_id', user.id)
+      .single();
+
+    setIsUnlocked(!!data);
+  };
+
+  const handleUnlock = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { error } = await supabase
+      .from('unlocked_premium_challenges')
+      .insert({
+        user_id: user.id,
+        challenge_id: challenge.id
+      });
+
+    if (error) {
+      toast.error("Failed to unlock challenge");
+      return;
+    }
+
+    setIsUnlocked(true);
+    toast.success("Challenge unlocked successfully!");
+  };
 
   const fetchProgress = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -133,6 +173,10 @@ export function ChallengeCard({ challenge, onJoin, isJoined }: ChallengeCardProp
             isJoined={isJoined}
             isLoading={false}
             onJoin={() => onJoin(challenge.id)}
+            difficulty={challenge.difficulty}
+            userPoints={userPoints}
+            onUnlock={handleUnlock}
+            isUnlocked={isUnlocked}
           />
         </CardFooter>
       </Card>

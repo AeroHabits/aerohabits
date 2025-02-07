@@ -66,6 +66,21 @@ export function useChallenges() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
+      // Check if it's a premium challenge and if it's unlocked
+      const challenge = challenges?.find(c => c.id === challengeId);
+      if (challenge?.is_premium) {
+        const { data: unlockedChallenge } = await supabase
+          .from('unlocked_premium_challenges')
+          .select('*')
+          .eq('challenge_id', challengeId)
+          .eq('user_id', user.id)
+          .single();
+
+        if (!unlockedChallenge) {
+          throw new Error("You need to unlock this premium challenge first!");
+        }
+      }
+
       const { error } = await supabase
         .from("user_challenges")
         .insert({
@@ -79,8 +94,8 @@ export function useChallenges() {
       queryClient.invalidateQueries({ queryKey: ["user-challenges"] });
       toast.success("Successfully joined the challenge! Let's crush this goal together! 💪");
     },
-    onError: () => {
-      toast.error("Failed to join the challenge");
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to join the challenge");
     }
   });
 

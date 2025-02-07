@@ -9,7 +9,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 export function ChallengeListContainer() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
-  const { challenges, userChallenges, isLoading, joinChallengeMutation } = useChallenges();
+  const { challenges, userChallenges, userProfile, isLoading, joinChallengeMutation } = useChallenges();
 
   const filteredChallenges = challenges?.filter(challenge => 
     challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
@@ -51,6 +51,7 @@ export function ChallengeListContainer() {
           challenges={filteredChallenges || []}
           userChallenges={userChallenges || []}
           onJoinChallenge={(challengeId) => joinChallengeMutation.mutate(challengeId)}
+          userPoints={userProfile?.total_points || 0}
         />
       </motion.div>
     </motion.div>
