@@ -3,12 +3,10 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ChallengeHeader } from "./challenge/ChallengeHeader";
-import { ChallengeProgress } from "./challenge/ChallengeProgress";
-import { ChallengeTips } from "./challenge/ChallengeTips";
+import { ChallengeProgressSection } from "./challenge/ChallengeProgressSection";
+import { ChallengeContent } from "./challenge/ChallengeContent";
 import { ChallengeActions } from "./challenge/ChallengeActions";
-import { ChallengePointsMessage } from "./challenge/ChallengePointsMessage";
-import { ChallengeMotivation } from "./challenge/ChallengeMotivation";
-import { ChallengeCompletionCriteria } from "./challenge/ChallengeCompletionCriteria";
+import { ChallengeUnlockButton } from "./challenge/ChallengeUnlockButton";
 import { toast } from "sonner";
 
 interface ChallengeCardProps {
@@ -111,6 +109,19 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
     }
   };
 
+  const getPointsRequired = (difficulty: string) => {
+    switch (difficulty.toLowerCase()) {
+      case 'medium':
+        return 1000;
+      case 'hard':
+        return 1500;
+      case 'master':
+        return 4000;
+      default:
+        return 0;
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -133,51 +144,45 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
           />
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground line-clamp-2">
-            {challenge.description}
-          </p>
-          
-          {isJoined && userChallengeId && (
-            <>
-              <ChallengeProgress
-                daysCompleted={progressData.daysCompleted}
-                totalDays={challenge.duration_days}
-                startDate={progressData.startDate}
-                userChallengeId={userChallengeId}
-                onProgressUpdate={fetchProgress}
-              />
-              <ChallengePointsMessage
-                rewardPoints={challenge.reward_points}
-                daysCompleted={progressData.daysCompleted}
-                totalDays={challenge.duration_days}
-              />
-            </>
-          )}
-
-          <ChallengeMotivation 
+          <ChallengeContent
+            description={challenge.description}
             motivationText={challenge.motivation_text}
+            completionCriteria={challenge.completion_criteria}
+            tips={challenge.tips}
             isHovered={isHovered}
           />
-
-          <ChallengeCompletionCriteria 
-            criteria={challenge.completion_criteria}
-          />
-
-          {challenge.tips && isHovered && (
-            <ChallengeTips tips={challenge.tips} isHovered={isHovered} />
+          
+          {isJoined && userChallengeId && (
+            <ChallengeProgressSection
+              daysCompleted={progressData.daysCompleted}
+              totalDays={challenge.duration_days}
+              startDate={progressData.startDate}
+              userChallengeId={userChallengeId}
+              onProgressUpdate={fetchProgress}
+              rewardPoints={challenge.reward_points}
+            />
           )}
         </CardContent>
         <CardFooter>
-          <ChallengeActions
-            isPremium={challenge.is_premium}
-            isJoined={isJoined}
-            isLoading={false}
-            onJoin={() => onJoin(challenge.id)}
-            difficulty={challenge.difficulty}
-            userPoints={userPoints}
-            onUnlock={handleUnlock}
-            isUnlocked={isUnlocked}
-          />
+          {challenge.is_premium && !isUnlocked ? (
+            <ChallengeUnlockButton
+              pointsRequired={getPointsRequired(challenge.difficulty)}
+              userPoints={userPoints}
+              onUnlock={handleUnlock}
+              isLoading={false}
+            />
+          ) : (
+            <ChallengeActions
+              isPremium={challenge.is_premium}
+              isJoined={isJoined}
+              isLoading={false}
+              onJoin={() => onJoin(challenge.id)}
+              difficulty={challenge.difficulty}
+              userPoints={userPoints}
+              onUnlock={handleUnlock}
+              isUnlocked={isUnlocked}
+            />
+          )}
         </CardFooter>
       </Card>
     </motion.div>
