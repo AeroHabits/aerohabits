@@ -1,3 +1,4 @@
+
 import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -19,12 +20,28 @@ export function AvatarUploader({ userId, onAvatarUpdate }: AvatarUploaderProps) 
 
     setIsUploading(true);
     try {
+      // Delete existing avatar files for this user
+      const { data: existingFiles } = await supabase.storage
+        .from('avatars')
+        .list(userId);
+
+      if (existingFiles?.length) {
+        await supabase.storage
+          .from('avatars')
+          .remove(existingFiles.map(f => `${userId}/${f.name}`));
+      }
+
+      // Upload new avatar
       const fileExt = file.name.split('.').pop();
-      const filePath = `${userId}/${crypto.randomUUID()}.${fileExt}`;
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
+      const filePath = `${userId}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '0',
+          upsert: false
+        });
 
       if (uploadError) throw uploadError;
 

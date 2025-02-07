@@ -1,3 +1,4 @@
+
 import { User } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
@@ -29,6 +30,11 @@ export function UserAvatar({ user, profile }: UserAvatarProps) {
           src={profile?.avatar_url || undefined}
           alt={profile?.full_name || user.email || "User avatar"}
           className="object-cover"
+          onError={(e) => {
+            console.error("Avatar load error:", e);
+            const img = e.target as HTMLImageElement;
+            img.style.display = 'none';
+          }}
         />
         <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-medium">
           {initials}
