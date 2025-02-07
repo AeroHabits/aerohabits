@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -59,7 +60,7 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
       .select('*')
       .eq('challenge_id', challenge.id)
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle(); // Changed from .single() to .maybeSingle()
 
     setIsUnlocked(!!data);
   };
@@ -93,7 +94,7 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
       .select('*')
       .eq('challenge_id', challenge.id)
       .eq('user_id', user.id)
-      .single();
+      .maybeSingle(); // Changed from .single() to .maybeSingle()
 
     if (data) {
       const { data: completions } = await supabase
