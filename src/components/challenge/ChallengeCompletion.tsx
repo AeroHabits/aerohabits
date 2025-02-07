@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { format, startOfDay } from "date-fns";
 
 interface ChallengeCompletionProps {
   userChallengeId: string;
@@ -16,10 +17,14 @@ export function ChallengeCompletion({ userChallengeId, onComplete, isCompleted }
   const handleMarkComplete = async () => {
     setIsLoading(true);
     try {
+      // Format today's date in UTC to match the database format
+      const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
+
       const { error } = await supabase
         .from('challenge_completions')
         .insert({
           user_challenge_id: userChallengeId,
+          completed_date: today
         });
 
       if (error) {

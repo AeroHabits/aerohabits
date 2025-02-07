@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
-import { format } from "date-fns";
+import { format, startOfDay } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ChallengeProgressProps {
@@ -23,13 +23,19 @@ export function ChallengeProgress({
 
   useEffect(() => {
     const checkTodayCompletion = async () => {
-      const today = format(new Date(), 'yyyy-MM-dd');
-      const { data: completions } = await supabase
+      // Format today's date in UTC to match the database format
+      const today = format(startOfDay(new Date()), 'yyyy-MM-dd');
+      
+      const { data: completions, error } = await supabase
         .from('challenge_completions')
         .select('*')
         .eq('user_challenge_id', userChallengeId)
         .eq('completed_date', today)
         .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is the "no rows returned" error
+        console.error('Error checking completion:', error);
+      }
 
       setIsCompletedToday(!!completions);
     };
