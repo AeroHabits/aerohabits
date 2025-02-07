@@ -2,12 +2,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Award, Lock, Star, Trophy } from "lucide-react";
-import { motion } from "framer-motion";
+import { Trophy } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { PointsGuide } from "./PointsGuide";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BadgeStore } from "./BadgeStore";
+import { BadgesList } from "./BadgesList";
 
 interface Badge {
   id: string;
@@ -88,19 +88,6 @@ export function BadgeDisplay() {
     },
   });
 
-  const getBadgeIcon = (type: string) => {
-    switch (type) {
-      case 'beginner':
-        return <Star className="h-6 w-6 text-blue-500" />;
-      case 'expert':
-        return <Award className="h-6 w-6 text-purple-500" />;
-      case 'master':
-        return <Trophy className="h-6 w-6 text-yellow-500" />;
-      default:
-        return <Star className="h-6 w-6 text-gray-500" />;
-    }
-  };
-
   const isUnlocked = (badgeId: string) => {
     return userBadges?.some(ub => ub.achievement_id === badgeId);
   };
@@ -114,7 +101,7 @@ export function BadgeDisplay() {
       badge_type: badge.badge_type,
       isUnlocked: isUnlocked(badge.id),
       unlockMessage: 'Unlocked!',
-      points_required: badge.points_required // Only include for achievement badges
+      points_required: badge.points_required
     })),
     ...(purchasedBadges || []).map(pb => ({
       id: pb.badge.id,
@@ -157,61 +144,7 @@ export function BadgeDisplay() {
               </p>
             </div>
             <Separator className="bg-white/10 mb-4" />
-            
-            <div className="space-y-4">
-              {allBadges.map((badge, index) => (
-                <motion.div
-                  key={badge.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className={`relative group rounded-lg transition-all duration-300 ${
-                    badge.isUnlocked 
-                      ? 'bg-white/10' 
-                      : 'bg-white/5'
-                  }`}
-                >
-                  <div className="p-4">
-                    <div className="flex items-center gap-4">
-                      <div className={`p-2 rounded-full ${
-                        badge.isUnlocked 
-                          ? 'bg-white/10' 
-                          : 'bg-white/5'
-                      }`}>
-                        {badge.isUnlocked 
-                          ? getBadgeIcon(badge.badge_type)
-                          : <Lock className="h-6 w-6 text-white/50" />
-                        }
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-white font-semibold">{badge.name}</span>
-                          {'points_required' in badge && !badge.isUnlocked && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/70">
-                              {badge.points_required} pts needed
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-sm text-white/70">{badge.description}</p>
-                      </div>
-                    </div>
-                  </div>
-                  {badge.isUnlocked && (
-                    <div className="absolute top-2 right-2">
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400">
-                        {badge.unlockMessage}
-                      </span>
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-
-              {allBadges.length === 0 && (
-                <div className="text-center py-8 text-white/60">
-                  No badges available yet. Start completing challenges to earn them!
-                </div>
-              )}
-            </div>
+            <BadgesList badges={allBadges} />
           </TabsContent>
 
           <TabsContent value="store" className="mt-4">
