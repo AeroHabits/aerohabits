@@ -34,7 +34,7 @@ interface PurchasedBadge {
 }
 
 export function BadgeDisplay() {
-  const { data: badges } = useQuery({
+  const { data: badges, isLoading: isLoadingBadges } = useQuery({
     queryKey: ["badges"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -47,7 +47,7 @@ export function BadgeDisplay() {
     },
   });
 
-  const { data: userBadges } = useQuery({
+  const { data: userBadges, isLoading: isLoadingUserBadges } = useQuery({
     queryKey: ["user-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -63,7 +63,7 @@ export function BadgeDisplay() {
     },
   });
 
-  const { data: purchasedBadges } = useQuery({
+  const { data: purchasedBadges, isLoading: isLoadingPurchased } = useQuery({
     queryKey: ["purchased-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -92,8 +92,10 @@ export function BadgeDisplay() {
     return userBadges?.some(ub => ub.achievement_id === badgeId);
   };
 
-  // Combine achievement badges and purchased badges
-  const allBadges = [
+  const isLoading = isLoadingBadges || isLoadingUserBadges || isLoadingPurchased;
+
+  // Only combine badges when all data is loaded
+  const allBadges = !isLoading ? [
     ...(badges || []).map(badge => ({
       id: badge.id,
       name: badge.name,
@@ -111,7 +113,7 @@ export function BadgeDisplay() {
       isUnlocked: true,
       unlockMessage: 'Purchased!'
     }))
-  ];
+  ] : [];
 
   return (
     <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20">
@@ -144,7 +146,13 @@ export function BadgeDisplay() {
               </p>
             </div>
             <Separator className="bg-white/10 mb-4" />
-            <BadgesList badges={allBadges} />
+            {isLoading ? (
+              <div className="text-center py-8 text-white/60">
+                Loading badges...
+              </div>
+            ) : (
+              <BadgesList badges={allBadges} />
+            )}
           </TabsContent>
 
           <TabsContent value="store" className="mt-4">
