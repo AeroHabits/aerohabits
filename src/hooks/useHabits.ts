@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
+import { isToday, isTomorrow, isYesterday } from "date-fns";
 
 export interface Habit {
   id: string;
@@ -10,6 +11,8 @@ export interface Habit {
   streak: number;
   completed: boolean;
   category?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export function useHabits() {
@@ -79,12 +82,17 @@ export function useHabits() {
 
         if (error) throw error;
       } else {
-        // If completing the habit, increase the streak
+        // Check if the last update was yesterday
+        const lastUpdate = new Date(habit.updated_at);
+        const maintainedStreak = isYesterday(lastUpdate) || isToday(lastUpdate);
+
+        // If completing the habit, check streak continuity
         const { error } = await supabase
           .from('habits')
           .update({ 
             completed: true,
-            streak: (habit.streak || 0) + 1
+            streak: maintainedStreak ? (habit.streak || 0) + 1 : 1,
+            updated_at: new Date().toISOString()
           })
           .eq('id', id);
 
