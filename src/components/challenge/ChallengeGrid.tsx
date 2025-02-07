@@ -1,3 +1,4 @@
+
 import { ChallengeCard } from "../ChallengeCard";
 
 interface ChallengeGridProps {
@@ -14,7 +15,7 @@ export function ChallengeGrid({
   userPoints 
 }: ChallengeGridProps) {
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
       {challenges?.map((challenge) => (
         <ChallengeCard
           key={challenge.id}
