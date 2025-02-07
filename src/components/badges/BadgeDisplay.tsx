@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Separator } from "@/components/ui/separator";
 import { PointsGuide } from "./PointsGuide";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { BadgeStore } from "./BadgeStore";
 
 interface Badge {
   id: string;
@@ -77,9 +78,10 @@ export function BadgeDisplay() {
         </div>
 
         <Tabs defaultValue="guide" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="guide">Points Guide</TabsTrigger>
             <TabsTrigger value="badges">Your Badges</TabsTrigger>
+            <TabsTrigger value="store">Badge Store</TabsTrigger>
           </TabsList>
           
           <TabsContent value="guide" className="mt-4">
@@ -153,6 +155,16 @@ export function BadgeDisplay() {
                 </div>
               )}
             </div>
+          </TabsContent>
+
+          <TabsContent value="store" className="mt-4">
+            <div className="mb-4">
+              <p className="text-sm text-white/80">
+                Spend your hard-earned points on exclusive badges. Each badge is unique and shows off your achievements!
+              </p>
+            </div>
+            <Separator className="bg-white/10 mb-4" />
+            <BadgeStore />
           </TabsContent>
         </Tabs>
       </div>

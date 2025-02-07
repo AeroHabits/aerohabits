@@ -39,6 +39,36 @@ export type Database = {
         }
         Relationships: []
       }
+      badge_store: {
+        Row: {
+          badge_type: string
+          cost: number
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          name: string
+        }
+        Insert: {
+          badge_type: string
+          cost: number
+          created_at?: string
+          description?: string | null
+          icon: string
+          id?: string
+          name: string
+        }
+        Update: {
+          badge_type?: string
+          cost?: number
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       challenge_completions: {
         Row: {
           completed_date: string
@@ -295,6 +325,42 @@ export type Database = {
         }
         Relationships: []
       }
+      purchased_badges: {
+        Row: {
+          badge_id: string
+          id: string
+          purchased_at: string
+          user_id: string
+        }
+        Insert: {
+          badge_id: string
+          id?: string
+          purchased_at?: string
+          user_id: string
+        }
+        Update: {
+          badge_id?: string
+          id?: string
+          purchased_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "purchased_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badge_store"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "purchased_badges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       testimonials: {
         Row: {
           content: string
@@ -432,7 +498,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      purchase_badge: {
+        Args: {
+          badge_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
