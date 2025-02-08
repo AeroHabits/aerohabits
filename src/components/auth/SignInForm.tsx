@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "sonner";
 import { FormInput } from "./FormInput";
 
 interface SignInFormProps {
@@ -19,23 +19,14 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
   const [rememberMe, setRememberMe] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const validateForm = () => {
     if (!email) {
-      toast({
-        title: "Error",
-        description: "Please enter your email",
-        variant: "destructive",
-      });
+      toast.error("Please enter your email");
       return false;
     }
     if (!isResettingPassword && !password) {
-      toast({
-        title: "Error",
-        description: "Please enter your password",
-        variant: "destructive",
-      });
+      toast.error("Please enter your password");
       return false;
     }
     return true;
@@ -44,11 +35,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
   const handleForgotPassword = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!email) {
-      toast({
-        title: "Error",
-        description: "Please enter your email address to reset your password",
-        variant: "destructive",
-      });
+      toast.error("Please enter your email address to reset your password");
       return;
     }
 
@@ -61,23 +48,12 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
       });
 
       if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
+        toast.error(error.message);
       } else {
-        toast({
-          title: "Check your email",
-          description: "We've sent you a password reset link",
-        });
+        toast.success("Check your email - we've sent you a password reset link");
       }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
       setIsResettingPassword(false);
@@ -100,23 +76,11 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
       
       if (error) {
         if (error.message.includes('Email not confirmed')) {
-          toast({
-            title: "Email not verified",
-            description: "Please check your email to verify your account before signing in.",
-            variant: "destructive",
-          });
+          toast.error("Please check your email to verify your account before signing in.");
         } else if (error.message.includes('Invalid login credentials')) {
-          toast({
-            title: "Sign in failed",
-            description: "Invalid email or password. Please check your credentials and try again.",
-            variant: "destructive",
-          });
+          toast.error("Invalid email or password. Please check your credentials and try again.");
         } else {
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
+          toast.error(error.message);
         }
         return;
       }
@@ -125,11 +89,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
         navigate("/");
       }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
