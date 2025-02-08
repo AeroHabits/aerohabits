@@ -5,7 +5,7 @@ import { HabitListLoading } from "./HabitListLoading";
 import { HabitListContent } from "./HabitListContent";
 import { useHabits } from "@/hooks/useHabits";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2 } from "lucide-react";
+import { Loader2, WifiOff } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export function HabitList() {
@@ -19,6 +19,7 @@ export function HabitList() {
     addHabit,
     refetch,
     isFetching,
+    isOnline
   } = useHabits();
 
   const isMobile = useIsMobile();
@@ -72,6 +73,19 @@ export function HabitList() {
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
     >
       <AnimatePresence>
+        {!isOnline && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg">
+              <WifiOff className="h-4 w-4" />
+              <span className="text-sm font-medium">Offline Mode</span>
+            </div>
+          </motion.div>
+        )}
         {isFetching && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
