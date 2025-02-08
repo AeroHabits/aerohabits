@@ -190,11 +190,11 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
           {isLoading ? "Loading..." : "Sign In"}
         </Button>
       </form>
-      <p className="text-center text-sm mt-6">
+      <p className="text-center text-sm mt-6 text-white">
         Don't have an account?{" "}
         <button
           onClick={onToggleForm}
-          className="text-black hover:text-gray-600 transition-colors duration-200 font-semibold"
+          className="text-white hover:text-gray-200 transition-colors duration-200 font-semibold"
           type="button"
         >
           Sign Up
