@@ -9,24 +9,29 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Info, ArrowRight } from "lucide-react";
+import { ArrowRight, Smile, Target, Trophy, Heart } from "lucide-react";
+import { motion } from "framer-motion";
 
 const tourSteps = [
   {
-    title: "Welcome to AREOHABITS! 👋",
-    description: "Let's take a quick tour to help you get started with building better habits.",
+    title: "Welcome to AEROHABITS! 🌟",
+    description: "Your journey to better habits starts here. Let's get you set up for success!",
+    icon: Smile,
   },
   {
-    title: "Track Your Habits ✅",
-    description: "Add daily habits and mark them complete to build streaks. The longer your streak, the stronger your habit becomes!",
+    title: "Track Your Progress 📈",
+    description: "Build lasting habits by tracking your daily activities. Watch your streaks grow as you stay consistent!",
+    icon: Target,
   },
   {
-    title: "Set Reminders ⏰",
-    description: "Enable notifications for your habits to never miss a day. We'll send you gentle reminders to keep you on track.",
+    title: "Complete Challenges 🎯",
+    description: "Push yourself with our challenge system. Each completed challenge brings you closer to your goals!",
+    icon: Trophy,
   },
   {
-    title: "Monitor Progress 📈",
-    description: "View your journey and track your progress over time. Watch as your small daily actions add up to big changes!",
+    title: "Join Our Community ❤️",
+    description: "You're not alone on this journey. Connect with others and share your achievements!",
+    icon: Heart,
   },
 ];
 
@@ -50,23 +55,45 @@ export function WelcomeTour() {
     }
   };
 
+  const CurrentIcon = tourSteps[currentStep].icon;
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md animate-fade-in">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Info className="h-5 w-5 text-blue-500" />
-            {tourSteps[currentStep].title}
-          </DialogTitle>
-          <DialogDescription className="pt-2">
-            {tourSteps[currentStep].description}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex justify-between items-center mt-4">
-          <div className="text-sm text-muted-foreground">
-            Step {currentStep + 1} of {tourSteps.length}
+      <DialogContent className="sm:max-w-md">
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <DialogHeader>
+            <div className="mx-auto mb-4">
+              <CurrentIcon className="w-12 h-12 text-primary mx-auto" />
+            </div>
+            <DialogTitle className="text-2xl text-center">
+              {tourSteps[currentStep].title}
+            </DialogTitle>
+            <DialogDescription className="text-center pt-2 text-lg">
+              {tourSteps[currentStep].description}
+            </DialogDescription>
+          </DialogHeader>
+        </motion.div>
+        <DialogFooter className="flex flex-col gap-4 sm:flex-row justify-between items-center mt-8">
+          <div className="flex gap-1">
+            {tourSteps.map((_, index) => (
+              <div
+                key={index}
+                className={`h-2 w-2 rounded-full transition-colors ${
+                  index === currentStep
+                    ? "bg-primary"
+                    : index < currentStep
+                    ? "bg-primary/30"
+                    : "bg-gray-200"
+                }`}
+              />
+            ))}
           </div>
-          <Button onClick={handleNext} className="gap-2">
+          <Button onClick={handleNext} className="min-w-[120px] gap-2">
             {currentStep === tourSteps.length - 1 ? "Get Started" : "Next"}
             <ArrowRight className="h-4 w-4" />
           </Button>

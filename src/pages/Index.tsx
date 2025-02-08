@@ -40,14 +40,19 @@ const Index = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "container mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8",
+          "container mx-auto px-4 py-6 md:py-8 space-y-8 md:space-y-12",
           isMobile && "pb-24"
         )}
       >
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
+          <motion.h1 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-4xl md:text-5xl font-bold text-white tracking-tight drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
+          >
             AEROHABITS
-          </h1>
+          </motion.h1>
           <UserMenu />
         </div>
 
@@ -58,6 +63,7 @@ const Index = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            className="space-y-12"
           >
             <AppHero />
             <AppShowcase />
@@ -67,6 +73,6 @@ const Index = () => {
       </motion.div>
     </div>
   );
-};
+}
 
 export default Index;
