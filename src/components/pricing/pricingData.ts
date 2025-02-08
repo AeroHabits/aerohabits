@@ -2,6 +2,18 @@
 export const PREMIUM_MONTHLY_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT';
 export const PREMIUM_YEARLY_PRICE_ID = 'price_1Qq92TRrh0VTJWZxoeUpLOKg';
 
+type PricingTier = {
+  name: string;
+  price: string;
+  perMonth?: string;
+  description: string;
+  features: readonly string[];
+  badge: string | null;
+  buttonText: string;
+  buttonVariant: 'outline' | 'default';
+  priceId: string | null;
+}
+
 export const tiers = [
   {
     name: "Free Trial",
