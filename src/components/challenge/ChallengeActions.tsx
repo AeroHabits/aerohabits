@@ -26,12 +26,12 @@ export function ChallengeActions({
   if (isLocked) {
     return (
       <Button 
-        className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed"
+        className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed px-2 py-1.5 h-auto min-h-[44px] text-xs sm:text-sm whitespace-normal"
         disabled={true}
       >
         <div className="flex items-center gap-2">
-          <Lock className="h-4 w-4" />
-          <span>Complete 80% of Medium Challenges</span>
+          <Lock className="h-4 w-4 flex-shrink-0" />
+          <span>Complete 80% of Medium Challenges to Unlock</span>
         </div>
       </Button>
     );
