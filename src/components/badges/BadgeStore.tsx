@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface StoreBadge {
   id: string;
@@ -45,6 +46,71 @@ const getIcon = (iconName: string) => {
   }
 };
 
+const BadgeTypeContent = ({ 
+  badges, 
+  purchasedBadges, 
+  onPurchase 
+}: { 
+  badges: StoreBadge[], 
+  purchasedBadges: PurchasedBadge[] | undefined,
+  onPurchase: (badgeId: string) => void 
+}) => {
+  const isOwned = (badgeId: string) => {
+    return purchasedBadges?.some(pb => pb.badge_id === badgeId);
+  };
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {badges.map((badge, index) => (
+        <motion.div
+          key={badge.id}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+        >
+          <Card className="p-4 bg-white/5 hover:bg-white/10 transition-all duration-300">
+            <div className="flex items-start gap-3">
+              <div className="p-2 rounded-full bg-white/10">
+                {getIcon(badge.icon)}
+              </div>
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+                  {badge.name}
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">
+                    {badge.cost} pts
+                  </span>
+                </h3>
+                <p className="text-sm text-white/70 mt-1">
+                  {badge.description}
+                </p>
+                <div className="mt-3">
+                  {isOwned(badge.id) ? (
+                    <Button 
+                      variant="secondary" 
+                      className="w-full" 
+                      disabled
+                    >
+                      Owned
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="secondary"
+                      className="w-full"
+                      onClick={() => onPurchase(badge.id)}
+                    >
+                      Purchase
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+      ))}
+    </div>
+  );
+};
+
 export function BadgeStore() {
   const { data: badges, isLoading: isLoadingBadges, error: badgesError, refetch: refetchBadges } = useQuery({
     queryKey: ["badge-store"],
@@ -74,10 +140,6 @@ export function BadgeStore() {
       return data as PurchasedBadge[];
     },
   });
-
-  const isOwned = (badgeId: string) => {
-    return purchasedBadges?.some(pb => pb.badge_id === badgeId);
-  };
 
   const handlePurchase = async (badgeId: string) => {
     try {
@@ -131,56 +193,55 @@ export function BadgeStore() {
     );
   }
 
+  const beginnerBadges = badges?.filter(b => b.badge_type === 'beginner') || [];
+  const expertBadges = badges?.filter(b => b.badge_type === 'expert') || [];
+  const masterBadges = badges?.filter(b => b.badge_type === 'master') || [];
+
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {badges?.map((badge, index) => (
-          <motion.div
-            key={badge.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Card className="p-4 bg-white/5 hover:bg-white/10 transition-all duration-300">
-              <div className="flex items-start gap-3">
-                <div className="p-2 rounded-full bg-white/10">
-                  {getIcon(badge.icon)}
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                    {badge.name}
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">
-                      {badge.cost} pts
-                    </span>
-                  </h3>
-                  <p className="text-sm text-white/70 mt-1">
-                    {badge.description}
-                  </p>
-                  <div className="mt-3">
-                    {isOwned(badge.id) ? (
-                      <Button 
-                        variant="secondary" 
-                        className="w-full" 
-                        disabled
-                      >
-                        Owned
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="secondary"
-                        className="w-full"
-                        onClick={() => handlePurchase(badge.id)}
-                      >
-                        Purchase
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+      <Tabs defaultValue="beginner" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="beginner">Beginner</TabsTrigger>
+          <TabsTrigger value="expert">Expert</TabsTrigger>
+          <TabsTrigger value="master">Master</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="beginner" className="mt-4">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-white">Beginner Badges</h3>
+            <p className="text-sm text-white/70">Perfect for starting your journey!</p>
+          </div>
+          <BadgeTypeContent 
+            badges={beginnerBadges} 
+            purchasedBadges={purchasedBadges} 
+            onPurchase={handlePurchase} 
+          />
+        </TabsContent>
+
+        <TabsContent value="expert" className="mt-4">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-white">Expert Badges</h3>
+            <p className="text-sm text-white/70">Show your dedication and skill!</p>
+          </div>
+          <BadgeTypeContent 
+            badges={expertBadges} 
+            purchasedBadges={purchasedBadges} 
+            onPurchase={handlePurchase} 
+          />
+        </TabsContent>
+
+        <TabsContent value="master" className="mt-4">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold text-white">Master Badges</h3>
+            <p className="text-sm text-white/70">Elite badges for true masters!</p>
+          </div>
+          <BadgeTypeContent 
+            badges={masterBadges} 
+            purchasedBadges={purchasedBadges} 
+            onPurchase={handlePurchase} 
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
