@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 
-const PREMIUM_PRICE_ID = 'price_XXXXX'; // Replace with your actual Stripe price ID
+const PREMIUM_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT';
 
 const tiers = [
   {
