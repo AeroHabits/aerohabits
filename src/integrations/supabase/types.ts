@@ -495,9 +495,23 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      medium_challenge_completion: {
+        Row: {
+          completed_medium: number | null
+          completion_percentage: number | null
+          total_medium: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
+      can_access_advanced_challenges: {
+        Args: {
+          user_uid: string
+        }
+        Returns: boolean
+      }
       purchase_badge: {
         Args: {
           badge_id: string

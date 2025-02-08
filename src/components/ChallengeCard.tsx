@@ -7,7 +7,6 @@ import { ChallengeHeader } from "./challenge/ChallengeHeader";
 import { ChallengeProgressSection } from "./challenge/ChallengeProgressSection";
 import { ChallengeContent } from "./challenge/ChallengeContent";
 import { ChallengeActions } from "./challenge/ChallengeActions";
-import { toast } from "sonner";
 
 interface ChallengeCardProps {
   challenge: {
@@ -27,9 +26,16 @@ interface ChallengeCardProps {
   onJoin: (challengeId: string) => void;
   isJoined?: boolean;
   userPoints: number;
+  canAccessAdvancedChallenge?: boolean;
 }
 
-export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: ChallengeCardProps) {
+export function ChallengeCard({ 
+  challenge, 
+  onJoin, 
+  isJoined, 
+  userPoints,
+  canAccessAdvancedChallenge = true
+}: ChallengeCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [userChallengeId, setUserChallengeId] = useState<string | null>(null);
   const [progressData, setProgressData] = useState<{
@@ -120,6 +126,7 @@ export function ChallengeCard({ challenge, onJoin, isJoined, userPoints }: Chall
             onJoin={() => onJoin(challenge.id)}
             difficulty={challenge.difficulty}
             userPoints={userPoints}
+            canAccessAdvancedChallenge={canAccessAdvancedChallenge}
           />
         </CardFooter>
       </Card>

@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Flame } from "lucide-react";
+import { CheckCircle2, Flame, Lock } from "lucide-react";
+import { ChallengeUnlockButton } from "./ChallengeUnlockButton";
 
 interface ChallengeActionsProps {
   isPremium: boolean | null;
@@ -9,13 +10,33 @@ interface ChallengeActionsProps {
   onJoin: () => void;
   difficulty: string;
   userPoints: number;
+  canAccessAdvancedChallenge?: boolean;
 }
 
 export function ChallengeActions({ 
   isJoined, 
   isLoading, 
   onJoin,
+  difficulty,
+  canAccessAdvancedChallenge = true
 }: ChallengeActionsProps) {
+  const isAdvancedChallenge = ['hard', 'master'].includes(difficulty.toLowerCase());
+  const isLocked = isAdvancedChallenge && !canAccessAdvancedChallenge;
+
+  if (isLocked) {
+    return (
+      <Button 
+        className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed"
+        disabled={true}
+      >
+        <div className="flex items-center gap-2">
+          <Lock className="h-4 w-4" />
+          <span>Complete 80% of Medium Challenges</span>
+        </div>
+      </Button>
+    );
+  }
+
   return (
     <Button 
       className={`w-full transition-all duration-300 ${
