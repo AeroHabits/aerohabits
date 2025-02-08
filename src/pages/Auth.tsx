@@ -1,12 +1,16 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
+import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
+import { useSearchParams } from "react-router-dom";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [searchParams] = useSearchParams();
+  const isReset = searchParams.get("reset") === "true";
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
@@ -23,7 +27,12 @@ const Auth = () => {
       <Card className="w-full max-w-md p-8 space-y-6 relative z-10 bg-white/10 backdrop-blur-lg border border-[#818CF8]/30 shadow-xl rounded-2xl animate-fade-in">
         <div className="absolute inset-0 bg-gradient-to-br from-[#4F46E5]/20 via-[#818CF8]/10 to-transparent rounded-2xl" />
         <div className="relative z-10">
-          {isSignUp ? (
+          {isReset ? (
+            <ResetPasswordForm
+              isLoading={isLoading}
+              setIsLoading={setIsLoading}
+            />
+          ) : isSignUp ? (
             <SignUpForm
               onToggleForm={() => setIsSignUp(false)}
               isLoading={isLoading}
