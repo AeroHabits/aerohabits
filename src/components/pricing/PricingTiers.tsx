@@ -19,13 +19,13 @@ const tiers = [
   {
     name: "Free Trial",
     price: "0",
-    description: "Try all premium features free for 7 days",
+    description: "Try all premium features free for 3 days",
     features: [
       "Access to all challenges",
       "Habit tracking",
       "Goal setting",
       "Progress tracking",
-      "7-day free trial"
+      "3-day free trial"
     ],
     badge: null,
     buttonText: "Start Free Trial",
