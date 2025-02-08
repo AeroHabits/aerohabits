@@ -11,22 +11,24 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 
 const PREMIUM_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT';
 
 const tiers = [
   {
-    name: "Free",
+    name: "Free Trial",
     price: "0",
-    description: "Perfect for getting started with habit building",
+    description: "Try all premium features free for 7 days",
     features: [
-      "Access to basic challenges",
+      "Access to all challenges",
       "Habit tracking",
       "Goal setting",
       "Progress tracking",
+      "7-day free trial"
     ],
     badge: null,
-    buttonText: "Get Started",
+    buttonText: "Start Free Trial",
     buttonVariant: "outline" as const,
     priceId: null
   },
@@ -35,7 +37,7 @@ const tiers = [
     price: "9.99",
     description: "Elevate your habit-building journey with advanced challenges, personalized insights, and expert guidance to accelerate your personal growth",
     features: [
-      "All Free features",
+      "All Free Trial features",
       "Advanced challenges",
       "Personalized recommendations",
       "Priority support",
@@ -61,6 +63,23 @@ export function PricingTiers() {
     },
   });
 
+  const { data: subscription } = useQuery({
+    queryKey: ['subscription'],
+    queryFn: async () => {
+      if (!session?.user) return null;
+      
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!session?.user,
+  });
+
   const handleSubscribe = async (tier: typeof tiers[0]) => {
     if (!tier.priceId) {
       navigate('/auth');
@@ -77,11 +96,9 @@ export function PricingTiers() {
       setLoading(true);
       const { sessionId } = await createCheckoutSession(tier.priceId);
       
-      // Load Stripe.js
       const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY || '');
       if (!stripe) throw new Error('Stripe failed to load');
 
-      // Redirect to Checkout
       const { error } = await stripe.redirectToCheckout({ sessionId });
       if (error) throw error;
 
@@ -93,6 +110,19 @@ export function PricingTiers() {
     }
   };
 
+  const getTrialStatus = () => {
+    if (!subscription) return null;
+    if (subscription.status === 'active' && subscription.plan_type === 'premium') {
+      return "Premium Active";
+    }
+    if (subscription.trial_end && new Date(subscription.trial_end) > new Date()) {
+      return `Trial ends ${format(new Date(subscription.trial_end), 'MMM dd, yyyy')}`;
+    }
+    return "Trial expired";
+  };
+
+  const trialStatus = getTrialStatus();
+
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
@@ -102,6 +132,14 @@ export function PricingTiers() {
         <p className="mt-4 text-lg text-muted-foreground">
           Choose the plan that's right for you
         </p>
+        {trialStatus && (
+          <Badge 
+            variant="secondary" 
+            className="mt-4 bg-blue-500/10 text-blue-500 border-blue-500/20"
+          >
+            {trialStatus}
+          </Badge>
+        )}
       </div>
       <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {tiers.map((tier, index) => (
@@ -151,9 +189,12 @@ export function PricingTiers() {
                   variant={tier.buttonVariant}
                   className="w-full"
                   onClick={() => handleSubscribe(tier)}
-                  disabled={loading}
+                  disabled={loading || (subscription?.status === 'active' && subscription?.plan_type === 'premium')}
                 >
-                  {loading ? "Loading..." : tier.buttonText}
+                  {loading ? "Loading..." : 
+                    subscription?.status === 'active' && subscription?.plan_type === 'premium' 
+                      ? "Current Plan" 
+                      : tier.buttonText}
                 </Button>
               </CardFooter>
             </Card>

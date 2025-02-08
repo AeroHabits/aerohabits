@@ -452,6 +452,8 @@ export type Database = {
           status: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          trial_end: string | null
+          trial_start: string | null
           updated_at: string
           user_id: string
         }
@@ -463,6 +465,8 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
           updated_at?: string
           user_id: string
         }
@@ -474,6 +478,8 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -625,6 +631,12 @@ export type Database = {
     }
     Functions: {
       can_access_advanced_challenges: {
+        Args: {
+          user_uid: string
+        }
+        Returns: boolean
+      }
+      can_access_app: {
         Args: {
           user_uid: string
         }
