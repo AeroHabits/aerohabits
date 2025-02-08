@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -23,14 +24,18 @@ export function TestimonialList() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("testimonials")
-        .select(`
-          *,
-          profiles(full_name, avatar_url)
-        `)
+        .select("*, user:user_id(full_name, avatar_url)")
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as unknown as Testimonial[];
+      
+      // Transform the data to match the expected interface
+      const transformedData = data.map(testimonial => ({
+        ...testimonial,
+        profiles: testimonial.user
+      }));
+
+      return transformedData as Testimonial[];
     },
   });
 

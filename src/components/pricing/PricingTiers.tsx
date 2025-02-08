@@ -32,7 +32,7 @@ export function PricingTiers() {
         .from('subscriptions')
         .select('*')
         .eq('user_id', session.user.id)
-        .single();
+        .maybeSingle(); // Changed from single() to maybeSingle()
 
       if (error) throw error;
       return data;
