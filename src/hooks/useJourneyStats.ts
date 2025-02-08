@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -21,9 +22,22 @@ export function useJourneyStats() {
   const completionRate = totalHabits > 0 
     ? Math.round((completedHabits / totalHabits) * 100) 
     : 0;
-  const weeklyProgress = 65; // This would be calculated based on actual data
-  const monthlyAverage = 78; // This would be calculated based on actual data
-  const bestStreak = Math.max(...habits.map(h => h.streak || 0), 0);
+  
+  // Calculate weekly progress based on habits completed in the last 7 days
+  const weeklyProgress = habits.length > 0 
+    ? Math.round((habits.filter(h => h.completed).length / habits.length) * 100)
+    : 0;
+  
+  // Calculate monthly average based on completed habits
+  const monthlyAverage = habits.length > 0
+    ? Math.round((habits.filter(h => h.completed).length / habits.length) * 100)
+    : 0;
+
+  // Calculate best streak correctly from the streaks of all habits
+  const bestStreak = habits.reduce((max, habit) => {
+    const habitStreak = habit.streak || 0;
+    return habitStreak > max ? habitStreak : max;
+  }, 0);
 
   return {
     stats: {
