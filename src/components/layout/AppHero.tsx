@@ -31,11 +31,11 @@ export function AppHero() {
       <p className="text-lg text-white/80 max-w-2xl mx-auto">
         Track your habits, build streaks, and achieve your goals.
       </p>
-      <div className="pt-4">
+      <div className="pt-8">
         <Button
           variant="outline"
           onClick={() => navigate("/pricing")}
-          className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 text-white"
+          className="bg-gradient-to-r from-purple-500/80 to-blue-500/80 hover:from-purple-500/90 hover:to-blue-500/90 text-white border-white/20 px-8 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
         >
           View Plans
         </Button>
