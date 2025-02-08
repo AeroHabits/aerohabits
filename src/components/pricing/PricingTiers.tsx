@@ -1,9 +1,17 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Star, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
+import { createCheckoutSession } from "@/lib/stripe";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+const PREMIUM_PRICE_ID = 'price_XXXXX'; // Replace with your actual Stripe price ID
 
 const tiers = [
   {
@@ -19,6 +27,7 @@ const tiers = [
     badge: null,
     buttonText: "Get Started",
     buttonVariant: "outline" as const,
+    priceId: null
   },
   {
     name: "Premium",
@@ -35,15 +44,51 @@ const tiers = [
     badge: "Most Popular",
     buttonText: "Upgrade Now",
     buttonVariant: "default" as const,
+    priceId: PREMIUM_PRICE_ID
   },
 ];
 
 export function PricingTiers() {
-  const handleSubscribe = (tier: string) => {
-    if (tier === "Premium") {
-      toast.info("Premium features coming soon!");
-    } else {
-      toast.success("You're already on the free plan. Start your journey today!");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const { data: session } = useQuery({
+    queryKey: ['session'],
+    queryFn: async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      return session;
+    },
+  });
+
+  const handleSubscribe = async (tier: typeof tiers[0]) => {
+    if (!tier.priceId) {
+      navigate('/auth');
+      return;
+    }
+
+    if (!session) {
+      toast.error("Please sign in to upgrade to premium");
+      navigate('/auth');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { sessionId } = await createCheckoutSession(tier.priceId);
+      
+      // Load Stripe.js
+      const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY || '');
+      if (!stripe) throw new Error('Stripe failed to load');
+
+      // Redirect to Checkout
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      if (error) throw error;
+
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Failed to start checkout process. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,9 +149,10 @@ export function PricingTiers() {
                 <Button
                   variant={tier.buttonVariant}
                   className="w-full"
-                  onClick={() => handleSubscribe(tier.name)}
+                  onClick={() => handleSubscribe(tier)}
+                  disabled={loading}
                 >
-                  {tier.buttonText}
+                  {loading ? "Loading..." : tier.buttonText}
                 </Button>
               </CardFooter>
             </Card>
