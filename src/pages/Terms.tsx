@@ -9,9 +9,8 @@ export default function Terms() {
       <div className="prose dark:prose-invert max-w-none">
         <h2 className="text-2xl font-semibold mt-6 mb-4">1. Company Information</h2>
         <p>AREOHABITS<br />
-        123 Business Street<br />
-        Suite 456<br />
-        San Francisco, CA 94105<br />
+        330 East Roosevelt Street<br />
+        Phoenix, AZ 85004<br />
         United States<br />
         Email: support@areohabits.com</p>
 
