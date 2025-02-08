@@ -66,7 +66,7 @@ export function HabitList() {
 
   return (
     <div 
-      className="space-y-6 overflow-hidden"
+      className="w-full"
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
@@ -87,14 +87,16 @@ export function HabitList() {
         )}
       </AnimatePresence>
 
-      <HabitListContent
-        habits={habits}
-        onToggle={toggleHabit}
-        onDelete={deleteHabit}
-        setHabitToDelete={setHabitToDelete}
-      />
-      <div className="max-w-md mx-auto">
-        <AddHabitForm onAddHabit={addHabit} />
+      <div className="space-y-6">
+        <HabitListContent
+          habits={habits}
+          onToggle={toggleHabit}
+          onDelete={deleteHabit}
+          setHabitToDelete={setHabitToDelete}
+        />
+        <div className="max-w-md mx-auto">
+          <AddHabitForm onAddHabit={addHabit} />
+        </div>
       </div>
     </div>
   );
