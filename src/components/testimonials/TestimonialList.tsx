@@ -5,18 +5,14 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
+import { Database } from "@/integrations/supabase/types";
 
-interface Testimonial {
-  id: string;
-  content: string;
-  rating: number;
-  created_at: string;
-  user_id: string;
+type Testimonial = Database['public']['Tables']['testimonials']['Row'] & {
   profiles: {
     full_name: string | null;
     avatar_url: string | null;
   } | null;
-}
+};
 
 export function TestimonialList() {
   const { data: testimonials, isLoading } = useQuery({
@@ -26,7 +22,7 @@ export function TestimonialList() {
         .from("testimonials")
         .select(`
           *,
-          profiles:user_id (
+          profiles (
             full_name,
             avatar_url
           )
