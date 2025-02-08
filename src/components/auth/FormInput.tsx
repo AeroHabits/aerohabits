@@ -23,7 +23,7 @@ export const FormInput = ({
 }: FormInputProps) => {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id} className="text-white font-medium">
+      <Label htmlFor={id} className="text-white text-lg font-semibold">
         {label}
       </Label>
       <Input
@@ -33,8 +33,9 @@ export const FormInput = ({
         onChange={onChange}
         required={required}
         disabled={disabled}
-        className="bg-white/10 border-white/20 text-white placeholder:text-white/70 focus:border-white/40 focus:ring-white/30"
+        className="bg-white/20 border-white/30 text-white text-base placeholder:text-gray-300 focus:border-white/60 focus:ring-white/40"
       />
     </div>
   );
 };
+
