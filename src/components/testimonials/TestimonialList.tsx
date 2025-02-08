@@ -9,7 +9,7 @@ import { Database } from "@/integrations/supabase/types";
 
 type Profile = Database['public']['Tables']['profiles']['Row'];
 type Testimonial = Database['public']['Tables']['testimonials']['Row'] & {
-  profiles: Profile | null;
+  profiles: Profile;
 };
 
 export function TestimonialList() {
@@ -20,7 +20,7 @@ export function TestimonialList() {
         .from("testimonials")
         .select(`
           *,
-          profiles:profiles!testimonials_user_id_fkey (
+          profiles (
             full_name,
             avatar_url
           )
