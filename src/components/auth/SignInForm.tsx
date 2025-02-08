@@ -162,7 +162,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
           />
           <button
             onClick={handleForgotPassword}
-            className="text-sm text-gray-600 hover:text-black transition-colors duration-200"
+            className="text-sm text-white hover:text-gray-200 transition-colors duration-200"
             disabled={isLoading}
             type="button"
           >
@@ -177,7 +177,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
           />
           <label
             htmlFor="rememberMe"
-            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            className="text-sm font-medium leading-none text-white peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Remember me
           </label>
