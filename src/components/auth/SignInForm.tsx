@@ -3,9 +3,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { FormInput } from "./FormInput";
+import { FormHeader } from "./FormHeader";
+import { FormFooter } from "./FormFooter";
+import { RememberMeCheckbox } from "./RememberMeCheckbox";
+import { validateSignInForm } from "@/utils/authValidation";
 
 interface SignInFormProps {
   onToggleForm: () => void;
@@ -19,18 +22,6 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
   const [rememberMe, setRememberMe] = useState(false);
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const navigate = useNavigate();
-
-  const validateForm = () => {
-    if (!email) {
-      toast.error("Please enter your email");
-      return false;
-    }
-    if (!isResettingPassword && !password) {
-      toast.error("Please enter your password");
-      return false;
-    }
-    return true;
-  };
 
   const handleForgotPassword = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -64,7 +55,11 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
     e.preventDefault();
     if (isLoading) return;
     
-    if (!validateForm()) return;
+    const validationError = validateSignInForm(email, password, isResettingPassword);
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
     
     setIsLoading(true);
 
@@ -97,9 +92,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
 
   return (
     <>
-      <h1 className="text-4xl font-bold text-center text-black mb-8">
-        Welcome Back
-      </h1>
+      <FormHeader title="Welcome Back" />
       <form onSubmit={handleSignIn} className="space-y-6">
         <FormInput
           id="email"
@@ -129,19 +122,10 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
             Forgot password?
           </button>
         </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="rememberMe"
-            checked={rememberMe}
-            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-          />
-          <label
-            htmlFor="rememberMe"
-            className="text-sm font-medium leading-none text-white peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            Remember me
-          </label>
-        </div>
+        <RememberMeCheckbox 
+          checked={rememberMe}
+          onCheckedChange={setRememberMe}
+        />
         <Button 
           type="submit" 
           className="w-full bg-black hover:bg-gray-800 text-white transition-colors" 
@@ -150,16 +134,11 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
           {isLoading ? "Loading..." : "Sign In"}
         </Button>
       </form>
-      <p className="text-center text-sm mt-6 text-white">
-        Don't have an account?{" "}
-        <button
-          onClick={onToggleForm}
-          className="text-white hover:text-gray-200 transition-colors duration-200 font-semibold"
-          type="button"
-        >
-          Sign Up
-        </button>
-      </p>
+      <FormFooter
+        message="Don't have an account?"
+        actionText="Sign Up"
+        onAction={onToggleForm}
+      />
     </>
   );
 };
