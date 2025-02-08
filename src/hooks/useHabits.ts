@@ -15,33 +15,45 @@ export function useHabits() {
   const { data: habits = [], isLoading, error, refetch, isFetching } = useQuery({
     queryKey: ["habits"],
     queryFn: async () => {
-      if (!isOnline) {
+      try {
+        if (!isOnline) {
+          console.log("Offline mode: Loading habits from local storage");
+          return loadOfflineHabits();
+        }
+
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          console.log("No authenticated user found");
+          return loadOfflineHabits();
+        }
+
+        const { data: habitsData, error: habitsError } = await supabase
+          .from('habits')
+          .select(`
+            *,
+            habit_categories (
+              id,
+              name,
+              color,
+              icon
+            )
+          `)
+          .order('created_at', { ascending: false });
+
+        if (habitsError) {
+          console.error('Error fetching habits:', habitsError);
+          return loadOfflineHabits();
+        }
+        
+        saveOfflineHabits(habitsData || []);
+        return habitsData || [];
+      } catch (error) {
+        console.error('Error in habits query:', error);
         return loadOfflineHabits();
       }
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("User not authenticated");
-      }
-
-      const { data: habitsData, error: habitsError } = await supabase
-        .from('habits')
-        .select(`
-          *,
-          habit_categories (
-            id,
-            name,
-            color,
-            icon
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      if (habitsError) throw habitsError;
-      
-      saveOfflineHabits(habitsData || []);
-      return habitsData || [];
     },
+    retry: false,
+    staleTime: 30000,
   });
 
   // Try to sync when coming back online
