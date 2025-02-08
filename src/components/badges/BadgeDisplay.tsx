@@ -45,7 +45,10 @@ export function BadgeDisplay() {
         .select("*")
         .order("points_required", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching badges:", error);
+        throw error;
+      }
       return data as Badge[];
     },
   });
@@ -61,7 +64,10 @@ export function BadgeDisplay() {
         .select("achievement_id, unlocked_at")
         .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching user badges:", error);
+        throw error;
+      }
       return data as UserBadge[];
     },
   });
@@ -86,7 +92,10 @@ export function BadgeDisplay() {
         `)
         .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching purchased badges:", error);
+        throw error;
+      }
       return data as PurchasedBadge[];
     },
   });
