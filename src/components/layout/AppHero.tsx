@@ -1,6 +1,11 @@
+
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export function AppHero() {
+  const navigate = useNavigate();
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -26,6 +31,15 @@ export function AppHero() {
       <p className="text-lg text-white/80 max-w-2xl mx-auto">
         Track your habits, build streaks, and achieve your goals.
       </p>
+      <div className="pt-4">
+        <Button
+          variant="outline"
+          onClick={() => navigate("/pricing")}
+          className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 text-white"
+        >
+          View Plans
+        </Button>
+      </div>
     </motion.div>
   );
 }
