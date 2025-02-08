@@ -19,7 +19,7 @@ interface SignInFormProps {
 export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true); // Default to true for better UX
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -67,6 +67,9 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
+        options: {
+          persistSession: rememberMe // Use rememberMe value to determine session persistence
+        }
       });
       
       if (error) {
@@ -81,10 +84,13 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
       }
 
       if (data.session) {
+        // Ensure session is properly set before navigating
+        await supabase.auth.getSession();
         navigate("/");
       }
     } catch (error: any) {
       toast.error("An unexpected error occurred. Please try again.");
+      console.error("Sign in error:", error);
     } finally {
       setIsLoading(false);
     }
