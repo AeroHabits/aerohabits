@@ -24,7 +24,7 @@ export function PricingTiers() {
   });
 
   const { data: subscription } = useQuery({
-    queryKey: ['subscription'],
+    queryKey: ['subscription', session?.user?.id],
     queryFn: async () => {
       if (!session?.user) return null;
       
@@ -32,7 +32,7 @@ export function PricingTiers() {
         .from('subscriptions')
         .select('*')
         .eq('user_id', session.user.id)
-        .maybeSingle(); // Changed from single() to maybeSingle()
+        .maybeSingle();
 
       if (error) throw error;
       return data;

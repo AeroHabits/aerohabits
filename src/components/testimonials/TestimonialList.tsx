@@ -24,18 +24,17 @@ export function TestimonialList() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("testimonials")
-        .select("*, user:user_id(full_name, avatar_url)")
+        .select(`
+          *,
+          profiles:user_id (
+            full_name,
+            avatar_url
+          )
+        `)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      
-      // Transform the data to match the expected interface
-      const transformedData = data.map(testimonial => ({
-        ...testimonial,
-        profiles: testimonial.user
-      }));
-
-      return transformedData as Testimonial[];
+      return data as Testimonial[];
     },
   });
 
