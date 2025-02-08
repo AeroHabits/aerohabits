@@ -31,7 +31,6 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
             full_name: fullName,
           },
           emailRedirectTo: `${window.location.origin}/auth/callback`,
-          persistSession: true // Always persist session for new sign-ups
         },
       });
 

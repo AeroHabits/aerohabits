@@ -67,9 +67,6 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          persistSession: rememberMe // Use rememberMe value to determine session persistence
-        }
       });
       
       if (error) {
