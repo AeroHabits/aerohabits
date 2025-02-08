@@ -44,7 +44,7 @@ export function PricingCard({ tier, index, loading, onSubscribe, isCurrentPlan }
           <div className="mt-4">
             <span className="text-3xl font-bold">${tier.price}</span>
             <span className="text-muted-foreground">{tier.name !== "Free Trial" ? "/year" : ""}</span>
-            {tier.perMonth && tier.name !== "Free Trial" && (
+            {tier.perMonth && (
               <div className="mt-1 text-sm text-muted-foreground">
                 Just ${tier.perMonth}/month
               </div>
