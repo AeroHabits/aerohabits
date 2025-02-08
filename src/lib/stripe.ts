@@ -1,4 +1,7 @@
 
+import { supabase } from "@/integrations/supabase/client";
+import { loadStripe } from "@/lib/loadStripe";
+
 export async function createCheckoutSession(priceId: string) {
   try {
     const { data: { user } } = await supabase.auth.getUser();

@@ -6,6 +6,7 @@ import { Check, Star, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { createCheckoutSession } from "@/lib/stripe";
+import { loadStripe } from "@/lib/loadStripe";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
