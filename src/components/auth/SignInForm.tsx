@@ -20,22 +20,51 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const validateForm = () => {
+    if (!email) {
+      toast({
+        title: "Error",
+        description: "Please enter your email",
+        variant: "destructive",
+      });
+      return false;
+    }
+    if (!password) {
+      toast({
+        title: "Error",
+        description: "Please enter your password",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
+    
+    if (!validateForm()) return;
+    
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
+        if (error.message.includes('Email not confirmed')) {
+          toast({
+            title: "Email not verified",
+            description: "Please check your email to verify your account before signing in.",
+            variant: "destructive",
+          });
+        } else if (error.message.includes('Invalid login credentials')) {
           toast({
             title: "Sign in failed",
-            description: "The email or password you entered is incorrect. Please try again.",
+            description: "Invalid email or password. Please check your credentials and try again.",
             variant: "destructive",
           });
         } else {
@@ -47,11 +76,14 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
         }
         return;
       }
-      navigate("/");
+
+      if (data.session) {
+        navigate("/");
+      }
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: "An unexpected error occurred. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -70,7 +102,7 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
           label="Email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => setEmail(e.target.value.trim())}
           required
           disabled={isLoading}
         />
