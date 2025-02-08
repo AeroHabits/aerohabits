@@ -1,10 +1,11 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,40 +14,49 @@ const Auth = () => {
   const isReset = searchParams.get("reset") === "true";
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      {/* Background with rich blue/indigo gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#4F46E5]/50 via-[#818CF8]/40 to-[#6366F1]/30" />
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      {/* Animated background elements */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="absolute inset-0"
+      >
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#4F46E5]/20 rounded-full mix-blend-multiply filter blur-xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#818CF8]/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-[#6366F1]/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '2s' }} />
+      </motion.div>
       
-      {/* Animated floating orbs with indigo/blue colors */}
-      <div className="absolute top-20 left-20 w-72 h-72 bg-[#4F46E5]/40 rounded-full mix-blend-multiply filter blur-xl animate-float" />
-      <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#6366F1]/40 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '1s' }} />
-      <div className="absolute top-40 right-40 w-60 h-60 bg-[#818CF8]/40 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '2s' }} />
-      <div className="absolute bottom-40 left-40 w-80 h-80 bg-[#4F46E5]/30 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '3s' }} />
-      
-      {/* Card with enhanced glassmorphism effect */}
-      <Card className="w-full max-w-md p-8 space-y-6 relative z-10 bg-white/10 backdrop-blur-lg border border-[#818CF8]/30 shadow-xl rounded-2xl animate-fade-in">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#4F46E5]/20 via-[#818CF8]/10 to-transparent rounded-2xl" />
-        <div className="relative z-10">
-          {isReset ? (
-            <ResetPasswordForm
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
-          ) : isSignUp ? (
-            <SignUpForm
-              onToggleForm={() => setIsSignUp(false)}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
-          ) : (
-            <SignInForm
-              onToggleForm={() => setIsSignUp(true)}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
-          )}
-        </div>
-      </Card>
+      {/* Auth card with enhanced glassmorphism */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="w-full max-w-md p-6 relative z-10"
+      >
+        <Card className="backdrop-blur-lg bg-white/10 border border-white/20 shadow-2xl">
+          <div className="p-6 space-y-6">
+            {isReset ? (
+              <ResetPasswordForm
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+              />
+            ) : isSignUp ? (
+              <SignUpForm
+                onToggleForm={() => setIsSignUp(false)}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+              />
+            ) : (
+              <SignInForm
+                onToggleForm={() => setIsSignUp(true)}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+              />
+            )}
+          </div>
+        </Card>
+      </motion.div>
     </div>
   );
 };

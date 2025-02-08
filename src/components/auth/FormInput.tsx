@@ -1,3 +1,4 @@
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -22,7 +23,9 @@ export const FormInput = ({
 }: FormInputProps) => {
   return (
     <div className="space-y-2">
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id} className="text-white/90">
+        {label}
+      </Label>
       <Input
         id={id}
         type={type}
@@ -30,6 +33,7 @@ export const FormInput = ({
         onChange={onChange}
         required={required}
         disabled={disabled}
+        className="bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-white/30 focus:ring-white/20"
       />
     </div>
   );
