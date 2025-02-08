@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 
 export default function Privacy() {
@@ -6,6 +7,14 @@ export default function Privacy() {
       <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
       
       <div className="prose dark:prose-invert max-w-none">
+        <h2 className="text-2xl font-semibold mt-6 mb-4">Company Information</h2>
+        <p>AREOHABITS<br />
+        123 Business Street<br />
+        Suite 456<br />
+        San Francisco, CA 94105<br />
+        United States<br />
+        Email: support@areohabits.com</p>
+
         <h2 className="text-2xl font-semibold mt-6 mb-4">1. Information We Collect</h2>
         <p>We collect information you provide directly to us when you create an account and use our services.</p>
 
