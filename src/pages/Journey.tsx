@@ -4,9 +4,9 @@ import { StatsGrid } from "@/components/StatsGrid";
 import { JourneyHero } from "@/components/journey/JourneyHero";
 import { useJourneyStats } from "@/hooks/useJourneyStats";
 import { motion } from "framer-motion";
-import { AppHeader } from "@/components/layout/AppHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { UserMenu } from "@/components/UserMenu";
 
 const Journey = () => {
   const { stats } = useJourneyStats();
@@ -15,10 +15,16 @@ const Journey = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className={cn(
-        "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+        "container mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8",
         isMobile && "pb-24"
       )}>
-        <AppHeader />
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
+            AEROHABITS
+          </h1>
+          <UserMenu />
+        </div>
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

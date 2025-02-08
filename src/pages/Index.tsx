@@ -1,5 +1,4 @@
 
-import { AppHeader } from "@/components/layout/AppHeader";
 import { AppHero } from "@/components/layout/AppHero";
 import { AppTabs } from "@/components/layout/AppTabs";
 import { WelcomeTour } from "@/components/WelcomeTour";
@@ -10,6 +9,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
+import { UserMenu } from "@/components/UserMenu";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -40,11 +40,17 @@ const Index = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "relative min-h-screen w-full py-4 md:py-8 space-y-6 md:space-y-8",
-          isMobile ? "px-4" : "container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
+          "container mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8",
+          isMobile && "pb-24"
         )}
       >
-        <AppHeader />
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
+            AEROHABITS
+          </h1>
+          <UserMenu />
+        </div>
+
         {showQuiz ? (
           <WelcomeQuiz />
         ) : (

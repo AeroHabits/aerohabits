@@ -1,10 +1,10 @@
 
-import { AppHeader } from "@/components/layout/AppHeader";
 import { ChallengeList } from "@/components/ChallengeList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { BadgeDisplay } from "@/components/badges/BadgeDisplay";
+import { UserMenu } from "@/components/UserMenu";
 
 const Challenges = () => {
   const isMobile = useIsMobile();
@@ -12,10 +12,16 @@ const Challenges = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className={cn(
-        "container py-8 space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
+        "container mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8",
         isMobile && "pb-24"
       )}>
-        <AppHeader />
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
+            AEROHABITS
+          </h1>
+          <UserMenu />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <motion.div
             className="lg:col-span-2"
