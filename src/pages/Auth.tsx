@@ -34,7 +34,7 @@ const Auth = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
         className="w-full max-w-md p-6 relative z-10"
       >
-        <Card className="backdrop-blur-lg bg-black/60 border border-white/30 shadow-2xl">
+        <Card className="backdrop-blur-lg bg-black/80 border border-white/40 shadow-2xl">
           <div className="p-6 space-y-6">
             {isReset ? (
               <ResetPasswordForm
@@ -62,4 +62,3 @@ const Auth = () => {
 };
 
 export default Auth;
-
