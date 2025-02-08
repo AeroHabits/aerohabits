@@ -101,7 +101,7 @@ export function BadgeDisplay() {
   });
 
   const isUnlocked = (badgeId: string) => {
-    return userBadges?.some(ub => ub.achievement_id === badgeId);
+    return userBadges?.some(ub => ub.achievement_id === badgeId) ?? false;
   };
 
   const isLoading = isLoadingBadges || isLoadingUserBadges || isLoadingPurchased;
@@ -113,9 +113,9 @@ export function BadgeDisplay() {
     refetchPurchased();
   };
 
-  // Only combine badges when all data is loaded
+  // Only combine badges when all data is loaded and valid
   const allBadges = !isLoading && !hasError ? [
-    ...(badges || []).map(badge => ({
+    ...(badges?.map(badge => ({
       id: badge.id,
       name: badge.name,
       description: badge.description,
@@ -123,15 +123,15 @@ export function BadgeDisplay() {
       isUnlocked: isUnlocked(badge.id),
       unlockMessage: 'Unlocked!',
       points_required: badge.points_required
-    })),
-    ...(purchasedBadges || []).map(pb => ({
+    })) ?? []),
+    ...(purchasedBadges?.filter(pb => pb.badge != null).map(pb => ({
       id: pb.badge.id,
       name: pb.badge.name,
       description: pb.badge.description,
       badge_type: pb.badge.badge_type,
       isUnlocked: true,
       unlockMessage: 'Purchased!'
-    }))
+    })) ?? [])
   ] : [];
 
   if (hasError) {
