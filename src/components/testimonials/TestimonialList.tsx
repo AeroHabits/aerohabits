@@ -7,16 +7,9 @@ import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { Database } from "@/integrations/supabase/types";
 
-type Testimonial = {
-  id: string;
-  content: string;
-  rating: number | null;
-  user_id: string;
-  created_at: string;
-  profiles: {
-    full_name: string | null;
-    avatar_url: string | null;
-  } | null;
+type Profile = Database['public']['Tables']['profiles']['Row'];
+type Testimonial = Database['public']['Tables']['testimonials']['Row'] & {
+  profiles: Profile | null;
 };
 
 export function TestimonialList() {
@@ -27,7 +20,7 @@ export function TestimonialList() {
         .from("testimonials")
         .select(`
           *,
-          profiles (
+          profiles:user_id (
             full_name,
             avatar_url
           )
