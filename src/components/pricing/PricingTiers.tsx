@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
 const PREMIUM_MONTHLY_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT';
-const PREMIUM_YEARLY_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT'; // Replace with actual yearly price ID from Stripe
+const PREMIUM_YEARLY_PRICE_ID = 'price_1Qq92TRrh0VTJWZxoeUpLOKg';
 
 const tiers = [
   {
