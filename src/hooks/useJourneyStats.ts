@@ -18,7 +18,6 @@ export function useJourneyStats() {
 
   const totalHabits = habits.length;
   const completedHabits = habits.filter(h => h.completed).length;
-  const currentStreak = Math.max(...habits.map(h => h.streak || 0), 0);
   const completionRate = totalHabits > 0 
     ? Math.round((completedHabits / totalHabits) * 100) 
     : 0;
@@ -38,6 +37,11 @@ export function useJourneyStats() {
     const habitStreak = habit.streak || 0;
     return habitStreak > max ? habitStreak : max;
   }, 0);
+
+  // Calculate current streak as the sum of all currently active streaks
+  const currentStreak = habits
+    .filter(h => h.completed)
+    .reduce((sum, habit) => sum + (habit.streak || 0), 0);
 
   return {
     stats: {
