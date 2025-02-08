@@ -1,7 +1,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { HabitCard } from "./HabitCard";
-import type { Habit } from "@/hooks/useHabits";
+import type { Habit } from "@/types";
 
 interface HabitListContentProps {
   habits: Habit[];
