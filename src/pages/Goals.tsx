@@ -50,23 +50,17 @@ const Goals = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className={cn(
-        "container mx-auto px-4 py-6 md:py-8 space-y-6 md:space-y-8",
+        "container mx-auto px-4 py-6 md:py-8",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
             AEROHABITS
           </h1>
           <UserMenu />
         </div>
 
-        <div className="text-center">
-          <p className="text-base md:text-lg text-gray-300 max-w-2xl mx-auto">
-            Set and track your goals to achieve lasting change.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {inspirationalCards.map((card, index) => (
             <Card key={index} className="p-4 md:p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-colors duration-300 group">
               <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
@@ -80,14 +74,12 @@ const Goals = () => {
           ))}
         </div>
         
-        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 shadow-lg border border-white/20">
-          <section>
-            <h2 className="text-xl md:text-2xl font-semibold mb-4 text-white">Your Goals</h2>
-            <div className="space-y-4 md:space-y-6">
-              <GoalForm onSubmit={handleGoalChange} />
-              <GoalList onGoalUpdated={handleGoalChange} />
-            </div>
-          </section>
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
+          <h2 className="text-xl md:text-2xl font-semibold mb-6 text-white">Your Goals</h2>
+          <div className="space-y-6">
+            <GoalForm onSubmit={handleGoalChange} />
+            <GoalList onGoalUpdated={handleGoalChange} />
+          </div>
         </div>
       </div>
     </div>
