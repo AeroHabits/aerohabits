@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,7 +32,7 @@ const tiers = [
   {
     name: "Premium",
     price: "9.99",
-    description: "Unlock advanced features for serious self-improvement",
+    description: "Elevate your habit-building journey with advanced challenges, personalized insights, and expert guidance to accelerate your personal growth",
     features: [
       "All Free features",
       "Advanced challenges",
