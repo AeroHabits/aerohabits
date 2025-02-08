@@ -6,7 +6,7 @@ const config: CapacitorConfig = {
   appName: 'AEROHABITS',
   webDir: 'dist',
   server: {
-    url: 'https://tpthvlivzxrtkexxzqli.lovableproject.com?forceHideBadge=true',
+    url: 'https://tpthvlivzxrtkexxzqli.supabase.co?forceHideBadge=true',
     cleartext: true
   },
   ios: {
