@@ -253,6 +253,44 @@ export type Database = {
           },
         ]
       }
+      habit_sync_queue: {
+        Row: {
+          action: string
+          created_at: string | null
+          data: Json | null
+          habit_id: string
+          id: string
+          synced_at: string | null
+          user_id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string | null
+          data?: Json | null
+          habit_id: string
+          id?: string
+          synced_at?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: string
+          created_at?: string | null
+          data?: Json | null
+          habit_id?: string
+          id?: string
+          synced_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "habit_sync_queue_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habits: {
         Row: {
           category: string | null
@@ -261,6 +299,8 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          last_synced: string | null
+          offline_created: boolean | null
           streak: number | null
           title: string
           updated_at: string
@@ -273,6 +313,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          last_synced?: string | null
+          offline_created?: boolean | null
           streak?: number | null
           title: string
           updated_at?: string
@@ -285,6 +327,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          last_synced?: string | null
+          offline_created?: boolean | null
           streak?: number | null
           title?: string
           updated_at?: string
