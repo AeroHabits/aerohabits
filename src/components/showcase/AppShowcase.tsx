@@ -12,7 +12,7 @@ export function AppShowcase() {
       icon: <Star className="h-6 w-6 text-yellow-500" />,
       title: "Track Daily Habits",
       description: "Build lasting habits with daily tracking and reminders",
-      route: "/habits"
+      route: "/journey"
     },
     {
       icon: <Trophy className="h-6 w-6 text-amber-500" />,
