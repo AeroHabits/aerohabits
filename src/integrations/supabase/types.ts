@@ -188,6 +188,33 @@ export type Database = {
         }
         Relationships: []
       }
+      habit_categories: {
+        Row: {
+          color: string
+          created_at: string
+          icon: string
+          id: string
+          name: string
+          user_id: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          name: string
+          user_id: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       habit_notifications: {
         Row: {
           created_at: string
@@ -229,6 +256,7 @@ export type Database = {
       habits: {
         Row: {
           category: string | null
+          category_id: string | null
           completed: boolean | null
           created_at: string
           description: string | null
@@ -240,6 +268,7 @@ export type Database = {
         }
         Insert: {
           category?: string | null
+          category_id?: string | null
           completed?: boolean | null
           created_at?: string
           description?: string | null
@@ -251,6 +280,7 @@ export type Database = {
         }
         Update: {
           category?: string | null
+          category_id?: string | null
           completed?: boolean | null
           created_at?: string
           description?: string | null
@@ -260,7 +290,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "habits_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "habit_categories"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       points_guide: {
         Row: {

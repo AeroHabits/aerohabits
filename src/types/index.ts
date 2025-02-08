@@ -1,8 +1,18 @@
+
 export interface User {
   id: string;
   email?: string;
   full_name?: string;
   avatar_url?: string;
+}
+
+export interface HabitCategory {
+  id: string;
+  name: string;
+  color: string;
+  icon: string;
+  user_id: string;
+  created_at: string;
 }
 
 export interface Habit {
@@ -12,7 +22,7 @@ export interface Habit {
   description?: string;
   streak: number;
   completed: boolean;
-  category?: string;
+  category_id?: string;
   created_at: string;
   updated_at: string;
 }

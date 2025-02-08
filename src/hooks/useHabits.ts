@@ -1,19 +1,10 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { isToday, isTomorrow, isYesterday } from "date-fns";
-
-export interface Habit {
-  id: string;
-  title: string;
-  description: string;
-  streak: number;
-  completed: boolean;
-  category?: string;
-  created_at: string;
-  updated_at: string;
-}
+import { isToday, isYesterday } from "date-fns";
+import { Habit, HabitCategory } from "@/types";
 
 export function useHabits() {
   const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
@@ -27,13 +18,21 @@ export function useHabits() {
         throw new Error("User not authenticated");
       }
 
-      const { data, error } = await supabase
+      const { data: habitsData, error: habitsError } = await supabase
         .from('habits')
-        .select('*')
+        .select(`
+          *,
+          habit_categories (
+            id,
+            name,
+            color,
+            icon
+          )
+        `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return data || [];
+      if (habitsError) throw habitsError;
+      return habitsData || [];
     },
   });
 
@@ -114,7 +113,7 @@ export function useHabits() {
     }
   };
 
-  const addHabit = async ({ title, description, category }: { title: string; description: string; category?: string }) => {
+  const addHabit = async ({ title, description, category_id }: { title: string; description: string; category_id?: string }) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
@@ -127,7 +126,7 @@ export function useHabits() {
           {
             title,
             description,
-            category,
+            category_id,
             streak: 0,
             completed: false,
             user_id: user.id

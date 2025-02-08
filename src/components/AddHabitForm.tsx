@@ -1,21 +1,88 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-import { Sparkles, Target, Brain, CircuitBoard } from "lucide-react";
+import { 
+  Sparkles, 
+  Target, 
+  Brain, 
+  CircuitBoard,
+  Plus,
+  X
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue, 
+} from "@/components/ui/select";
+import { HabitCategory } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { icons } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface AddHabitFormProps {
-  onAddHabit: (habit: { title: string; description: string; category?: string }) => void;
+  onAddHabit: (habit: { title: string; description: string; category_id?: string }) => void;
 }
+
+const COLORS = [
+  { name: 'Red', value: '#ef4444' },
+  { name: 'Green', value: '#22c55e' },
+  { name: 'Blue', value: '#3b82f6' },
+  { name: 'Purple', value: '#a855f7' },
+  { name: 'Yellow', value: '#f59e0b' },
+  { name: 'Pink', value: '#ec4899' },
+  { name: 'Indigo', value: '#6366f1' },
+  { name: 'Teal', value: '#14b8a6' },
+];
+
+const ICON_LIST = [
+  'Star', 'Heart', 'Dumbbell', 'Book', 'Laptop', 
+  'Brain', 'Target', 'Sun', 'Moon', 'Music', 
+  'Pencil', 'Coffee', 'Smile', 'Trophy'
+];
 
 export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [categories, setCategories] = useState<HabitCategory[]>([]);
   const [isTitleFocused, setIsTitleFocused] = useState(false);
   const [isDescriptionFocused, setIsDescriptionFocused] = useState(false);
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryColor, setNewCategoryColor] = useState("#3b82f6");
+  const [newCategoryIcon, setNewCategoryIcon] = useState("Star");
   const { toast } = useToast();
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    const { data, error } = await supabase
+      .from('habit_categories')
+      .select('*')
+      .order('name');
+
+    if (error) {
+      console.error('Error fetching categories:', error);
+      return;
+    }
+
+    setCategories(data || []);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,14 +96,70 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
       return;
     }
 
-    onAddHabit({ title, description });
+    onAddHabit({ 
+      title, 
+      description,
+      category_id: selectedCategory || undefined
+    });
+    
     setTitle("");
     setDescription("");
+    setSelectedCategory("");
     
     toast({
       title: "Success",
       description: "New habit added successfully!",
     });
+  };
+
+  const handleAddCategory = async () => {
+    if (!newCategoryName.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a category name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabase
+      .from('habit_categories')
+      .insert([{
+        name: newCategoryName.trim(),
+        color: newCategoryColor,
+        icon: newCategoryIcon,
+        user_id: user.id
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create category",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "Category created successfully!",
+    });
+
+    setNewCategoryName("");
+    setNewCategoryColor("#3b82f6");
+    setNewCategoryIcon("Star");
+    setIsAddingCategory(false);
+    fetchCategories();
+  };
+
+  const LucideIcon = ({ name, ...props }: { name: string; [key: string]: any }) => {
+    const Icon = (icons as any)[name];
+    return Icon ? <Icon {...props} /> : null;
   };
 
   return (
@@ -102,6 +225,114 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
             className="pl-10 bg-white/10 border-2 border-white/20 focus:border-blue-400 text-white placeholder:text-white/50 text-base rounded-lg min-h-[100px] transition-all duration-300 hover:border-white/30 focus:ring-2 focus:ring-blue-400/50 focus:ring-opacity-50"
           />
         </motion.div>
+
+        <div className="flex items-center gap-2">
+          <Select
+            value={selectedCategory}
+            onValueChange={setSelectedCategory}
+          >
+            <SelectTrigger className="w-full bg-white/10 border-2 border-white/20 focus:border-blue-400 text-white">
+              <SelectValue placeholder="Select a category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((category) => (
+                <SelectItem 
+                  key={category.id} 
+                  value={category.id}
+                  className="flex items-center gap-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-4 h-4 rounded-full" 
+                      style={{ backgroundColor: category.color }}
+                    />
+                    <LucideIcon 
+                      name={category.icon} 
+                      className="w-4 h-4"
+                      style={{ color: category.color }}
+                    />
+                    <span>{category.name}</span>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Dialog open={isAddingCategory} onOpenChange={setIsAddingCategory}>
+            <DialogTrigger asChild>
+              <Button 
+                type="button"
+                variant="outline" 
+                size="icon"
+                className="bg-white/10 border-2 border-white/20 hover:bg-white/20"
+              >
+                <Plus className="h-4 w-4 text-white" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Create New Category</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <Input
+                  placeholder="Category name"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  className="w-full"
+                />
+                
+                <div className="grid grid-cols-4 gap-2">
+                  {COLORS.map((color) => (
+                    <button
+                      key={color.value}
+                      type="button"
+                      className={cn(
+                        "w-8 h-8 rounded-full transition-transform",
+                        newCategoryColor === color.value && "scale-125 ring-2 ring-white"
+                      )}
+                      style={{ backgroundColor: color.value }}
+                      onClick={() => setNewCategoryColor(color.value)}
+                    />
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-7 gap-2">
+                  {ICON_LIST.map((icon) => (
+                    <button
+                      key={icon}
+                      type="button"
+                      className={cn(
+                        "p-2 rounded-lg transition-all",
+                        newCategoryIcon === icon 
+                          ? "bg-blue-500 text-white" 
+                          : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      )}
+                      onClick={() => setNewCategoryIcon(icon)}
+                    >
+                      <LucideIcon name={icon} className="w-4 h-4" />
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setIsAddingCategory(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleAddCategory}
+                  >
+                    Create Category
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
       
       <motion.div

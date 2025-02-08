@@ -5,6 +5,7 @@ import { Trash2, Star, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { icons } from "lucide-react";
 
 interface HabitCardProps {
   id: string;
@@ -12,6 +13,12 @@ interface HabitCardProps {
   description?: string;
   streak: number;
   completed: boolean;
+  category?: {
+    id: string;
+    name: string;
+    color: string;
+    icon: string;
+  };
   onToggle: () => void;
   onDelete: () => void;
 }
@@ -22,9 +29,12 @@ export function HabitCard({
   description,
   streak,
   completed,
+  category,
   onToggle,
   onDelete,
 }: HabitCardProps) {
+  const LucideIcon = category?.icon ? (icons as any)[category.icon] : Star;
+
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -43,9 +53,33 @@ export function HabitCard({
         <div className="p-6">
           <div className="flex justify-between items-start mb-4">
             <div className="space-y-1">
-              <h3 className="font-semibold text-lg text-white/90">{title}</h3>
+              <div className="flex items-center gap-2">
+                {category && (
+                  <div 
+                    className="p-1.5 rounded-lg"
+                    style={{ backgroundColor: `${category.color}20` }}
+                  >
+                    <LucideIcon 
+                      className="h-4 w-4"
+                      style={{ color: category.color }}
+                    />
+                  </div>
+                )}
+                <h3 className="font-semibold text-lg text-white/90">{title}</h3>
+              </div>
               {description && (
                 <p className="text-white/80">{description}</p>
+              )}
+              {category && (
+                <span 
+                  className="text-sm px-2 py-1 rounded-full" 
+                  style={{ 
+                    backgroundColor: `${category.color}20`,
+                    color: category.color
+                  }}
+                >
+                  {category.name}
+                </span>
               )}
             </div>
             <AlertDialog>
