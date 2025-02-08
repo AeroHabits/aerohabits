@@ -1,6 +1,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Badge {
   id: string;
@@ -30,12 +31,18 @@ export const useBadges = () => {
   const { data: badges, isLoading: isLoadingBadges, error: badgesError, refetch: refetchBadges } = useQuery({
     queryKey: ["badges"],
     queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Authentication required");
+
       const { data, error } = await supabase
         .from("achievements")
         .select("*")
         .order("points_required", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        toast.error("Failed to load achievements");
+        throw error;
+      }
       return data as Badge[];
     },
   });
@@ -44,14 +51,17 @@ export const useBadges = () => {
     queryKey: ["user-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      if (!user) throw new Error("Authentication required");
 
       const { data, error } = await supabase
         .from("user_achievements")
         .select("achievement_id, unlocked_at")
         .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        toast.error("Failed to load user achievements");
+        throw error;
+      }
       return data as UserBadge[];
     },
   });
@@ -60,7 +70,7 @@ export const useBadges = () => {
     queryKey: ["purchased-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      if (!user) throw new Error("Authentication required");
 
       const { data, error } = await supabase
         .from("purchased_badges")
@@ -76,7 +86,10 @@ export const useBadges = () => {
         `)
         .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        toast.error("Failed to load purchased badges");
+        throw error;
+      }
       return data as PurchasedBadge[];
     },
   });

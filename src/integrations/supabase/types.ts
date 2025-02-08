@@ -26,7 +26,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
-          points_required: number
+          points_required?: number
         }
         Update: {
           badge_type?: string | null

@@ -1,9 +1,8 @@
 
-import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Habit } from "@/types";
-import { isToday, isYesterday, startOfDay } from "date-fns";
+import { isToday, isYesterday, startOfDay, parseISO } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
 import { useLocalStorage } from "./useLocalStorage";
 
@@ -54,9 +53,21 @@ export function useHabitOperations() {
     if (!habit) return false;
 
     try {
-      const today = startOfDay(new Date());
-      const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
-      const maintainedStreak = lastUpdate && (isYesterday(lastUpdate) || isToday(lastUpdate));
+      const now = new Date();
+      const utcNow = new Date(Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        now.getUTCHours(),
+        now.getUTCMinutes(),
+        now.getUTCSeconds()
+      ));
+
+      const lastUpdate = habit.updated_at ? parseISO(habit.updated_at) : null;
+      const maintainedStreak = lastUpdate && (
+        isToday(lastUpdate) || 
+        (isYesterday(lastUpdate) && now.getHours() < 24) // Allow completing yesterday's habit until midnight
+      );
       
       const updatedHabit = {
         ...habit,
@@ -64,7 +75,7 @@ export function useHabitOperations() {
         streak: !habit.completed 
           ? (maintainedStreak ? (habit.streak || 0) + 1 : 1)
           : Math.max(0, (habit.streak || 0) - 1),
-        updated_at: new Date().toISOString()
+        updated_at: utcNow.toISOString()
       };
 
       if (!isOnline) {
