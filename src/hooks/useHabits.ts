@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
-import { isToday, isYesterday } from "date-fns";
+import { isToday, isYesterday, startOfDay } from "date-fns";
 import { Habit, HabitCategory } from "@/types";
 
 export function useHabits() {
@@ -66,8 +66,7 @@ export function useHabits() {
 
     try {
       // Get today's date at midnight UTC
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0);
+      const today = startOfDay(new Date());
       
       // If the habit was already completed today, uncomplete it and decrease streak
       if (habit.completed) {
@@ -75,15 +74,16 @@ export function useHabits() {
           .from('habits')
           .update({ 
             completed: false,
-            streak: Math.max(0, (habit.streak || 0) - 1)
+            streak: Math.max(0, (habit.streak || 0) - 1),
+            updated_at: new Date().toISOString()
           })
           .eq('id', id);
 
         if (error) throw error;
       } else {
-        // Check if the last update was yesterday
-        const lastUpdate = new Date(habit.updated_at);
-        const maintainedStreak = isYesterday(lastUpdate) || isToday(lastUpdate);
+        // Check if the last update was yesterday or today (to maintain streak)
+        const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
+        const maintainedStreak = lastUpdate && (isYesterday(lastUpdate) || isToday(lastUpdate));
 
         // If completing the habit, check streak continuity
         const { error } = await supabase
