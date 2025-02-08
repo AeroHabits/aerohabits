@@ -13,7 +13,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 
-const PREMIUM_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT';
+const PREMIUM_MONTHLY_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT';
+const PREMIUM_YEARLY_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT'; // Replace with actual yearly price ID from Stripe
 
 const tiers = [
   {
@@ -33,9 +34,10 @@ const tiers = [
     priceId: null
   },
   {
-    name: "Premium",
+    name: "Premium Monthly",
     price: "9.99",
-    description: "Elevate your habit-building journey with advanced challenges, personalized insights, and expert guidance to accelerate your personal growth",
+    perMonth: "9.99",
+    description: "Elevate your habit-building journey with advanced challenges, personalized insights, and expert guidance",
     features: [
       "All Free Trial features",
       "Advanced challenges",
@@ -44,11 +46,30 @@ const tiers = [
       "Exclusive content",
       "Advanced analytics",
     ],
-    badge: "Most Popular",
-    buttonText: "Upgrade Now",
+    badge: null,
+    buttonText: "Subscribe Monthly",
     buttonVariant: "default" as const,
-    priceId: PREMIUM_PRICE_ID
+    priceId: PREMIUM_MONTHLY_PRICE_ID
   },
+  {
+    name: "Premium Yearly",
+    price: "69.99",
+    perMonth: "5.83",
+    description: "Get our best value plan with 40% savings when paid annually",
+    features: [
+      "All Premium Monthly features",
+      "Save 40% vs monthly plan",
+      "Advanced challenges",
+      "Personalized recommendations",
+      "Priority support",
+      "Exclusive content",
+      "Advanced analytics",
+    ],
+    badge: "Best Value",
+    buttonText: "Subscribe Yearly",
+    buttonVariant: "default" as const,
+    priceId: PREMIUM_YEARLY_PRICE_ID
+  }
 ];
 
 export function PricingTiers() {
@@ -141,7 +162,7 @@ export function PricingTiers() {
           </Badge>
         )}
       </div>
-      <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+      <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
         {tiers.map((tier, index) => (
           <motion.div
             key={tier.name}
@@ -161,14 +182,19 @@ export function PricingTiers() {
               )}
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {tier.name === "Premium" ? (
+                  {tier.name === "Premium Yearly" || tier.name === "Premium Monthly" ? (
                     <Zap className="h-5 w-5 text-blue-500" />
                   ) : null}
                   {tier.name}
                 </CardTitle>
                 <div className="mt-4">
                   <span className="text-3xl font-bold">${tier.price}</span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-muted-foreground">{tier.name !== "Free Trial" ? "/year" : ""}</span>
+                  {tier.perMonth && tier.name !== "Free Trial" && (
+                    <div className="mt-1 text-sm text-muted-foreground">
+                      Just ${tier.perMonth}/month
+                    </div>
+                  )}
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
                   {tier.description}
