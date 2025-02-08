@@ -5,7 +5,7 @@ import { JourneyChart } from "./JourneyChart";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { BarChart3 } from "lucide-react";
-import { format, subDays, startOfDay, endOfDay } from "date-fns";
+import { format, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
 
 export function WeeklyProgress() {
   const { data: habits } = useQuery({
@@ -27,9 +27,10 @@ export function WeeklyProgress() {
     const dayStart = startOfDay(date);
     const dayEnd = endOfDay(date);
     
+    // Filter habits that were created or updated within this day's interval
     const dayHabits = habits?.filter(habit => {
-      const habitDate = new Date(habit.created_at);
-      return habitDate >= dayStart && habitDate <= dayEnd;
+      const habitDate = new Date(habit.updated_at);
+      return isWithinInterval(habitDate, { start: dayStart, end: dayEnd });
     }) || [];
     
     return {
@@ -46,8 +47,11 @@ export function WeeklyProgress() {
   const now = new Date();
   const weekAgo = subDays(now, 6);
   const weekHabits = habits?.filter(habit => {
-    const habitDate = new Date(habit.created_at);
-    return habitDate >= startOfDay(weekAgo) && habitDate <= endOfDay(now);
+    const habitDate = new Date(habit.updated_at);
+    return isWithinInterval(habitDate, { 
+      start: startOfDay(weekAgo), 
+      end: endOfDay(now) 
+    });
   }) || [];
 
   const totalCompleted = weekHabits.filter(habit => habit.completed).length;
