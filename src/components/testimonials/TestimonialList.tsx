@@ -20,7 +20,7 @@ export function TestimonialList() {
         .from("testimonials")
         .select(`
           *,
-          profiles:user_id (
+          profiles:profiles!testimonials_user_id_fkey (
             full_name,
             avatar_url
           )
