@@ -14,7 +14,14 @@ import Privacy from "@/pages/Privacy";
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Index />} />
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Index />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/auth" element={<Auth />} />
       <Route
         path="/goals"
@@ -32,7 +39,14 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route path="/challenges" element={<Challenges />} />
+      <Route
+        path="/challenges"
+        element={
+          <ProtectedRoute>
+            <Challenges />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/badges"
         element={
