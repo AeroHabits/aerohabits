@@ -66,7 +66,7 @@ export function HabitList() {
 
   return (
     <div 
-      className="space-y-8 relative"
+      className="space-y-6 overflow-hidden"
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
