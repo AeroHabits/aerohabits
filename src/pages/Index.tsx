@@ -10,10 +10,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
 import { UserMenu } from "@/components/UserMenu";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const isMobile = useIsMobile();
   const [showQuiz, setShowQuiz] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkQuizStatus = async () => {
@@ -53,7 +56,16 @@ const Index = () => {
           >
             AEROHABITS
           </motion.h1>
-          <UserMenu />
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate("/pricing")}
+              className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 text-white"
+            >
+              View Plans
+            </Button>
+            <UserMenu />
+          </div>
         </div>
 
         {showQuiz ? (

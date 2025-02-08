@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Award, Flame, Star, Target, Trophy } from "lucide-react";
+import { Award, Flame, Star, Target, Trophy, CreditCard } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
@@ -37,6 +37,12 @@ export function AppShowcase() {
       title: "Track Progress",
       description: "Visualize your journey with detailed statistics",
       route: "/journey"
+    },
+    {
+      icon: <CreditCard className="h-6 w-6 text-green-500" />,
+      title: "Premium Features",
+      description: "Unlock advanced features with our premium plans",
+      route: "/pricing"
     }
   ];
 
