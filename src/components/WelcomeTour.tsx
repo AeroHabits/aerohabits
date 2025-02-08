@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Smile, Target, Trophy, Heart } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 const tourSteps = [
   {
@@ -40,18 +41,37 @@ export function WelcomeTour() {
   const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
-    const hasSeenTour = localStorage.getItem("hasSeenTour");
-    if (!hasSeenTour) {
-      setOpen(true);
-    }
+    const checkUserTourStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) return;
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('has_seen_tour')
+        .eq('id', user.id)
+        .single();
+
+      if (profile && !profile.has_seen_tour) {
+        setOpen(true);
+      }
+    };
+
+    checkUserTourStatus();
   }, []);
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < tourSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase
+          .from('profiles')
+          .update({ has_seen_tour: true })
+          .eq('id', user.id);
+      }
       setOpen(false);
-      localStorage.setItem("hasSeenTour", "true");
     }
   };
 
