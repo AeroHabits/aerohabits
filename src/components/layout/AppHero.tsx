@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { PricingTiers } from "../pricing/PricingTiers";
 import { useQuery } from "@tanstack/react-query";
@@ -54,21 +54,39 @@ export function AppHero() {
 
       {!profile?.is_premium && (
         <div className="space-y-4">
-          <Button
-            variant="ghost"
-            onClick={() => setShowPricing(!showPricing)}
-            className="text-white/80 hover:text-white hover:bg-white/10"
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            {showPricing ? (
-              <>
-                Hide Premium Features <ChevronUp className="ml-1 h-4 w-4" />
-              </>
-            ) : (
-              <>
-                View Premium Features <ChevronDown className="ml-1 h-4 w-4" />
-              </>
-            )}
-          </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowPricing(!showPricing)}
+              className="relative group bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 text-white border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300"
+            >
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-purple-400/10 to-blue-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                animate={{
+                  background: ["linear-gradient(to right, rgba(168,85,247,0.1), rgba(59,130,246,0.1))", 
+                             "linear-gradient(to right, rgba(59,130,246,0.1), rgba(168,85,247,0.1))"],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                }}
+              />
+              <Sparkles className="mr-2 h-4 w-4 text-yellow-300 animate-pulse" />
+              {showPricing ? (
+                <>
+                  Hide Premium Features <ChevronUp className="ml-1 h-4 w-4" />
+                </>
+              ) : (
+                <>
+                  Unlock Premium Features <ChevronDown className="ml-1 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </motion.div>
 
           {showPricing && (
             <motion.div
