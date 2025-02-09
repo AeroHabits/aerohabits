@@ -34,6 +34,22 @@ export function PricingTiers() {
     },
   });
 
+  const { data: subscription } = useQuery({
+    queryKey: ['subscription'],
+    queryFn: async () => {
+      if (!session?.user) return null;
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', session.user.id)
+        .single();
+      
+      if (error && error.code !== 'PGRST116') throw error;
+      return data;
+    },
+    enabled: !!session?.user,
+  });
+
   const handleSubscribe = async (tier: typeof tiers[number]) => {
     if (!session) {
       toast.error("Please sign in first");
@@ -54,7 +70,6 @@ export function PricingTiers() {
         throw new Error('Failed to create checkout session');
       }
 
-      // Load Stripe dynamically
       const { loadStripe } = await import('@/lib/loadStripe');
       
       if (!stripeConfig?.publishable_key) {
@@ -100,7 +115,7 @@ export function PricingTiers() {
             index={index}
             loading={loading}
             onSubscribe={handleSubscribe}
-            isCurrentPlan={false}
+            isCurrentPlan={subscription?.plan_type === tier.name.toLowerCase()}
           />
         ))}
       </div>
