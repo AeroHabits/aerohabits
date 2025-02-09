@@ -35,8 +35,12 @@ export function PricingTiers() {
 
     try {
       setLoading(true);
-      const { sessionId } = await createCheckoutSession(tier.priceId);
+      const response = await createCheckoutSession(tier.priceId);
       
+      if (!response?.sessionId) {
+        throw new Error('Failed to create checkout session');
+      }
+
       // Load Stripe dynamically
       const { loadStripe } = await import('@/lib/loadStripe');
       const stripe = await loadStripe('pk_test_51OtQEbRrh0VTJWZxmAUodFnuaGOrFPCwGEuN5gkbpJOOmClyJBvXMJLyTixoL2DFcKB1F7Cc3Uv5A7fK4Xd0ytBv00pfBCUPxk');
@@ -46,11 +50,11 @@ export function PricingTiers() {
       }
 
       const result = await stripe.redirectToCheckout({
-        sessionId
+        sessionId: response.sessionId
       });
 
-      if (result.error) {
-        throw result.error;
+      if (result?.error) {
+        throw new Error(result.error.message || 'Failed to redirect to checkout');
       }
     } catch (error) {
       console.error('Error:', error);

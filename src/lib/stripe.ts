@@ -6,33 +6,31 @@ export async function createCheckoutSession(priceId: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User must be authenticated');
 
-    console.log('Creating checkout session for user:', user.id, 'price:', priceId);
-
-    const { data, error } = await supabase.functions.invoke('stripe', {
-      body: { price_id: priceId, user_id: user.id }
+    const response = await fetch('https://tpthvlivzxrtkexxzqli.supabase.co/functions/v1/stripe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
+      },
+      body: JSON.stringify({
+        price_id: priceId,
+        user_id: user.id
+      })
     });
 
-    if (error) {
-      console.error('Supabase function error:', error);
-      throw error;
-    }
-    
-    if (!data?.sessionId) {
-      console.error('No session ID returned:', data);
-      throw new Error('Invalid checkout session');
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to create checkout session');
     }
 
-    console.log('Checkout session created:', data.sessionId);
+    const data = await response.json();
+    if (!data?.sessionId) {
+      throw new Error('Invalid checkout session response');
+    }
+
     return data;
   } catch (error) {
     console.error('Error creating checkout session:', error);
-    // Add more context to the error
-    if (error.message) {
-      console.error('Error message:', error.message);
-    }
-    if (error.status) {
-      console.error('Error status:', error.status);
-    }
     throw error;
   }
 }
