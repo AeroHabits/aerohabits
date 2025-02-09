@@ -23,7 +23,8 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      // First create the user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -34,14 +35,14 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
         },
       });
 
-      if (error) {
-        if (error.message.includes('rate_limit')) {
+      if (authError) {
+        if (authError.message.includes('rate_limit')) {
           toast({
             title: "Please wait",
             description: "For security purposes, please wait 45 seconds before trying again.",
             variant: "destructive",
           });
-        } else if (error.message.includes('Email signups are disabled')) {
+        } else if (authError.message.includes('Email signups are disabled')) {
           toast({
             title: "Sign up disabled",
             description: "Email signups are currently disabled. Please contact the administrator.",
@@ -50,12 +51,35 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
         } else {
           toast({
             title: "Error",
-            description: error.message,
+            description: authError.message,
             variant: "destructive",
           });
         }
         return;
       }
+
+      // If user creation was successful, explicitly create their profile
+      if (authData.user) {
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert([
+            {
+              id: authData.user.id,
+              full_name: fullName,
+            }
+          ]);
+
+        if (profileError) {
+          console.error("Profile creation error:", profileError);
+          toast({
+            title: "Warning",
+            description: "Account created but profile setup incomplete. Please contact support.",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       toast({
         title: "Success!",
         description: "Please check your email to verify your account.",
@@ -73,7 +97,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
 
   return (
     <>
-      <h1 className="text-4xl font-bold text-center text-black mb-8">
+      <h1 className="text-4xl font-bold text-center text-white mb-8">
         Create Account
       </h1>
       <form onSubmit={handleSignUp} className="space-y-6">
@@ -112,11 +136,11 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           {isLoading ? "Loading..." : "Sign Up"}
         </Button>
       </form>
-      <p className="text-center text-sm mt-6">
+      <p className="text-center text-sm mt-6 text-white">
         Already have an account?{" "}
         <button
           onClick={onToggleForm}
-          className="text-black hover:text-gray-600 transition-colors duration-200 font-semibold"
+          className="text-white hover:text-gray-300 transition-colors duration-200 font-semibold"
           type="button"
         >
           Sign In
