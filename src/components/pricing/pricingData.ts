@@ -1,7 +1,7 @@
 
 // Stripe test mode price IDs
-export const PREMIUM_MONTHLY_PRICE_ID = 'price_1NyKaxHGg42hcY0gD4VyPcAk';
-export const PREMIUM_YEARLY_PRICE_ID = 'price_1NyKaxHGg42hcY0gD4VyPcAk'; // Using same price ID for both plans for now
+export const PREMIUM_MONTHLY_PRICE_ID = 'price_1QqPnKRrh0VTJWZxosJHPcgU';
+export const PREMIUM_YEARLY_PRICE_ID = 'price_1QqPnKRrh0VTJWZxosJHPcgU'; // Using same price ID for both plans for now
 
 type PricingTier = {
   name: string;
