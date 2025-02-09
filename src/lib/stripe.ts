@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { loadStripe } from "@/lib/loadStripe";
 
 export async function createCheckoutSession(priceId: string) {
   try {
@@ -15,7 +14,7 @@ export async function createCheckoutSession(priceId: string) {
 
     if (error) {
       console.error('Supabase function error:', error);
-      throw new Error('Failed to create checkout session');
+      throw error;
     }
     
     if (!data?.sessionId) {

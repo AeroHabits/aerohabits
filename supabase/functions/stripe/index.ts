@@ -16,8 +16,21 @@ serve(async (req) => {
     console.log('Processing checkout for user:', user_id, 'price:', price_id)
 
     // Validate required fields
-    if (!user_id) throw new Error('User ID is required')
-    if (!price_id) throw new Error('Price ID is required')
+    if (!user_id) {
+      console.error('User ID is missing');
+      return new Response(
+        JSON.stringify({ error: 'User ID is required' }), 
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+    
+    if (!price_id) {
+      console.error('Price ID is missing');
+      return new Response(
+        JSON.stringify({ error: 'Price ID is required' }), 
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
 
     // Get or create customer
     const customer = await createOrRetrieveCustomer({ uuid: user_id })
@@ -38,18 +51,18 @@ serve(async (req) => {
     })
       
     console.log('Checkout session created:', session.id)
-    return new Response(JSON.stringify({ sessionId: session.id }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    })
+    return new Response(
+      JSON.stringify({ sessionId: session.id }), 
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+    )
   } catch (error) {
     console.error('Error in stripe function:', error)
-    return new Response(JSON.stringify({ 
-      error: error.message,
-      details: error.raw ? error.raw : null
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 400,
-    })
+    return new Response(
+      JSON.stringify({ 
+        error: error.message,
+        details: error.raw ? error.raw : null
+      }), 
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+    )
   }
 })
