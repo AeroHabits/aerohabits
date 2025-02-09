@@ -3,7 +3,6 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { stripe } from "./stripe.ts"
 import { createOrRetrieveCustomer } from "./utils.ts"
 import { corsHeaders } from "../_shared/cors.ts"
-import { supabaseAdmin } from "../_shared/supabaseAdmin.ts"
 
 serve(async (req) => {
   // Handle CORS preflight
@@ -21,51 +20,34 @@ serve(async (req) => {
     if (!price_id) throw new Error('Price ID is required')
 
     // Get or create customer
-    let customer;
-    try {
-      customer = await createOrRetrieveCustomer({ uuid: user_id })
-      console.log('Customer retrieved/created:', customer.id, 'mode:', customer.livemode ? 'live' : 'test')
-    } catch (error) {
-      console.error('Error creating/retrieving customer:', error)
-      return new Response(JSON.stringify({ error: error.message }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      })
-    }
+    const customer = await createOrRetrieveCustomer({ uuid: user_id })
+    console.log('Customer retrieved/created:', customer.id)
 
     // Create checkout session
-    try {
-      const session = await stripe.checkout.sessions.create({
-        customer: customer.id,
-        mode: 'subscription',
-        payment_method_types: ['card'],
-        line_items: [{ price: price_id, quantity: 1 }],
-        success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.get('origin')}/pricing`,
-        subscription_data: {
-          metadata: { user_id },
-        },
+    const session = await stripe.checkout.sessions.create({
+      customer: customer.id,
+      mode: 'subscription',
+      payment_method_types: ['card'],
+      line_items: [{ price: price_id, quantity: 1 }],
+      success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/pricing`,
+      subscription_data: {
         metadata: { user_id },
-      })
+      },
+      metadata: { user_id },
+    })
       
-      console.log('Checkout session created:', session.id, 'mode:', session.livemode ? 'live' : 'test')
-      return new Response(JSON.stringify({ sessionId: session.id }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200,
-      })
-    } catch (error) {
-      console.error('Error creating checkout session:', error)
-      return new Response(JSON.stringify({ 
-        error: error.message,
-        details: error.raw ? error.raw : null
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
-      })
-    }
+    console.log('Checkout session created:', session.id)
+    return new Response(JSON.stringify({ sessionId: session.id }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
+    })
   } catch (error) {
     console.error('Error in stripe function:', error)
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(JSON.stringify({ 
+      error: error.message,
+      details: error.raw ? error.raw : null
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
     })
