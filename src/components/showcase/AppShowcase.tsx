@@ -1,48 +1,34 @@
 
 import { motion } from "framer-motion";
-import { Award, Flame, Star, Target, Trophy, CreditCard } from "lucide-react";
+import { Award, Flame, Star, Target, Trophy } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
 
 export function AppShowcase() {
-  const navigate = useNavigate();
-
   const features = [
     {
       icon: <Star className="h-6 w-6 text-yellow-500" />,
       title: "Track Daily Habits",
-      description: "Build lasting habits with daily tracking and reminders",
-      route: "/journey"
+      description: "Build lasting habits with daily tracking and reminders"
     },
     {
       icon: <Trophy className="h-6 w-6 text-amber-500" />,
       title: "Earn Achievements",
-      description: "Unlock badges and rewards as you progress",
-      route: "/badges"
+      description: "Unlock badges and rewards as you progress"
     },
     {
       icon: <Flame className="h-6 w-6 text-orange-500" />,
       title: "Join Challenges",
-      description: "Participate in community challenges",
-      route: "/challenges"
+      description: "Participate in community challenges"
     },
     {
       icon: <Target className="h-6 w-6 text-blue-500" />,
       title: "Set Goals",
-      description: "Define and achieve your personal goals",
-      route: "/goals"
+      description: "Define and achieve your personal goals"
     },
     {
       icon: <Award className="h-6 w-6 text-purple-500" />,
       title: "Track Progress",
-      description: "Visualize your journey with detailed statistics",
-      route: "/journey"
-    },
-    {
-      icon: <CreditCard className="h-6 w-6 text-green-500" />,
-      title: "Premium Features",
-      description: "Unlock advanced features with our premium plans",
-      route: "/pricing"
+      description: "Visualize your journey with detailed statistics"
     }
   ];
 
@@ -55,20 +41,15 @@ export function AppShowcase() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
-            onClick={() => navigate(feature.route)}
           >
-            <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all cursor-pointer group">
+            <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
               <div className="flex items-center gap-4">
-                <div className="p-2 rounded-full bg-white/10 group-hover:bg-white/20 transition-colors">
+                <div className="p-2 rounded-full bg-white/10">
                   {feature.icon}
                 </div>
                 <div>
-                  <h3 className="font-semibold text-white group-hover:text-white/90 transition-colors">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm text-white/70 group-hover:text-white/80 transition-colors">
-                    {feature.description}
-                  </p>
+                  <h3 className="font-semibold text-white">{feature.title}</h3>
+                  <p className="text-sm text-white/70">{feature.description}</p>
                 </div>
               </div>
             </Card>

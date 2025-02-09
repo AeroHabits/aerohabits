@@ -1,16 +1,21 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
-import { Database } from "@/integrations/supabase/types";
 
-type Profile = Database['public']['Tables']['profiles']['Row'];
-type Testimonial = Database['public']['Tables']['testimonials']['Row'] & {
-  profiles: Profile;
-};
+interface Testimonial {
+  id: string;
+  content: string;
+  rating: number;
+  created_at: string;
+  user_id: string;
+  profiles: {
+    full_name: string | null;
+    avatar_url: string | null;
+  } | null;
+}
 
 export function TestimonialList() {
   const { data: testimonials, isLoading } = useQuery({
@@ -20,14 +25,12 @@ export function TestimonialList() {
         .from("testimonials")
         .select(`
           *,
-          profiles (
-            full_name,
-            avatar_url
-          )
-        `);
+          profiles(full_name, avatar_url)
+        `)
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
-      return data as Testimonial[];
+      return data as unknown as Testimonial[];
     },
   });
 

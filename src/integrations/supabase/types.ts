@@ -26,7 +26,7 @@ export type Database = {
           description?: string | null
           id?: string
           name: string
-          points_required?: number
+          points_required: number
         }
         Update: {
           badge_type?: string | null
@@ -443,69 +443,6 @@ export type Database = {
           },
         ]
       }
-      stripe_config: {
-        Row: {
-          created_at: string | null
-          id: string
-          publishable_key: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          publishable_key: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          publishable_key?: string
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      stripe_products: {
-        Row: {
-          active: boolean | null
-          created_at: string
-          description: string | null
-          id: string
-          interval: string | null
-          name: string
-          price: number
-          stripe_price_id: string
-          stripe_product_id: string
-          type: string
-          updated_at: string
-        }
-        Insert: {
-          active?: boolean | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          interval?: string | null
-          name: string
-          price: number
-          stripe_price_id: string
-          stripe_product_id: string
-          type: string
-          updated_at?: string
-        }
-        Update: {
-          active?: boolean | null
-          created_at?: string
-          description?: string | null
-          id?: string
-          interval?: string | null
-          name?: string
-          price?: number
-          stripe_price_id?: string
-          stripe_product_id?: string
-          type?: string
-          updated_at?: string
-        }
-        Relationships: []
-      }
       subscriptions: {
         Row: {
           created_at: string
@@ -515,8 +452,6 @@ export type Database = {
           status: string
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
-          trial_end: string | null
-          trial_start: string | null
           updated_at: string
           user_id: string
         }
@@ -528,8 +463,6 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
-          trial_end?: string | null
-          trial_start?: string | null
           updated_at?: string
           user_id: string
         }
@@ -541,8 +474,6 @@ export type Database = {
           status?: string
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
-          trial_end?: string | null
-          trial_start?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -570,15 +501,7 @@ export type Database = {
           rating?: number | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "testimonials_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       user_achievements: {
         Row: {
@@ -702,12 +625,6 @@ export type Database = {
     }
     Functions: {
       can_access_advanced_challenges: {
-        Args: {
-          user_uid: string
-        }
-        Returns: boolean
-      }
-      can_access_app: {
         Args: {
           user_uid: string
         }

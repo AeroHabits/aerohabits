@@ -1,13 +1,53 @@
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Check, Star, Zap } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { createCheckoutSession } from "@/lib/stripe";
+import { loadStripe } from "@/lib/loadStripe";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { PricingCard } from "./PricingCard";
-import { getPricingTiers, type PricingTier } from "./pricingData";
-import { createCheckoutSession } from "@/lib/stripe";
+
+const PREMIUM_PRICE_ID = 'price_XXXXX'; // Replace with your actual Stripe price ID
+
+const tiers = [
+  {
+    name: "Free",
+    price: "0",
+    description: "Perfect for getting started with habit building",
+    features: [
+      "Access to basic challenges",
+      "Habit tracking",
+      "Goal setting",
+      "Progress tracking",
+    ],
+    badge: null,
+    buttonText: "Get Started",
+    buttonVariant: "outline" as const,
+    priceId: null
+  },
+  {
+    name: "Premium",
+    price: "9.99",
+    description: "Unlock advanced features for serious self-improvement",
+    features: [
+      "All Free features",
+      "Advanced challenges",
+      "Personalized recommendations",
+      "Priority support",
+      "Exclusive content",
+      "Advanced analytics",
+    ],
+    badge: "Most Popular",
+    buttonText: "Upgrade Now",
+    buttonVariant: "default" as const,
+    priceId: PREMIUM_PRICE_ID
+  },
+];
 
 export function PricingTiers() {
   const [loading, setLoading] = useState(false);
@@ -21,83 +61,33 @@ export function PricingTiers() {
     },
   });
 
-  const { data: stripeConfig } = useQuery({
-    queryKey: ['stripeConfig'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('stripe_config')
-        .select('publishable_key')
-        .single();
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const { data: subscription } = useQuery({
-    queryKey: ['subscription'],
-    queryFn: async () => {
-      if (!session?.user) return null;
-      const { data, error } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .single();
-      
-      if (error && error.code !== 'PGRST116') throw error;
-      return data;
-    },
-    enabled: !!session?.user,
-  });
-
-  const { data: tiers = [] } = useQuery({
-    queryKey: ['pricingTiers'],
-    queryFn: getPricingTiers
-  });
-
-  const handleSubscribe = async (tier: PricingTier) => {
-    if (!session) {
-      toast.error("Please sign in first");
+  const handleSubscribe = async (tier: typeof tiers[0]) => {
+    if (!tier.priceId) {
       navigate('/auth');
       return;
     }
 
-    if (!tier.priceId) {
-      toast.info("This plan is not available yet. Please check back soon!");
+    if (!session) {
+      toast.error("Please sign in to upgrade to premium");
+      navigate('/auth');
       return;
     }
 
     try {
       setLoading(true);
-      console.log('Creating checkout session for price:', tier.priceId);
-      const response = await createCheckoutSession(tier.priceId);
+      const { sessionId } = await createCheckoutSession(tier.priceId);
       
-      if (!response?.sessionId) {
-        throw new Error('Failed to create checkout session');
-      }
+      // Load Stripe.js
+      const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY || '');
+      if (!stripe) throw new Error('Stripe failed to load');
 
-      const { loadStripe } = await import('@/lib/loadStripe');
-      
-      if (!stripeConfig?.publishable_key) {
-        throw new Error('Stripe configuration is not available');
-      }
+      // Redirect to Checkout
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+      if (error) throw error;
 
-      const stripe = await loadStripe(stripeConfig.publishable_key);
-      
-      if (!stripe) {
-        throw new Error('Stripe failed to load');
-      }
-
-      const result = await stripe.redirectToCheckout({
-        sessionId: response.sessionId
-      });
-
-      if (result?.error) {
-        throw new Error(result.error.message || 'Failed to redirect to checkout');
-      }
-    } catch (error: any) {
+    } catch (error) {
       console.error('Error:', error);
-      toast.error(error?.message || "Failed to start subscription process. Please try again.");
+      toast.error("Failed to start checkout process. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -113,16 +103,61 @@ export function PricingTiers() {
           Choose the plan that's right for you
         </p>
       </div>
-      <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+      <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {tiers.map((tier, index) => (
-          <PricingCard
+          <motion.div
             key={tier.name}
-            tier={tier}
-            index={index}
-            loading={loading}
-            onSubscribe={handleSubscribe}
-            isCurrentPlan={subscription?.plan_type === tier.name.toLowerCase()}
-          />
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.2 }}
+          >
+            <Card className="relative h-full flex flex-col">
+              {tier.badge && (
+                <Badge
+                  className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-purple-500"
+                  variant="secondary"
+                >
+                  <Star className="h-3 w-3 mr-1" />
+                  {tier.badge}
+                </Badge>
+              )}
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  {tier.name === "Premium" ? (
+                    <Zap className="h-5 w-5 text-blue-500" />
+                  ) : null}
+                  {tier.name}
+                </CardTitle>
+                <div className="mt-4">
+                  <span className="text-3xl font-bold">${tier.price}</span>
+                  <span className="text-muted-foreground">/month</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {tier.description}
+                </p>
+              </CardHeader>
+              <CardContent className="flex-grow">
+                <ul className="space-y-3">
+                  {tier.features.map((feature) => (
+                    <li key={feature} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-green-500" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button
+                  variant={tier.buttonVariant}
+                  className="w-full"
+                  onClick={() => handleSubscribe(tier)}
+                  disabled={loading}
+                >
+                  {loading ? "Loading..." : tier.buttonText}
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
         ))}
       </div>
     </div>

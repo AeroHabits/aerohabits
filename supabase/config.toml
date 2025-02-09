@@ -1,5 +1,4 @@
-
 project_id = "tpthvlivzxrtkexxzqli"
 
-[functions.stripe]
-verify_jwt = true
+[functions.reset-habits]
+verify_jwt = false

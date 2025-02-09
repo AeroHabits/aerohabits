@@ -1,4 +1,3 @@
-
 import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Index from "@/pages/Index";
@@ -6,7 +5,6 @@ import Auth from "@/pages/Auth";
 import Goals from "@/pages/Goals";
 import Journey from "@/pages/Journey";
 import Challenges from "@/pages/Challenges";
-import Badges from "@/pages/Badges";
 import Pricing from "@/pages/Pricing";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
@@ -14,14 +12,7 @@ import Privacy from "@/pages/Privacy";
 export function AppRoutes() {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Index />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/" element={<Index />} />
       <Route path="/auth" element={<Auth />} />
       <Route
         path="/goals"
@@ -39,22 +30,7 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/challenges"
-        element={
-          <ProtectedRoute>
-            <Challenges />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/badges"
-        element={
-          <ProtectedRoute>
-            <Badges />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/challenges" element={<Challenges />} />
       <Route path="/pricing" element={<Pricing />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />

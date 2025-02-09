@@ -6,53 +6,45 @@ export async function createOrRetrieveCustomer({
   uuid,
 }: {
   uuid: string
-}): Promise<any> {
-  // First check if customer already exists
-  const { data: subscription } = await supabaseAdmin
+}) {
+  const { data: subscription, error: subscriptionError } = await supabaseAdmin
     .from('subscriptions')
     .select('stripe_customer_id')
     .eq('user_id', uuid)
     .single()
 
   if (subscription?.stripe_customer_id) {
-    const existingCustomer = await stripe.customers.retrieve(subscription.stripe_customer_id)
-    console.log('Retrieved existing customer:', existingCustomer.id)
-    return existingCustomer
+    return await stripe.customers.retrieve(subscription.stripe_customer_id)
   }
 
-  // If no customer exists, get user data and create one
-  const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(uuid)
-  if (userError) {
-    console.error('Error getting user:', userError)
-    throw userError
-  }
+  // No customer record found, let's create one
+  const { data: userData, error: userError } = await supabaseAdmin
+    .from('profiles')
+    .select('full_name, id')
+    .eq('id', uuid)
+    .single()
 
-  if (!user?.email) {
-    throw new Error('User email is required')
-  }
+  if (userError) throw userError
 
-  // Create new customer
   const customer = await stripe.customers.create({
-    email: user.email,
-    name: user.user_metadata?.full_name,
+    email: userData?.id, // Using ID as email since we might not have email
+    name: userData?.full_name ?? undefined,
     metadata: {
       supabaseUUID: uuid,
     },
   })
-  console.log('Created new customer:', customer.id)
 
-  // Store the mapping
+  // Insert the new customer ID into our Supabase mapping table
   const { error: createError } = await supabaseAdmin
     .from('subscriptions')
-    .insert([{ 
-      user_id: uuid,
-      stripe_customer_id: customer.id,
-    }])
+    .insert([
+      {
+        user_id: uuid,
+        stripe_customer_id: customer.id,
+      },
+    ])
 
-  if (createError) {
-    console.error('Error storing customer mapping:', createError)
-    throw createError
-  }
+  if (createError) throw createError
 
   return customer
 }
