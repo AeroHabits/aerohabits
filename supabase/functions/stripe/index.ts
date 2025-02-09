@@ -24,7 +24,7 @@ serve(async (req) => {
     let customer;
     try {
       customer = await createOrRetrieveCustomer({ uuid: user_id })
-      console.log('Customer retrieved/created:', customer.id)
+      console.log('Customer retrieved/created:', customer.id, 'mode:', customer.livemode ? 'live' : 'test')
     } catch (error) {
       console.error('Error creating/retrieving customer:', error)
       return new Response(JSON.stringify({ error: error.message }), {
@@ -48,14 +48,17 @@ serve(async (req) => {
         metadata: { user_id },
       })
       
-      console.log('Checkout session created:', session.id)
+      console.log('Checkout session created:', session.id, 'mode:', session.livemode ? 'live' : 'test')
       return new Response(JSON.stringify({ sessionId: session.id }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
       })
     } catch (error) {
       console.error('Error creating checkout session:', error)
-      return new Response(JSON.stringify({ error: error.message }), {
+      return new Response(JSON.stringify({ 
+        error: error.message,
+        details: error.raw ? error.raw : null
+      }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,
       })
