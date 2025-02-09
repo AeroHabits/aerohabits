@@ -57,7 +57,10 @@ export function PricingTiers() {
       const { sessionId } = await createCheckoutSession(tier.priceId);
       
       const stripe = await loadStripe('pk_test_51QpIhTRrh0VTJWZxqSz0Uho6kNt5UqFySvOhXo8Qx0MqS8QLYCCgwStVvkYjtRtVPigMSnNxViinXgdHWV6iM3FC00BkevHOVU');
-      if (!stripe) throw new Error('Stripe failed to load');
+      if (!stripe) {
+        console.error('Failed to load Stripe');
+        throw new Error('Failed to load Stripe');
+      }
 
       const { error } = await stripe.redirectToCheckout({ sessionId });
       if (error) {
