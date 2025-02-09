@@ -52,7 +52,7 @@ export const useBadges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         console.error("No user found");
-        throw new Error("No user found");
+        return []; // Return empty array instead of throwing error
       }
 
       const { data, error } = await supabase
@@ -69,6 +69,7 @@ export const useBadges = () => {
     },
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    enabled: Boolean(supabase.auth.getSession()), // Only run query if user is authenticated
   });
 
   const { data: purchasedBadges, isLoading: isLoadingPurchased, error: purchasedError, refetch: refetchPurchased } = useQuery({
@@ -77,7 +78,7 @@ export const useBadges = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         console.error("No user found");
-        throw new Error("No user found");
+        return []; // Return empty array instead of throwing error
       }
 
       const { data, error } = await supabase
@@ -103,6 +104,7 @@ export const useBadges = () => {
     },
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    enabled: Boolean(supabase.auth.getSession()), // Only run query if user is authenticated
   });
 
   const isUnlocked = (badgeId: string) => {
