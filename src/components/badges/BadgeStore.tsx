@@ -1,115 +1,13 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Card } from "@/components/ui/card";
-import { Trophy, Star, Award, Flame, Crown } from "lucide-react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-interface StoreBadge {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  badge_type: 'beginner' | 'expert' | 'master';
-  icon: string;
-}
-
-interface PurchasedBadge {
-  badge_id: string;
-}
-
-interface PurchaseResponse {
-  success: boolean;
-  message: string;
-  remaining_points?: number;
-}
-
-const getIcon = (iconName: string) => {
-  switch (iconName) {
-    case 'Trophy':
-      return <Trophy className="h-6 w-6 text-yellow-500" />;
-    case 'Flame':
-      return <Flame className="h-6 w-6 text-orange-500" />;
-    case 'Star':
-      return <Star className="h-6 w-6 text-blue-500" />;
-    case 'Award':
-      return <Award className="h-6 w-6 text-purple-500" />;
-    case 'Crown':
-      return <Crown className="h-6 w-6 text-amber-500" />;
-    default:
-      return <Star className="h-6 w-6 text-gray-500" />;
-  }
-};
-
-const BadgeTypeContent = ({ 
-  badges, 
-  purchasedBadges, 
-  onPurchase 
-}: { 
-  badges: StoreBadge[], 
-  purchasedBadges: PurchasedBadge[] | undefined,
-  onPurchase: (badgeId: string) => void 
-}) => {
-  const isOwned = (badgeId: string) => {
-    return purchasedBadges?.some(pb => pb.badge_id === badgeId);
-  };
-
-  return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {badges.map((badge, index) => (
-        <motion.div
-          key={badge.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.1 }}
-        >
-          <Card className="p-4 bg-white/5 hover:bg-white/10 transition-all duration-300">
-            <div className="flex items-start gap-3">
-              <div className="p-2 rounded-full bg-white/10">
-                {getIcon(badge.icon)}
-              </div>
-              <div className="flex-1">
-                <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-                  {badge.name}
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-white/10">
-                    {badge.cost} pts
-                  </span>
-                </h3>
-                <p className="text-sm text-white/70 mt-1">
-                  {badge.description}
-                </p>
-                <div className="mt-3">
-                  {isOwned(badge.id) ? (
-                    <Button 
-                      variant="secondary" 
-                      className="w-full" 
-                      disabled
-                    >
-                      Owned
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="secondary"
-                      className="w-full"
-                      onClick={() => onPurchase(badge.id)}
-                    >
-                      Purchase
-                    </Button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </Card>
-        </motion.div>
-      ))}
-    </div>
-  );
-};
+import { toast } from "sonner";
+import { StoreBadge, PurchasedBadge, PurchaseResponse } from "./types";
+import { BadgeTypeContent } from "./BadgeTypeContent";
 
 export function BadgeStore() {
   const { data: badges, isLoading: isLoadingBadges, error: badgesError, refetch: refetchBadges } = useQuery({
