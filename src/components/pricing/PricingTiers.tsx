@@ -56,9 +56,9 @@ export function PricingTiers() {
       if (result?.error) {
         throw new Error(result.error.message || 'Failed to redirect to checkout');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error:', error);
-      toast.error("Failed to start subscription process. Please try again.");
+      toast.error(error?.message || "Failed to start subscription process. Please try again.");
     } finally {
       setLoading(false);
     }

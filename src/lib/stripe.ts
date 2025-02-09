@@ -6,29 +6,22 @@ export async function createCheckoutSession(priceId: string) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error('User must be authenticated');
 
-    const response = await fetch('https://tpthvlivzxrtkexxzqli.supabase.co/functions/v1/stripe', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`
-      },
-      body: JSON.stringify({
+    const response = await supabase.functions.invoke('stripe', {
+      body: {
         price_id: priceId,
         user_id: user.id
-      })
+      }
     });
 
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to create checkout session');
+    if (response.error) {
+      throw new Error(response.error.message || 'Failed to create checkout session');
     }
 
-    const data = await response.json();
-    if (!data?.sessionId) {
+    if (!response.data?.sessionId) {
       throw new Error('Invalid checkout session response');
     }
 
-    return data;
+    return response.data;
   } catch (error) {
     console.error('Error creating checkout session:', error);
     throw error;

@@ -32,12 +32,6 @@ serve(async (req) => {
     const customer = await createOrRetrieveCustomer({ uuid: user_id })
     console.log('Customer retrieved/created:', customer.id)
 
-    // Log stripe secret key configuration
-    console.log('Stripe configuration:', {
-      hasKey: !!Deno.env.get('STRIPE_SECRET_KEY'),
-      keyType: Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test') ? 'test' : 'live'
-    })
-
     // Create checkout session
     console.log('Creating checkout session...')
     const session = await stripe.checkout.sessions.create({
@@ -50,6 +44,11 @@ serve(async (req) => {
       metadata: {
         user_id,
       },
+      allow_promotion_codes: true,
+      billing_address_collection: 'auto',
+      customer_update: {
+        address: 'auto'
+      }
     })
     
     console.log('Session created successfully:', session.id)
