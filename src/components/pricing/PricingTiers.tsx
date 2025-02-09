@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PricingCard } from "./PricingCard";
-import { tiers } from "./pricingData";
+import { getPricingTiers, type PricingTier } from "./pricingData";
 import { createCheckoutSession } from "@/lib/stripe";
 
 export function PricingTiers() {
@@ -50,7 +50,12 @@ export function PricingTiers() {
     enabled: !!session?.user,
   });
 
-  const handleSubscribe = async (tier: typeof tiers[number]) => {
+  const { data: tiers = [] } = useQuery({
+    queryKey: ['pricingTiers'],
+    queryFn: getPricingTiers
+  });
+
+  const handleSubscribe = async (tier: PricingTier) => {
     if (!session) {
       toast.error("Please sign in first");
       navigate('/auth');
@@ -64,6 +69,7 @@ export function PricingTiers() {
 
     try {
       setLoading(true);
+      console.log('Creating checkout session for price:', tier.priceId);
       const response = await createCheckoutSession(tier.priceId);
       
       if (!response?.sessionId) {
