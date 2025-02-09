@@ -7,39 +7,57 @@ export async function createOrRetrieveCustomer({
 }: {
   uuid: string
 }) {
-  const { data: subscription, error: subscriptionError } = await supabaseAdmin
-    .from('subscriptions')
-    .select('stripe_customer_id')
-    .eq('user_id', uuid)
-    .single()
+  try {
+    // First check if customer already exists
+    const { data: subscription } = await supabaseAdmin
+      .from('subscriptions')
+      .select('stripe_customer_id')
+      .eq('user_id', uuid)
+      .single()
 
-  if (subscription?.stripe_customer_id) {
-    return await stripe.customers.retrieve(subscription.stripe_customer_id)
-  }
+    if (subscription?.stripe_customer_id) {
+      const existingCustomer = await stripe.customers.retrieve(subscription.stripe_customer_id)
+      console.log('Retrieved existing customer:', existingCustomer.id)
+      return existingCustomer
+    }
 
-  // No customer record found, let's create one
-  const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(uuid)
-  if (userError) throw userError
+    // If no customer exists, get user data and create one
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(uuid)
+    if (userError) {
+      console.error('Error getting user:', userError)
+      throw userError
+    }
 
-  const customer = await stripe.customers.create({
-    email: user?.email,  // Use actual email instead of UUID
-    name: user?.user_metadata?.full_name,
-    metadata: {
-      supabaseUUID: uuid,
-    },
-  })
+    if (!user?.email) {
+      throw new Error('User email is required')
+    }
 
-  // Insert the new customer ID into our Supabase mapping table
-  const { error: createError } = await supabaseAdmin
-    .from('subscriptions')
-    .insert([
-      {
+    // Create new customer
+    const customer = await stripe.customers.create({
+      email: user.email,
+      name: user.user_metadata?.full_name,
+      metadata: {
+        supabaseUUID: uuid,
+      },
+    })
+    console.log('Created new customer:', customer.id)
+
+    // Store the mapping
+    const { error: createError } = await supabaseAdmin
+      .from('subscriptions')
+      .insert([{ 
         user_id: uuid,
         stripe_customer_id: customer.id,
-      },
-    ])
+      }])
 
-  if (createError) throw createError
+    if (createError) {
+      console.error('Error storing customer mapping:', createError)
+      throw createError
+    }
 
-  return customer
+    return customer
+  } catch (error) {
+    console.error('Error in createOrRetrieveCustomer:', error)
+    throw error
+  }
 }
