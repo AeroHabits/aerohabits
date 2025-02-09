@@ -18,40 +18,51 @@ serve(async (req) => {
     if (!user_id) throw new Error('User ID is required')
     if (!price_id) throw new Error('Price ID is required')
 
-    // Get or create customer
-    const customer = await createOrRetrieveCustomer({
-      uuid: user_id,
-    })
-    console.log('Customer retrieved/created:', customer.id)
+    // Get or create customer with proper error handling
+    let customer;
+    try {
+      customer = await createOrRetrieveCustomer({
+        uuid: user_id,
+      })
+      console.log('Customer retrieved/created:', customer.id)
+    } catch (error) {
+      console.error('Error creating/retrieving customer:', error)
+      throw error
+    }
 
     // Create checkout session
-    const session = await stripe.checkout.sessions.create({
-      customer: customer.id,
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: price_id,
-          quantity: 1,
+    try {
+      const session = await stripe.checkout.sessions.create({
+        customer: customer.id,
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: price_id,
+            quantity: 1,
+          },
+        ],
+        success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${req.headers.get('origin')}/pricing`,
+        subscription_data: {
+          metadata: {
+            user_id,
+          },
         },
-      ],
-      success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/pricing`,
-      subscription_data: {
         metadata: {
-          user_id,
+          user_id, // Add user_id to session metadata as well
         },
-      },
-      metadata: {
-        user_id, // Add user_id to session metadata as well
-      },
-    })
-    console.log('Checkout session created:', session.id)
+      })
+      console.log('Checkout session created:', session.id)
 
-    return new Response(JSON.stringify({ sessionId: session.id }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    })
+      return new Response(JSON.stringify({ sessionId: session.id }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 200,
+      })
+    } catch (error) {
+      console.error('Error creating checkout session:', error)
+      throw error
+    }
   } catch (error) {
     console.error('Error in stripe function:', error)
     return new Response(JSON.stringify({ error: error.message }), {

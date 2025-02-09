@@ -18,17 +18,12 @@ export async function createOrRetrieveCustomer({
   }
 
   // No customer record found, let's create one
-  const { data: userData, error: userError } = await supabaseAdmin
-    .from('profiles')
-    .select('full_name, id')
-    .eq('id', uuid)
-    .single()
-
+  const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(uuid)
   if (userError) throw userError
 
   const customer = await stripe.customers.create({
-    email: userData?.id, // Using ID as email since we might not have email
-    name: userData?.full_name ?? undefined,
+    email: user?.email,  // Use actual email instead of UUID
+    name: user?.user_metadata?.full_name,
     metadata: {
       supabaseUUID: uuid,
     },
