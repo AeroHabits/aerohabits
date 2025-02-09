@@ -12,6 +12,8 @@ export async function createCheckoutSession(priceId: string) {
     });
 
     if (error) throw error;
+    if (!data?.sessionId) throw new Error('No session ID returned');
+
     return data;
   } catch (error) {
     console.error('Error creating checkout session:', error);
