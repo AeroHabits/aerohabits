@@ -17,7 +17,7 @@ serve(async (req) => {
 
     if (!user_id || !price_id) {
       const error = !user_id ? 'User ID is required' : 'Price ID is required'
-      console.error(error)
+      console.error('Validation error:', error)
       return new Response(
         JSON.stringify({ error }), 
         { 
@@ -28,10 +28,18 @@ serve(async (req) => {
     }
 
     // Create or get customer
+    console.log('Getting or creating customer...')
     const customer = await createOrRetrieveCustomer({ uuid: user_id })
-    console.log('Customer:', customer.id)
+    console.log('Customer retrieved/created:', customer.id)
+
+    // Log stripe secret key configuration
+    console.log('Stripe configuration:', {
+      hasKey: !!Deno.env.get('STRIPE_SECRET_KEY'),
+      keyType: Deno.env.get('STRIPE_SECRET_KEY')?.startsWith('sk_test') ? 'test' : 'live'
+    })
 
     // Create checkout session
+    console.log('Creating checkout session...')
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription',
@@ -44,7 +52,7 @@ serve(async (req) => {
       },
     })
     
-    console.log('Session created:', session.id)
+    console.log('Session created successfully:', session.id)
     return new Response(
       JSON.stringify({ sessionId: session.id }), 
       { 
@@ -54,8 +62,19 @@ serve(async (req) => {
     )
   } catch (error) {
     console.error('Stripe function error:', error)
+    // Add more detailed error logging
+    if (error.type) {
+      console.error('Stripe error type:', error.type)
+    }
+    if (error.raw) {
+      console.error('Raw error:', error.raw)
+    }
+    
     return new Response(
-      JSON.stringify({ error: error.message }), 
+      JSON.stringify({ 
+        error: error.message,
+        type: error.type || 'unknown'
+      }), 
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
         status: 400 

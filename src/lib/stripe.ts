@@ -26,6 +26,13 @@ export async function createCheckoutSession(priceId: string) {
     return data;
   } catch (error) {
     console.error('Error creating checkout session:', error);
+    // Add more context to the error
+    if (error.message) {
+      console.error('Error message:', error.message);
+    }
+    if (error.status) {
+      console.error('Error status:', error.status);
+    }
     throw error;
   }
 }
