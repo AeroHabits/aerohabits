@@ -35,32 +35,50 @@ export const useBadges = () => {
         .select("*")
         .order("points_required", { ascending: true });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching badges:", error);
+        throw error;
+      }
+      
       return data as Badge[];
     },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const { data: userBadges, isLoading: isLoadingUserBadges, error: userBadgesError, refetch: refetchUserBadges } = useQuery({
     queryKey: ["user-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      if (!user) {
+        console.error("No user found");
+        throw new Error("No user found");
+      }
 
       const { data, error } = await supabase
         .from("user_achievements")
         .select("achievement_id, unlocked_at")
         .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching user badges:", error);
+        throw error;
+      }
+
       return data as UserBadge[];
     },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const { data: purchasedBadges, isLoading: isLoadingPurchased, error: purchasedError, refetch: refetchPurchased } = useQuery({
     queryKey: ["purchased-badges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
+      if (!user) {
+        console.error("No user found");
+        throw new Error("No user found");
+      }
 
       const { data, error } = await supabase
         .from("purchased_badges")
@@ -76,9 +94,15 @@ export const useBadges = () => {
         `)
         .eq("user_id", user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching purchased badges:", error);
+        throw error;
+      }
+
       return data as PurchasedBadge[];
     },
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 
   const isUnlocked = (badgeId: string) => {

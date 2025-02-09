@@ -12,8 +12,14 @@ export function ErrorDisplay({ onRetry }: ErrorDisplayProps) {
     <Alert variant="destructive" className="bg-red-500/10 border-red-500/20">
       <AlertCircle className="h-4 w-4" />
       <AlertTitle>Error loading badges</AlertTitle>
-      <AlertDescription>
-        There was a problem loading your badges. Please try again.
+      <AlertDescription className="space-y-4">
+        <p>There was a problem loading your badges. This might be due to:</p>
+        <ul className="list-disc list-inside text-sm space-y-1">
+          <li>Temporary connection issue</li>
+          <li>Authentication timeout</li>
+          <li>Server maintenance</li>
+        </ul>
+        <p>Please try again.</p>
       </AlertDescription>
       <Button 
         onClick={onRetry} 
