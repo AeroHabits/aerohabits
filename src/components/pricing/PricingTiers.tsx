@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { PricingCard } from "./PricingCard";
 import { tiers } from "./pricingData";
+import { createCheckoutSession } from "@/lib/stripe";
 
 export function PricingTiers() {
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,36 @@ export function PricingTiers() {
       return;
     }
 
-    toast.info("Subscriptions are currently being updated. Please check back soon!");
+    if (!tier.priceId) {
+      toast.info("This plan is not available yet. Please check back soon!");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const { sessionId } = await createCheckoutSession(tier.priceId);
+      
+      // Load Stripe dynamically
+      const { loadStripe } = await import('@/lib/loadStripe');
+      const stripe = await loadStripe('pk_test_51OtQEbRrh0VTJWZxmAUodFnuaGOrFPCwGEuN5gkbpJOOmClyJBvXMJLyTixoL2DFcKB1F7Cc3Uv5A7fK4Xd0ytBv00pfBCUPxk');
+      
+      if (!stripe) {
+        throw new Error('Stripe failed to load');
+      }
+
+      const result = await stripe.redirectToCheckout({
+        sessionId
+      });
+
+      if (result.error) {
+        throw result.error;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Failed to start subscription process. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,12 +69,6 @@ export function PricingTiers() {
         <p className="mt-4 text-lg text-muted-foreground">
           Choose the plan that's right for you
         </p>
-        <Badge 
-          variant="secondary" 
-          className="mt-4 bg-blue-500/10 text-blue-500 border-blue-500/20"
-        >
-          Coming Soon
-        </Badge>
       </div>
       <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
         {tiers.map((tier, index) => (

@@ -44,7 +44,7 @@ export const tiers = [
     badge: null,
     buttonText: "Subscribe Monthly",
     buttonVariant: "default" as const,
-    priceId: null
+    priceId: "price_1QqRMIRrh0VTJWZxqng2r1eS"
   },
   {
     name: "Premium Yearly",
