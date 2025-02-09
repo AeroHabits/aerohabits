@@ -1,8 +1,4 @@
 
-// Stripe test mode price IDs
-export const PREMIUM_MONTHLY_PRICE_ID = 'price_1QqPnKRrh0VTJWZxosJHPcgU';
-export const PREMIUM_YEARLY_PRICE_ID = 'price_1QqPnKRrh0VTJWZxosJHPcgU'; // Using same price ID for both plans for now
-
 type PricingTier = {
   name: string;
   price: string;
@@ -48,7 +44,7 @@ export const tiers = [
     badge: null,
     buttonText: "Subscribe Monthly",
     buttonVariant: "default" as const,
-    priceId: PREMIUM_MONTHLY_PRICE_ID
+    priceId: null
   },
   {
     name: "Premium Yearly",
@@ -67,6 +63,6 @@ export const tiers = [
     badge: "Best Value",
     buttonText: "Subscribe Yearly",
     buttonVariant: "default" as const,
-    priceId: PREMIUM_YEARLY_PRICE_ID
+    priceId: null
   }
 ] as const;
