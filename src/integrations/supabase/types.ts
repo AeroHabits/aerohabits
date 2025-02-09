@@ -383,6 +383,7 @@ export type Database = {
           full_name: string | null
           has_seen_tour: boolean | null
           id: string
+          is_premium: boolean | null
           total_points: number | null
           updated_at: string | null
         }
@@ -391,6 +392,7 @@ export type Database = {
           full_name?: string | null
           has_seen_tour?: boolean | null
           id: string
+          is_premium?: boolean | null
           total_points?: number | null
           updated_at?: string | null
         }
@@ -399,6 +401,7 @@ export type Database = {
           full_name?: string | null
           has_seen_tour?: boolean | null
           id?: string
+          is_premium?: boolean | null
           total_points?: number | null
           updated_at?: string | null
         }
@@ -439,6 +442,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan_type: string
+          status: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          trial_end: string | null
+          trial_start: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_type?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_type?: string
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          trial_end?: string | null
+          trial_start?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       testimonials: {
         Row: {
@@ -600,6 +645,12 @@ export type Database = {
         Returns: boolean
       }
       can_access_app: {
+        Args: {
+          user_uid: string
+        }
+        Returns: boolean
+      }
+      is_premium_user: {
         Args: {
           user_uid: string
         }
