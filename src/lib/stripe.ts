@@ -11,8 +11,15 @@ export async function createCheckoutSession(priceId: string) {
       body: { price_id: priceId, user_id: user.id }
     });
 
-    if (error) throw error;
-    if (!data?.sessionId) throw new Error('No session ID returned');
+    if (error) {
+      console.error('Supabase function error:', error);
+      throw new Error('Failed to create checkout session');
+    }
+    
+    if (!data?.sessionId) {
+      console.error('No session ID returned:', data);
+      throw new Error('Invalid checkout session');
+    }
 
     return data;
   } catch (error) {

@@ -60,7 +60,10 @@ export function PricingTiers() {
       if (!stripe) throw new Error('Stripe failed to load');
 
       const { error } = await stripe.redirectToCheckout({ sessionId });
-      if (error) throw error;
+      if (error) {
+        console.error('Stripe redirect error:', error);
+        throw error;
+      }
 
     } catch (error) {
       console.error('Error:', error);
