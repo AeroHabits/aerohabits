@@ -1,6 +1,6 @@
 
-export const PREMIUM_MONTHLY_PRICE_ID = 'price_1Qq8Q3Rrh0VTJWZxKHTXCKdT';
-export const PREMIUM_YEARLY_PRICE_ID = 'price_1Qq92TRrh0VTJWZxoeUpLOKg';
+export const PREMIUM_MONTHLY_PRICE_ID = 'price_1QqPnKRrh0VTJWZxosJHPcgU';
+export const PREMIUM_YEARLY_PRICE_ID = 'price_1QqPnKRrh0VTJWZxosJHPcgU'; // Using same price ID for both plans for now
 
 type PricingTier = {
   name: string;
