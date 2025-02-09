@@ -3,10 +3,13 @@ import { AddHabitForm } from "./AddHabitForm";
 import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
 import { HabitListContent } from "./HabitListContent";
+import { PricingTiers } from "./pricing/PricingTiers";
 import { useHabits } from "@/hooks/useHabits";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, WifiOff } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export function HabitList() {
   const {
@@ -21,6 +24,22 @@ export function HabitList() {
     isFetching,
     isOnline
   } = useHabits();
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      return data;
+    },
+  });
 
   const isMobile = useIsMobile();
   let touchStartY = 0;
@@ -67,7 +86,7 @@ export function HabitList() {
 
   return (
     <div 
-      className="w-full"
+      className="w-full space-y-8"
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
@@ -112,6 +131,17 @@ export function HabitList() {
           <AddHabitForm onAddHabit={addHabit} />
         </div>
       </div>
+
+      {!profile?.is_premium && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-12"
+        >
+          <PricingTiers />
+        </motion.div>
+      )}
     </div>
   );
 }
