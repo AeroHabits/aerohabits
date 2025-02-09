@@ -1,22 +1,16 @@
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Sparkles, Star, Zap } from "lucide-react";
-import { toast } from "sonner";
-import { motion } from "framer-motion";
-import { createCheckoutSession } from "@/lib/stripe";
-import { loadStripe } from "@/lib/loadStripe";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { createCheckoutSession } from "@/lib/stripe";
+import { loadStripe } from "@/lib/loadStripe";
+import { PricingHeader } from "./PricingHeader";
+import { PricingCard } from "./PricingCard";
 
 export function PricingTiers() {
   const [loading, setLoading] = useState(false);
-  const [isYearly, setIsYearly] = useState(false);
   const navigate = useNavigate();
 
   const { data: session } = useQuery({
@@ -43,7 +37,7 @@ export function PricingTiers() {
 
   const getSelectedPlan = () => {
     if (!stripeProducts) return null;
-    return stripeProducts.find(product => product.interval === (isYearly ? 'year' : 'month'));
+    return stripeProducts[0]; // Monthly plan
   };
 
   const handleSubscribe = async (priceId: string | null) => {
@@ -77,7 +71,6 @@ export function PricingTiers() {
   };
 
   const selectedPlan = getSelectedPlan();
-  const monthlyPrice = selectedPlan?.interval === 'month' ? selectedPlan.price : (selectedPlan?.price || 0) / 12;
 
   const tiers = [
     {
@@ -121,72 +114,18 @@ export function PricingTiers() {
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold tracking-tight">
-          Choose Your Premium Plan
-        </h2>
-        <p className="mt-4 text-lg text-muted-foreground">
-          72-hour free trial, then unlock full access with our premium plans
-        </p>
-      </div>
+      <PricingHeader />
       <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {tiers.map((tier, index) => (
-          <motion.div
+          <PricingCard
             key={tier.name}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.2 }}
-          >
-            <Card className="relative h-full flex flex-col">
-              {tier.badge && (
-                <Badge
-                  className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-purple-500"
-                  variant="secondary"
-                >
-                  <Star className="h-3 w-3 mr-1" />
-                  {tier.badge}
-                </Badge>
-              )}
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  {tier.name === "Yearly" ? (
-                    <Zap className="h-5 w-5 text-blue-500" />
-                  ) : null}
-                  {tier.name}
-                </CardTitle>
-                <div className="mt-4">
-                  <span className="text-3xl font-bold">${tier.price}</span>
-                  <span className="text-muted-foreground">/{tier.interval}</span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-2">
-                  {tier.description}
-                </p>
-              </CardHeader>
-              <CardContent className="flex-grow">
-                <ul className="space-y-3">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  variant={tier.buttonVariant}
-                  className="w-full"
-                  onClick={() => handleSubscribe(tier.priceId)}
-                  disabled={loading}
-                >
-                  {loading ? "Loading..." : tier.buttonText}
-                </Button>
-              </CardFooter>
-            </Card>
-          </motion.div>
+            tier={tier}
+            index={index}
+            loading={loading}
+            onSubscribe={handleSubscribe}
+          />
         ))}
       </div>
     </div>
   );
 }
-
