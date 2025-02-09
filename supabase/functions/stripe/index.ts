@@ -13,28 +13,23 @@ serve(async (req) => {
   try {
     // Parse request body
     const { user_id, price_id } = await req.json()
-    console.log('Processing checkout for user:', user_id, 'price:', price_id)
+    console.log(`Creating checkout session for user ${user_id} with price ${price_id}`)
 
-    // Validate required fields
-    if (!user_id) {
-      console.error('User ID is missing');
+    if (!user_id || !price_id) {
+      const error = !user_id ? 'User ID is required' : 'Price ID is required'
+      console.error(error)
       return new Response(
-        JSON.stringify({ error: 'User ID is required' }), 
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
-    
-    if (!price_id) {
-      console.error('Price ID is missing');
-      return new Response(
-        JSON.stringify({ error: 'Price ID is required' }), 
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
+        JSON.stringify({ error }), 
+        { 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+          status: 400 
+        }
+      )
     }
 
-    // Get or create customer
+    // Create or get customer
     const customer = await createOrRetrieveCustomer({ uuid: user_id })
-    console.log('Customer retrieved/created:', customer.id)
+    console.log('Customer:', customer.id)
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -44,25 +39,27 @@ serve(async (req) => {
       line_items: [{ price: price_id, quantity: 1 }],
       success_url: `${req.headers.get('origin')}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${req.headers.get('origin')}/pricing`,
-      subscription_data: {
-        metadata: { user_id },
+      metadata: {
+        user_id,
       },
-      metadata: { user_id },
     })
-      
-    console.log('Checkout session created:', session.id)
+    
+    console.log('Session created:', session.id)
     return new Response(
       JSON.stringify({ sessionId: session.id }), 
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+        status: 200 
+      }
     )
   } catch (error) {
-    console.error('Error in stripe function:', error)
+    console.error('Stripe function error:', error)
     return new Response(
-      JSON.stringify({ 
-        error: error.message,
-        details: error.raw ? error.raw : null
-      }), 
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      JSON.stringify({ error: error.message }), 
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+        status: 400 
+      }
     )
   }
 })
