@@ -81,36 +81,39 @@ export function PricingTiers() {
 
   const tiers = [
     {
-      name: "Free",
-      price: "0",
+      name: "Monthly",
+      price: "9.99",
       interval: "month",
-      description: "Perfect for getting started with habit building",
+      description: "Perfect for getting started with full access to all premium features",
       features: [
-        "Access to basic challenges",
-        "Habit tracking",
-        "Goal setting",
-        "Progress tracking",
-      ],
-      badge: null,
-      buttonText: "Get Started",
-      buttonVariant: "outline" as const,
-      priceId: null
-    },
-    {
-      name: "Premium",
-      price: monthlyPrice.toFixed(2),
-      interval: isYearly ? "year" : "month",
-      description: "Unlock advanced features for serious self-improvement",
-      features: [
-        "All Free features",
+        "All premium features",
         "Advanced challenges",
         "Personalized recommendations",
         "Priority support",
         "Exclusive content",
         "Advanced analytics",
       ],
-      badge: isYearly ? "Save 16%" : "Most Popular",
-      buttonText: "Upgrade Now",
+      badge: null,
+      buttonText: "Subscribe Monthly",
+      buttonVariant: "outline" as const,
+      priceId: selectedPlan?.stripe_price_id || null
+    },
+    {
+      name: "Yearly",
+      price: "69.99",
+      interval: "year",
+      description: "Best value for long-term commitment to self-improvement",
+      features: [
+        "All Monthly features",
+        "Save 42% compared to monthly",
+        "Advanced challenges",
+        "Personalized recommendations",
+        "Priority support",
+        "Exclusive content",
+        "Advanced analytics",
+      ],
+      badge: "Best Value",
+      buttonText: "Get Yearly Access",
       buttonVariant: "default" as const,
       priceId: selectedPlan?.stripe_price_id || null
     },
@@ -120,27 +123,11 @@ export function PricingTiers() {
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold tracking-tight">
-          Simple, transparent pricing
+          Choose Your Premium Plan
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Choose the plan that's right for you
+          72-hour free trial, then unlock full access with our premium plans
         </p>
-        <div className="flex items-center justify-center mt-8 gap-2">
-          <Label htmlFor="billing-toggle" className={!isYearly ? "font-semibold" : ""}>Monthly</Label>
-          <Switch
-            id="billing-toggle"
-            checked={isYearly}
-            onCheckedChange={setIsYearly}
-          />
-          <Label htmlFor="billing-toggle" className={isYearly ? "font-semibold" : ""}>
-            Yearly
-            {isYearly && (
-              <Badge variant="secondary" className="ml-2 bg-green-500/10 text-green-500 border-green-500/20">
-                Save 16%
-              </Badge>
-            )}
-          </Label>
-        </div>
       </div>
       <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {tiers.map((tier, index) => (
@@ -156,17 +143,13 @@ export function PricingTiers() {
                   className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-purple-500"
                   variant="secondary"
                 >
-                  {tier.badge === "Save 16%" ? (
-                    <Sparkles className="h-3 w-3 mr-1" />
-                  ) : (
-                    <Star className="h-3 w-3 mr-1" />
-                  )}
+                  <Star className="h-3 w-3 mr-1" />
                   {tier.badge}
                 </Badge>
               )}
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  {tier.name === "Premium" ? (
+                  {tier.name === "Yearly" ? (
                     <Zap className="h-5 w-5 text-blue-500" />
                   ) : null}
                   {tier.name}
@@ -206,3 +189,4 @@ export function PricingTiers() {
     </div>
   );
 }
+
