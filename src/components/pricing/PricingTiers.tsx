@@ -2,7 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Star, Zap } from "lucide-react";
+import { Check, Sparkles, Star, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { createCheckoutSession } from "@/lib/stripe";
@@ -11,46 +11,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
-
-const PREMIUM_PRICE_ID = 'price_XXXXX'; // Replace with your actual Stripe price ID
-
-const tiers = [
-  {
-    name: "Free",
-    price: "0",
-    description: "Perfect for getting started with habit building",
-    features: [
-      "Access to basic challenges",
-      "Habit tracking",
-      "Goal setting",
-      "Progress tracking",
-    ],
-    badge: null,
-    buttonText: "Get Started",
-    buttonVariant: "outline" as const,
-    priceId: null
-  },
-  {
-    name: "Premium",
-    price: "9.99",
-    description: "Unlock advanced features for serious self-improvement",
-    features: [
-      "All Free features",
-      "Advanced challenges",
-      "Personalized recommendations",
-      "Priority support",
-      "Exclusive content",
-      "Advanced analytics",
-    ],
-    badge: "Most Popular",
-    buttonText: "Upgrade Now",
-    buttonVariant: "default" as const,
-    priceId: PREMIUM_PRICE_ID
-  },
-];
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export function PricingTiers() {
   const [loading, setLoading] = useState(false);
+  const [isYearly, setIsYearly] = useState(false);
   const navigate = useNavigate();
 
   const { data: session } = useQuery({
@@ -61,8 +27,27 @@ export function PricingTiers() {
     },
   });
 
-  const handleSubscribe = async (tier: typeof tiers[0]) => {
-    if (!tier.priceId) {
+  const { data: stripeProducts } = useQuery({
+    queryKey: ['stripeProducts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('stripe_products')
+        .select('*')
+        .eq('active', true)
+        .order('price');
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const getSelectedPlan = () => {
+    if (!stripeProducts) return null;
+    return stripeProducts.find(product => product.interval === (isYearly ? 'year' : 'month'));
+  };
+
+  const handleSubscribe = async (priceId: string | null) => {
+    if (!priceId) {
       navigate('/auth');
       return;
     }
@@ -75,13 +60,11 @@ export function PricingTiers() {
 
     try {
       setLoading(true);
-      const { sessionId } = await createCheckoutSession(tier.priceId);
+      const { sessionId } = await createCheckoutSession(priceId);
       
-      // Load Stripe.js
       const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY || '');
       if (!stripe) throw new Error('Stripe failed to load');
 
-      // Redirect to Checkout
       const { error } = await stripe.redirectToCheckout({ sessionId });
       if (error) throw error;
 
@@ -93,6 +76,46 @@ export function PricingTiers() {
     }
   };
 
+  const selectedPlan = getSelectedPlan();
+  const monthlyPrice = selectedPlan?.interval === 'month' ? selectedPlan.price : (selectedPlan?.price || 0) / 12;
+
+  const tiers = [
+    {
+      name: "Free",
+      price: "0",
+      interval: "month",
+      description: "Perfect for getting started with habit building",
+      features: [
+        "Access to basic challenges",
+        "Habit tracking",
+        "Goal setting",
+        "Progress tracking",
+      ],
+      badge: null,
+      buttonText: "Get Started",
+      buttonVariant: "outline" as const,
+      priceId: null
+    },
+    {
+      name: "Premium",
+      price: monthlyPrice.toFixed(2),
+      interval: isYearly ? "year" : "month",
+      description: "Unlock advanced features for serious self-improvement",
+      features: [
+        "All Free features",
+        "Advanced challenges",
+        "Personalized recommendations",
+        "Priority support",
+        "Exclusive content",
+        "Advanced analytics",
+      ],
+      badge: isYearly ? "Save 16%" : "Most Popular",
+      buttonText: "Upgrade Now",
+      buttonVariant: "default" as const,
+      priceId: selectedPlan?.stripe_price_id || null
+    },
+  ];
+
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
@@ -102,6 +125,22 @@ export function PricingTiers() {
         <p className="mt-4 text-lg text-muted-foreground">
           Choose the plan that's right for you
         </p>
+        <div className="flex items-center justify-center mt-8 gap-2">
+          <Label htmlFor="billing-toggle" className={!isYearly ? "font-semibold" : ""}>Monthly</Label>
+          <Switch
+            id="billing-toggle"
+            checked={isYearly}
+            onCheckedChange={setIsYearly}
+          />
+          <Label htmlFor="billing-toggle" className={isYearly ? "font-semibold" : ""}>
+            Yearly
+            {isYearly && (
+              <Badge variant="secondary" className="ml-2 bg-green-500/10 text-green-500 border-green-500/20">
+                Save 16%
+              </Badge>
+            )}
+          </Label>
+        </div>
       </div>
       <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
         {tiers.map((tier, index) => (
@@ -117,7 +156,11 @@ export function PricingTiers() {
                   className="absolute -top-2 -right-2 bg-gradient-to-r from-blue-500 to-purple-500"
                   variant="secondary"
                 >
-                  <Star className="h-3 w-3 mr-1" />
+                  {tier.badge === "Save 16%" ? (
+                    <Sparkles className="h-3 w-3 mr-1" />
+                  ) : (
+                    <Star className="h-3 w-3 mr-1" />
+                  )}
                   {tier.badge}
                 </Badge>
               )}
@@ -130,7 +173,7 @@ export function PricingTiers() {
                 </CardTitle>
                 <div className="mt-4">
                   <span className="text-3xl font-bold">${tier.price}</span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-muted-foreground">/{tier.interval}</span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-2">
                   {tier.description}
@@ -150,7 +193,7 @@ export function PricingTiers() {
                 <Button
                   variant={tier.buttonVariant}
                   className="w-full"
-                  onClick={() => handleSubscribe(tier)}
+                  onClick={() => handleSubscribe(tier.priceId)}
                   disabled={loading}
                 >
                   {loading ? "Loading..." : tier.buttonText}
