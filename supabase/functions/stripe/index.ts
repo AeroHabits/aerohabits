@@ -6,17 +6,23 @@ import { corsHeaders } from "../_shared/cors.ts"
 import { supabaseAdmin } from "../_shared/supabaseAdmin.ts"
 
 serve(async (req) => {
+  // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
     const { user_id, price_id } = await req.json()
+    console.log('Processing checkout for user:', user_id, 'price:', price_id)
+
+    if (!user_id) throw new Error('User ID is required')
+    if (!price_id) throw new Error('Price ID is required')
 
     // Get or create customer
     const customer = await createOrRetrieveCustomer({
       uuid: user_id,
     })
+    console.log('Customer retrieved/created:', customer.id)
 
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
@@ -36,14 +42,18 @@ serve(async (req) => {
           user_id,
         },
       },
+      metadata: {
+        user_id, // Add user_id to session metadata as well
+      },
     })
+    console.log('Checkout session created:', session.id)
 
     return new Response(JSON.stringify({ sessionId: session.id }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
   } catch (error) {
-    console.error(error)
+    console.error('Error in stripe function:', error)
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 400,
