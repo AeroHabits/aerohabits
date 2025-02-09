@@ -5,9 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Star, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 import { PricingFeatures } from "./PricingFeatures";
-import { tiers } from "./pricingData";
-
-type PricingTier = typeof tiers[number];
+import { type PricingTier } from "./pricingData";
 
 interface PricingCardProps {
   tier: PricingTier;
