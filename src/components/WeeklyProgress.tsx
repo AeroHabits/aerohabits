@@ -5,7 +5,7 @@ import { JourneyChart } from "./JourneyChart";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { BarChart3 } from "lucide-react";
-import { format, subDays, startOfDay, endOfDay, isWithinInterval } from "date-fns";
+import { format, subDays, startOfDay, endOfDay, startOfWeek, isWithinInterval } from "date-fns";
 
 export function WeeklyProgress() {
   const { data: habits } = useQuery({
@@ -21,41 +21,35 @@ export function WeeklyProgress() {
     },
   });
 
-  // Generate an array of the last 7 days
+  // Get the start of the current week
+  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start from Monday
+
+  // Generate data for the current week
   const weeklyData = Array.from({ length: 7 }, (_, index) => {
     const date = subDays(new Date(), 6 - index);
     const dayStart = startOfDay(date);
     const dayEnd = endOfDay(date);
     
-    // Filter habits that were created or updated within this day's interval
+    // Filter habits for this day
     const dayHabits = habits?.filter(habit => {
       const habitDate = new Date(habit.updated_at);
       return isWithinInterval(habitDate, { start: dayStart, end: dayEnd });
     }) || [];
     
+    const completed = dayHabits.filter(habit => habit.completed).length;
+    const total = dayHabits.length;
+    
     return {
       day: format(date, 'EEE'),
-      completed: dayHabits.filter(habit => habit.completed).length,
-      total: dayHabits.length,
-      percentage: dayHabits.length > 0 
-        ? Math.round((dayHabits.filter(habit => habit.completed).length / dayHabits.length) * 100)
-        : 0
+      completed,
+      total,
+      percentage: total > 0 ? Math.round((completed / total) * 100) : 0
     };
   });
 
-  // Calculate actual totals based on all habits within the 7-day period
-  const now = new Date();
-  const weekAgo = subDays(now, 6);
-  const weekHabits = habits?.filter(habit => {
-    const habitDate = new Date(habit.updated_at);
-    return isWithinInterval(habitDate, { 
-      start: startOfDay(weekAgo), 
-      end: endOfDay(now) 
-    });
-  }) || [];
-
-  const totalCompleted = weekHabits.filter(habit => habit.completed).length;
-  const totalHabits = weekHabits.length;
+  // Calculate weekly totals
+  const totalCompleted = weeklyData.reduce((sum, day) => sum + day.completed, 0);
+  const totalHabits = weeklyData.reduce((sum, day) => sum + day.total, 0);
   const weeklyPercentage = totalHabits > 0 
     ? Math.round((totalCompleted / totalHabits) * 100) 
     : 0;
@@ -72,10 +66,10 @@ export function WeeklyProgress() {
             <div className="space-y-1">
               <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
                 <BarChart3 className="w-6 h-6" />
-                Habit Completion Analysis
+                Weekly Progress
               </h2>
               <p className="text-sm text-white/80">
-                7-Day Performance Overview
+                Current Week Overview
               </p>
             </div>
             <div className="bg-white/10 px-4 py-2 rounded-lg">

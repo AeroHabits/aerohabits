@@ -1,6 +1,6 @@
 
 import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, CartesianGrid } from "recharts";
 import { motion } from "framer-motion";
 
 interface JourneyChartProps {
@@ -32,11 +32,11 @@ export function JourneyChart({ data }: JourneyChartProps) {
     >
       <ChartContainer config={config}>
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+          <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
             <defs>
-              <linearGradient id="completed" x1="0" y1="0" x2="0" y2="1">
+              <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#3B82F6" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.1} />
+                <stop offset="100%" stopColor="#3B82F6" stopOpacity={0.3} />
               </linearGradient>
             </defs>
             
@@ -78,21 +78,34 @@ export function JourneyChart({ data }: JourneyChartProps) {
                 >
                   <p className="font-medium text-white">{data.day}</p>
                   <p className="text-blue-300">
-                    Completed: {data.completed}
+                    Completed: {data.completed} / {data.total}
+                  </p>
+                  <p className="text-blue-200">
+                    {data.percentage}% Success
                   </p>
                 </motion.div>
               );
             }} />
             
-            <Area
-              type="monotone"
+            <Bar
               dataKey="completed"
-              stroke="#3B82F6"
-              strokeWidth={2}
-              fillOpacity={1}
-              fill="url(#completed)"
-            />
-          </AreaChart>
+              fill="url(#barGradient)"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={50}
+              animationBegin={0}
+              animationDuration={800}
+              animationEasing="ease"
+            >
+              {data.map((entry, index) => (
+                <motion.rect
+                  key={`bar-${index}`}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: index * 0.1 }}
+                />
+              ))}
+            </Bar>
+          </BarChart>
         </ResponsiveContainer>
       </ChartContainer>
     </motion.div>
