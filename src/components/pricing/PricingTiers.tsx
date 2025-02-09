@@ -21,6 +21,19 @@ export function PricingTiers() {
     },
   });
 
+  const { data: stripeConfig } = useQuery({
+    queryKey: ['stripeConfig'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('stripe_config')
+        .select('publishable_key')
+        .single();
+      
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const handleSubscribe = async (tier: typeof tiers[number]) => {
     if (!session) {
       toast.error("Please sign in first");
@@ -43,7 +56,12 @@ export function PricingTiers() {
 
       // Load Stripe dynamically
       const { loadStripe } = await import('@/lib/loadStripe');
-      const stripe = await loadStripe('pk_test_51OtQEbRrh0VTJWZxmAUodFnuaGOrFPCwGEuN5gkbpJOOmClyJBvXMJLyTixoL2DFcKB1F7Cc3Uv5A7fK4Xd0ytBv00pfBCUPxk');
+      
+      if (!stripeConfig?.publishable_key) {
+        throw new Error('Stripe configuration is not available');
+      }
+
+      const stripe = await loadStripe(stripeConfig.publishable_key);
       
       if (!stripe) {
         throw new Error('Stripe failed to load');
