@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { PointsGuide } from "@/components/badges/PointsGuide";
 
 export default function Settings() {
   const [loading, setLoading] = useState(true);
@@ -27,7 +28,7 @@ export default function Settings() {
         .from('subscriptions')
         .select('*')
         .eq('user_id', user.id)
-        .maybeSingle();  // Changed from .single() to .maybeSingle()
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -137,6 +138,16 @@ export default function Settings() {
       <div className="container max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-white">Settings</h1>
         
+        <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
+          <CardHeader>
+            <CardTitle className="text-white">Points Guide</CardTitle>
+            <CardDescription className="text-gray-300">Learn how to earn and spend points</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <PointsGuide />
+          </CardContent>
+        </Card>
+
         <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
           <CardHeader>
             <CardTitle className="text-white">Subscription</CardTitle>
