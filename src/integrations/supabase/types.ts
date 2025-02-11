@@ -299,9 +299,11 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          last_streak: number | null
           last_synced: string | null
           offline_created: boolean | null
           streak: number | null
+          streak_broken: boolean | null
           title: string
           updated_at: string
           user_id: string
@@ -313,9 +315,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          last_streak?: number | null
           last_synced?: string | null
           offline_created?: boolean | null
           streak?: number | null
+          streak_broken?: boolean | null
           title: string
           updated_at?: string
           user_id: string
@@ -327,9 +331,11 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          last_streak?: number | null
           last_synced?: string | null
           offline_created?: boolean | null
           streak?: number | null
+          streak_broken?: boolean | null
           title?: string
           updated_at?: string
           user_id?: string

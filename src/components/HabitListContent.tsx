@@ -1,5 +1,5 @@
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { HabitCard } from "./HabitCard";
 import type { Habit } from "@/types";
 
@@ -27,6 +27,9 @@ export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete 
             description={habit.description}
             streak={habit.streak}
             completed={habit.completed}
+            streak_broken={habit.streak_broken}
+            last_streak={habit.last_streak}
+            category={habit.habit_categories}
             onToggle={() => onToggle(habit.id)}
             onDelete={() => onDelete(habit.id)}
           />

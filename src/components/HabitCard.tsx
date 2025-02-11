@@ -1,11 +1,12 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Star, Trophy } from "lucide-react";
+import { Trash2, Star, Trophy, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { icons } from "lucide-react";
+import { toast } from "sonner";
 
 interface HabitCardProps {
   id: string;
@@ -13,6 +14,8 @@ interface HabitCardProps {
   description?: string;
   streak: number;
   completed: boolean;
+  streak_broken?: boolean;
+  last_streak?: number;
   category?: {
     id: string;
     name: string;
@@ -29,11 +32,27 @@ export function HabitCard({
   description,
   streak,
   completed,
+  streak_broken,
+  last_streak,
   category,
   onToggle,
   onDelete,
 }: HabitCardProps) {
   const LucideIcon = category?.icon ? (icons as any)[category.icon] : Star;
+
+  // Show toast when streak is broken
+  if (streak_broken && last_streak && last_streak > 0) {
+    toast.warning(
+      <div className="flex flex-col gap-2">
+        <div className="font-semibold">Don't give up!</div>
+        <div>You had a {last_streak} day streak going. Let's start building it back up!</div>
+      </div>,
+      {
+        icon: <AlertCircle className="h-5 w-5 text-yellow-500" />,
+        duration: 5000,
+      }
+    );
+  }
 
   return (
     <motion.div
@@ -119,6 +138,12 @@ export function HabitCard({
                 <div className="flex items-center space-x-1 text-blue-300">
                   <Trophy className="h-5 w-5" />
                   <span className="font-medium text-white/90">{streak} day streak!</span>
+                </div>
+              )}
+              {streak_broken && last_streak && last_streak > 0 && (
+                <div className="flex items-center space-x-1 text-yellow-300">
+                  <AlertCircle className="h-5 w-5" />
+                  <span className="font-medium text-white/90">Start again!</span>
                 </div>
               )}
             </div>

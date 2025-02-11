@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email?: string;
@@ -25,6 +24,14 @@ export interface Habit {
   category_id?: string;
   created_at: string;
   updated_at: string;
+  streak_broken?: boolean;
+  last_streak?: number;
+  habit_categories?: {
+    id: string;
+    name: string;
+    color: string;
+    icon: string;
+  };
 }
 
 export interface Goal {
