@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Settings() {
   const [loading, setLoading] = useState(true);
@@ -119,6 +120,19 @@ export default function Settings() {
               checked={settings.push_notifications}
               onCheckedChange={(checked) => updateSetting('push_notifications', checked)}
             />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Legal</CardTitle>
+          <CardDescription>Review our legal documents</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex flex-col space-y-2">
+            <Link to="/terms" className="text-blue-500 hover:underline">Terms of Service</Link>
+            <Link to="/privacy" className="text-blue-500 hover:underline">Privacy Policy</Link>
           </div>
         </CardContent>
       </Card>
