@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { MobileNav } from "./MobileNav";
 import { motion } from "framer-motion";
 
 interface ProtectedRouteProps {
@@ -47,9 +46,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   return isAuthenticated ? (
     <>
       {children}
-      <MobileNav />
     </>
   ) : (
     <Navigate to="/auth" state={{ from: location }} replace />
   );
 };
+
