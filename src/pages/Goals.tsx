@@ -35,28 +35,28 @@ const Goals = () => {
     {
       icon: <Rocket className="w-8 h-8 text-[#8B5CF6] transition-all duration-300 group-hover:text-[#D946EF]" />,
       title: "Dream Big",
-      description: "Your goals are the first step toward your dreams. Make them count!",
+      description: "Your Goals are the First Step Toward Your Dreams. Make Them Count!",
       onClick: () => toast({
         title: "Dream Big!",
-        description: "Set ambitious goals that inspire and challenge you.",
+        description: "Set Ambitious Goals That Inspire and Challenge You.",
       })
     },
     {
       icon: <Target className="w-8 h-8 text-[#F97316] transition-all duration-300 group-hover:text-[#0EA5E9]" />,
       title: "Stay Focused",
-      description: "Break down your goals into actionable steps and track your progress.",
+      description: "Break Down Your Goals into Actionable Steps and Track Your Progress.",
       onClick: () => toast({
         title: "Stay Focused!",
-        description: "Small steps every day lead to big achievements.",
+        description: "Small Steps Every Day Lead to Big Achievements.",
       })
     },
     {
       icon: <Star className="w-8 h-8 text-[#0EA5E9] transition-all duration-300 group-hover:text-[#8B5CF6]" />,
       title: "Celebrate Progress",
-      description: "Every step forward is a victory. Acknowledge your achievements!",
+      description: "Every Step Forward is a Victory. Acknowledge Your Achievements!",
       onClick: () => toast({
         title: "Celebrate Progress!",
-        description: "Don't forget to celebrate your wins, big and small.",
+        description: "Don't Forget to Celebrate Your Wins, Big and Small.",
       })
     }
   ];

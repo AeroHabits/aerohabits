@@ -12,22 +12,22 @@ export default function Terms() {
         1101 Parc Central Dr<br />
         Festus, MO 63028<br />
         United States<br />
-        Email: support@aerohabits.com</p>
+        Email: Support@AeroHabits.com</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">2. Acceptance of Terms</h2>
-        <p>By accessing and using AEROHABITS, you agree to be bound by these Terms of Service.</p>
+        <p>By accessing and using AEROHABITS, You agree to be bound by these Terms of Service.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">3. Description of Service</h2>
-        <p>AEROHABITS is a habit tracking application that helps users build and maintain positive habits.</p>
+        <p>AEROHABITS is a Habit Tracking Application that helps Users build and maintain positive habits.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">4. User Accounts</h2>
-        <p>Users must register for an account and maintain accurate information. You are responsible for maintaining the security of your account.</p>
+        <p>Users must register for an Account and maintain accurate information. You are responsible for maintaining the security of Your Account.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">5. Privacy</h2>
-        <p>Your privacy is important to us. Please review our <Link to="/privacy" className="text-blue-500 hover:underline">Privacy Policy</Link>.</p>
+        <p>Your Privacy is important to Us. Please review Our <Link to="/privacy" className="text-blue-500 hover:underline">Privacy Policy</Link>.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">6. Modifications to Service</h2>
-        <p>We reserve the right to modify or discontinue the service at any time.</p>
+        <p>We reserve the right to modify or discontinue the Service at any time.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">7. Limitation of Liability</h2>
         <p>AEROHABITS is provided "as is" without warranties of any kind.</p>

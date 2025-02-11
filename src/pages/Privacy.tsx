@@ -12,22 +12,22 @@ export default function Privacy() {
         1101 Parc Central Dr<br />
         Festus, MO 63028<br />
         United States<br />
-        Email: support@aerohabits.com</p>
+        Email: Support@AeroHabits.com</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">1. Information We Collect</h2>
-        <p>We collect information you provide directly to us when you create an account and use our services.</p>
+        <p>We collect information You provide directly to Us when You create an account and use Our services.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">2. How We Use Your Information</h2>
-        <p>We use the information we collect to provide, maintain, and improve our services.</p>
+        <p>We use the information We collect to provide, maintain, and improve Our services.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">3. Information Sharing</h2>
-        <p>We do not share your personal information with third parties except as described in this policy.</p>
+        <p>We do not share Your personal information with third parties except as described in this Policy.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">4. Data Security</h2>
-        <p>We take reasonable measures to help protect your personal information from loss, theft, misuse, and unauthorized access.</p>
+        <p>We take reasonable measures to help protect Your personal information from loss, theft, misuse, and unauthorized access.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">5. Your Rights</h2>
-        <p>You have the right to access, update, or delete your personal information.</p>
+        <p>You have the right to access, update, or delete Your personal information.</p>
 
         <div className="mt-8">
           <Link to="/" className="text-blue-500 hover:underline">← Back to Home</Link>
