@@ -1,3 +1,4 @@
+
 import { ChallengeMotivation } from "./ChallengeMotivation";
 import { ChallengeCompletionCriteria } from "./ChallengeCompletionCriteria";
 import { ChallengeTips } from "./ChallengeTips";
@@ -19,7 +20,7 @@ export function ChallengeContent({
 }: ChallengeContentProps) {
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground line-clamp-2">
+      <p className="text-sm text-muted-foreground line-clamp-3">
         {description}
       </p>
       
