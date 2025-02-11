@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -42,10 +43,10 @@ export function TestimonialList() {
     <div className="py-12 px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <h2 className="text-3xl font-bold tracking-tight">
-          What our users say
+          Transform Your Life, One Habit at a Time
         </h2>
         <p className="mt-4 text-lg text-muted-foreground">
-          Join thousands of satisfied users on their journey to better habits
+          Join our community of achievers who turned their dreams into daily victories
         </p>
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
