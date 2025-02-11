@@ -1,9 +1,6 @@
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { HabitList } from "@/components/HabitList";
 import { ChallengeList } from "@/components/ChallengeList";
-import { PricingTiers } from "@/components/pricing/PricingTiers";
-import { TestimonialList } from "@/components/testimonials/TestimonialList";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -16,10 +13,11 @@ export function AppTabs() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <Tabs defaultValue="habits" className="w-full">
+      <Tabs defaultValue="challenges" className="w-full">
         <TabsList className="w-full max-w-md mx-auto bg-white/20 backdrop-blur-sm border border-white/30">
           <TabsTrigger 
             value="habits" 
+            onClick={() => navigate("/habits")}
             className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
           >
             Habits
@@ -52,12 +50,6 @@ export function AppTabs() {
           transition={{ delay: 0.3 }}
           className="mt-6"
         >
-          <TabsContent value="habits">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
-              <HabitList />
-            </div>
-          </TabsContent>
-          
           <TabsContent value="challenges">
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
               <ChallengeList />

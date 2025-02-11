@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
+import Habits from "@/pages/Habits";
 import Goals from "@/pages/Goals";
 import Journey from "@/pages/Journey";
 import Challenges from "@/pages/Challenges";
@@ -22,6 +23,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Index />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/habits"
+        element={
+          <ProtectedRoute>
+            <Habits />
           </ProtectedRoute>
         }
       />

@@ -12,7 +12,7 @@ export function AppShowcase() {
       icon: <Star className="h-6 w-6 text-yellow-500" />,
       title: "Track Daily Habits",
       description: "Build lasting habits with daily tracking and reminders",
-      route: "#habits" // Using hash for tab navigation
+      route: "/habits"
     },
     {
       icon: <Trophy className="h-6 w-6 text-amber-500" />,
@@ -24,7 +24,7 @@ export function AppShowcase() {
       icon: <Flame className="h-6 w-6 text-orange-500" />,
       title: "Join Challenges",
       description: "Participate in community challenges",
-      route: "#challenges" // Using hash for tab navigation
+      route: "#challenges"
     },
     {
       icon: <Target className="h-6 w-6 text-blue-500" />,
@@ -42,9 +42,8 @@ export function AppShowcase() {
 
   const handleCardClick = (route: string) => {
     if (route.startsWith('#')) {
-      // For tab navigation, first ensure we're on the index page
-      const tabId = route.substring(1); // Remove the # from the route
-      const tabsList = document.querySelector(`[value="${tabId}"]`);
+      const tabId = route.substring(1);
+      const tabsList = document.querySelector(`[value="${tabId}"]`) as HTMLElement;
       if (tabsList) {
         tabsList.click();
       }
