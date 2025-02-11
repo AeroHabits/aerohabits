@@ -5,8 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, Crown } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Settings() {
   const [loading, setLoading] = useState(true);
@@ -15,6 +16,23 @@ export default function Settings() {
     push_notifications: true
   });
   const { toast } = useToast();
+
+  const { data: subscription } = useQuery({
+    queryKey: ['subscription'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   useEffect(() => {
     loadUserSettings();
@@ -76,6 +94,36 @@ export default function Settings() {
     }
   };
 
+  const getSubscriptionStatus = () => {
+    if (!subscription) return "No active subscription";
+    
+    if (subscription.status === 'trialing') {
+      return "Free Trial";
+    }
+    
+    if (subscription.status === 'active' && subscription.plan_type === 'premium') {
+      return "Premium";
+    }
+    
+    return "Free Plan";
+  };
+
+  const getSubscriptionDetails = () => {
+    if (!subscription) return "Start your journey with our premium features";
+    
+    if (subscription.status === 'trialing') {
+      const trialEnd = new Date(subscription.trial_end);
+      return `Trial ends on ${trialEnd.toLocaleDateString()}`;
+    }
+    
+    if (subscription.status === 'active' && subscription.plan_type === 'premium') {
+      const periodEnd = new Date(subscription.current_period_end);
+      return `Next billing date: ${periodEnd.toLocaleDateString()}`;
+    }
+    
+    return "Upgrade to premium for exclusive features";
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -89,6 +137,30 @@ export default function Settings() {
       <div className="container max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold mb-8 text-white">Settings</h1>
         
+        <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
+          <CardHeader>
+            <CardTitle className="text-white">Subscription</CardTitle>
+            <CardDescription className="text-gray-300">Manage your subscription plan</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Crown className="h-5 w-5 text-yellow-400" />
+                  <h3 className="font-medium text-white">{getSubscriptionStatus()}</h3>
+                </div>
+                <p className="text-sm text-gray-300">{getSubscriptionDetails()}</p>
+              </div>
+              <Link
+                to="/pricing"
+                className="px-4 py-2 rounded-md bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 transition-all duration-200"
+              >
+                {subscription?.status === 'active' ? 'Manage Plan' : 'Upgrade'}
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
           <CardHeader>
             <CardTitle className="text-white">Notifications</CardTitle>
