@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
 import { Card } from "@/components/ui/card";
 import { Rocket, Target, Star } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Goals = () => {
   const isMobile = useIsMobile();
+  const { toast } = useToast();
   
   const { data: goals, refetch } = useQuery({
     queryKey: ["goals"],
@@ -33,17 +35,29 @@ const Goals = () => {
     {
       icon: <Rocket className="w-8 h-8 text-[#8B5CF6] transition-all duration-300 group-hover:text-[#D946EF]" />,
       title: "Dream Big",
-      description: "Your goals are the first step towards your dreams. Make them count!"
+      description: "Your goals are the first step towards your dreams. Make them count!",
+      onClick: () => toast({
+        title: "Dream Big!",
+        description: "Set ambitious goals that inspire and challenge you.",
+      })
     },
     {
       icon: <Target className="w-8 h-8 text-[#F97316] transition-all duration-300 group-hover:text-[#0EA5E9]" />,
       title: "Stay Focused",
-      description: "Break down your goals into actionable steps and track your progress."
+      description: "Break down your goals into actionable steps and track your progress.",
+      onClick: () => toast({
+        title: "Stay Focused!",
+        description: "Small steps every day lead to big achievements.",
+      })
     },
     {
       icon: <Star className="w-8 h-8 text-[#0EA5E9] transition-all duration-300 group-hover:text-[#8B5CF6]" />,
       title: "Celebrate Progress",
-      description: "Every step forward is a victory. Acknowledge your achievements!"
+      description: "Every step forward is a victory. Acknowledge your achievements!",
+      onClick: () => toast({
+        title: "Celebrate Progress!",
+        description: "Don't forget to celebrate your wins, big and small.",
+      })
     }
   ];
 
@@ -62,7 +76,11 @@ const Goals = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {inspirationalCards.map((card, index) => (
-            <Card key={index} className="p-4 md:p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-colors duration-300 group">
+            <Card 
+              key={index} 
+              className="p-4 md:p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 group cursor-pointer transform hover:scale-105"
+              onClick={card.onClick}
+            >
               <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
                 <div className="p-3 bg-white/10 rounded-full">
                   {card.icon}
