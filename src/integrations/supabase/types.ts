@@ -386,28 +386,34 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          email_notifications: boolean | null
           full_name: string | null
           has_seen_tour: boolean | null
           id: string
           is_premium: boolean | null
+          push_notifications: boolean | null
           total_points: number | null
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
+          email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
           id: string
           is_premium?: boolean | null
+          push_notifications?: boolean | null
           total_points?: number | null
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
+          email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
           id?: string
           is_premium?: boolean | null
+          push_notifications?: boolean | null
           total_points?: number | null
           updated_at?: string | null
         }
