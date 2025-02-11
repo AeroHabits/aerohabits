@@ -7,6 +7,7 @@ import Habits from "@/pages/Habits";
 import Goals from "@/pages/Goals";
 import Journey from "@/pages/Journey";
 import Challenges from "@/pages/Challenges";
+import Settings from "@/pages/Settings";
 import Pricing from "@/pages/Pricing";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
@@ -55,6 +56,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Challenges />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
           </ProtectedRoute>
         }
       />
