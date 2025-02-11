@@ -7,11 +7,6 @@ import { cn } from "@/lib/utils";
 export function BottomNav() {
   const location = useLocation();
 
-  // Don't render navigation on the habits page
-  if (location.pathname === "/habits") {
-    return null;
-  }
-
   const tabs = [
     {
       name: "Habits",
