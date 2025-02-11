@@ -11,6 +11,7 @@ import Settings from "@/pages/Settings";
 import Pricing from "@/pages/Pricing";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import Points from "@/pages/Points";
 
 export function AppRoutes() {
   return (
@@ -64,6 +65,14 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/points"
+        element={
+          <ProtectedRoute>
+            <Points />
           </ProtectedRoute>
         }
       />

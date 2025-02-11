@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Home, Trophy, Target, Route } from "lucide-react";
+import { Home, Trophy, Target, Route, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function BottomNav() {
@@ -27,6 +27,11 @@ export function BottomNav() {
       name: "Journey",
       path: "/journey",
       icon: Route,
+    },
+    {
+      name: "Points",
+      path: "/points",
+      icon: Star,
     },
   ];
 
@@ -90,4 +95,4 @@ export function BottomNav() {
       </div>
     </motion.nav>
   );
-};
+}

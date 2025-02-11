@@ -42,6 +42,13 @@ export function AppTabs() {
           >
             Journey
           </TabsTrigger>
+          <TabsTrigger 
+            value="points" 
+            onClick={() => navigate("/points")}
+            className="flex-1 data-[state=active]:bg-white/30 data-[state=active]:text-white text-white/90 font-medium"
+          >
+            Points
+          </TabsTrigger>
         </TabsList>
 
         <motion.div
