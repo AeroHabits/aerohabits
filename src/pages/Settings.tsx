@@ -85,57 +85,59 @@ export default function Settings() {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">Settings</h1>
-      
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>Manage how you receive notifications</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex items-center justify-between">
-            <Label htmlFor="email-notifications" className="flex flex-col">
-              <span className="font-medium">Email Notifications</span>
-              <span className="text-sm text-muted-foreground">
-                Receive notifications about your progress via email
-              </span>
-            </Label>
-            <Switch
-              id="email-notifications"
-              checked={settings.email_notifications}
-              onCheckedChange={(checked) => updateSetting('email_notifications', checked)}
-            />
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="container max-w-2xl mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold mb-8 text-white">Settings</h1>
+        
+        <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
+          <CardHeader>
+            <CardTitle className="text-white">Notifications</CardTitle>
+            <CardDescription className="text-gray-300">Manage how you receive notifications</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="email-notifications" className="flex flex-col">
+                <span className="font-medium text-white">Email Notifications</span>
+                <span className="text-sm text-gray-300">
+                  Receive notifications about your progress via email
+                </span>
+              </Label>
+              <Switch
+                id="email-notifications"
+                checked={settings.email_notifications}
+                onCheckedChange={(checked) => updateSetting('email_notifications', checked)}
+              />
+            </div>
 
-          <div className="flex items-center justify-between">
-            <Label htmlFor="push-notifications" className="flex flex-col">
-              <span className="font-medium">Push Notifications</span>
-              <span className="text-sm text-muted-foreground">
-                Receive push notifications about your progress
-              </span>
-            </Label>
-            <Switch
-              id="push-notifications"
-              checked={settings.push_notifications}
-              onCheckedChange={(checked) => updateSetting('push_notifications', checked)}
-            />
-          </div>
-        </CardContent>
-      </Card>
+            <div className="flex items-center justify-between">
+              <Label htmlFor="push-notifications" className="flex flex-col">
+                <span className="font-medium text-white">Push Notifications</span>
+                <span className="text-sm text-gray-300">
+                  Receive push notifications about your progress
+                </span>
+              </Label>
+              <Switch
+                id="push-notifications"
+                checked={settings.push_notifications}
+                onCheckedChange={(checked) => updateSetting('push_notifications', checked)}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Legal</CardTitle>
-          <CardDescription>Review our legal documents</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex flex-col space-y-2">
-            <Link to="/terms" className="text-blue-500 hover:underline">Terms of Service</Link>
-            <Link to="/privacy" className="text-blue-500 hover:underline">Privacy Policy</Link>
-          </div>
-        </CardContent>
-      </Card>
+        <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+          <CardHeader>
+            <CardTitle className="text-white">Legal</CardTitle>
+            <CardDescription className="text-gray-300">Review our legal documents</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col space-y-2">
+              <Link to="/terms" className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">Terms of Service</Link>
+              <Link to="/privacy" className="text-blue-400 hover:text-blue-300 hover:underline transition-colors">Privacy Policy</Link>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
