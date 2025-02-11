@@ -8,17 +8,17 @@ export default function Terms() {
       
       <div className="prose dark:prose-invert max-w-none">
         <h2 className="text-2xl font-semibold mt-6 mb-4">1. Company Information</h2>
-        <p>AREOHABITS<br />
+        <p>AEROHABITS<br />
         1101 Parc Central Dr<br />
         Festus, MO 63028<br />
         United States<br />
-        Email: support@areohabits.com</p>
+        Email: support@aerohabits.com</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">2. Acceptance of Terms</h2>
-        <p>By accessing and using AREOHABITS, you agree to be bound by these Terms of Service.</p>
+        <p>By accessing and using AEROHABITS, you agree to be bound by these Terms of Service.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">3. Description of Service</h2>
-        <p>AREOHABITS is a habit tracking application that helps users build and maintain positive habits.</p>
+        <p>AEROHABITS is a habit tracking application that helps users build and maintain positive habits.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">4. User Accounts</h2>
         <p>Users must register for an account and maintain accurate information. You are responsible for maintaining the security of your account.</p>
@@ -30,7 +30,7 @@ export default function Terms() {
         <p>We reserve the right to modify or discontinue the service at any time.</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">7. Limitation of Liability</h2>
-        <p>AREOHABITS is provided "as is" without warranties of any kind.</p>
+        <p>AEROHABITS is provided "as is" without warranties of any kind.</p>
 
         <div className="mt-8">
           <Link to="/" className="text-blue-500 hover:underline">← Back to Home</Link>

@@ -8,11 +8,11 @@ export default function Privacy() {
       
       <div className="prose dark:prose-invert max-w-none">
         <h2 className="text-2xl font-semibold mt-6 mb-4">Company Information</h2>
-        <p>AREOHABITS<br />
+        <p>AEROHABITS<br />
         1101 Parc Central Dr<br />
         Festus, MO 63028<br />
         United States<br />
-        Email: support@areohabits.com</p>
+        Email: support@aerohabits.com</p>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">1. Information We Collect</h2>
         <p>We collect information you provide directly to us when you create an account and use our services.</p>

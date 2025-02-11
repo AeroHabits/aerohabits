@@ -35,7 +35,7 @@ const Goals = () => {
     {
       icon: <Rocket className="w-8 h-8 text-[#8B5CF6] transition-all duration-300 group-hover:text-[#D946EF]" />,
       title: "Dream Big",
-      description: "Your goals are the first step towards your dreams. Make them count!",
+      description: "Your goals are the first step toward your dreams. Make them count!",
       onClick: () => toast({
         title: "Dream Big!",
         description: "Set ambitious goals that inspire and challenge you.",
