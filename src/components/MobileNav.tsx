@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { List, Target, Trophy, Route } from "lucide-react";
@@ -5,6 +6,11 @@ import { cn } from "@/lib/utils";
 
 export const MobileNav = () => {
   const location = useLocation();
+
+  // Don't render navigation on the habits page
+  if (location.pathname === "/habits") {
+    return null;
+  }
 
   const tabs = [
     {

@@ -1,3 +1,4 @@
+
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Home, Trophy, Target, Route } from "lucide-react";
@@ -5,6 +6,11 @@ import { cn } from "@/lib/utils";
 
 export function BottomNav() {
   const location = useLocation();
+
+  // Don't render navigation on the habits page
+  if (location.pathname === "/habits") {
+    return null;
+  }
 
   const tabs = [
     {
@@ -89,4 +95,4 @@ export function BottomNav() {
       </div>
     </motion.nav>
   );
-}
+};
