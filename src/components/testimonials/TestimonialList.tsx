@@ -41,14 +41,19 @@ export function TestimonialList() {
 
   return (
     <div className="py-12 px-4 sm:px-6 lg:px-8">
-      <div className="text-center mb-12">
-        <h2 className="text-3xl font-bold tracking-tight">
+      <motion.div 
+        className="text-center mb-12"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h2 className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-600 via-purple-500 to-pink-500 text-transparent bg-clip-text animate-gradient-x">
           Transform Your Life, One Habit at a Time
         </h2>
-        <p className="mt-4 text-lg text-muted-foreground">
+        <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
           Join our community of achievers who turned their dreams into daily victories
         </p>
-      </div>
+      </motion.div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
         {testimonials?.map((testimonial, index) => (
           <motion.div
