@@ -27,6 +27,14 @@ serve(async (req) => {
       throw new Error('No authorization header');
     }
 
+    // Extract the JWT token and get the user ID
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
+    
+    if (userError || !user) {
+      throw new Error('Invalid authorization token');
+    }
+
     // Store user message in the database
     const { data: userMessage, error: userMessageError } = await supabaseAdmin
       .from('coaching_messages')
@@ -85,7 +93,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',  // Updated to use the correct model name
+        model: 'gpt-4o-mini',  // Using the recommended fast model
         messages,
         temperature: 0.7,
         max_tokens: 500,
