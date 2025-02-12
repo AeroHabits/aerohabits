@@ -64,7 +64,21 @@ export function AiCoach() {
         },
       });
 
-      if (error) throw error;
+      if (error) {
+        // Check for quota exceeded error
+        if (error.status === 503) {
+          toast({
+            title: "AI Service Unavailable",
+            description: "Our AI service has reached its quota limit. Please try again in a few minutes.",
+            variant: "destructive",
+            duration: 5000,
+          });
+          // Remove the user's message since we couldn't get a response
+          setMessages(prev => prev.slice(0, -1));
+          return;
+        }
+        throw error;
+      }
 
       setMessages(prev => [...prev, { role: 'assistant', content: data.message.content }]);
     } catch (error) {
@@ -73,6 +87,8 @@ export function AiCoach() {
         description: error instanceof Error ? error.message : "Something went wrong",
         variant: "destructive",
       });
+      // Remove the user's message if we couldn't get a response
+      setMessages(prev => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
     }
