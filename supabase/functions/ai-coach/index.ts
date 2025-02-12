@@ -50,23 +50,23 @@ serve(async (req) => {
       throw userMessageError;
     }
 
-    // Get only the last 5 messages for context to reduce token usage
+    // Get only the last 3 messages for context to reduce token usage even further
     const { data: history, error: historyError } = await supabaseAdmin
       .from('coaching_messages')
       .select('role, content')
       .eq('conversation_id', conversationId)
       .order('created_at', { ascending: false })
-      .limit(5);
+      .limit(3);
 
     if (historyError) {
       throw historyError;
     }
 
-    // Format messages for OpenAI, with a more concise system prompt
+    // Format messages for OpenAI with an even more concise system prompt
     const messages = [
       {
         role: 'system',
-        content: 'You are a concise AI life coach helping users build better habits. Be empathetic, positive, and provide specific, actionable advice.'
+        content: 'You are a brief AI coach. Give short, clear habit advice.'
       },
       ...history.reverse().map(msg => ({
         role: msg.role,
@@ -74,9 +74,9 @@ serve(async (req) => {
       }))
     ];
 
-    console.log('Sending request to OpenAI with messages:', messages);
+    console.log('Attempting OpenAI request with messages:', messages);
 
-    // Call OpenAI API with reduced max_tokens
+    // Call OpenAI API with minimal tokens and faster model
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -84,11 +84,11 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',  // Using a more available model
         messages,
-        temperature: 0.7,
-        max_tokens: 150, // Reduced from 500 to save on token usage
-        presence_penalty: 0.6, // Encourage more focused responses
+        temperature: 0.5,        // More focused responses
+        max_tokens: 100,         // Further reduced token limit
+        presence_penalty: 0.3,    // Less deviation in responses
       }),
     });
 
@@ -98,9 +98,10 @@ serve(async (req) => {
       
       // Check for quota exceeded error
       if (error.error?.message?.includes('quota')) {
+        console.error('Quota exceeded error:', error);
         return new Response(
           JSON.stringify({ 
-            error: 'The AI service is currently unavailable. Please try again later or contact support.'
+            error: 'The AI service is currently unavailable due to high demand. Please try again in a few minutes.'
           }),
           { 
             status: 503,
@@ -115,7 +116,7 @@ serve(async (req) => {
     const aiResponse = await openAIResponse.json();
     const aiMessage = aiResponse.choices[0].message.content;
 
-    console.log('Received AI response:', aiMessage);
+    console.log('Successfully received AI response:', aiMessage);
 
     // Store AI response in the database
     const { data: storedAiMessage, error: aiMessageError } = await supabaseAdmin
