@@ -11,15 +11,11 @@ import { motion } from "framer-motion";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
 import { UserMenu } from "@/components/UserMenu";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Rocket } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const isMobile = useIsMobile();
   const [showQuiz, setShowQuiz] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Test notification
@@ -81,24 +77,6 @@ const Index = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="space-y-12"
           >
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 260,
-                damping: 20 
-              }}
-              className="flex justify-center"
-            >
-              <Button
-                onClick={() => navigate('/coach')}
-                className="bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 hover:from-purple-600 hover:via-blue-600 hover:to-purple-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
-              >
-                <Rocket className="mr-2 h-6 w-6 animate-bounce" />
-                Talk to Your AI Coach Now!
-              </Button>
-            </motion.div>
             <AppHero />
             <AppShowcase />
             <AppTabs />
