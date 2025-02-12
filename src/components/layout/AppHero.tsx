@@ -1,16 +1,14 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Sparkles, Rocket } from "lucide-react";
+import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { PricingTiers } from "../pricing/PricingTiers";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
 
 export function AppHero() {
   const [showPricing, setShowPricing] = useState(false);
-  const navigate = useNavigate();
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -86,25 +84,6 @@ export function AppHero() {
                 Unlock Premium Features <ChevronDown className="ml-1 h-4 w-4" />
               </>
             )}
-          </Button>
-        </motion.div>
-
-        <motion.div
-          initial={{ scale: 0.9 }}
-          animate={{ scale: 1 }}
-          transition={{ 
-            type: "spring",
-            stiffness: 260,
-            damping: 20 
-          }}
-          className="flex justify-center"
-        >
-          <Button
-            onClick={() => navigate('/coach')}
-            className="bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 hover:from-purple-600 hover:via-blue-600 hover:to-purple-600 text-white px-8 py-6 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
-          >
-            <Rocket className="mr-2 h-6 w-6 animate-bounce" />
-            Talk to Your AI Coach Now!
           </Button>
         </motion.div>
 

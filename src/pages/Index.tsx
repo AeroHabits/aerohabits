@@ -10,22 +10,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
 import { UserMenu } from "@/components/UserMenu";
-import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const isMobile = useIsMobile();
   const [showQuiz, setShowQuiz] = useState(false);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    // Test notification
-    toast({
-      title: "Welcome to AI Coaching!",
-      description: "Your personal AI coach is ready to help you achieve your goals.",
-      variant: "default",
-      duration: 5000,
-    });
-  }, []);
 
   useEffect(() => {
     const checkQuizStatus = async () => {
