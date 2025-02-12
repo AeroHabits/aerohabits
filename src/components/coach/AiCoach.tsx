@@ -57,26 +57,15 @@ export function AiCoach() {
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const response = await fetch('/api/ai-coach', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${user.id}`,
-        },
-        body: JSON.stringify({
+      const { data, error } = await supabase.functions.invoke('ai-coach', {
+        body: {
           message: userMessage,
           conversationId,
-        }),
+        },
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get response from AI coach');
-      }
+      if (error) throw error;
 
-      const data = await response.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.message.content }]);
     } catch (error) {
       toast({
