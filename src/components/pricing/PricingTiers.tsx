@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { createCheckoutSession } from "@/lib/stripe";
-import { loadStripe } from "@/lib/loadStripe";
 import { PricingHeader } from "./PricingHeader";
 import { PricingCard } from "./PricingCard";
 
@@ -21,56 +19,15 @@ export function PricingTiers() {
     },
   });
 
-  const { data: stripeProducts } = useQuery({
-    queryKey: ['stripeProducts'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('stripe_products')
-        .select('*')
-        .eq('active', true)
-        .order('price');
-      
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const getSelectedPlan = () => {
-    if (!stripeProducts) return null;
-    return stripeProducts[0]; // Monthly plan
-  };
-
-  const handleSubscribe = async (priceId: string | null) => {
-    if (!priceId) {
-      navigate('/auth');
-      return;
-    }
-
+  const handleSubscribe = async () => {
     if (!session) {
-      toast.error("Please sign in to upgrade to premium");
+      toast.error("Please sign in first");
       navigate('/auth');
       return;
     }
 
-    try {
-      setLoading(true);
-      const { sessionId } = await createCheckoutSession(priceId);
-      
-      const stripe = await loadStripe(process.env.STRIPE_PUBLISHABLE_KEY || '');
-      if (!stripe) throw new Error('Stripe failed to load');
-
-      const { error } = await stripe.redirectToCheckout({ sessionId });
-      if (error) throw error;
-
-    } catch (error) {
-      console.error('Error:', error);
-      toast.error("Failed to start checkout process. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    toast.info("Premium features coming soon!");
   };
-
-  const selectedPlan = getSelectedPlan();
 
   const tiers = [
     {
@@ -89,7 +46,7 @@ export function PricingTiers() {
       badge: null,
       buttonText: "Subscribe Monthly",
       buttonVariant: "outline" as const,
-      priceId: selectedPlan?.stripe_price_id || null
+      priceId: null
     },
     {
       name: "Yearly",
@@ -108,7 +65,7 @@ export function PricingTiers() {
       badge: "Best Value",
       buttonText: "Get Yearly Access",
       buttonVariant: "default" as const,
-      priceId: selectedPlan?.stripe_price_id || null
+      priceId: null
     },
   ];
 
