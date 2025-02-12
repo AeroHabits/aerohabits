@@ -50,34 +50,25 @@ serve(async (req) => {
       throw userMessageError;
     }
 
-    // Get conversation history
+    // Get only the last 5 messages for context to reduce token usage
     const { data: history, error: historyError } = await supabaseAdmin
       .from('coaching_messages')
       .select('role, content')
       .eq('conversation_id', conversationId)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: false })
+      .limit(5);
 
     if (historyError) {
       throw historyError;
     }
 
-    // Format messages for OpenAI
+    // Format messages for OpenAI, with a more concise system prompt
     const messages = [
       {
         role: 'system',
-        content: `You are an AI life coach focusing on helping users develop better habits and achieve their goals. Your responses should be:
-        1. Empathetic and understanding
-        2. Focused on actionable advice
-        3. Encouraging and positive
-        4. Concise but comprehensive
-        
-        Always ask thoughtful follow-up questions to better understand the user's situation.
-        Provide specific, actionable steps they can take.
-        When appropriate, suggest habit-building techniques or strategies.
-        
-        You have access to the user's conversation history to provide contextual advice.`
+        content: 'You are a concise AI life coach helping users build better habits. Be empathetic, positive, and provide specific, actionable advice.'
       },
-      ...history.map(msg => ({
+      ...history.reverse().map(msg => ({
         role: msg.role,
         content: msg.content,
       }))
@@ -85,7 +76,7 @@ serve(async (req) => {
 
     console.log('Sending request to OpenAI with messages:', messages);
 
-    // Call OpenAI API
+    // Call OpenAI API with reduced max_tokens
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -93,16 +84,31 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',  // Using the recommended fast model
+        model: 'gpt-4o-mini',
         messages,
         temperature: 0.7,
-        max_tokens: 500,
+        max_tokens: 150, // Reduced from 500 to save on token usage
+        presence_penalty: 0.6, // Encourage more focused responses
       }),
     });
 
     if (!openAIResponse.ok) {
       const error = await openAIResponse.json();
       console.error('OpenAI API error:', error);
+      
+      // Check for quota exceeded error
+      if (error.error?.message?.includes('quota')) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'The AI service is currently unavailable. Please try again later or contact support.'
+          }),
+          { 
+            status: 503,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        );
+      }
+      
       throw new Error(error.error?.message || 'Failed to get response from OpenAI');
     }
 
