@@ -63,6 +63,10 @@ serve(async (req) => {
         3. Encouraging and positive
         4. Concise but comprehensive
         
+        Always ask thoughtful follow-up questions to better understand the user's situation.
+        Provide specific, actionable steps they can take.
+        When appropriate, suggest habit-building techniques or strategies.
+        
         You have access to the user's conversation history to provide contextual advice.`
       },
       ...history.map(msg => ({
@@ -70,6 +74,8 @@ serve(async (req) => {
         content: msg.content,
       }))
     ];
+
+    console.log('Sending request to OpenAI with messages:', messages);
 
     // Call OpenAI API
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -82,16 +88,20 @@ serve(async (req) => {
         model: 'gpt-4o-mini',
         messages,
         temperature: 0.7,
+        max_tokens: 500,
       }),
     });
 
     if (!openAIResponse.ok) {
       const error = await openAIResponse.json();
+      console.error('OpenAI API error:', error);
       throw new Error(error.error?.message || 'Failed to get response from OpenAI');
     }
 
     const aiResponse = await openAIResponse.json();
     const aiMessage = aiResponse.choices[0].message.content;
+
+    console.log('Received AI response:', aiMessage);
 
     // Store AI response in the database
     const { data: storedAiMessage, error: aiMessageError } = await supabaseAdmin
