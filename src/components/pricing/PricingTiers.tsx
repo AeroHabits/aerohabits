@@ -26,7 +26,13 @@ export function PricingTiers() {
       return;
     }
 
-    toast.info("Premium features coming soon!");
+    toast("Premium Features Coming Soon! 🚀", {
+      description: "We're working hard to bring you amazing premium features. Stay tuned!",
+      action: {
+        label: "Got it",
+        onClick: () => console.log("Dismissed")
+      },
+    });
   };
 
   const tiers = [
@@ -43,8 +49,8 @@ export function PricingTiers() {
         "Exclusive content",
         "Advanced analytics",
       ],
-      badge: null,
-      buttonText: "Subscribe Monthly",
+      badge: "Coming Soon",
+      buttonText: "Coming Soon",
       buttonVariant: "outline" as const,
       priceId: null
     },
@@ -62,8 +68,8 @@ export function PricingTiers() {
         "Exclusive content",
         "Advanced analytics",
       ],
-      badge: "Best Value",
-      buttonText: "Get Yearly Access",
+      badge: "Coming Soon",
+      buttonText: "Coming Soon",
       buttonVariant: "default" as const,
       priceId: null
     },
