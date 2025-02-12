@@ -11,6 +11,7 @@ import Settings from "@/pages/Settings";
 import Pricing from "@/pages/Pricing";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import Coach from "@/pages/Coach";
 
 export function AppRoutes() {
   return (
@@ -66,6 +67,10 @@ export function AppRoutes() {
             <Settings />
           </ProtectedRoute>
         }
+      />
+      <Route
+        path="/coach"
+        element={<Coach />}
       />
     </Routes>
   );
