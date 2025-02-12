@@ -16,17 +16,17 @@ export default function Settings() {
   });
   const { toast } = useToast();
 
-  const { data: subscription } = useQuery({
-    queryKey: ['subscription'],
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
 
       const { data, error } = await supabase
-        .from('subscriptions')
+        .from('profiles')
         .select('*')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        .eq('id', user.id)
+        .single();
 
       if (error) throw error;
       return data;
@@ -93,52 +93,15 @@ export default function Settings() {
     }
   };
 
-  const getSubscriptionStatus = () => {
-    if (!subscription) return "No active subscription";
-    
-    if (subscription.status === 'trialing') {
-      return "Free Trial";
-    }
-    
-    if (subscription.status === 'active' && subscription.plan_type === 'premium') {
-      return "Premium";
-    }
-    
-    return "Free Plan";
-  };
-
-  const getSubscriptionDetails = () => {
-    if (!subscription) return "Start your journey with our premium features";
-    
-    if (subscription.status === 'trialing') {
-      const trialEnd = new Date(subscription.trial_end);
-      return `Trial ends on ${trialEnd.toLocaleDateString()}`;
-    }
-    
-    if (subscription.status === 'active' && subscription.plan_type === 'premium') {
-      const periodEnd = new Date(subscription.current_period_end);
-      return `Next billing date: ${periodEnd.toLocaleDateString()}`;
-    }
-    
-    return "Upgrade to premium for exclusive features";
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className="container max-w-2xl mx-auto px-4 py-8">
         <SettingsHeader loading={loading} />
-        
-        <SubscriptionCard 
-          subscription={subscription}
-          getSubscriptionStatus={getSubscriptionStatus}
-          getSubscriptionDetails={getSubscriptionDetails}
-        />
-
+        <SubscriptionCard />
         <NotificationsCard 
           settings={settings}
           updateSetting={updateSetting}
         />
-
         <LegalCard />
       </div>
     </div>
