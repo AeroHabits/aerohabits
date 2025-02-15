@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 
 export function Footer() {
@@ -11,7 +12,7 @@ export function Footer() {
           <Link to="/privacy" className="hover:text-foreground transition-colors">
             Privacy Policy
           </Link>
-          <span>© {new Date().getFullYear()} AREOHABITS</span>
+          <span>© {new Date().getFullYear()} AEROHABITS</span>
         </div>
       </div>
     </footer>
