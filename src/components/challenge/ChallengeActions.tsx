@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Flame, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 interface ChallengeActionsProps {
   isPremium: boolean | null;
@@ -21,11 +22,37 @@ export function ChallengeActions({
   canAccessDifficulty = true,
   isLocked = false
 }: ChallengeActionsProps) {
+  const handleLockedClick = () => {
+    if (isLocked && !isJoined) {
+      toast.info(
+        "Complete Current Challenge First!", 
+        {
+          description: "Focus on your active challenge. You'll unlock this one once you complete it.",
+          duration: 4000
+        }
+      );
+      return;
+    }
+  };
+
+  const handleDifficultyClick = () => {
+    if (!canAccessDifficulty) {
+      toast.info(
+        "Level Up Required!", 
+        {
+          description: "Complete 80% of challenges in your current difficulty to unlock this level.",
+          duration: 4000
+        }
+      );
+      return;
+    }
+  };
+
   if (isLocked && !isJoined) {
     return (
       <Button 
         className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed px-2 py-1.5 h-auto min-h-[44px] text-xs sm:text-sm whitespace-normal"
-        disabled={true}
+        onClick={handleLockedClick}
       >
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4 flex-shrink-0" />
@@ -39,7 +66,7 @@ export function ChallengeActions({
     return (
       <Button 
         className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed px-2 py-1.5 h-auto min-h-[44px] text-xs sm:text-sm whitespace-normal"
-        disabled={true}
+        onClick={handleDifficultyClick}
       >
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4 flex-shrink-0" />
