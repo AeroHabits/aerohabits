@@ -118,7 +118,7 @@ export function PricingTiers() {
       badge: "Best Value",
       buttonText: "Subscribe Yearly",
       buttonVariant: "default" as const,
-      priceId: null // You'll need to add your yearly plan price ID here
+      priceId: "price_1QseOXRrh0VTJWZxZ4CjUcJG"
     },
   ];
 
