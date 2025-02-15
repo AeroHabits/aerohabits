@@ -10,6 +10,7 @@ import { PricingCard } from "./PricingCard";
 
 // Initialize Stripe with key from Supabase
 const getStripePromise = async () => {
+  console.log('Fetching Stripe key...');
   const { data: publishableKey, error } = await supabase
     .rpc('get_stripe_publishable_key');
   
@@ -17,8 +18,15 @@ const getStripePromise = async () => {
     console.error('Error fetching Stripe key:', error);
     return null;
   }
+
+  console.log('Stripe key received:', publishableKey ? 'Key exists' : 'No key found');
   
-  return loadStripe(publishableKey || '');
+  if (!publishableKey) {
+    console.error('No publishable key returned from Supabase');
+    return null;
+  }
+
+  return loadStripe(publishableKey);
 };
 
 export function PricingTiers() {
@@ -75,9 +83,11 @@ export function PricingTiers() {
       if (sessionError) throw sessionError;
 
       // Initialize Stripe with key from Supabase
+      console.log('Initializing Stripe...');
       const stripe = await getStripePromise();
       if (!stripe) throw new Error('Stripe failed to initialize');
 
+      console.log('Redirecting to checkout...');
       const { error: stripeError } = await stripe.redirectToCheckout({
         sessionId: sessionData.sessionId,
       });
