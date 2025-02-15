@@ -24,7 +24,7 @@ export function AppShowcase() {
       icon: <Flame className="h-6 w-6 text-orange-500" />,
       title: "Join Challenges",
       description: "Participate in community challenges",
-      route: "#challenges"
+      route: "/challenges"
     },
     {
       icon: <Target className="h-6 w-6 text-blue-500" />,
@@ -41,15 +41,7 @@ export function AppShowcase() {
   ];
 
   const handleCardClick = (route: string) => {
-    if (route.startsWith('#')) {
-      const tabId = route.substring(1);
-      const tabsList = document.querySelector(`[value="${tabId}"]`) as HTMLElement;
-      if (tabsList) {
-        tabsList.click();
-      }
-    } else {
-      navigate(route);
-    }
+    navigate(route);
   };
 
   return (
