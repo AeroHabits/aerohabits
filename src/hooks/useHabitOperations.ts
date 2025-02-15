@@ -18,7 +18,7 @@ export function useHabitOperations() {
         const currentHabits = loadOfflineHabits();
         const updatedHabits = currentHabits.filter((h: Habit) => h.id !== id);
         saveOfflineHabits(updatedHabits);
-        await queueSync(id, 'delete');
+        await queueSync(id, 'habit', 'delete');
         toast({
           title: "Success",
           description: "Habit deleted successfully (offline mode)",
@@ -73,7 +73,7 @@ export function useHabitOperations() {
           h.id === id ? updatedHabit : h
         );
         saveOfflineHabits(updatedHabits);
-        await queueSync(id, 'update', {
+        await queueSync(id, 'habit', 'update', {
           completed: updatedHabit.completed,
           streak: updatedHabit.streak,
           updated_at: updatedHabit.updated_at
@@ -136,7 +136,7 @@ export function useHabitOperations() {
       if (!isOnline) {
         const currentHabits = loadOfflineHabits();
         saveOfflineHabits([newHabit, ...currentHabits]);
-        await queueSync(newHabit.id, 'add', newHabit);
+        await queueSync(newHabit.id, 'habit', 'add', newHabit);
         debouncedSync();
         toast({
           title: "Success",

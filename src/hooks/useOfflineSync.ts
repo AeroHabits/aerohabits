@@ -3,22 +3,11 @@ import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { debounce } from "lodash";
 import { useOnlineStatus } from "./useOnlineStatus";
-import { Habit, Goal, Challenge } from "@/types";
+import { SyncEntityType, SyncAction, SyncQueueItem } from "@/types";
 
 const SYNC_QUEUE_KEY = 'habitSyncQueue';
 const BATCH_SIZE = 10;
 const SYNC_DEBOUNCE_MS = 2000;
-
-type SyncItem = {
-  id?: string;
-  user_id: string;
-  entity_id: string;
-  entity_type: 'habit' | 'goal' | 'challenge';
-  action: 'add' | 'update' | 'delete';
-  data?: any;
-  created_at: string;
-  synced_at?: string;
-};
 
 export function useOfflineSync() {
   const isOnline = useOnlineStatus();
@@ -27,14 +16,14 @@ export function useOfflineSync() {
   // Queue sync operation
   const queueSync = async (
     entityId: string, 
-    entityType: SyncItem['entity_type'], 
-    action: SyncItem['action'], 
+    entityType: SyncEntityType,
+    action: SyncAction,
     data?: any
   ) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const syncItem: SyncItem = {
+    const syncItem: SyncQueueItem = {
       user_id: user.id,
       entity_id: entityId,
       entity_type: entityType,
@@ -45,7 +34,7 @@ export function useOfflineSync() {
 
     try {
       const { error } = await supabase
-        .from('sync_queue')
+        .from('habit_sync_queue')
         .insert([syncItem]);
 
       if (error) throw error;
@@ -70,7 +59,7 @@ export function useOfflineSync() {
 
       // Get queue items from both Supabase and local storage
       const { data: queueItems } = await supabase
-        .from('sync_queue')
+        .from('habit_sync_queue')
         .select('*')
         .is('synced_at', null)
         .order('created_at', { ascending: true })
@@ -88,24 +77,25 @@ export function useOfflineSync() {
         
         for (const item of batch) {
           try {
-            const table = `${item.entity_type}s`; // habits, goals, challenges
-            
-            switch (item.action) {
-              case 'add':
-                await supabase.from(table).insert([item.data]);
-                break;
-              case 'update':
-                await supabase.from(table).update(item.data).eq('id', item.entity_id);
-                break;
-              case 'delete':
-                await supabase.from(table).delete().eq('id', item.entity_id);
-                break;
+            if (item.entity_type === 'habit') {
+              switch (item.action) {
+                case 'add':
+                  await supabase.from('habits').insert([item.data]);
+                  break;
+                case 'update':
+                  await supabase.from('habits').update(item.data).eq('id', item.entity_id);
+                  break;
+                case 'delete':
+                  await supabase.from('habits').delete().eq('id', item.entity_id);
+                  break;
+              }
             }
+            // Handle other entity types similarly when implemented
 
             // Mark as synced in Supabase queue
             if (item.id) {
               await supabase
-                .from('sync_queue')
+                .from('habit_sync_queue')
                 .update({ synced_at: new Date().toISOString() })
                 .eq('id', item.id);
             }

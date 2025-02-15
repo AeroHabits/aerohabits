@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   email?: string;
@@ -62,4 +61,36 @@ export interface Profile {
   avatar_url?: string;
   updated_at?: string;
   total_points?: number;
+}
+
+export interface Challenge {
+  id: string;
+  title: string;
+  description?: string;
+  difficulty: 'easy' | 'medium' | 'hard' | 'master';
+  category?: string;
+  duration_days: number;
+  reward_points?: number;
+  completion_criteria?: string;
+  created_at: string;
+  updated_at: string;
+  milestones?: any[];
+  tips?: string[];
+  is_premium?: boolean;
+  sequence_order: number;
+  motivation_text?: string;
+}
+
+export type SyncEntityType = 'habit' | 'goal' | 'challenge';
+export type SyncAction = 'add' | 'update' | 'delete';
+
+export interface SyncQueueItem {
+  id?: string;
+  user_id: string;
+  entity_id: string;
+  entity_type: SyncEntityType;
+  action: SyncAction;
+  data?: any;
+  created_at: string;
+  synced_at?: string;
 }
