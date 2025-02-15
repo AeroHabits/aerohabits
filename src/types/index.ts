@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   email?: string;
@@ -62,4 +63,19 @@ export interface Profile {
   updated_at?: string;
   total_points?: number;
   is_premium?: boolean;
+}
+
+export interface Subscription {
+  id: string;
+  user_id?: string;
+  status: string;
+  plan_type: string;
+  created_at?: string;
+  updated_at?: string;
+  current_period_start?: string;
+  current_period_end?: string;
+  trial_start?: string;
+  trial_end?: string;
+  stripe_customer_id?: string;
+  stripe_subscription_id?: string;
 }
