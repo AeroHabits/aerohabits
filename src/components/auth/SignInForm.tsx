@@ -1,11 +1,12 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useToast } from "@/hooks/use-toast";
 import { FormInput } from "./FormInput";
+import { FormWrapper } from "./FormWrapper";
+import { ToggleFormLink } from "./ToggleFormLink";
+import { useAuthForm } from "@/hooks/useAuthForm";
 
 interface SignInFormProps {
   onToggleForm: () => void;
@@ -17,42 +18,15 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
-  const [isResettingPassword, setIsResettingPassword] = useState(false);
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  const validateForm = () => {
-    if (!email) {
-      toast({
-        title: "Error",
-        description: "Please enter your email",
-        variant: "destructive",
-      });
-      return false;
-    }
-    if (!isResettingPassword && !password) {
-      toast({
-        title: "Error",
-        description: "Please enter your password",
-        variant: "destructive",
-      });
-      return false;
-    }
-    return true;
-  };
+  const { navigate, handleError, handleSuccess } = useAuthForm();
 
   const handleForgotPassword = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!email) {
-      toast({
-        title: "Error",
-        description: "Please enter your email address to reset your password",
-        variant: "destructive",
-      });
+      handleError({ message: "Please enter your email address to reset your password" });
       return;
     }
 
-    setIsResettingPassword(true);
     setIsLoading(true);
 
     try {
@@ -60,27 +34,12 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
         redirectTo: `${window.location.origin}/auth?reset=true`,
       });
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Check your email",
-          description: "We've sent you a password reset link",
-        });
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      if (error) throw error;
+      handleSuccess("We've sent you a password reset link");
+    } catch (error) {
+      handleError(error);
     } finally {
       setIsLoading(false);
-      setIsResettingPassword(false);
     }
   };
 
@@ -88,7 +47,10 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
     e.preventDefault();
     if (isLoading) return;
     
-    if (!validateForm()) return;
+    if (!email || !password) {
+      handleError({ message: "Please fill in all fields" });
+      return;
+    }
     
     setIsLoading(true);
 
@@ -98,48 +60,19 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
         password,
       });
       
-      if (error) {
-        if (error.message.includes('Email not confirmed')) {
-          toast({
-            title: "Email not verified",
-            description: "Please check your email to verify your account before signing in.",
-            variant: "destructive",
-          });
-        } else if (error.message.includes('Invalid login credentials')) {
-          toast({
-            title: "Sign in failed",
-            description: "Invalid email or password. Please check your credentials and try again.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: error.message,
-            variant: "destructive",
-          });
-        }
-        return;
-      }
-
+      if (error) throw error;
       if (data.session) {
         navigate("/");
       }
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <h1 className="text-4xl font-bold text-center text-black mb-8">
-        Welcome Back
-      </h1>
+    <FormWrapper title="Welcome Back">
       <form onSubmit={handleSignIn} className="space-y-6">
         <FormInput
           id="email"
@@ -190,16 +123,11 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
           {isLoading ? "Loading..." : "Sign In"}
         </Button>
       </form>
-      <p className="text-center text-sm mt-6 text-white">
-        Don't have an account?{" "}
-        <button
-          onClick={onToggleForm}
-          className="text-white hover:text-gray-200 transition-colors duration-200 font-semibold"
-          type="button"
-        >
-          Sign Up
-        </button>
-      </p>
-    </>
+      <ToggleFormLink
+        text="Don't have an account?"
+        linkText="Sign Up"
+        onClick={onToggleForm}
+      />
+    </FormWrapper>
   );
 };

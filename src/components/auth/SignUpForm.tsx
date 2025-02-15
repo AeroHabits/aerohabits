@@ -2,8 +2,10 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { FormInput } from "./FormInput";
+import { FormWrapper } from "./FormWrapper";
+import { ToggleFormLink } from "./ToggleFormLink";
+import { useAuthForm } from "@/hooks/useAuthForm";
 
 interface SignUpFormProps {
   onToggleForm: () => void;
@@ -15,7 +17,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const { toast } = useToast();
+  const { handleError, handleSuccess } = useAuthForm();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +25,6 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
     setIsLoading(true);
 
     try {
-      // First create the user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -35,71 +36,26 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
         },
       });
 
-      if (authError) {
-        if (authError.message.includes('rate_limit')) {
-          toast({
-            title: "Please wait",
-            description: "For security purposes, please wait 45 seconds before trying again.",
-            variant: "destructive",
-          });
-        } else if (authError.message.includes('Email signups are disabled')) {
-          toast({
-            title: "Sign up disabled",
-            description: "Email signups are currently disabled. Please contact the administrator.",
-            variant: "destructive",
-          });
-        } else {
-          toast({
-            title: "Error",
-            description: authError.message,
-            variant: "destructive",
-          });
-        }
-        return;
-      }
+      if (authError) throw authError;
 
-      // If user creation was successful, explicitly create their profile
       if (authData.user) {
         const { error: profileError } = await supabase
           .from('profiles')
-          .insert([
-            {
-              id: authData.user.id,
-              full_name: fullName,
-            }
-          ]);
+          .insert([{ id: authData.user.id, full_name: fullName }]);
 
-        if (profileError) {
-          console.error("Profile creation error:", profileError);
-          toast({
-            title: "Warning",
-            description: "Account created but profile setup incomplete. Please contact support.",
-            variant: "destructive",
-          });
-          return;
-        }
+        if (profileError) throw profileError;
       }
 
-      toast({
-        title: "Success!",
-        description: "Please check your email to verify your account.",
-      });
+      handleSuccess("Please check your email to verify your account.");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <h1 className="text-4xl font-bold text-center text-white mb-8">
-        Create Account
-      </h1>
+    <FormWrapper title="Create Account">
       <form onSubmit={handleSignUp} className="space-y-6">
         <FormInput
           id="fullName"
@@ -136,16 +92,11 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           {isLoading ? "Loading..." : "Sign Up"}
         </Button>
       </form>
-      <p className="text-center text-sm mt-6 text-white">
-        Already have an account?{" "}
-        <button
-          onClick={onToggleForm}
-          className="text-white hover:text-gray-300 transition-colors duration-200 font-semibold"
-          type="button"
-        >
-          Sign In
-        </button>
-      </p>
-    </>
+      <ToggleFormLink
+        text="Already have an account?"
+        linkText="Sign In"
+        onClick={onToggleForm}
+      />
+    </FormWrapper>
   );
 };

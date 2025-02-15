@@ -1,10 +1,10 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { FormInput } from "./FormInput";
+import { FormWrapper } from "./FormWrapper";
+import { useAuthForm } from "@/hooks/useAuthForm";
 
 interface ResetPasswordFormProps {
   isLoading: boolean;
@@ -14,32 +14,19 @@ interface ResetPasswordFormProps {
 export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordFormProps) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const { navigate, handleError, handleSuccess } = useAuthForm();
 
-  const validateForm = () => {
+  const validatePasswords = () => {
     if (!newPassword || !confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Please fill in all fields",
-        variant: "destructive",
-      });
+      handleError({ message: "Please fill in all fields" });
       return false;
     }
     if (newPassword !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive",
-      });
+      handleError({ message: "Passwords do not match" });
       return false;
     }
     if (newPassword.length < 6) {
-      toast({
-        title: "Error",
-        description: "Password must be at least 6 characters long",
-        variant: "destructive",
-      });
+      handleError({ message: "Password must be at least 6 characters long" });
       return false;
     }
     return true;
@@ -49,7 +36,7 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
     e.preventDefault();
     if (isLoading) return;
     
-    if (!validateForm()) return;
+    if (!validatePasswords()) return;
     
     setIsLoading(true);
 
@@ -58,38 +45,19 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
         password: newPassword
       });
 
-      if (error) {
-        toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
+      if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Your password has been reset successfully",
-      });
-
-      // Redirect to sign in
+      handleSuccess("Your password has been reset successfully");
       navigate("/auth");
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <h1 className="text-4xl font-bold text-center text-black mb-8">
-        Reset Password
-      </h1>
+    <FormWrapper title="Reset Password">
       <form onSubmit={handleResetPassword} className="space-y-6">
         <FormInput
           id="newPassword"
@@ -117,6 +85,6 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
           {isLoading ? "Loading..." : "Reset Password"}
         </Button>
       </form>
-    </>
+    </FormWrapper>
   );
 };
