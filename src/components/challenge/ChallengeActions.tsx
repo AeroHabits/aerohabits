@@ -40,7 +40,7 @@ export function ChallengeActions({
       toast.info(
         "Level Up Required!", 
         {
-          description: "Complete 80% of challenges in your current difficulty to unlock this level.",
+          description: "Complete 80% of challenges in your current difficulty to unlock this level. Keep pushing forward!",
           duration: 4000
         }
       );
