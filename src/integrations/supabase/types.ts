@@ -390,6 +390,7 @@ export type Database = {
         Row: {
           avatar_url: string | null
           current_challenge_id: string | null
+          current_difficulty: string | null
           email_notifications: boolean | null
           full_name: string | null
           has_seen_tour: boolean | null
@@ -402,6 +403,7 @@ export type Database = {
         Insert: {
           avatar_url?: string | null
           current_challenge_id?: string | null
+          current_difficulty?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
@@ -414,6 +416,7 @@ export type Database = {
         Update: {
           avatar_url?: string | null
           current_challenge_id?: string | null
+          current_difficulty?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
@@ -575,6 +578,7 @@ export type Database = {
           completed_at: string | null
           created_at: string
           id: string
+          is_completed: boolean | null
           start_date: string
           status: string
           updated_at: string
@@ -585,6 +589,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
+          is_completed?: boolean | null
           start_date?: string
           status?: string
           updated_at?: string
@@ -595,6 +600,7 @@ export type Database = {
           completed_at?: string | null
           created_at?: string
           id?: string
+          is_completed?: boolean | null
           start_date?: string
           status?: string
           updated_at?: string
@@ -650,6 +656,16 @@ export type Database = {
       }
     }
     Views: {
+      difficulty_completion_stats: {
+        Row: {
+          completed_challenges: number | null
+          completion_percentage: number | null
+          difficulty: string | null
+          total_challenges: number | null
+          user_id: string | null
+        }
+        Relationships: []
+      }
       medium_challenge_completion: {
         Row: {
           completed_medium: number | null
@@ -670,6 +686,13 @@ export type Database = {
       can_access_app: {
         Args: {
           user_uid: string
+        }
+        Returns: boolean
+      }
+      can_access_difficulty: {
+        Args: {
+          user_uid: string
+          target_difficulty: string
         }
         Returns: boolean
       }

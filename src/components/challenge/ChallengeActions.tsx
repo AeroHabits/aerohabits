@@ -9,7 +9,7 @@ interface ChallengeActionsProps {
   onJoin: () => void;
   difficulty: string;
   userPoints: number;
-  canAccessAdvancedChallenge?: boolean;
+  canAccessDifficulty?: boolean;
   isLocked?: boolean;
 }
 
@@ -18,12 +18,9 @@ export function ChallengeActions({
   isLoading, 
   onJoin,
   difficulty,
-  canAccessAdvancedChallenge = true,
+  canAccessDifficulty = true,
   isLocked = false
 }: ChallengeActionsProps) {
-  const isAdvancedChallenge = ['hard', 'master'].includes(difficulty.toLowerCase());
-  const isDisabled = isAdvancedChallenge && !canAccessAdvancedChallenge;
-
   if (isLocked && !isJoined) {
     return (
       <Button 
@@ -38,7 +35,7 @@ export function ChallengeActions({
     );
   }
 
-  if (isDisabled) {
+  if (!canAccessDifficulty) {
     return (
       <Button 
         className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed px-2 py-1.5 h-auto min-h-[44px] text-xs sm:text-sm whitespace-normal"
@@ -46,7 +43,7 @@ export function ChallengeActions({
       >
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4 flex-shrink-0" />
-          <span>Complete 80% of Medium Challenges to Unlock</span>
+          <span>Complete 80% of Previous Difficulty to Unlock</span>
         </div>
       </Button>
     );

@@ -6,7 +6,7 @@ interface ChallengeGridProps {
   userChallenges: string[];
   onJoinChallenge: (challengeId: string) => void;
   userPoints: number;
-  canAccessAdvancedChallenge?: boolean;
+  canAccessDifficulty?: boolean;
   currentChallengeId: string | null;
 }
 
@@ -15,7 +15,7 @@ export function ChallengeGrid({
   userChallenges, 
   onJoinChallenge,
   userPoints,
-  canAccessAdvancedChallenge = true,
+  canAccessDifficulty = true,
   currentChallengeId
 }: ChallengeGridProps) {
   return (
@@ -27,7 +27,7 @@ export function ChallengeGrid({
           onJoin={(challengeId) => onJoinChallenge(challengeId)}
           isJoined={userChallenges?.includes(challenge.id)}
           userPoints={userPoints}
-          canAccessAdvancedChallenge={canAccessAdvancedChallenge}
+          canAccessDifficulty={canAccessDifficulty}
           isLocked={currentChallengeId !== null && currentChallengeId !== challenge.id}
           sequenceOrder={challenge.sequence_order}
         />
