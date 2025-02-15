@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
@@ -64,7 +65,16 @@ export function ChallengeProgress({
 
           // Update the UI
           onProgressUpdate();
-          toast.error("You missed a day! Challenge progress has been reset.");
+          
+          // Show a more prominent notification about the streak loss
+          toast.error("Challenge Progress Reset!", {
+            description: "You missed a day in your challenge! Your progress has been reset and you'll need to start over. Remember to complete your challenge daily to maintain your streak!",
+            duration: 6000, // Show for 6 seconds
+            action: {
+              label: "Got it",
+              onClick: () => console.log("User acknowledged challenge reset")
+            }
+          });
         }
       }
     };
