@@ -5,9 +5,8 @@ import { ChallengeDifficultyGuide } from "./ChallengeDifficultyGuide";
 import { ChallengeDifficultyTabs } from "./ChallengeDifficultyTabs";
 import { ChallengeGrid } from "./ChallengeGrid";
 import { ChallengeHero } from "./ChallengeHero";
-import { ChallengeProgressionGuide } from "./ChallengeProgressionGuide";
-import { useChallenges } from "@/hooks/useChallenges";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useChallenges } from "@/hooks/useChallenges";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -105,10 +104,6 @@ export function ChallengeListContainer() {
     >
       <ChallengeHero />
       
-      <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
-        <ChallengeProgressionGuide />
-      </motion.div>
-
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <ChallengeDifficultyGuide />
       </motion.div>
