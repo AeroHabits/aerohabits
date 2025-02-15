@@ -25,7 +25,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
     setIsLoading(true);
 
     try {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
+      const { error: authError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -37,14 +37,6 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
       });
 
       if (authError) throw authError;
-
-      if (authData.user) {
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert([{ id: authData.user.id, full_name: fullName }]);
-
-        if (profileError) throw profileError;
-      }
 
       handleSuccess("Please check your email to verify your account.");
     } catch (error: any) {
