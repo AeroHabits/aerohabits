@@ -88,8 +88,11 @@ export function WelcomeQuiz() {
 
           if (responseError) throw responseError;
 
-          toast.success("Quiz completed! Redirecting to your recommended challenge...");
-          navigate("/challenges");
+          toast.success("Quiz completed! Redirecting to your recommended challenge...", {
+            onDismiss: () => {
+              navigate("/challenges");
+            }
+          });
         }
       } catch (error) {
         console.error("Error saving quiz responses:", error);
