@@ -472,6 +472,27 @@ export type Database = {
           },
         ]
       }
+      secrets: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          value?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string | null
@@ -701,6 +722,10 @@ export type Database = {
           target_difficulty: string
         }
         Returns: boolean
+      }
+      get_stripe_publishable_key: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       is_premium_user: {
         Args: {

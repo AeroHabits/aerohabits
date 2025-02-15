@@ -10,11 +10,13 @@ import { PricingCard } from "./PricingCard";
 
 // Initialize Stripe with key from Supabase
 const getStripePromise = async () => {
-  const { data: { value: publishableKey } } = await supabase
-    .from('secrets')
-    .select('value')
-    .eq('name', 'STRIPE_PUBLISHABLE_KEY')
-    .single();
+  const { data: publishableKey, error } = await supabase
+    .rpc('get_stripe_publishable_key');
+  
+  if (error) {
+    console.error('Error fetching Stripe key:', error);
+    return null;
+  }
   
   return loadStripe(publishableKey || '');
 };
