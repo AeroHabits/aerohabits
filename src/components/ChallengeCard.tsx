@@ -17,7 +17,6 @@ interface ChallengeCardProps {
     duration_days: number;
     category: string | null;
     reward_points: number | null;
-    is_premium: boolean | null;
     completion_criteria: string | null;
     motivation_text: string | null;
     milestones: any[] | null;
@@ -99,7 +98,6 @@ export function ChallengeCard({
             difficulty={challenge.difficulty}
             category={challenge.category}
             rewardPoints={challenge.reward_points}
-            isPremium={challenge.is_premium}
             isHovered={isHovered}
             sequenceOrder={sequenceOrder}
           />
@@ -126,7 +124,6 @@ export function ChallengeCard({
         </CardContent>
         <CardFooter>
           <ChallengeActions
-            isPremium={challenge.is_premium}
             isJoined={isJoined}
             isLoading={false}
             onJoin={() => onJoin(challenge.id)}

@@ -395,7 +395,6 @@ export type Database = {
           full_name: string | null
           has_seen_tour: boolean | null
           id: string
-          is_premium: boolean | null
           push_notifications: boolean | null
           total_points: number | null
           updated_at: string | null
@@ -408,7 +407,6 @@ export type Database = {
           full_name?: string | null
           has_seen_tour?: boolean | null
           id: string
-          is_premium?: boolean | null
           push_notifications?: boolean | null
           total_points?: number | null
           updated_at?: string | null
@@ -421,7 +419,6 @@ export type Database = {
           full_name?: string | null
           has_seen_tour?: boolean | null
           id?: string
-          is_premium?: boolean | null
           push_notifications?: boolean | null
           total_points?: number | null
           updated_at?: string | null
@@ -490,51 +487,6 @@ export type Database = {
           id?: string
           name?: string
           value?: string
-        }
-        Relationships: []
-      }
-      subscriptions: {
-        Row: {
-          created_at: string | null
-          current_period_end: string | null
-          current_period_start: string | null
-          id: string
-          plan_type: string
-          status: string
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
-          trial_end: string | null
-          trial_start: string | null
-          updated_at: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          current_period_end?: string | null
-          current_period_start?: string | null
-          id?: string
-          plan_type: string
-          status: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          trial_end?: string | null
-          trial_start?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          current_period_end?: string | null
-          current_period_start?: string | null
-          id?: string
-          plan_type?: string
-          status?: string
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          trial_end?: string | null
-          trial_start?: string | null
-          updated_at?: string | null
-          user_id?: string | null
         }
         Relationships: []
       }
@@ -710,26 +662,10 @@ export type Database = {
         }
         Returns: boolean
       }
-      can_access_app: {
-        Args: {
-          user_uid: string
-        }
-        Returns: boolean
-      }
       can_access_difficulty: {
         Args: {
           user_uid: string
           target_difficulty: string
-        }
-        Returns: boolean
-      }
-      get_stripe_publishable_key: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      is_premium_user: {
-        Args: {
-          user_uid: string
         }
         Returns: boolean
       }

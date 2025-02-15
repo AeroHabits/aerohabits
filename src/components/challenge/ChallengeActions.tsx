@@ -4,7 +4,6 @@ import { CheckCircle2, Flame, Lock } from "lucide-react";
 import { toast } from "sonner";
 
 interface ChallengeActionsProps {
-  isPremium: boolean | null;
   isJoined: boolean | undefined;
   isLoading: boolean;
   onJoin: () => void;

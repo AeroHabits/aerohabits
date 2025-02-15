@@ -3,28 +3,9 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
 import { useState } from "react";
-import { PricingTiers } from "../pricing/PricingTiers";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 
 export function AppHero() {
-  const [showPricing, setShowPricing] = useState(false);
-
-  const { data: profile } = useQuery({
-    queryKey: ['profile'],
-    queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-      
-      const { data } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-      
-      return data;
-    },
-  });
+  const [showFeatures, setShowFeatures] = useState(false);
 
   return (
     <motion.div
@@ -59,7 +40,7 @@ export function AppHero() {
         >
           <Button
             variant="ghost"
-            onClick={() => setShowPricing(!showPricing)}
+            onClick={() => setShowFeatures(!showFeatures)}
             className="relative group bg-gradient-to-r from-purple-500/20 to-blue-500/20 hover:from-purple-500/30 hover:to-blue-500/30 text-white border border-purple-500/30 hover:border-purple-500/50 transition-all duration-300"
           >
             <motion.div
@@ -75,26 +56,27 @@ export function AppHero() {
               }}
             />
             <Sparkles className="mr-2 h-4 w-4 text-yellow-300 animate-pulse" />
-            {showPricing ? (
+            {showFeatures ? (
               <>
-                Hide Premium Features <ChevronUp className="ml-1 h-4 w-4" />
+                Hide Features <ChevronUp className="ml-1 h-4 w-4" />
               </>
             ) : (
               <>
-                Unlock Premium Features <ChevronDown className="ml-1 h-4 w-4" />
+                Show Features <ChevronDown className="ml-1 h-4 w-4" />
               </>
             )}
           </Button>
         </motion.div>
 
-        {showPricing && (
+        {showFeatures && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
+            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto"
           >
-            <PricingTiers />
+            {/* Feature cards here */}
           </motion.div>
         )}
       </div>
