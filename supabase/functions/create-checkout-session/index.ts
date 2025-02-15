@@ -16,6 +16,13 @@ serve(async (req) => {
   try {
     const { priceId, customerId } = await req.json();
 
+    if (!priceId || !customerId) {
+      throw new Error('Price ID and Customer ID are required');
+    }
+
+    console.log('Creating checkout session for:', { customerId, priceId });
+
+    const origin = req.headers.get('origin') || 'http://localhost:5173';
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -25,11 +32,20 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/settings?success=true`,
-      cancel_url: `${req.headers.get('origin')}/pricing?canceled=true`,
+      success_url: `${origin}/settings?success=true`,
+      cancel_url: `${origin}/pricing?canceled=true`,
       allow_promotion_codes: true,
       billing_address_collection: 'required',
+      customer_update: {
+        address: 'auto'
+      },
+      payment_method_types: ['card'],
+      metadata: {
+        customer_id: customerId
+      }
     });
+
+    console.log('Checkout session created:', session.id);
 
     return new Response(JSON.stringify({ sessionId: session.id }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -38,7 +54,11 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return new Response(
-      JSON.stringify({ error: { message: error.message } }),
+      JSON.stringify({ 
+        error: { 
+          message: error instanceof Error ? error.message : 'An unexpected error occurred'
+        } 
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400,

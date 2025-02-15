@@ -16,14 +16,13 @@ const getStripePromise = async () => {
   
   if (error) {
     console.error('Error fetching Stripe key:', error);
-    return null;
+    throw new Error('Failed to fetch Stripe key');
   }
 
   console.log('Stripe key received:', publishableKey ? 'Key exists' : 'No key found');
   
   if (!publishableKey) {
-    console.error('No publishable key returned from Supabase');
-    return null;
+    throw new Error('No Stripe publishable key found');
   }
 
   return loadStripe(publishableKey);
@@ -55,6 +54,7 @@ export function PricingTiers() {
 
     try {
       setLoading(true);
+      console.log('Starting subscription process...');
 
       // First, create or get Stripe customer
       const { data: createCustomerData, error: createCustomerError } = await supabase.functions.invoke(
@@ -67,7 +67,12 @@ export function PricingTiers() {
         }
       );
 
-      if (createCustomerError) throw createCustomerError;
+      if (createCustomerError) {
+        console.error('Create customer error:', createCustomerError);
+        throw new Error(createCustomerError.message || 'Failed to create customer');
+      }
+
+      console.log('Customer created/retrieved:', createCustomerData);
 
       // Create checkout session
       const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
@@ -80,19 +85,29 @@ export function PricingTiers() {
         }
       );
 
-      if (sessionError) throw sessionError;
+      if (sessionError) {
+        console.error('Create session error:', sessionError);
+        throw new Error(sessionError.message || 'Failed to create checkout session');
+      }
+
+      console.log('Checkout session created:', sessionData);
 
       // Initialize Stripe with key from Supabase
       console.log('Initializing Stripe...');
       const stripe = await getStripePromise();
-      if (!stripe) throw new Error('Stripe failed to initialize');
+      if (!stripe) {
+        throw new Error('Failed to initialize Stripe');
+      }
 
       console.log('Redirecting to checkout...');
       const { error: stripeError } = await stripe.redirectToCheckout({
         sessionId: sessionData.sessionId,
       });
 
-      if (stripeError) throw stripeError;
+      if (stripeError) {
+        console.error('Stripe redirect error:', stripeError);
+        throw stripeError;
+      }
 
     } catch (error: any) {
       console.error('Subscription error:', error);
