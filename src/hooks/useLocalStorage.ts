@@ -1,38 +1,57 @@
 
 import { useState } from "react";
-import { Habit } from "@/types";
+import { Habit, Goal, Challenge } from "@/types";
 
-const HABITS_STORAGE_KEY = 'offlineHabits';
+const STORAGE_KEYS = {
+  HABITS: 'offlineHabits',
+  GOALS: 'offlineGoals',
+  CHALLENGES: 'offlineChallenges',
+  SYNC_QUEUE: 'syncQueue'
+} as const;
 
 export function useLocalStorage() {
-  // Load habits from local storage with expiration
-  const loadOfflineHabits = () => {
-    const stored = localStorage.getItem(HABITS_STORAGE_KEY);
+  // Generic load function with expiration
+  const loadFromStorage = <T>(key: string): T[] => {
+    const stored = localStorage.getItem(key);
     if (!stored) return [];
     
     try {
-      const { habits, timestamp } = JSON.parse(stored);
+      const { data, timestamp } = JSON.parse(stored);
       // Clear cache if older than 24 hours
       if (Date.now() - timestamp > 24 * 60 * 60 * 1000) {
-        localStorage.removeItem(HABITS_STORAGE_KEY);
+        localStorage.removeItem(key);
         return [];
       }
-      return habits;
+      return data;
     } catch {
       return [];
     }
   };
 
-  // Save habits to local storage with timestamp
-  const saveOfflineHabits = (habits: Habit[]) => {
-    localStorage.setItem(HABITS_STORAGE_KEY, JSON.stringify({
-      habits,
+  // Generic save function with timestamp
+  const saveToStorage = <T>(key: string, data: T[]) => {
+    localStorage.setItem(key, JSON.stringify({
+      data,
       timestamp: Date.now()
     }));
   };
 
+  // Specific functions for each data type
+  const loadOfflineHabits = () => loadFromStorage<Habit>(STORAGE_KEYS.HABITS);
+  const saveOfflineHabits = (habits: Habit[]) => saveToStorage(STORAGE_KEYS.HABITS, habits);
+  
+  const loadOfflineGoals = () => loadFromStorage<Goal>(STORAGE_KEYS.GOALS);
+  const saveOfflineGoals = (goals: Goal[]) => saveToStorage(STORAGE_KEYS.GOALS, goals);
+  
+  const loadOfflineChallenges = () => loadFromStorage<Challenge>(STORAGE_KEYS.CHALLENGES);
+  const saveOfflineChallenges = (challenges: Challenge[]) => saveToStorage(STORAGE_KEYS.CHALLENGES, challenges);
+
   return {
     loadOfflineHabits,
-    saveOfflineHabits
+    saveOfflineHabits,
+    loadOfflineGoals,
+    saveOfflineGoals,
+    loadOfflineChallenges,
+    saveOfflineChallenges
   };
 }
