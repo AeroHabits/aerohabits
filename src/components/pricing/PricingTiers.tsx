@@ -8,8 +8,16 @@ import { loadStripe } from "@stripe/stripe-js";
 import { PricingHeader } from "./PricingHeader";
 import { PricingCard } from "./PricingCard";
 
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
+// Initialize Stripe with key from Supabase
+const getStripePromise = async () => {
+  const { data: { value: publishableKey } } = await supabase
+    .from('secrets')
+    .select('value')
+    .eq('name', 'STRIPE_PUBLISHABLE_KEY')
+    .single();
+  
+  return loadStripe(publishableKey || '');
+};
 
 export function PricingTiers() {
   const [loading, setLoading] = useState(false);
@@ -64,8 +72,8 @@ export function PricingTiers() {
 
       if (sessionError) throw sessionError;
 
-      // Redirect to Stripe Checkout
-      const stripe = await stripePromise;
+      // Initialize Stripe with key from Supabase
+      const stripe = await getStripePromise();
       if (!stripe) throw new Error('Stripe failed to initialize');
 
       const { error: stripeError } = await stripe.redirectToCheckout({
