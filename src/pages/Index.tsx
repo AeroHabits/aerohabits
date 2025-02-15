@@ -1,6 +1,5 @@
 
 import { AppHero } from "@/components/layout/AppHero";
-import { AppTabs } from "@/components/layout/AppTabs";
 import { WelcomeTour } from "@/components/WelcomeTour";
 import { WelcomeQuiz } from "@/components/quiz/WelcomeQuiz";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -67,7 +66,6 @@ const Index = () => {
           >
             <AppHero />
             <AppShowcase />
-            <AppTabs />
           </motion.div>
         )}
       </motion.div>
