@@ -3,11 +3,21 @@ import { useState, useCallback, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { debounce } from "lodash";
 import { useOnlineStatus } from "./useOnlineStatus";
-import { SyncEntityType, SyncAction, SyncQueueItem } from "@/types";
+import { SyncEntityType, SyncAction } from "@/types";
 
 const SYNC_QUEUE_KEY = 'habitSyncQueue';
 const BATCH_SIZE = 10;
 const SYNC_DEBOUNCE_MS = 2000;
+
+interface HabitSyncQueueItem {
+  id?: string;
+  user_id: string;
+  habit_id: string;  // Changed from entity_id to match DB schema
+  action: string;
+  data?: any;
+  created_at: string;
+  synced_at?: string;
+}
 
 export function useOfflineSync() {
   const isOnline = useOnlineStatus();
@@ -23,10 +33,15 @@ export function useOfflineSync() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const syncItem: SyncQueueItem = {
+    // Only handle habit syncs for now
+    if (entityType !== 'habit') {
+      console.warn('Only habit sync is currently supported');
+      return;
+    }
+
+    const syncItem: HabitSyncQueueItem = {
       user_id: user.id,
-      entity_id: entityId,
-      entity_type: entityType,
+      habit_id: entityId,  // Using habit_id instead of entity_id
       action,
       data,
       created_at: new Date().toISOString()
@@ -77,20 +92,17 @@ export function useOfflineSync() {
         
         for (const item of batch) {
           try {
-            if (item.entity_type === 'habit') {
-              switch (item.action) {
-                case 'add':
-                  await supabase.from('habits').insert([item.data]);
-                  break;
-                case 'update':
-                  await supabase.from('habits').update(item.data).eq('id', item.entity_id);
-                  break;
-                case 'delete':
-                  await supabase.from('habits').delete().eq('id', item.entity_id);
-                  break;
-              }
+            switch (item.action) {
+              case 'add':
+                await supabase.from('habits').insert([item.data]);
+                break;
+              case 'update':
+                await supabase.from('habits').update(item.data).eq('id', item.habit_id);
+                break;
+              case 'delete':
+                await supabase.from('habits').delete().eq('id', item.habit_id);
+                break;
             }
-            // Handle other entity types similarly when implemented
 
             // Mark as synced in Supabase queue
             if (item.id) {
