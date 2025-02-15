@@ -3,7 +3,6 @@ import { AddHabitForm } from "./AddHabitForm";
 import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
 import { HabitListContent } from "./HabitListContent";
-import { PricingTiers } from "./pricing/PricingTiers";
 import { useHabits } from "@/hooks/useHabits";
 import { motion, AnimatePresence } from "framer-motion";
 import { Loader2, WifiOff } from "lucide-react";
@@ -86,7 +85,7 @@ export function HabitList() {
 
   return (
     <div 
-      className="w-full space-y-8"
+      className="w-full space-y-8 pb-6"
       onTouchStart={isMobile ? handleTouchStart : undefined}
       onTouchMove={isMobile ? handleTouchMove : undefined}
       onTouchEnd={isMobile ? handleTouchEnd : undefined}
@@ -131,17 +130,6 @@ export function HabitList() {
           <AddHabitForm onAddHabit={addHabit} />
         </div>
       </div>
-
-      {!profile?.is_premium && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-12"
-        >
-          <PricingTiers />
-        </motion.div>
-      )}
     </div>
   );
 }
