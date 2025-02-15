@@ -15,14 +15,16 @@ serve(async (req) => {
 
   try {
     const { priceId, customerId } = await req.json();
+    console.log('Received request with:', { priceId, customerId });
 
     if (!priceId || !customerId) {
       throw new Error('Price ID and Customer ID are required');
     }
 
-    console.log('Creating checkout session for:', { customerId, priceId });
-
     const origin = req.headers.get('origin') || 'http://localhost:5173';
+    
+    console.log('Creating checkout session for:', { customerId, priceId });
+    
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -40,17 +42,20 @@ serve(async (req) => {
         address: 'auto'
       },
       payment_method_types: ['card'],
-      metadata: {
-        customer_id: customerId
-      }
     });
 
     console.log('Checkout session created:', session.id);
 
-    return new Response(JSON.stringify({ sessionId: session.id }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      status: 200,
-    });
+    return new Response(
+      JSON.stringify({ sessionId: session.id }),
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        },
+        status: 200,
+      }
+    );
   } catch (error) {
     console.error('Error creating checkout session:', error);
     return new Response(
@@ -60,7 +65,10 @@ serve(async (req) => {
         } 
       }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        },
         status: 400,
       }
     );
