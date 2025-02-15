@@ -4,8 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { loadStripe } from "@stripe/stripe-js";
 import { PricingHeader } from "./PricingHeader";
 import { PricingCard } from "./PricingCard";
+
+// Initialize Stripe
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || '');
 
 export function PricingTiers() {
   const [loading, setLoading] = useState(false);
@@ -19,20 +23,63 @@ export function PricingTiers() {
     },
   });
 
-  const handleSubscribe = async () => {
+  const handleSubscribe = async (priceId: string | null) => {
     if (!session) {
       toast.error("Please sign in first");
       navigate('/auth');
       return;
     }
 
-    toast("Premium Features Coming Soon! 🚀", {
-      description: "We're working hard to bring you amazing premium features. Stay tuned!",
-      action: {
-        label: "Got it",
-        onClick: () => console.log("Dismissed")
-      },
-    });
+    if (!priceId) {
+      toast.error("Invalid price ID");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // First, create or get Stripe customer
+      const { data: createCustomerData, error: createCustomerError } = await supabase.functions.invoke(
+        'create-stripe-customer',
+        {
+          body: {
+            email: session.user.email,
+            userId: session.user.id,
+          },
+        }
+      );
+
+      if (createCustomerError) throw createCustomerError;
+
+      // Create checkout session
+      const { data: sessionData, error: sessionError } = await supabase.functions.invoke(
+        'create-checkout-session',
+        {
+          body: {
+            priceId,
+            customerId: createCustomerData.customerId,
+          },
+        }
+      );
+
+      if (sessionError) throw sessionError;
+
+      // Redirect to Stripe Checkout
+      const stripe = await stripePromise;
+      if (!stripe) throw new Error('Stripe failed to initialize');
+
+      const { error: stripeError } = await stripe.redirectToCheckout({
+        sessionId: sessionData.sessionId,
+      });
+
+      if (stripeError) throw stripeError;
+
+    } catch (error: any) {
+      console.error('Subscription error:', error);
+      toast.error(error.message || "Failed to start subscription");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const tiers = [
@@ -49,10 +96,10 @@ export function PricingTiers() {
         "Exclusive content",
         "Advanced analytics",
       ],
-      badge: "Coming Soon",
-      buttonText: "Coming Soon",
+      badge: null,
+      buttonText: "Subscribe Monthly",
       buttonVariant: "outline" as const,
-      priceId: null
+      priceId: "price_1Qq8Q3Rrh0VTJWZxKHTXCKdT"
     },
     {
       name: "Yearly",
@@ -68,10 +115,10 @@ export function PricingTiers() {
         "Exclusive content",
         "Advanced analytics",
       ],
-      badge: "Coming Soon",
-      buttonText: "Coming Soon",
+      badge: "Best Value",
+      buttonText: "Subscribe Yearly",
       buttonVariant: "default" as const,
-      priceId: null
+      priceId: null // You'll need to add your yearly plan price ID here
     },
   ];
 
