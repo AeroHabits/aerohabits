@@ -1,3 +1,4 @@
+
 import { Badge } from "@/components/ui/badge";
 import { CardTitle } from "@/components/ui/card";
 import { Trophy, Sparkles, Star, Flame, Award, Crown } from "lucide-react";
@@ -10,6 +11,7 @@ interface ChallengeHeaderProps {
   rewardPoints: number | null;
   isPremium: boolean | null;
   isHovered: boolean;
+  sequenceOrder: number;
 }
 
 export function ChallengeHeader({
@@ -18,7 +20,8 @@ export function ChallengeHeader({
   category,
   rewardPoints,
   isPremium,
-  isHovered
+  isHovered,
+  sequenceOrder
 }: ChallengeHeaderProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
@@ -57,7 +60,9 @@ export function ChallengeHeader({
           initial={{ x: 0 }}
           animate={{ x: isHovered ? 5 : 0 }}
           transition={{ duration: 0.2 }}
+          className="flex items-center gap-2"
         >
+          <span className="text-sm text-muted-foreground">#{sequenceOrder}</span>
           <CardTitle className="text-xl font-bold">{title}</CardTitle>
         </motion.div>
         <div className="flex items-center gap-2">
