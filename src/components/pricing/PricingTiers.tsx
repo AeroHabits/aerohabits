@@ -99,7 +99,7 @@ export function PricingTiers() {
       badge: null,
       buttonText: "Subscribe Monthly",
       buttonVariant: "outline" as const,
-      priceId: "price_1Qq8Q3Rrh0VTJWZxKHTXCKdT"
+      priceId: "price_1QqRMIRrh0VTJWZxqng2r1eS"
     },
     {
       name: "Yearly",
@@ -118,7 +118,7 @@ export function PricingTiers() {
       badge: "Best Value",
       buttonText: "Subscribe Yearly",
       buttonVariant: "default" as const,
-      priceId: "price_1QseOXRrh0VTJWZxZ4CjUcJG"
+      priceId: "price_1QseeyRrh0VTJWZx9wLlTiCI"
     },
   ];
 
