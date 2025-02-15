@@ -17,7 +17,7 @@ const Challenges = () => {
       )}>
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
-            Wake up at 5:30 AM and win the morning.
+            AEROHABITS
           </h1>
           <UserMenu />
         </div>
