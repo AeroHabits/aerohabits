@@ -5,17 +5,17 @@ interface ToggleFormLinkProps {
   onClick: () => void;
 }
 
-export const ToggleFormLink = ({ text, linkText, onClick }: ToggleFormLinkProps) => {
+export function ToggleFormLink({ text, linkText, onClick }: ToggleFormLinkProps) {
   return (
-    <p className="text-center text-sm mt-6 text-white">
+    <p className="text-center mt-4 text-sm">
       {text}{" "}
       <button
         onClick={onClick}
-        className="text-white hover:text-gray-200 transition-colors duration-200 font-semibold"
+        className="text-blue-600 hover:text-blue-700 font-medium"
         type="button"
       >
         {linkText}
       </button>
     </p>
   );
-};
+}

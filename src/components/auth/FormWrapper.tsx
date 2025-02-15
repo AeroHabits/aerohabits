@@ -1,18 +1,18 @@
 
-import { ReactNode } from "react";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface FormWrapperProps {
+  children: React.ReactNode;
   title: string;
-  children: ReactNode;
 }
 
-export const FormWrapper = ({ title, children }: FormWrapperProps) => {
+export function FormWrapper({ children, title }: FormWrapperProps) {
   return (
-    <>
-      <h1 className="text-4xl font-bold text-center text-white mb-8">
-        {title}
-      </h1>
-      {children}
-    </>
+    <Card>
+      <CardContent className="pt-6">
+        <h2 className="text-2xl font-semibold text-center mb-6">{title}</h2>
+        {children}
+      </CardContent>
+    </Card>
   );
-};
+}

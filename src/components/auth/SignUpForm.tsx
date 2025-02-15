@@ -91,4 +91,4 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
       />
     </FormWrapper>
   );
-};
+}
