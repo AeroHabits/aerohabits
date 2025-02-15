@@ -8,7 +8,6 @@ import Goals from "@/pages/Goals";
 import Journey from "@/pages/Journey";
 import Challenges from "@/pages/Challenges";
 import Settings from "@/pages/Settings";
-import Pricing from "@/pages/Pricing";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 
@@ -18,7 +17,6 @@ export function AppRoutes() {
       <Route path="/auth" element={<Auth />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
-      <Route path="/pricing" element={<Pricing />} />
       <Route
         path="/"
         element={

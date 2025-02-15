@@ -9,7 +9,6 @@ interface ChallengeHeaderProps {
   difficulty: string;
   category: string | null;
   rewardPoints: number | null;
-  isPremium: boolean | null;
   isHovered: boolean;
   sequenceOrder: number;
 }
@@ -19,8 +18,8 @@ export function ChallengeHeader({
   difficulty,
   category,
   rewardPoints,
-  isPremium,
-  isHovered
+  isHovered,
+  sequenceOrder
 }: ChallengeHeaderProps) {
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty.toLowerCase()) {
@@ -62,20 +61,12 @@ export function ChallengeHeader({
         >
           <CardTitle className="text-xl font-bold">{title}</CardTitle>
         </motion.div>
-        <div className="flex items-center gap-2">
-          {rewardPoints && (
-            <Badge variant="secondary" className="bg-amber-100 text-amber-800 animate-pulse">
-              <Trophy className="h-3 w-3 mr-1" />
-              {rewardPoints} pts
-            </Badge>
-          )}
-          {isPremium && (
-            <Badge variant="secondary" className="bg-purple-100 text-purple-800">
-              <Sparkles className="h-3 w-3 mr-1" />
-              Premium
-            </Badge>
-          )}
-        </div>
+        {rewardPoints && (
+          <Badge variant="secondary" className="bg-amber-100 text-amber-800 animate-pulse">
+            <Trophy className="h-3 w-3 mr-1" />
+            {rewardPoints} pts
+          </Badge>
+        )}
       </div>
       <div className="flex gap-2">
         <Badge variant="secondary" className={`${getDifficultyColor(difficulty)} flex items-center`}>
