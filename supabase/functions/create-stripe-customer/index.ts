@@ -9,6 +9,7 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
 });
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
@@ -16,12 +17,20 @@ serve(async (req) => {
   try {
     const { email, userId } = await req.json();
 
+    if (!email || !userId) {
+      throw new Error('Email and userId are required');
+    }
+
+    console.log('Creating Stripe customer for:', { email, userId });
+
     const customer = await stripe.customers.create({
       email,
       metadata: {
         user_id: userId,
       },
     });
+
+    console.log('Stripe customer created:', customer.id);
 
     const response = { customerId: customer.id };
 
