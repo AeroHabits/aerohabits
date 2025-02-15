@@ -27,7 +27,7 @@ interface ChallengeCardProps {
   onJoin: (challengeId: string) => void;
   isJoined?: boolean;
   userPoints: number;
-  canAccessAdvancedChallenge?: boolean;
+  canAccessDifficulty?: boolean;
   isLocked?: boolean;
   sequenceOrder: number;
 }
@@ -37,7 +37,7 @@ export function ChallengeCard({
   onJoin, 
   isJoined, 
   userPoints,
-  canAccessAdvancedChallenge = true,
+  canAccessDifficulty = true,
   isLocked = false,
   sequenceOrder
 }: ChallengeCardProps) {
@@ -132,7 +132,7 @@ export function ChallengeCard({
             onJoin={() => onJoin(challenge.id)}
             difficulty={challenge.difficulty}
             userPoints={userPoints}
-            canAccessAdvancedChallenge={canAccessAdvancedChallenge}
+            canAccessDifficulty={canAccessDifficulty}
             isLocked={isLocked}
           />
         </CardFooter>
