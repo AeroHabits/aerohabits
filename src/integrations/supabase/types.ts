@@ -111,6 +111,7 @@ export type Database = {
           milestones: Json | null
           motivation_text: string | null
           reward_points: number | null
+          sequence_order: number
           tips: string[] | null
           title: string
           updated_at: string
@@ -127,6 +128,7 @@ export type Database = {
           milestones?: Json | null
           motivation_text?: string | null
           reward_points?: number | null
+          sequence_order: number
           tips?: string[] | null
           title: string
           updated_at?: string
@@ -143,6 +145,7 @@ export type Database = {
           milestones?: Json | null
           motivation_text?: string | null
           reward_points?: number | null
+          sequence_order?: number
           tips?: string[] | null
           title?: string
           updated_at?: string
@@ -386,6 +389,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          current_challenge_id: string | null
           email_notifications: boolean | null
           full_name: string | null
           has_seen_tour: boolean | null
@@ -397,6 +401,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          current_challenge_id?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
@@ -408,6 +413,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          current_challenge_id?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
@@ -417,7 +423,15 @@ export type Database = {
           total_points?: number | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_current_challenge_id_fkey"
+            columns: ["current_challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       purchased_badges: {
         Row: {

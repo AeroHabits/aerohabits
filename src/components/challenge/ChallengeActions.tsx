@@ -1,7 +1,6 @@
 
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Flame, Lock } from "lucide-react";
-import { ChallengeUnlockButton } from "./ChallengeUnlockButton";
 
 interface ChallengeActionsProps {
   isPremium: boolean | null;
@@ -11,6 +10,7 @@ interface ChallengeActionsProps {
   difficulty: string;
   userPoints: number;
   canAccessAdvancedChallenge?: boolean;
+  isLocked?: boolean;
 }
 
 export function ChallengeActions({ 
@@ -18,12 +18,27 @@ export function ChallengeActions({
   isLoading, 
   onJoin,
   difficulty,
-  canAccessAdvancedChallenge = true
+  canAccessAdvancedChallenge = true,
+  isLocked = false
 }: ChallengeActionsProps) {
   const isAdvancedChallenge = ['hard', 'master'].includes(difficulty.toLowerCase());
-  const isLocked = isAdvancedChallenge && !canAccessAdvancedChallenge;
+  const isDisabled = isAdvancedChallenge && !canAccessAdvancedChallenge;
 
-  if (isLocked) {
+  if (isLocked && !isJoined) {
+    return (
+      <Button 
+        className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed px-2 py-1.5 h-auto min-h-[44px] text-xs sm:text-sm whitespace-normal"
+        disabled={true}
+      >
+        <div className="flex items-center gap-2">
+          <Lock className="h-4 w-4 flex-shrink-0" />
+          <span>Complete Previous Challenge to Unlock</span>
+        </div>
+      </Button>
+    );
+  }
+
+  if (isDisabled) {
     return (
       <Button 
         className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed px-2 py-1.5 h-auto min-h-[44px] text-xs sm:text-sm whitespace-normal"

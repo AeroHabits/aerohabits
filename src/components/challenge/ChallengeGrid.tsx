@@ -7,6 +7,7 @@ interface ChallengeGridProps {
   onJoinChallenge: (challengeId: string) => void;
   userPoints: number;
   canAccessAdvancedChallenge?: boolean;
+  currentChallengeId: string | null;
 }
 
 export function ChallengeGrid({ 
@@ -14,7 +15,8 @@ export function ChallengeGrid({
   userChallenges, 
   onJoinChallenge,
   userPoints,
-  canAccessAdvancedChallenge = true
+  canAccessAdvancedChallenge = true,
+  currentChallengeId
 }: ChallengeGridProps) {
   return (
     <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
@@ -26,6 +28,8 @@ export function ChallengeGrid({
           isJoined={userChallenges?.includes(challenge.id)}
           userPoints={userPoints}
           canAccessAdvancedChallenge={canAccessAdvancedChallenge}
+          isLocked={currentChallengeId !== null && currentChallengeId !== challenge.id}
+          sequenceOrder={challenge.sequence_order}
         />
       ))}
     </div>

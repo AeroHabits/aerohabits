@@ -22,11 +22,14 @@ interface ChallengeCardProps {
     motivation_text: string | null;
     milestones: any[] | null;
     tips: string[] | null;
+    sequence_order: number;
   };
   onJoin: (challengeId: string) => void;
   isJoined?: boolean;
   userPoints: number;
   canAccessAdvancedChallenge?: boolean;
+  isLocked?: boolean;
+  sequenceOrder: number;
 }
 
 export function ChallengeCard({ 
@@ -34,7 +37,9 @@ export function ChallengeCard({
   onJoin, 
   isJoined, 
   userPoints,
-  canAccessAdvancedChallenge = true
+  canAccessAdvancedChallenge = true,
+  isLocked = false,
+  sequenceOrder
 }: ChallengeCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [userChallengeId, setUserChallengeId] = useState<string | null>(null);
@@ -87,7 +92,7 @@ export function ChallengeCard({
       onHoverEnd={() => setIsHovered(false)}
       className="h-full"
     >
-      <Card className="h-full overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 bg-gradient-to-br from-white to-gray-50">
+      <Card className={`h-full overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 bg-gradient-to-br from-white to-gray-50 ${isLocked ? 'opacity-50' : ''}`}>
         <CardHeader>
           <ChallengeHeader
             title={challenge.title}
@@ -96,6 +101,7 @@ export function ChallengeCard({
             rewardPoints={challenge.reward_points}
             isPremium={challenge.is_premium}
             isHovered={isHovered}
+            sequenceOrder={sequenceOrder}
           />
         </CardHeader>
         <CardContent className="space-y-3">
@@ -127,6 +133,7 @@ export function ChallengeCard({
             difficulty={challenge.difficulty}
             userPoints={userPoints}
             canAccessAdvancedChallenge={canAccessAdvancedChallenge}
+            isLocked={isLocked}
           />
         </CardFooter>
       </Card>
