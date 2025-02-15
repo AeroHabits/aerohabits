@@ -1,3 +1,4 @@
+
 export interface User {
   id: string;
   email?: string;
@@ -61,6 +62,15 @@ export interface Profile {
   avatar_url?: string;
   updated_at?: string;
   total_points?: number;
+  current_difficulty?: string;
+  current_challenge_id?: string;
+  push_notifications?: boolean;
+  email_notifications?: boolean;
+  has_seen_tour?: boolean;
+  stripe_customer_id?: string;
+  is_subscribed?: boolean;
+  subscription_status?: string;
+  subscription_id?: string;
 }
 
 export interface Challenge {
