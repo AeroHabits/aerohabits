@@ -50,7 +50,7 @@ export function AppHero() {
 
       // Create or get Stripe customer
       if (!profile?.stripe_customer_id) {
-        const response = await fetch('/api/stripe/create-customer', {
+        const response = await fetch(`${window.location.origin}/functions/v1/create-stripe-customer`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
@@ -64,7 +64,7 @@ export function AppHero() {
       }
 
       // Create checkout session
-      const response = await fetch('/api/stripe/create-checkout', {
+      const response = await fetch(`${window.location.origin}/functions/v1/create-checkout-session`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
@@ -73,11 +73,14 @@ export function AppHero() {
         body: JSON.stringify({ interval }),
       });
 
-      const { url, error } = await response.json();
-      if (error) throw new Error(error);
+      const data = await response.json();
       
-      if (url) {
-        window.location.href = url;
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      if (data.url) {
+        window.location.href = data.url;
       } else {
         throw new Error('No checkout URL received');
       }
@@ -85,7 +88,7 @@ export function AppHero() {
       console.error('Subscription error:', error);
       toast({
         title: "Error",
-        description: "Failed to start subscription process. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to start subscription process. Please try again.",
         variant: "destructive",
       });
     } finally {
