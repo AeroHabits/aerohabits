@@ -139,11 +139,11 @@ export function AppHero() {
             <Sparkles className="mr-2 h-4 w-4 text-yellow-300 animate-pulse" />
             {showFeatures ? (
               <>
-                Hide Features <ChevronUp className="ml-1 h-4 w-4" />
+                Hide Subscriptions <ChevronUp className="ml-1 h-4 w-4" />
               </>
             ) : (
               <>
-                Show Features <ChevronDown className="ml-1 h-4 w-4" />
+                Subscriptions <ChevronDown className="ml-1 h-4 w-4" />
               </>
             )}
           </Button>
