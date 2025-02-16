@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Crown, Sparkles, Star, Trophy, Target } from "lucide-react";
@@ -165,9 +164,9 @@ export function AppHero() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
+                  <Card className="p-6 bg-black/40 backdrop-blur-sm border-white/10 hover:bg-black/50 transition-all">
                     <div className="flex items-center gap-4">
-                      <div className="p-2 rounded-full bg-white/10">
+                      <div className="p-2 rounded-full bg-black/30">
                         {feature.icon}
                       </div>
                       <div className="text-left">
@@ -186,10 +185,10 @@ export function AppHero() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 }}
               >
-                <Card className="p-6 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm border-purple-400/30 h-full">
+                <Card className="p-6 bg-black/40 backdrop-blur-lg border-white/10 hover:bg-black/50 transition-all h-full">
                   <div className="flex flex-col h-full">
                     <div className="flex items-center gap-3 mb-4">
-                      <Crown className="h-8 w-8 text-yellow-400" />
+                      <Crown className="h-8 w-8 text-yellow-400/80" />
                       <div>
                         <h3 className="text-xl font-bold text-white">Monthly Premium</h3>
                         <p className="text-2xl font-bold text-white">$9.99<span className="text-sm text-white/70">/month</span></p>
@@ -197,22 +196,22 @@ export function AppHero() {
                     </div>
                     <ul className="space-y-2 mb-6 text-white/80">
                       <li className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
+                        <Star className="h-4 w-4 text-yellow-400/80" />
                         <span>All Premium Features</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Trophy className="h-4 w-4 text-yellow-400" />
+                        <Trophy className="h-4 w-4 text-yellow-400/80" />
                         <span>Advanced Analytics</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Target className="h-4 w-4 text-yellow-400" />
+                        <Target className="h-4 w-4 text-yellow-400/80" />
                         <span>Cancel Anytime</span>
                       </li>
                     </ul>
                     <Button
                       onClick={() => handleSubscribe('month')}
                       disabled={isLoading || profile?.is_subscribed}
-                      className="mt-auto bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold"
+                      className="mt-auto bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20"
                     >
                       {profile?.is_subscribed ? "Currently Subscribed" : "Subscribe Monthly"}
                     </Button>
@@ -225,15 +224,15 @@ export function AppHero() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4 }}
               >
-                <Card className="p-6 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm border-purple-400/30 h-full relative overflow-hidden">
+                <Card className="p-6 bg-black/40 backdrop-blur-lg border-white/10 hover:bg-black/50 transition-all h-full relative overflow-hidden">
                   <div className="absolute top-3 right-3">
-                    <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full">
+                    <span className="bg-white/10 backdrop-blur-md text-white text-xs font-bold px-2 py-1 rounded-full border border-white/20">
                       Save 42%
                     </span>
                   </div>
                   <div className="flex flex-col h-full">
                     <div className="flex items-center gap-3 mb-4">
-                      <Crown className="h-8 w-8 text-yellow-400" />
+                      <Crown className="h-8 w-8 text-yellow-400/80" />
                       <div>
                         <h3 className="text-xl font-bold text-white">Yearly Premium</h3>
                         <p className="text-2xl font-bold text-white">$69.99<span className="text-sm text-white/70">/year</span></p>
@@ -242,22 +241,22 @@ export function AppHero() {
                     </div>
                     <ul className="space-y-2 mb-6 text-white/80">
                       <li className="flex items-center gap-2">
-                        <Star className="h-4 w-4 text-yellow-400" />
+                        <Star className="h-4 w-4 text-yellow-400/80" />
                         <span>All Premium Features</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Trophy className="h-4 w-4 text-yellow-400" />
+                        <Trophy className="h-4 w-4 text-yellow-400/80" />
                         <span>Advanced Analytics</span>
                       </li>
                       <li className="flex items-center gap-2">
-                        <Target className="h-4 w-4 text-yellow-400" />
+                        <Target className="h-4 w-4 text-yellow-400/80" />
                         <span>2 Months Free</span>
                       </li>
                     </ul>
                     <Button
                       onClick={() => handleSubscribe('year')}
                       disabled={isLoading || profile?.is_subscribed}
-                      className="mt-auto bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold"
+                      className="mt-auto bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20"
                     >
                       {profile?.is_subscribed ? "Currently Subscribed" : "Subscribe Yearly"}
                     </Button>
