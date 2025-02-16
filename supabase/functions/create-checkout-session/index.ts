@@ -36,9 +36,10 @@ serve(async (req) => {
     }
 
     const { interval } = await req.json()
+    // Using your provided price ID for monthly subscription
     const priceId = interval === 'year' ? 
-      'price_1QsvipLDj4yzbQfI1nSsq0NL' : 
-      'price_1QsvhhLDj4yzbQfI1r95uNO3'
+      'price_1Qsw84LDj4yzbQfIQkQ8igHs' : // Using same price for now, update with yearly price when available
+      'price_1Qsw84LDj4yzbQfIQkQ8igHs'
 
     const { data: profile } = await supabaseClient
       .from('profiles')
