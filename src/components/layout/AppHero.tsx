@@ -1,11 +1,51 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { ChevronDown, ChevronUp, Crown, Sparkles, Star, Trophy, Target } from "lucide-react";
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 export function AppHero() {
   const [showFeatures, setShowFeatures] = useState(false);
+  const navigate = useNavigate();
+
+  const { data: profile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const premiumFeatures = [
+    {
+      icon: <Star className="h-6 w-6 text-yellow-500" />,
+      title: "Advanced Challenges",
+      description: "Access premium difficulty levels and exclusive challenges"
+    },
+    {
+      icon: <Trophy className="h-6 w-6 text-amber-500" />,
+      title: "Detailed Analytics",
+      description: "Get in-depth insights about your habits and progress"
+    },
+    {
+      icon: <Target className="h-6 w-6 text-blue-500" />,
+      title: "Personalized Goals",
+      description: "Set and track advanced personal goals"
+    }
+  ];
 
   return (
     <motion.div
@@ -74,9 +114,54 @@ export function AppHero() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 max-w-4xl mx-auto"
+            className="space-y-6"
           >
-            {/* Feature cards here */}
+            <div className="grid gap-4 md:grid-cols-3 max-w-4xl mx-auto">
+              {premiumFeatures.map((feature, index) => (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2 rounded-full bg-white/10">
+                        {feature.icon}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-semibold text-white">{feature.title}</h3>
+                        <p className="text-sm text-white/70">{feature.description}</p>
+                      </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <Card className="p-6 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm border-purple-400/30">
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <Crown className="h-8 w-8 text-yellow-400" />
+                    <div className="text-left">
+                      <h3 className="text-xl font-bold text-white">Unlock Premium Features</h3>
+                      <p className="text-white/70">Get access to advanced features and exclusive content</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={() => navigate("/settings")}
+                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-8"
+                  >
+                    {profile?.is_subscribed ? "Manage Subscription" : "Subscribe Now"}
+                  </Button>
+                </div>
+              </Card>
+            </motion.div>
           </motion.div>
         )}
       </div>
