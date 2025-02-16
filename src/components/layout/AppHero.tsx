@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import { PremiumFeatureCard, premiumFeatures } from "@/components/subscription/PremiumFeatureCard";
 import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
 
@@ -13,6 +14,7 @@ export function AppHero() {
   const [showFeatures, setShowFeatures] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -34,22 +36,38 @@ export function AppHero() {
   const handleSubscribe = async (interval: 'month' | 'year') => {
     try {
       setIsLoading(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to subscribe.",
+          variant: "destructive",
+        });
+        navigate('/auth');
+        return;
+      }
 
+      // Create or get Stripe customer
       if (!profile?.stripe_customer_id) {
         const response = await fetch('/api/stripe/create-customer', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+            'Authorization': `Bearer ${session.access_token}`,
           },
         });
 
-        if (!response.ok) throw new Error('Failed to create customer');
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Failed to create customer');
+        }
       }
 
+      // Create checkout session
       const response = await fetch('/api/stripe/create-checkout', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ interval }),
@@ -57,8 +75,14 @@ export function AppHero() {
 
       const { url, error } = await response.json();
       if (error) throw new Error(error);
-      window.location.href = url;
+      
+      if (url) {
+        window.location.href = url;
+      } else {
+        throw new Error('No checkout URL received');
+      }
     } catch (error) {
+      console.error('Subscription error:', error);
       toast({
         title: "Error",
         description: "Failed to start subscription process. Please try again.",

@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Crown, Star, Trophy, Target } from "lucide-react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SubscriptionCardProps {
   type: 'month' | 'year';
@@ -15,6 +18,33 @@ export function SubscriptionCard({ type, isLoading, isSubscribed, onSubscribe }:
   const isYearly = type === 'year';
   const price = isYearly ? "$69.99" : "$9.99";
   const interval = isYearly ? "year" : "month";
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleSubscribe = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to subscribe.",
+          variant: "destructive",
+        });
+        navigate('/auth');
+        return;
+      }
+
+      await onSubscribe(type);
+    } catch (error) {
+      console.error('Subscription error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start subscription process. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <motion.div
@@ -58,7 +88,7 @@ export function SubscriptionCard({ type, isLoading, isSubscribed, onSubscribe }:
             whileTap={{ scale: 0.98 }}
           >
             <Button
-              onClick={() => onSubscribe(type)}
+              onClick={handleSubscribe}
               disabled={isLoading || isSubscribed}
               className={`
                 w-full relative group overflow-hidden
