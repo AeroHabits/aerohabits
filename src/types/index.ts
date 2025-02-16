@@ -67,6 +67,10 @@ export interface Profile {
   push_notifications?: boolean;
   email_notifications?: boolean;
   has_seen_tour?: boolean;
+  stripe_customer_id?: string;
+  subscription_status?: string;
+  subscription_id?: string;
+  is_subscribed?: boolean;
 }
 
 export interface Challenge {
@@ -85,6 +89,19 @@ export interface Challenge {
   is_premium?: boolean;
   sequence_order: number;
   motivation_text?: string;
+}
+
+export interface SubscriptionPlan {
+  id: string;
+  name: string;
+  description?: string;
+  price_id: string;
+  amount: number;
+  currency: string;
+  interval: string;
+  features?: any;
+  is_active?: boolean;
+  created_at: string;
 }
 
 export type SyncEntityType = 'habit' | 'goal' | 'challenge';
