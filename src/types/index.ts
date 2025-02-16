@@ -67,10 +67,6 @@ export interface Profile {
   push_notifications?: boolean;
   email_notifications?: boolean;
   has_seen_tour?: boolean;
-  stripe_customer_id?: string;
-  is_subscribed?: boolean;
-  subscription_status?: string;
-  subscription_id?: string;
 }
 
 export interface Challenge {
