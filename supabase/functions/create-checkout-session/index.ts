@@ -35,6 +35,11 @@ serve(async (req) => {
       )
     }
 
+    const { interval } = await req.json()
+    const priceId = interval === 'year' ? 
+      'price_1QsvipLDj4yzbQfI1nSsq0NL' : 
+      'price_1QsvhhLDj4yzbQfI1r95uNO3'
+
     const { data: profile } = await supabaseClient
       .from('profiles')
       .select('stripe_customer_id')
@@ -45,17 +50,7 @@ serve(async (req) => {
       customer: profile?.stripe_customer_id,
       line_items: [
         {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: 'AeroHabits Premium',
-              description: 'Unlock all premium features and challenges',
-            },
-            unit_amount: 999, // $9.99
-            recurring: {
-              interval: 'month',
-            },
-          },
+          price: priceId,
           quantity: 1,
         },
       ],
