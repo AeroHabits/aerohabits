@@ -6,11 +6,12 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 export function AppHero() {
   const [showFeatures, setShowFeatures] = useState(false);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -28,6 +29,46 @@ export function AppHero() {
       return data;
     },
   });
+
+  const handleSubscribe = async (interval: 'month' | 'year') => {
+    try {
+      setIsLoading(true);
+
+      // Create or get Stripe customer
+      if (!profile?.stripe_customer_id) {
+        const response = await fetch('/api/stripe/create-customer', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          },
+        });
+
+        if (!response.ok) throw new Error('Failed to create customer');
+      }
+
+      // Create checkout session
+      const response = await fetch('/api/stripe/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ interval }),
+      });
+
+      const { url, error } = await response.json();
+      if (error) throw new Error(error);
+      window.location.href = url;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start subscription process. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const premiumFeatures = [
     {
@@ -139,29 +180,91 @@ export function AppHero() {
               ))}
             </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Card className="p-6 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm border-purple-400/30">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
-                    <Crown className="h-8 w-8 text-yellow-400" />
-                    <div className="text-left">
-                      <h3 className="text-xl font-bold text-white">Unlock Premium Features</h3>
-                      <p className="text-white/70">Get access to advanced features and exclusive content</p>
+            <div className="grid gap-4 md:grid-cols-2 max-w-3xl mx-auto">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <Card className="p-6 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm border-purple-400/30 h-full">
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Crown className="h-8 w-8 text-yellow-400" />
+                      <div>
+                        <h3 className="text-xl font-bold text-white">Monthly Premium</h3>
+                        <p className="text-2xl font-bold text-white">$9.99<span className="text-sm text-white/70">/month</span></p>
+                      </div>
                     </div>
+                    <ul className="space-y-2 mb-6 text-white/80">
+                      <li className="flex items-center gap-2">
+                        <Star className="h-4 w-4 text-yellow-400" />
+                        <span>All Premium Features</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Trophy className="h-4 w-4 text-yellow-400" />
+                        <span>Advanced Analytics</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Target className="h-4 w-4 text-yellow-400" />
+                        <span>Cancel Anytime</span>
+                      </li>
+                    </ul>
+                    <Button
+                      onClick={() => handleSubscribe('month')}
+                      disabled={isLoading || profile?.is_subscribed}
+                      className="mt-auto bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold"
+                    >
+                      {profile?.is_subscribed ? "Currently Subscribed" : "Subscribe Monthly"}
+                    </Button>
                   </div>
-                  <Button
-                    onClick={() => navigate("/settings")}
-                    className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold px-8"
-                  >
-                    {profile?.is_subscribed ? "Manage Subscription" : "Subscribe Now"}
-                  </Button>
-                </div>
-              </Card>
-            </motion.div>
+                </Card>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <Card className="p-6 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm border-purple-400/30 h-full relative overflow-hidden">
+                  <div className="absolute top-3 right-3">
+                    <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full">
+                      Save 20%
+                    </span>
+                  </div>
+                  <div className="flex flex-col h-full">
+                    <div className="flex items-center gap-3 mb-4">
+                      <Crown className="h-8 w-8 text-yellow-400" />
+                      <div>
+                        <h3 className="text-xl font-bold text-white">Yearly Premium</h3>
+                        <p className="text-2xl font-bold text-white">$95.88<span className="text-sm text-white/70">/year</span></p>
+                        <p className="text-sm text-white/70">$7.99/month, billed annually</p>
+                      </div>
+                    </div>
+                    <ul className="space-y-2 mb-6 text-white/80">
+                      <li className="flex items-center gap-2">
+                        <Star className="h-4 w-4 text-yellow-400" />
+                        <span>All Premium Features</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Trophy className="h-4 w-4 text-yellow-400" />
+                        <span>Advanced Analytics</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <Target className="h-4 w-4 text-yellow-400" />
+                        <span>Two Months Free</span>
+                      </li>
+                    </ul>
+                    <Button
+                      onClick={() => handleSubscribe('year')}
+                      disabled={isLoading || profile?.is_subscribed}
+                      className="mt-auto bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold"
+                    >
+                      {profile?.is_subscribed ? "Currently Subscribed" : "Subscribe Yearly"}
+                    </Button>
+                  </div>
+                </Card>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </div>
