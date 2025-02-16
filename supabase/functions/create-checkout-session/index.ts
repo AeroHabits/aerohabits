@@ -79,8 +79,8 @@ serve(async (req) => {
 
     // Set price ID based on interval
     const priceId = interval === 'year' ? 
-      'price_1QsvhhLDj4yzbQfI1r95uNO3' : // Yearly subscription price
-      'price_1QsvipLDj4yzbQfI1nSsq0NL'   // Monthly subscription price
+      'price_1OgRWCLDj4yzbQfIDEQRu9hy' : // Live mode yearly subscription price
+      'price_1OgRWCLDj4yzbQfI7lvRaBOX'   // Live mode monthly subscription price
 
     // Get or create customer
     const { data: profile, error: profileError } = await supabaseClient
