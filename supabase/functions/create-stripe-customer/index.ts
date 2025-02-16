@@ -35,10 +35,23 @@ serve(async (req) => {
       )
     }
 
+    const { data: profile, error: getProfileError } = await supabaseClient
+      .from('profiles')
+      .select('email')
+      .eq('id', user.id)
+      .single()
+
+    if (getProfileError) {
+      return new Response(
+        JSON.stringify({ error: 'Profile not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     const customer = await stripe.customers.create({
       email: user.email,
       metadata: {
-        supabase_uid: user.id,
+        supabase_user_id: user.id,
       },
     })
 
@@ -48,11 +61,14 @@ serve(async (req) => {
       .eq('id', user.id)
 
     if (updateError) {
-      throw updateError
+      return new Response(
+        JSON.stringify({ error: 'Failed to update profile' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
     return new Response(
-      JSON.stringify({ customer }),
+      JSON.stringify({ customer_id: customer.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
