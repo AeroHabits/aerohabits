@@ -53,13 +53,45 @@ export function SubscriptionCard({ type, isLoading, isSubscribed, onSubscribe }:
               <span>{isYearly ? "2 Months Free" : "Cancel Anytime"}</span>
             </li>
           </ul>
-          <Button
-            onClick={() => onSubscribe(type)}
-            disabled={isLoading || isSubscribed}
-            className="mt-auto bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20"
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            {isSubscribed ? "Currently Subscribed" : `Subscribe ${isYearly ? "Yearly" : "Monthly"}`}
-          </Button>
+            <Button
+              onClick={() => onSubscribe(type)}
+              disabled={isLoading || isSubscribed}
+              className={`
+                w-full relative group overflow-hidden
+                ${isSubscribed 
+                  ? "bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20" 
+                  : `bg-gradient-to-r from-purple-500 to-blue-500 
+                     hover:from-purple-600 hover:to-blue-600 
+                     text-white font-semibold 
+                     transform transition-all duration-200
+                     shadow-lg hover:shadow-xl
+                     border border-purple-400/50`
+                }
+              `}
+            >
+              {!isSubscribed && (
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
+                  animate={{
+                    background: [
+                      "linear-gradient(to right, rgba(168,85,247,0.2), rgba(59,130,246,0.2))",
+                      "linear-gradient(to right, rgba(59,130,246,0.2), rgba(168,85,247,0.2))",
+                    ],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                  }}
+                />
+              )}
+              {isSubscribed ? "Currently Subscribed" : `Subscribe ${isYearly ? "Yearly" : "Monthly"}`}
+            </Button>
+          </motion.div>
         </div>
       </Card>
     </motion.div>
