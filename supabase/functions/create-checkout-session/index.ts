@@ -9,43 +9,61 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
+    // Initialize Stripe first
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '', {
       apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
     })
 
+    // Initialize Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      throw new Error('No authorization header')
+    }
+
     const { data: { user }, error: getUserError } = await supabaseClient.auth.getUser(
-      req.headers.get('Authorization')?.replace('Bearer ', '') ?? ''
+      authHeader.replace('Bearer ', '')
     )
 
     if (getUserError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      throw new Error('Unauthorized')
     }
 
+    // Get interval from request body
     const { interval } = await req.json()
+    if (!interval || !['month', 'year'].includes(interval)) {
+      throw new Error('Invalid interval')
+    }
+
+    // Set price ID based on interval
     const priceId = interval === 'year' ? 
       'price_1QsvhhLDj4yzbQfI1r95uNO3' : // Yearly subscription price
       'price_1QsvipLDj4yzbQfI1nSsq0NL'   // Monthly subscription price
 
-    const { data: profile } = await supabaseClient
+    // Get or create customer
+    const { data: profile, error: profileError } = await supabaseClient
       .from('profiles')
       .select('stripe_customer_id')
       .eq('id', user.id)
       .single()
 
+    if (profileError) {
+      throw new Error('Failed to fetch profile')
+    }
+
+    // Create Stripe checkout session
     const session = await stripe.checkout.sessions.create({
       customer: profile?.stripe_customer_id,
       line_items: [
@@ -59,15 +77,30 @@ serve(async (req) => {
       cancel_url: `${req.headers.get('origin')}/settings`,
     })
 
+    // Return checkout URL
     return new Response(
       JSON.stringify({ url: session.url }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     )
+
   } catch (error) {
+    console.error('Checkout session error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        error: error.message || 'Failed to create checkout session'
+      }),
+      { 
+        status: 400, 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     )
   }
 })
-

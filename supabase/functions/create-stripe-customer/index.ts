@@ -9,32 +9,39 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
+    // Initialize Stripe first
     const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') ?? '', {
       apiVersion: '2023-10-16',
       httpClient: Stripe.createFetchHttpClient(),
     })
 
+    // Initialize Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
+    // Verify authentication
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      throw new Error('No authorization header')
+    }
+
     const { data: { user }, error: getUserError } = await supabaseClient.auth.getUser(
-      req.headers.get('Authorization')?.replace('Bearer ', '') ?? ''
+      authHeader.replace('Bearer ', '')
     )
 
     if (getUserError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      throw new Error('Unauthorized')
     }
 
+    // Get user profile
     const { data: profile, error: getProfileError } = await supabaseClient
       .from('profiles')
       .select('email')
@@ -42,12 +49,10 @@ serve(async (req) => {
       .single()
 
     if (getProfileError) {
-      return new Response(
-        JSON.stringify({ error: 'Profile not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      throw new Error('Profile not found')
     }
 
+    // Create Stripe customer
     const customer = await stripe.customers.create({
       email: user.email,
       metadata: {
@@ -55,26 +60,34 @@ serve(async (req) => {
       },
     })
 
+    // Update profile with Stripe customer ID
     const { error: updateError } = await supabaseClient
       .from('profiles')
       .update({ stripe_customer_id: customer.id })
       .eq('id', user.id)
 
     if (updateError) {
-      return new Response(
-        JSON.stringify({ error: 'Failed to update profile' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
+      throw new Error('Failed to update profile')
     }
 
     return new Response(
       JSON.stringify({ customer_id: customer.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
+
   } catch (error) {
+    console.error('Create customer error:', error)
     return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({ 
+        error: error.message || 'Failed to create customer'
+      }),
+      { 
+        status: 400, 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     )
   }
 })
