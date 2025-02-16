@@ -30,7 +30,13 @@ serve(async (req) => {
     // Verify authentication
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      throw new Error('No authorization header')
+      return new Response(
+        JSON.stringify({ error: 'No authorization header' }),
+        { 
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
     const { data: { user }, error: getUserError } = await supabaseClient.auth.getUser(
@@ -38,13 +44,25 @@ serve(async (req) => {
     )
 
     if (getUserError || !user) {
-      throw new Error('Unauthorized')
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { 
+          status: 401,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
     // Get interval from request body
     const { interval } = await req.json()
     if (!interval || !['month', 'year'].includes(interval)) {
-      throw new Error('Invalid interval')
+      return new Response(
+        JSON.stringify({ error: 'Invalid interval' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
     // Set price ID based on interval
@@ -60,7 +78,13 @@ serve(async (req) => {
       .single()
 
     if (profileError) {
-      throw new Error('Failed to fetch profile')
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch profile' }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
     // Create Stripe checkout session
@@ -92,7 +116,7 @@ serve(async (req) => {
     console.error('Checkout session error:', error)
     return new Response(
       JSON.stringify({ 
-        error: error.message || 'Failed to create checkout session'
+        error: error instanceof Error ? error.message : 'Failed to create checkout session'
       }),
       { 
         status: 400, 
