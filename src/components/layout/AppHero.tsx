@@ -192,7 +192,7 @@ export function AppHero() {
                       <Crown className="h-8 w-8 text-yellow-400" />
                       <div>
                         <h3 className="text-xl font-bold text-white">Monthly Premium</h3>
-                        <p className="text-2xl font-bold text-white">$14.99<span className="text-sm text-white/70">/month</span></p>
+                        <p className="text-2xl font-bold text-white">$9.99<span className="text-sm text-white/70">/month</span></p>
                       </div>
                     </div>
                     <ul className="space-y-2 mb-6 text-white/80">
@@ -228,7 +228,7 @@ export function AppHero() {
                 <Card className="p-6 bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 backdrop-blur-sm border-purple-400/30 h-full relative overflow-hidden">
                   <div className="absolute top-3 right-3">
                     <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black text-xs font-bold px-2 py-1 rounded-full">
-                      Save 17%
+                      Save 42%
                     </span>
                   </div>
                   <div className="flex flex-col h-full">
@@ -236,8 +236,8 @@ export function AppHero() {
                       <Crown className="h-8 w-8 text-yellow-400" />
                       <div>
                         <h3 className="text-xl font-bold text-white">Yearly Premium</h3>
-                        <p className="text-2xl font-bold text-white">$149.99<span className="text-sm text-white/70">/year</span></p>
-                        <p className="text-sm text-white/70">$12.50/month, billed annually</p>
+                        <p className="text-2xl font-bold text-white">$69.99<span className="text-sm text-white/70">/year</span></p>
+                        <p className="text-sm text-white/70">$5.83/month, billed annually</p>
                       </div>
                     </div>
                     <ul className="space-y-2 mb-6 text-white/80">
