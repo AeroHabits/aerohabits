@@ -30,40 +30,7 @@ serve(async (req) => {
     // Verify authentication
     const authHeader = req.headers.get('Authorization')
     if (!authHeader) {
-      return new Response(
-        JSON.stringify({ error: 'No authorization header' }),
-        { 
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    // Parse the request body first to fail early if it's invalid
-    let requestBody
-    try {
-      requestBody = await req.json()
-    } catch (error) {
-      console.error('Failed to parse request body:', error)
-      return new Response(
-        JSON.stringify({ error: 'Invalid request body - failed to parse JSON' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
-    // Validate interval before proceeding
-    const { interval } = requestBody
-    if (!interval || !['month', 'year'].includes(interval)) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid interval. Must be "month" or "year".' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+      throw new Error('No authorization header')
     }
 
     // Verify user
@@ -72,14 +39,34 @@ serve(async (req) => {
     )
 
     if (getUserError || !user) {
-      console.error('Auth error:', getUserError)
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized' }),
-        { 
-          status: 401,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+      throw new Error('Unauthorized')
+    }
+
+    // Get user profile
+    const { data: profile, error: getProfileError } = await supabaseClient
+      .from('profiles')
+      .select('stripe_customer_id')
+      .eq('id', user.id)
+      .single()
+
+    if (getProfileError) {
+      throw new Error('Profile not found')
+    }
+
+    // Parse request body
+    const text = await req.text()
+    let interval: string
+    
+    try {
+      const body = text ? JSON.parse(text) : {}
+      interval = body.interval
+      
+      if (!interval || !['month', 'year'].includes(interval)) {
+        throw new Error('Invalid interval. Must be "month" or "year".')
+      }
+    } catch (error) {
+      console.error('Body parsing error:', error, 'Raw text:', text)
+      throw new Error('Invalid request format')
     }
 
     // Set price ID based on interval
@@ -87,88 +74,40 @@ serve(async (req) => {
       'price_1OgRWCLDj4yzbQfIDEQRu9hy' : // Live mode yearly subscription price
       'price_1OgRWCLDj4yzbQfI7lvRaBOX'   // Live mode monthly subscription price
 
-    // Get or create customer
-    const { data: profile, error: profileError } = await supabaseClient
-      .from('profiles')
-      .select('stripe_customer_id')
-      .eq('id', user.id)
-      .single()
-
-    if (profileError) {
-      console.error('Profile fetch error:', profileError)
-      return new Response(
-        JSON.stringify({ error: 'Failed to fetch profile' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
-    }
-
     if (!profile?.stripe_customer_id) {
-      console.error('No Stripe customer ID found')
-      return new Response(
-        JSON.stringify({ error: 'No Stripe customer ID found. Please try again.' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      )
+      throw new Error('No Stripe customer ID found')
     }
 
-    try {
-      // Create Stripe checkout session
-      const session = await stripe.checkout.sessions.create({
-        customer: profile.stripe_customer_id,
-        line_items: [
-          {
-            price: priceId,
-            quantity: 1,
-          },
-        ],
-        mode: 'subscription',
-        success_url: `${req.headers.get('origin')}/settings?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${req.headers.get('origin')}/settings`,
-      })
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create({
+      customer: profile.stripe_customer_id,
+      line_items: [
+        {
+          price: priceId,
+          quantity: 1,
+        },
+      ],
+      mode: 'subscription',
+      success_url: `${req.headers.get('origin')}/settings?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/settings`,
+    })
 
-      // Return checkout URL
-      return new Response(
-        JSON.stringify({ url: session.url }),
-        { 
-          headers: { 
-            ...corsHeaders, 
-            'Content-Type': 'application/json' 
-          } 
-        }
-      )
-    } catch (stripeError) {
-      console.error('Stripe session creation error:', stripeError)
-      return new Response(
-        JSON.stringify({ 
-          error: stripeError instanceof Error ? stripeError.message : 'Failed to create checkout session'
-        }),
-        { 
-          status: 400, 
-          headers: { 
-            ...corsHeaders, 
-            'Content-Type': 'application/json' 
-          } 
-        }
-      )
-    }
+    return new Response(
+      JSON.stringify({ url: session.url }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
+    )
 
   } catch (error) {
-    console.error('General error:', error)
+    console.error('Error:', error)
     return new Response(
       JSON.stringify({ 
         error: error instanceof Error ? error.message : 'An unexpected error occurred'
       }),
       { 
-        status: 500, 
-        headers: { 
-          ...corsHeaders, 
-          'Content-Type': 'application/json' 
-        } 
+        status: 400, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     )
   }
