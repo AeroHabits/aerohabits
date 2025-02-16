@@ -33,69 +33,6 @@ export function AppHero() {
     },
   });
 
-  const handleSubscribe = async (interval: 'month' | 'year') => {
-    try {
-      setIsLoading(true);
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to subscribe.",
-          variant: "destructive",
-        });
-        navigate('/auth');
-        return;
-      }
-
-      // Create or get Stripe customer
-      if (!profile?.stripe_customer_id) {
-        const response = await fetch(`${window.location.origin}/functions/v1/create-stripe-customer`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-          },
-        });
-
-        if (!response.ok) {
-          const error = await response.json();
-          throw new Error(error.message || 'Failed to create customer');
-        }
-      }
-
-      // Create checkout session
-      const response = await fetch(`${window.location.origin}/functions/v1/create-checkout-session`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ interval }),
-      });
-
-      const data = await response.json();
-      
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('No checkout URL received');
-      }
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "Failed to start subscription process. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -175,14 +112,10 @@ export function AppHero() {
               <SubscriptionCard
                 type="month"
                 isLoading={isLoading}
-                isSubscribed={!!profile?.is_subscribed}
-                onSubscribe={handleSubscribe}
               />
               <SubscriptionCard
                 type="year"
                 isLoading={isLoading}
-                isSubscribed={!!profile?.is_subscribed}
-                onSubscribe={handleSubscribe}
               />
             </div>
           </motion.div>
