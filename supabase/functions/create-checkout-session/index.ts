@@ -54,10 +54,22 @@ serve(async (req) => {
     }
 
     // Get interval from request body
-    const { interval } = await req.json()
-    if (!interval || !['month', 'year'].includes(interval)) {
+    let interval: string
+    try {
+      const body = await req.json()
+      interval = body.interval
+      if (!interval || !['month', 'year'].includes(interval)) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid interval' }),
+          { 
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          }
+        )
+      }
+    } catch (error) {
       return new Response(
-        JSON.stringify({ error: 'Invalid interval' }),
+        JSON.stringify({ error: 'Invalid request body' }),
         { 
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
