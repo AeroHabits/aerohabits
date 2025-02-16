@@ -4,46 +4,21 @@ import { Card } from "@/components/ui/card";
 import { Crown, Star, Trophy, Target } from "lucide-react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface SubscriptionCardProps {
   type: 'month' | 'year';
-  isLoading: boolean;
-  isSubscribed: boolean;
-  onSubscribe: (interval: 'month' | 'year') => Promise<void>;
+  isLoading?: boolean;
 }
 
-export function SubscriptionCard({ type, isLoading, isSubscribed, onSubscribe }: SubscriptionCardProps) {
+export function SubscriptionCard({ type, isLoading }: SubscriptionCardProps) {
   const isYearly = type === 'year';
   const price = isYearly ? "$69.99" : "$9.99";
   const interval = isYearly ? "year" : "month";
   const navigate = useNavigate();
-  const { toast } = useToast();
 
-  const handleSubscribe = async () => {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        toast({
-          title: "Authentication Required",
-          description: "Please sign in to subscribe.",
-          variant: "destructive",
-        });
-        navigate('/auth');
-        return;
-      }
-
-      await onSubscribe(type);
-    } catch (error) {
-      console.error('Subscription error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to start subscription process. Please try again.",
-        variant: "destructive",
-      });
-    }
+  const handleSubscribe = () => {
+    toast.info("Premium subscriptions coming soon!");
   };
 
   return (
@@ -89,37 +64,10 @@ export function SubscriptionCard({ type, isLoading, isSubscribed, onSubscribe }:
           >
             <Button
               onClick={handleSubscribe}
-              disabled={isLoading || isSubscribed}
-              className={`
-                w-full relative group overflow-hidden
-                ${isSubscribed 
-                  ? "bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20" 
-                  : `bg-gradient-to-r from-purple-500 to-blue-500 
-                     hover:from-purple-600 hover:to-blue-600 
-                     text-white font-semibold 
-                     transform transition-all duration-200
-                     shadow-lg hover:shadow-xl
-                     border border-purple-400/50`
-                }
-              `}
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold"
             >
-              {!isSubscribed && (
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"
-                  animate={{
-                    background: [
-                      "linear-gradient(to right, rgba(168,85,247,0.2), rgba(59,130,246,0.2))",
-                      "linear-gradient(to right, rgba(59,130,246,0.2), rgba(168,85,247,0.2))",
-                    ],
-                  }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse",
-                  }}
-                />
-              )}
-              {isSubscribed ? "Currently Subscribed" : `Subscribe ${isYearly ? "Yearly" : "Monthly"}`}
+              Coming Soon
             </Button>
           </motion.div>
         </div>
