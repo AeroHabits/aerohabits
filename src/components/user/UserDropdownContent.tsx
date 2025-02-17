@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { UserProfile } from "../UserProfile";
-import { AvatarUploader } from "../AvatarUploader";
+import { LogoSelector } from "./LogoSelector";
 import { Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -44,9 +44,9 @@ export function UserDropdownContent({
         />
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <AvatarUploader 
+      <LogoSelector 
         userId={user.id}
-        onAvatarUpdate={(url) => setProfile(prev => prev ? { ...prev, avatar_url: url } : null)}
+        onLogoUpdate={(url) => setProfile(prev => prev ? { ...prev, avatar_url: url } : null)}
       />
       <DropdownMenuItem
         className="cursor-pointer"
