@@ -18,7 +18,7 @@ export function AppShowcase() {
       icon: <Trophy className="h-6 w-6 text-amber-500" />,
       title: "Earn Achievements",
       description: "Unlock badges and rewards as you progress",
-      route: "/journey"
+      route: "/journey?tab=badges"
     },
     {
       icon: <Flame className="h-6 w-6 text-orange-500" />,
