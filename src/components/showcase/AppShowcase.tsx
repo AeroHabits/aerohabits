@@ -39,8 +39,8 @@ export function AppShowcase() {
   };
 
   return (
-    <div className="py-12">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="py-6">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {features.map((feature, index) => (
           <motion.div
             key={feature.title}
@@ -49,8 +49,8 @@ export function AppShowcase() {
             transition={{ delay: index * 0.1 }}
             onClick={() => handleCardClick(feature.route)}
           >
-            <Card className="p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all cursor-pointer">
-              <div className="flex items-center gap-4">
+            <Card className="p-4 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all cursor-pointer">
+              <div className="flex items-center gap-3">
                 <div className="p-2 rounded-full bg-white/10">
                   {feature.icon}
                 </div>

@@ -10,14 +10,14 @@ const Index = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-x-hidden">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "container mx-auto px-4 py-6 md:py-8 space-y-8 md:space-y-12",
-          isMobile && "pb-24"
+          "container mx-auto px-4 py-4 md:py-6 space-y-6 md:space-y-8",
+          isMobile && "pb-20"
         )}
       >
         <div className="flex justify-between items-center">
@@ -25,7 +25,7 @@ const Index = () => {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-4xl md:text-5xl font-bold text-white tracking-tight drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
+            className="text-2xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
           >
             AEROHABITS
           </motion.h1>
@@ -36,7 +36,7 @@ const Index = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="space-y-12"
+          className="space-y-8"
         >
           <AppHero />
           <AppShowcase />
