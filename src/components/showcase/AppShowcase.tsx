@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Award, Flame, Star, Target, Trophy } from "lucide-react";
+import { Star, Target, Flame, Award } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
@@ -13,12 +13,6 @@ export function AppShowcase() {
       title: "Track Daily Habits",
       description: "Build lasting habits with daily tracking and reminders",
       route: "/habits"
-    },
-    {
-      icon: <Trophy className="h-6 w-6 text-amber-500" />,
-      title: "Earn Achievements",
-      description: "Unlock badges and rewards as you progress",
-      route: "/journey?tab=badges"
     },
     {
       icon: <Flame className="h-6 w-6 text-orange-500" />,
