@@ -18,7 +18,7 @@ export function SubscriptionCard({ type, isLoading }: SubscriptionCardProps) {
   const navigate = useNavigate();
 
   const handleSubscribe = () => {
-    toast.info("Premium subscriptions coming soon!");
+    toast.info("Please download our mobile app to subscribe through the App Store");
   };
 
   return (
@@ -67,7 +67,7 @@ export function SubscriptionCard({ type, isLoading }: SubscriptionCardProps) {
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold"
             >
-              Coming Soon
+              Get Premium in App Store
             </Button>
           </motion.div>
         </div>
