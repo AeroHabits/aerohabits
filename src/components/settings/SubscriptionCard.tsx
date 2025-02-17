@@ -10,23 +10,24 @@ export function SubscriptionCard() {
   };
 
   return (
-    <Card className="mb-8 bg-white/10 backdrop-blur-sm border-white/20">
-      <CardHeader>
-        <CardTitle className="text-white">Premium Subscription</CardTitle>
+    <Card className="bg-white/10 backdrop-blur-sm border-white/20">
+      <CardHeader className="border-b border-white/10">
+        <CardTitle className="text-lg font-medium text-white">Premium Subscription</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-yellow-400" />
-          <h3 className="font-medium text-white">
+          <h3 className="text-sm font-medium text-gray-200">
             Unlock Premium Features
           </h3>
         </div>
-        <p className="text-sm text-gray-300">
+        <p className="text-sm text-gray-400">
           Get access to advanced challenges, personalized insights, and exclusive content
         </p>
         <Button 
           onClick={handleSubscribe}
-          className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold"
+          variant="outline"
+          className="w-full border-white/20 text-white hover:bg-white/10"
         >
           Coming Soon
         </Button>
