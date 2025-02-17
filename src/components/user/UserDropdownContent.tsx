@@ -7,7 +7,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { UserProfile } from "../UserProfile";
-import { LogoSelector } from "./LogoSelector";
 import { Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -44,10 +43,6 @@ export function UserDropdownContent({
         />
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <LogoSelector 
-        userId={user.id}
-        onLogoUpdate={(url) => setProfile(prev => prev ? { ...prev, avatar_url: url } : null)}
-      />
       <DropdownMenuItem
         className="cursor-pointer"
         onClick={() => navigate("/settings")}
