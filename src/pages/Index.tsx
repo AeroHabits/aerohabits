@@ -1,6 +1,5 @@
 
 import { AppHero } from "@/components/layout/AppHero";
-import { WelcomeTour } from "@/components/WelcomeTour";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -12,7 +11,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <WelcomeTour />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
