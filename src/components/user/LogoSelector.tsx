@@ -1,5 +1,5 @@
 
-import { Check } from "lucide-react";
+import { Star, Target, Flame, Award } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
@@ -18,41 +18,41 @@ interface LogoSelectorProps {
 
 const availableLogos = [
   {
-    id: 'robot',
-    url: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e',
-    alt: 'White Robot'
+    id: 'star',
+    icon: <Star className="h-12 w-12 text-yellow-500" />,
+    name: 'Star'
   },
   {
-    id: 'code',
-    url: 'https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7',
-    alt: 'Code Display'
+    id: 'flame',
+    icon: <Flame className="h-12 w-12 text-orange-500" />,
+    name: 'Flame'
   },
   {
-    id: 'laptop',
-    url: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085',
-    alt: 'Laptop Code'
+    id: 'target',
+    icon: <Target className="h-12 w-12 text-blue-500" />,
+    name: 'Target'
   },
   {
-    id: 'workspace',
-    url: 'https://images.unsplash.com/photo-1483058712412-4245e9b90334',
-    alt: 'Modern Workspace'
-  },
+    id: 'award',
+    icon: <Award className="h-12 w-12 text-purple-500" />,
+    name: 'Award'
+  }
 ];
 
 export function LogoSelector({ userId, onLogoUpdate }: LogoSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleLogoSelect = async (logoUrl: string) => {
+  const handleLogoSelect = async (logoId: string) => {
     try {
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: logoUrl })
+        .update({ avatar_url: logoId })
         .eq('id', userId);
 
       if (updateError) throw updateError;
 
-      onLogoUpdate(logoUrl);
+      onLogoUpdate(logoId);
       setIsOpen(false);
       toast({
         title: "Success",
@@ -86,14 +86,10 @@ export function LogoSelector({ userId, onLogoUpdate }: LogoSelectorProps) {
             {availableLogos.map((logo) => (
               <button
                 key={logo.id}
-                className="relative aspect-square overflow-hidden rounded-lg border-2 border-white/20 hover:border-white/40 transition-all"
-                onClick={() => handleLogoSelect(logo.url)}
+                className="flex items-center justify-center aspect-square rounded-lg border-2 border-white/20 hover:border-white/40 transition-all bg-white/5 hover:bg-white/10"
+                onClick={() => handleLogoSelect(logo.id)}
               >
-                <img
-                  src={logo.url}
-                  alt={logo.alt}
-                  className="w-full h-full object-cover"
-                />
+                {logo.icon}
               </button>
             ))}
           </div>

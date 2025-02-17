@@ -2,6 +2,7 @@
 import { User } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
+import { Star, Target, Flame, Award } from "lucide-react";
 
 interface UserAvatarProps {
   user: User;
@@ -19,6 +20,21 @@ export function UserAvatar({ user, profile }: UserAvatarProps) {
     .join("")
     .toUpperCase() || user.email?.[0].toUpperCase() || "?";
 
+  const getLogoIcon = () => {
+    switch (profile?.avatar_url) {
+      case 'star':
+        return <Star className="h-5 w-5 text-yellow-500" />;
+      case 'flame':
+        return <Flame className="h-5 w-5 text-orange-500" />;
+      case 'target':
+        return <Target className="h-5 w-5 text-blue-500" />;
+      case 'award':
+        return <Award className="h-5 w-5 text-purple-500" />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
@@ -26,19 +42,13 @@ export function UserAvatar({ user, profile }: UserAvatarProps) {
       className="relative"
     >
       <Avatar className="h-10 w-10 border-2 border-white/20 shadow-lg">
-        <AvatarImage
-          src={profile?.avatar_url || undefined}
-          alt={profile?.full_name || user.email || "User avatar"}
-          className="object-cover"
-          onError={(e) => {
-            console.error("Avatar load error:", e);
-            const img = e.target as HTMLImageElement;
-            img.style.display = 'none';
-          }}
-        />
-        <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600 text-white font-medium">
-          {initials}
-        </AvatarFallback>
+        <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600">
+          {getLogoIcon() || (
+            <AvatarFallback className="bg-transparent text-white font-medium">
+              {initials}
+            </AvatarFallback>
+          )}
+        </div>
       </Avatar>
       <motion.div
         className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
