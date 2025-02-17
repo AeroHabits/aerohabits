@@ -26,8 +26,7 @@ export function SubscriptionCard() {
         </p>
         <Button 
           onClick={handleSubscribe}
-          variant="outline"
-          className="w-full border-white/20 text-white hover:bg-white/10"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-lg"
         >
           Coming Soon
         </Button>
