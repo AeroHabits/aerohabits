@@ -71,7 +71,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
   return (
     <motion.form 
       onSubmit={handleSubmit} 
-      className="space-y-6 bg-white/20 backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-white/30 hover:border-white/40 transition-all duration-300"
+      className="space-y-6 bg-[#2A2F3C] backdrop-blur-lg p-8 rounded-xl shadow-2xl border-2 border-[#403E43] hover:border-[#8B5CF6]/50 transition-all duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -81,7 +81,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="p-3 bg-blue-500 rounded-full shadow-lg"
+          className="p-3 bg-[#8B5CF6] rounded-full shadow-lg"
         >
           <Target className="w-6 h-6 text-white" />
         </motion.div>
@@ -102,7 +102,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
           className="relative"
         >
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Target className="w-5 h-5 text-blue-500" />
+            <Target className="w-5 h-5 text-[#8B5CF6]" />
           </div>
           <Input
             type="text"
@@ -111,7 +111,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
             onChange={(e) => setTitle(e.target.value)}
             onFocus={() => setIsTitleFocused(true)}
             onBlur={() => setIsTitleFocused(false)}
-            className="pl-10 bg-white/30 border-2 border-white/40 focus:border-blue-500 text-white placeholder:text-white/70 text-lg font-medium rounded-lg transition-all duration-300 hover:border-white/50 focus:ring-2 focus:ring-blue-500/50"
+            className="pl-10 bg-[#1A1F2C] border-2 border-[#403E43] focus:border-[#8B5CF6] text-white placeholder:text-gray-400 text-lg font-medium rounded-lg transition-all duration-300 hover:border-[#8B5CF6]/50 focus:ring-2 focus:ring-[#8B5CF6]/30"
           />
         </motion.div>
         
@@ -121,7 +121,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
           className="relative"
         >
           <div className="absolute top-3 left-3 pointer-events-none">
-            <CircuitBoard className="w-5 h-5 text-blue-500" />
+            <CircuitBoard className="w-5 h-5 text-[#8B5CF6]" />
           </div>
           <Textarea
             placeholder="Describe your goal..."
@@ -129,7 +129,7 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
             onChange={(e) => setDescription(e.target.value)}
             onFocus={() => setIsDescriptionFocused(true)}
             onBlur={() => setIsDescriptionFocused(false)}
-            className="pl-10 bg-white/30 border-2 border-white/40 focus:border-blue-500 text-white placeholder:text-white/70 text-base rounded-lg min-h-[100px] transition-all duration-300 hover:border-white/50 focus:ring-2 focus:ring-blue-500/50"
+            className="pl-10 bg-[#1A1F2C] border-2 border-[#403E43] focus:border-[#8B5CF6] text-white placeholder:text-gray-400 text-base rounded-lg min-h-[100px] transition-all duration-300 hover:border-[#8B5CF6]/50 focus:ring-2 focus:ring-[#8B5CF6]/30"
           />
         </motion.div>
       </div>
