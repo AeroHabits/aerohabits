@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -165,7 +164,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
   return (
     <motion.form 
       onSubmit={handleSubmit} 
-      className="space-y-6 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-white/20 hover:border-white/30 transition-all duration-300"
+      className="space-y-6 bg-[#1A1F2C] backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-[#403E43] hover:border-[#9b87f5]/50 transition-all duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -175,7 +174,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="p-3 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full shadow-lg"
+          className="p-3 bg-[#9b87f5] rounded-full shadow-lg"
         >
           <Brain className="w-6 h-6 text-white" />
         </motion.div>
@@ -183,7 +182,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-xl font-semibold text-white"
+          className="text-xl font-semibold text-[#C8C8C9]"
         >
           Create New Habit
         </motion.div>
@@ -196,7 +195,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           className="relative"
         >
           <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Target className="w-5 h-5 text-blue-400" />
+            <Target className="w-5 h-5 text-[#9b87f5]" />
           </div>
           <Input
             placeholder="Enter your new habit..."
@@ -204,7 +203,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
             onChange={(e) => setTitle(e.target.value)}
             onFocus={() => setIsTitleFocused(true)}
             onBlur={() => setIsTitleFocused(false)}
-            className="pl-10 bg-white/10 border-2 border-white/20 focus:border-blue-400 text-white placeholder:text-white/50 text-lg font-medium rounded-lg transition-all duration-300 hover:border-white/30 focus:ring-2 focus:ring-blue-400/50 focus:ring-opacity-50"
+            className="pl-10 bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9] placeholder:text-[#8E9196] text-lg font-medium rounded-lg transition-all duration-300 hover:border-[#9b87f5]/50 focus:ring-2 focus:ring-[#9b87f5]/30"
           />
         </motion.div>
         
@@ -214,7 +213,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           className="relative"
         >
           <div className="absolute top-3 left-3 pointer-events-none">
-            <CircuitBoard className="w-5 h-5 text-blue-400" />
+            <CircuitBoard className="w-5 h-5 text-[#9b87f5]" />
           </div>
           <Textarea
             placeholder="Describe your habit..."
@@ -222,7 +221,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
             onChange={(e) => setDescription(e.target.value)}
             onFocus={() => setIsDescriptionFocused(true)}
             onBlur={() => setIsDescriptionFocused(false)}
-            className="pl-10 bg-white/10 border-2 border-white/20 focus:border-blue-400 text-white placeholder:text-white/50 text-base rounded-lg min-h-[100px] transition-all duration-300 hover:border-white/30 focus:ring-2 focus:ring-blue-400/50 focus:ring-opacity-50"
+            className="pl-10 bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9] placeholder:text-[#8E9196] text-base rounded-lg min-h-[100px] transition-all duration-300 hover:border-[#9b87f5]/50 focus:ring-2 focus:ring-[#9b87f5]/30"
           />
         </motion.div>
 
@@ -231,15 +230,15 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
             value={selectedCategory}
             onValueChange={setSelectedCategory}
           >
-            <SelectTrigger className="w-full bg-white/10 border-2 border-white/20 focus:border-blue-400 text-white">
+            <SelectTrigger className="w-full bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9]">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-[#2A2F3C] border-[#403E43]">
               {categories.map((category) => (
                 <SelectItem 
                   key={category.id} 
                   value={category.id}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 text-[#C8C8C9] hover:bg-[#9b87f5]/20"
                 >
                   <div className="flex items-center gap-2">
                     <div 
@@ -264,9 +263,9 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
                 type="button"
                 variant="outline" 
                 size="icon"
-                className="bg-white/10 border-2 border-white/20 hover:bg-white/20"
+                className="bg-[#2A2F3C] border-2 border-[#403E43] hover:bg-[#9b87f5]/20 hover:border-[#9b87f5]"
               >
-                <Plus className="h-4 w-4 text-white" />
+                <Plus className="h-4 w-4 text-[#C8C8C9]" />
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -342,9 +341,9 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
       >
         <Button 
           type="submit"
-          className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-medium py-6 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden rounded-lg"
+          className="w-full bg-[#9b87f5] hover:bg-[#8b76f4] text-white font-medium py-6 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden rounded-lg"
         >
-          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/40 to-indigo-400/40 opacity-0 group-hover:opacity-50 transition-opacity duration-300"></span>
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-50 transition-opacity duration-300"></span>
           <span className="relative flex items-center justify-center gap-2">
             <Sparkles className="w-5 h-5 animate-pulse" />
             Create Habit
@@ -356,7 +355,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-center text-white/60 text-sm mt-4"
+        className="text-center text-[#8E9196] text-sm mt-4"
       >
         Start your journey to better habits today
       </motion.div>
