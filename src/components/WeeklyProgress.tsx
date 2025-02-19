@@ -1,7 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { JourneyChart } from "./JourneyChart";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { BarChart3 } from "lucide-react";
@@ -40,7 +39,7 @@ export function WeeklyProgress() {
     const total = dayHabits.length;
     
     return {
-      day: format(date, 'EEE'),
+      day: format(date, 'EEEE'),
       completed,
       total,
       percentage: total > 0 ? Math.round((completed / total) * 100) : 0
@@ -60,7 +59,7 @@ export function WeeklyProgress() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <Card className="p-6 bg-white/20 backdrop-blur-sm border-white/30 shadow-xl">
+      <Card className="p-6 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-2xl">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
@@ -72,24 +71,50 @@ export function WeeklyProgress() {
                 Current Week Overview
               </p>
             </div>
-            <div className="bg-white/10 px-4 py-2 rounded-lg">
+            <div className="bg-black/30 px-4 py-2 rounded-lg">
               <span className="text-sm font-medium text-white">
-                {weeklyPercentage}% Success Rate
+                {weeklyPercentage}% Overall Success
               </span>
             </div>
           </div>
           
-          <div className="bg-white/10 rounded-lg p-4">
-            <JourneyChart data={weeklyData} />
+          <div className="grid gap-4 md:grid-cols-2">
+            {weeklyData.map((day, index) => (
+              <motion.div
+                key={day.day}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.1 }}
+                className="bg-black/30 rounded-lg p-4"
+              >
+                <div className="flex justify-between items-center">
+                  <h3 className="font-medium text-white">{day.day}</h3>
+                  <span className="text-sm text-white/80">
+                    {day.percentage}% Complete
+                  </span>
+                </div>
+                <p className="mt-2 text-lg font-semibold text-white">
+                  {day.completed} of {day.total} habits completed
+                </p>
+                {day.total > 0 && (
+                  <div className="mt-2 w-full bg-white/10 rounded-full h-2">
+                    <div
+                      className="bg-white/30 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${day.percentage}%` }}
+                    />
+                  </div>
+                )}
+              </motion.div>
+            ))}
           </div>
           
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white/10 rounded-lg p-4">
-              <p className="text-sm text-white font-medium">Completed Tasks</p>
+            <div className="bg-black/30 rounded-lg p-4">
+              <p className="text-sm text-white/80 font-medium">Completed Tasks</p>
               <p className="text-2xl font-bold text-white">{totalCompleted}</p>
             </div>
-            <div className="bg-white/10 rounded-lg p-4">
-              <p className="text-sm text-white font-medium">Total Tasks</p>
+            <div className="bg-black/30 rounded-lg p-4">
+              <p className="text-sm text-white/80 font-medium">Total Tasks</p>
               <p className="text-2xl font-bold text-white">{totalHabits}</p>
             </div>
           </div>
