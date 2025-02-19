@@ -141,9 +141,9 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
       >
         <Button 
           type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-medium py-6 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden rounded-lg"
+          className="w-full bg-gradient-to-r from-[#8B5CF6] to-[#D946EF] hover:from-[#7C3AED] hover:to-[#C026D3] text-white font-semibold py-6 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden rounded-lg"
         >
-          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-400/40 to-blue-500/40 opacity-0 group-hover:opacity-50 transition-opacity duration-300"></span>
+          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-50 transition-opacity duration-300"></span>
           <span className="relative flex items-center justify-center gap-2">
             Create Goal
           </span>
