@@ -37,7 +37,9 @@ const StatCard = ({ icon, title, value, description, delay }: StatCardProps) => 
     <Dialog>
       <DialogTrigger asChild>
         <Card className="p-6 flex items-center space-x-4 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all cursor-pointer">
-          {icon}
+          <div className="p-2 rounded-full bg-white/10">
+            {icon}
+          </div>
           <div>
             <h3 className="font-semibold text-white">{title}</h3>
             <p className="text-2xl font-bold text-white">{value}</p>
