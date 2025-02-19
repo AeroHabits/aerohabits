@@ -102,16 +102,16 @@ export const SignInForm = ({ onToggleForm, isLoading, setIsLoading }: SignInForm
             Forgot password?
           </button>
         </div>
-        <div className="flex items-center space-x-3 bg-white/25 hover:bg-white/30 transition-colors p-4 rounded-lg border-2 border-white/40">
+        <div className="flex items-center space-x-3 bg-gray-800/90 hover:bg-gray-800 transition-colors p-4 rounded-lg border-2 border-gray-700">
           <Checkbox
             id="rememberMe"
             checked={rememberMe}
             onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-            className="h-5 w-5 data-[state=checked]:bg-blue-500 border-2 border-white rounded-sm"
+            className="h-5 w-5 data-[state=checked]:bg-blue-500 border-2 border-gray-400 rounded-sm"
           />
           <label
             htmlFor="rememberMe"
-            className="text-base font-medium text-white cursor-pointer select-none"
+            className="text-base font-medium text-gray-200 cursor-pointer select-none"
           >
             Remember me
           </label>
