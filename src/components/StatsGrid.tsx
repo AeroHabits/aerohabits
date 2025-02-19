@@ -68,42 +68,42 @@ export function StatsGrid({
 }: StatsGridProps) {
   const stats = [
     {
-      icon: <Trophy className="h-10 w-10 text-yellow-500" />,
+      icon: <Trophy className="h-10 w-10 text-white" />,
       title: "Total Habits",
       value: totalHabits,
       description: "The total number of habits you're currently tracking. Each habit represents a step towards your personal growth.",
       delay: 0
     },
     {
-      icon: <Flame className="h-10 w-10 text-orange-500" />,
+      icon: <Flame className="h-10 w-10 text-white" />,
       title: "Current Streak",
       value: `${currentStreak} days`,
       description: "Your ongoing streak of consistently maintaining your habits. Keep it up to build lasting change!",
       delay: 0.1
     },
     {
-      icon: <Target className="h-10 w-10 text-purple-500" />,
+      icon: <Target className="h-10 w-10 text-white" />,
       title: "Completion Rate",
       value: `${completionRate}%`,
       description: "Your overall success rate in completing your habits. This percentage reflects your dedication to self-improvement.",
       delay: 0.2
     },
     {
-      icon: <Calendar className="h-10 w-10 text-blue-500" />,
+      icon: <Calendar className="h-10 w-10 text-white" />,
       title: "Weekly Progress",
       value: `${weeklyProgress}%`,
       description: "Your habit completion rate for this week. Track your weekly momentum to stay motivated.",
       delay: 0.3
     },
     {
-      icon: <CheckCircle2 className="h-10 w-10 text-emerald-500" />,
+      icon: <CheckCircle2 className="h-10 w-10 text-white" />,
       title: "Monthly Average",
       value: `${monthlyAverage}%`,
       description: "Your average habit completion rate over the past month. A great indicator of your long-term consistency.",
       delay: 0.4
     },
     {
-      icon: <TrendingUp className="h-10 w-10 text-cyan-500" />,
+      icon: <TrendingUp className="h-10 w-10 text-white" />,
       title: "Best Streak",
       value: `${bestStreak} days`,
       description: "Your longest streak of consistent habit completion. Can you beat your personal best?",
