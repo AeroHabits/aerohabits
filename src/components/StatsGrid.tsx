@@ -36,20 +36,20 @@ const StatCard = ({ icon, title, value, description, delay }: StatCardProps) => 
   >
     <Dialog>
       <DialogTrigger asChild>
-        <Card className="p-6 flex items-center space-x-4 bg-gradient-to-br from-indigo-600/20 to-purple-600/20 backdrop-blur-sm border border-indigo-300/30 hover:from-indigo-600/30 hover:to-purple-600/30 transition-all duration-300 cursor-pointer shadow-xl">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500/30 to-purple-500/30 backdrop-blur-md shadow-inner">
+        <Card className="p-6 flex items-center space-x-4 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer shadow-2xl hover:shadow-xl">
+          <div className="p-3 rounded-lg bg-black/30">
             {icon}
           </div>
           <div>
-            <h3 className="font-semibold text-white/95 text-lg">{title}</h3>
-            <p className="text-3xl font-bold bg-gradient-to-r from-white via-purple-100 to-indigo-100 bg-clip-text text-transparent">{value}</p>
+            <h3 className="font-semibold text-white/90 text-lg">{title}</h3>
+            <p className="text-3xl font-bold text-white">{value}</p>
           </div>
         </Card>
       </DialogTrigger>
-      <DialogContent className="bg-gradient-to-br from-indigo-700/95 to-purple-800/95 backdrop-blur-xl border border-indigo-300/30">
+      <DialogContent className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/10">
         <DialogHeader>
           <DialogTitle className="text-white font-bold text-xl">{title}</DialogTitle>
-          <DialogDescription className="text-indigo-100">
+          <DialogDescription className="text-white/80">
             {description}
           </DialogDescription>
         </DialogHeader>
