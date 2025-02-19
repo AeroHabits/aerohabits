@@ -37,38 +37,38 @@ export function DisplayBadge({ badge, index }: DisplayBadgeProps) {
       transition={{ delay: index * 0.1 }}
       className={`relative group rounded-lg transition-all duration-300 ${
         badge.isUnlocked 
-          ? 'bg-[#2A2F3C] border-2 border-[#403E43]' 
-          : 'bg-[#1A1F2C] border-2 border-[#2A2F3C]'
+          ? 'bg-white/20 backdrop-blur-sm border border-white/30' 
+          : 'bg-white/10 backdrop-blur-sm border border-white/20'
       }`}
     >
       <div className="p-4">
         <div className="flex items-center gap-4">
           <div className={`p-2 rounded-full ${
             badge.isUnlocked 
-              ? 'bg-[#8B5CF6]/20' 
-              : 'bg-gray-700'
+              ? 'bg-white/20' 
+              : 'bg-white/10'
           }`}>
             {badge.isUnlocked 
               ? getBadgeIcon(badge.badge_type)
-              : <Lock className="h-6 w-6 text-gray-400" />
+              : <Lock className="h-6 w-6 text-white/70" />
             }
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <span className="text-white font-semibold">{badge.name}</span>
               {'points_required' in badge && !badge.isUnlocked && (
-                <span className="text-xs px-2 py-0.5 rounded-full bg-[#8B5CF6]/20 text-[#8B5CF6]">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-white/20 text-white font-medium">
                   {badge.points_required} pts needed
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-300">{badge.description}</p>
+            <p className="text-sm text-white/80">{badge.description}</p>
           </div>
         </div>
       </div>
       {badge.isUnlocked && (
         <div className="absolute top-2 right-2">
-          <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-400/20 text-emerald-400 font-medium">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-white/20 text-white font-medium">
             {badge.unlockMessage}
           </span>
         </div>
