@@ -10,7 +10,7 @@ const Habits = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="container mx-auto px-4 py-6 md:py-8 space-y-8 md:space-y-12"
+        className="container mx-auto px-4 pt-12 pb-6 md:py-8 space-y-8 md:space-y-12 safe-top" // Added pt-12 and safe-top
       >
         <AppHeader />
         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
