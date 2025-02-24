@@ -80,7 +80,7 @@ export const SignInForm = ({
         <FormInput id="email" label="Email" type="email" value={email} onChange={e => setEmail(e.target.value.trim())} required disabled={isLoading} />
         <div className="space-y-2">
           <FormInput id="password" label="Password" type="password" value={password} onChange={e => setPassword(e.target.value)} required disabled={isLoading} />
-          <button onClick={handleForgotPassword} className="text-sm text-white hover:text-gray-200 transition-colors duration-200" disabled={isLoading} type="button">
+          <button onClick={handleForgotPassword} disabled={isLoading} type="button" className="text-sm transition-colors duration-200 text-zinc-950">
             Forgot password?
           </button>
         </div>
