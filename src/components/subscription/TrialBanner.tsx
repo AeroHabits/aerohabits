@@ -4,12 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Calendar, DollarSign, X } from 'lucide-react';
+import { AlertTriangle, DollarSign, X } from 'lucide-react';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 
 export function TrialBanner() {
   const navigate = useNavigate();
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
-  const [isVisible, setIsVisible] = useState(true);
+  const { loadFromStorage, saveToStorage } = useLocalStorage();
+  const bannerKey = 'trial_banner_dismissed';
+
+  // Check if banner was recently dismissed
+  const isDismissed = loadFromStorage<{ dismissed: boolean }>(bannerKey)?.dismissed;
+  const [isVisible, setIsVisible] = useState(!isDismissed);
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -36,6 +42,11 @@ export function TrialBanner() {
       setDaysLeft(timeLeft > 0 ? timeLeft : 0);
     }
   }, [profile]);
+
+  const handleDismiss = () => {
+    setIsVisible(false);
+    saveToStorage(bannerKey, { dismissed: true });
+  };
 
   if (!profile || profile.subscription_status !== 'trialing' || daysLeft === null || !isVisible) {
     return null;
@@ -68,7 +79,7 @@ export function TrialBanner() {
             Subscribe Now
           </Button>
           <Button
-            onClick={() => setIsVisible(false)}
+            onClick={handleDismiss}
             variant="ghost"
             size="icon"
             className="text-white hover:bg-purple-500/20"
