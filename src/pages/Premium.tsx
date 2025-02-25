@@ -12,33 +12,6 @@ export default function Premium() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleStartFreeTrial = async () => {
-    try {
-      setIsLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('No authenticated user');
-
-      // Update the user's profile with trial information
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          subscription_status: 'trialing',
-          trial_end_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
-
-      toast.success("Your free trial has started!");
-      navigate('/settings');
-    } catch (error) {
-      console.error('Error starting free trial:', error);
-      toast.error('Failed to start free trial. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSubscribe = async () => {
     try {
       setIsLoading(true);
@@ -85,10 +58,10 @@ export default function Premium() {
           <div className="text-center space-y-4">
             <Crown className="w-12 h-12 mx-auto text-yellow-500 mb-6" />
             <h1 className="text-3xl font-semibold text-white">
-              Upgrade to Premium
+              Subscribe to Premium
             </h1>
             <p className="text-lg text-gray-300">
-              Get full access to all features and maximize your productivity
+              Continue enjoying all features and maximize your productivity
             </p>
           </div>
 
@@ -99,9 +72,6 @@ export default function Premium() {
                   <span className="font-bold text-white text-3xl">$9.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
-                <p className="mt-2 text-sm text-gray-400">
-                  Start with a 3-day free trial, no credit card required
-                </p>
               </div>
 
               <div className="space-y-4">
@@ -114,29 +84,15 @@ export default function Premium() {
               </div>
 
               <Button
-                onClick={handleStartFreeTrial}
+                onClick={handleSubscribe}
                 disabled={isLoading}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold tracking-wide rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Processing..." : "Start Free Trial"}
+                {isLoading ? "Processing..." : "Subscribe Now"}
               </Button>
 
-              <div className="text-center space-y-4">
-                <p className="text-sm text-gray-400">
-                  Already tried and love it? Subscribe now:
-                </p>
-                <Button
-                  onClick={handleSubscribe}
-                  disabled={isLoading}
-                  variant="outline"
-                  className="w-full"
-                >
-                  {isLoading ? "Processing..." : "Subscribe Now"}
-                </Button>
-              </div>
-
               <p className="text-sm text-gray-400 text-center">
-                No credit card required for trial. Subscribe any time during or after your trial.
+                Your free trial has ended. Subscribe now to continue using all premium features.
               </p>
             </div>
           </Card>
