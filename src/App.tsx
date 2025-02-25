@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
 import { BottomNav } from "./components/layout/BottomNav";
+import { TrialBanner } from "./components/subscription/TrialBanner";
 import { useEffect } from "react";
 import { trackPageView } from "./lib/analytics";
 import { useIsMobile } from "./hooks/use-mobile";
@@ -67,6 +69,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
       <Footer />
       <BottomNav />
+      <TrialBanner />
     </div>
   );
 };
