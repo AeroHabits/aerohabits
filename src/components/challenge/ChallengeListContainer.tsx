@@ -14,6 +14,7 @@ export function ChallengeListContainer() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
   const { challenges, userChallenges, userProfile, isLoading, joinChallengeMutation } = useChallenges();
   const [currentChallengeId, setCurrentChallengeId] = useState<string | null>(null);
+  const [canAccessMaster, setCanAccessMaster] = useState(false);
   const [canAccessSelected, setCanAccessSelected] = useState(true);
 
   useEffect(() => {
@@ -21,7 +22,8 @@ export function ChallengeListContainer() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase.rpc('can_access_difficulty', {
+      // Check access for selected difficulty
+      const { data: canAccess, error } = await supabase.rpc('can_access_difficulty', {
         user_uid: user.id,
         target_difficulty: selectedDifficulty.toLowerCase()
       });
@@ -31,7 +33,17 @@ export function ChallengeListContainer() {
         return;
       }
 
-      setCanAccessSelected(data);
+      setCanAccessSelected(canAccess);
+
+      // Check master access specifically
+      const { data: masterAccess, error: masterError } = await supabase.rpc('can_access_difficulty', {
+        user_uid: user.id,
+        target_difficulty: 'master'
+      });
+
+      if (!masterError) {
+        setCanAccessMaster(!!masterAccess);
+      }
     };
 
     checkDifficultyAccess();
@@ -112,6 +124,7 @@ export function ChallengeListContainer() {
         <ChallengeDifficultyTabs 
           onDifficultyChange={setSelectedDifficulty}
           currentDifficulty={userProfile?.current_difficulty || 'easy'}
+          canAccessMaster={canAccessMaster}
         />
       </motion.div>
 

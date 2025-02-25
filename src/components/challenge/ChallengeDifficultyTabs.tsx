@@ -5,11 +5,16 @@ import { Lock } from "lucide-react";
 interface ChallengeDifficultyTabsProps {
   onDifficultyChange: (difficulty: string) => void;
   currentDifficulty: string;
+  canAccessMaster: boolean;
 }
 
 const difficultyOrder = ['easy', 'medium', 'hard', 'master'];
 
-export function ChallengeDifficultyTabs({ onDifficultyChange, currentDifficulty }: ChallengeDifficultyTabsProps) {
+export function ChallengeDifficultyTabs({ 
+  onDifficultyChange, 
+  currentDifficulty,
+  canAccessMaster 
+}: ChallengeDifficultyTabsProps) {
   return (
     <Tabs defaultValue="easy" className="w-full">
       <TabsList className="grid w-full grid-cols-4">
