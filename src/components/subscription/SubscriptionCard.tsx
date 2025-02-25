@@ -3,22 +3,51 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Crown, Star, Trophy, Target } from "lucide-react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface SubscriptionCardProps {
   type: 'month' | 'year';
   isLoading?: boolean;
 }
 
-export function SubscriptionCard({ type, isLoading }: SubscriptionCardProps) {
+export function SubscriptionCard({ type, isLoading: parentLoading }: SubscriptionCardProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const isYearly = type === 'year';
   const price = isYearly ? "$69.99" : "$9.99";
   const interval = isYearly ? "year" : "month";
-  const navigate = useNavigate();
+  const priceId = isYearly 
+    ? 'price_yearly_placeholder'  // Replace with your Stripe yearly price ID
+    : 'price_monthly_placeholder'; // Replace with your Stripe monthly price ID
 
-  const handleSubscribe = () => {
-    toast.info("Please download our mobile app to subscribe through the App Store");
+  const handleSubscribe = async () => {
+    try {
+      setIsLoading(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+
+      // Create a Stripe checkout session through our Edge Function
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { priceId, returnUrl: window.location.origin + '/settings' }
+      });
+
+      if (error) throw error;
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
+    } catch (error) {
+      console.error('Error creating checkout session:', error);
+      toast.error('Failed to start checkout process. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -64,10 +93,10 @@ export function SubscriptionCard({ type, isLoading }: SubscriptionCardProps) {
           >
             <Button
               onClick={handleSubscribe}
-              disabled={isLoading}
+              disabled={isLoading || parentLoading}
               className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold"
             >
-              Get Premium in App Store
+              {isLoading ? "Loading..." : "Subscribe Now"}
             </Button>
           </motion.div>
         </div>
