@@ -1,4 +1,3 @@
-
 import { Crown, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,11 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-
 interface SubscriptionCardProps {
   isLoading?: boolean;
 }
-
 export function SubscriptionCard({
   isLoading
 }: SubscriptionCardProps) {
@@ -36,7 +33,6 @@ export function SubscriptionCard({
       return data;
     }
   });
-
   const handleManageSubscription = async () => {
     try {
       setIsLoadingState(true);
@@ -57,14 +53,12 @@ export function SubscriptionCard({
       setIsLoadingState(false);
     }
   };
-
   const getSubscriptionStatus = () => {
     if (profileLoading) return 'Loading...';
     if (!profile?.is_subscribed) return 'Not subscribed';
     if (profile.subscription_status === 'trialing') return 'Trial Active';
     return profile.subscription_status === 'active' ? 'Active' : profile.subscription_status;
   };
-
   return <Card className="bg-white/10 backdrop-blur-sm border-white/20">
       <CardHeader className="border-b border-white/10">
         <CardTitle className="text-lg font-medium text-white">
@@ -79,7 +73,7 @@ export function SubscriptionCard({
           </h3>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="font-bold text-white text-2xl">$9.99</span>
+          <span className="font-bold text-white text-3xl">$9.99</span>
           <span className="text-sm text-gray-400">/month</span>
         </div>
 
