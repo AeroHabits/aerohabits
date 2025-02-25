@@ -78,10 +78,10 @@ export function SubscriptionCard({ isLoading }: SubscriptionCardProps) {
         </div>
 
         {profile?.subscription_status === 'trialing' && (
-          <Alert className="bg-blue-500/20 border-blue-500/30 text-white">
+          <Alert className="bg-red-500/20 border-red-500/30 text-white">
             <Calendar className="h-4 w-4" />
             <AlertDescription className="text-white">
-              You're currently in your 3-day free trial. You will be charged $9.99/month after the trial ends.
+              Important: After your 3-day trial, you'll need to subscribe to continue using the app. You will be charged $9.99/month.
             </AlertDescription>
           </Alert>
         )}
@@ -89,7 +89,7 @@ export function SubscriptionCard({ isLoading }: SubscriptionCardProps) {
         <p className="text-sm text-gray-400">
           {profile?.is_subscribed 
             ? "Manage your subscription, view billing history, and update payment methods."
-            : "Start with a 3-day free trial. Get access to advanced challenges, personalized insights, and exclusive content"}
+            : "Start with a 3-day free trial. After the trial period, subscribe to continue using all app features."}
         </p>
 
         {profile?.is_subscribed ? (

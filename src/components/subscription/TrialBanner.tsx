@@ -43,27 +43,27 @@ export function TrialBanner() {
   return (
     <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg z-50">
       <div className="container max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
           <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
+            <AlertTriangle className="h-5 w-5 text-yellow-300" />
             <p className="text-sm font-medium">
               {daysLeft > 0 
-                ? `${daysLeft} days left in your free trial`
-                : 'Your free trial ends today'}
+                ? `${daysLeft} days left before app access expires`
+                : 'Your trial ends today - Subscribe to keep access'}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             <p className="text-sm font-medium">
-              $9.99/month after trial
+              $9.99/month to continue using all features
             </p>
           </div>
         </div>
         <Button
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate('/premium')}
           className="bg-white text-purple-600 hover:bg-gray-100 whitespace-nowrap"
         >
-          Manage Subscription
+          Subscribe Now
         </Button>
       </div>
     </div>
