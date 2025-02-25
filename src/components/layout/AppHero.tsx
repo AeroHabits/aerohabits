@@ -108,15 +108,8 @@ export function AppHero() {
               ))}
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2 max-w-3xl mx-auto">
-              <SubscriptionCard
-                type="month"
-                isLoading={isLoading}
-              />
-              <SubscriptionCard
-                type="year"
-                isLoading={isLoading}
-              />
+            <div className="max-w-md mx-auto">
+              <SubscriptionCard isLoading={isLoading} />
             </div>
           </motion.div>
         )}

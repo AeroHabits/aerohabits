@@ -8,16 +8,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
 interface SubscriptionCardProps {
-  type?: 'month' | 'year';
   isLoading?: boolean;
 }
 
-export function SubscriptionCard({ type = 'month', isLoading }: SubscriptionCardProps) {
+export function SubscriptionCard({ isLoading }: SubscriptionCardProps) {
   const [isLoadingState, setIsLoadingState] = useState(false);
-
-  const price = type === 'month' ? '$9.99' : '$99.99';
-  const period = type === 'month' ? 'month' : 'year';
-  const savings = type === 'year' ? '(Save 17%)' : '';
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile'],
@@ -64,11 +59,8 @@ export function SubscriptionCard({ type = 'month', isLoading }: SubscriptionCard
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20">
       <CardHeader className="border-b border-white/10">
-        <CardTitle className="text-lg font-medium text-white flex items-center justify-between">
-          <span>Premium {type === 'year' ? 'Yearly' : 'Monthly'}</span>
-          {type === 'year' && (
-            <span className="text-sm text-green-400">{savings}</span>
-          )}
+        <CardTitle className="text-lg font-medium text-white">
+          Premium Monthly
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
@@ -79,8 +71,8 @@ export function SubscriptionCard({ type = 'month', isLoading }: SubscriptionCard
           </h3>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-white">{price}</span>
-          <span className="text-sm text-gray-400">/{period}</span>
+          <span className="text-3xl font-bold text-white">$9.99</span>
+          <span className="text-sm text-gray-400">/month</span>
         </div>
         <p className="text-sm text-gray-400">
           {profile?.is_subscribed 
