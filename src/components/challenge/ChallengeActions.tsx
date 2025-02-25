@@ -35,11 +35,11 @@ export function ChallengeActions({
   };
 
   const handleDifficultyClick = () => {
-    if (!canAccessDifficulty) {
+    if (difficulty === 'master') {
       toast.info(
-        "Level Up Required!", 
+        "Master Challenges Locked!", 
         {
-          description: "Complete 80% of challenges in your current difficulty to unlock this level. Keep pushing forward!",
+          description: "Complete 10 challenges of any difficulty to unlock Master level challenges. Keep pushing forward!",
           duration: 4000
         }
       );
@@ -61,7 +61,7 @@ export function ChallengeActions({
     );
   }
 
-  if (!canAccessDifficulty) {
+  if (difficulty === 'master' && !canAccessDifficulty) {
     return (
       <Button 
         className="w-full bg-gray-500 hover:bg-gray-600 cursor-not-allowed px-2 py-1.5 h-auto min-h-[44px] text-xs sm:text-sm whitespace-normal"
@@ -69,7 +69,7 @@ export function ChallengeActions({
       >
         <div className="flex items-center gap-2">
           <Lock className="h-4 w-4 flex-shrink-0" />
-          <span>Complete 80% of Previous Difficulty to Unlock</span>
+          <span>Complete 10 Challenges to Unlock Master Level</span>
         </div>
       </Button>
     );
