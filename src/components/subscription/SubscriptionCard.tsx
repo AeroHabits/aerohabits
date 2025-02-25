@@ -7,8 +7,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-export function SubscriptionCard() {
-  const [isLoading, setIsLoading] = useState(false);
+interface SubscriptionCardProps {
+  type?: 'month' | 'year';
+  isLoading?: boolean;
+}
+
+export function SubscriptionCard({ type = 'month', isLoading }: SubscriptionCardProps) {
+  const [isLoadingState, setIsLoadingState] = useState(false);
+
+  const price = type === 'month' ? '$9.99' : '$99.99';
+  const period = type === 'month' ? 'month' : 'year';
+  const savings = type === 'year' ? '(Save 17%)' : '';
 
   const { data: profile, isLoading: profileLoading } = useQuery({
     queryKey: ['profile'],
@@ -29,7 +38,7 @@ export function SubscriptionCard() {
 
   const handleManageSubscription = async () => {
     try {
-      setIsLoading(true);
+      setIsLoadingState(true);
       const { data, error } = await supabase.functions.invoke('create-customer-portal', {
         body: { returnUrl: window.location.origin + '/settings' }
       });
@@ -40,7 +49,7 @@ export function SubscriptionCard() {
       console.error('Error opening customer portal:', error);
       toast.error('Failed to open subscription management. Please try again.');
     } finally {
-      setIsLoading(false);
+      setIsLoadingState(false);
     }
   };
 
@@ -55,7 +64,12 @@ export function SubscriptionCard() {
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20">
       <CardHeader className="border-b border-white/10">
-        <CardTitle className="text-lg font-medium text-white">Premium Subscription</CardTitle>
+        <CardTitle className="text-lg font-medium text-white flex items-center justify-between">
+          <span>Premium {type === 'year' ? 'Yearly' : 'Monthly'}</span>
+          {type === 'year' && (
+            <span className="text-sm text-green-400">{savings}</span>
+          )}
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
@@ -63,6 +77,10 @@ export function SubscriptionCard() {
           <h3 className="text-sm font-medium text-gray-200">
             Subscription Status: {getSubscriptionStatus()}
           </h3>
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-3xl font-bold text-white">{price}</span>
+          <span className="text-sm text-gray-400">/{period}</span>
         </div>
         <p className="text-sm text-gray-400">
           {profile?.is_subscribed 
@@ -72,17 +90,18 @@ export function SubscriptionCard() {
         {profile?.is_subscribed ? (
           <Button 
             onClick={handleManageSubscription}
-            disabled={isLoading}
+            disabled={isLoading || isLoadingState}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-lg"
           >
-            {isLoading ? "Loading..." : "Manage Subscription"}
+            {isLoading || isLoadingState ? "Loading..." : "Manage Subscription"}
           </Button>
         ) : (
           <Button
             onClick={() => window.location.href = '/premium'}
+            disabled={isLoading}
             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium shadow-lg"
           >
-            Upgrade to Premium
+            {isLoading ? "Loading..." : "Upgrade to Premium"}
           </Button>
         )}
       </CardContent>
