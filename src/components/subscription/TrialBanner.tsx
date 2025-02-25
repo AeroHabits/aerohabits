@@ -4,11 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Calendar, DollarSign } from 'lucide-react';
+import { AlertTriangle, Calendar, DollarSign, X } from 'lucide-react';
 
 export function TrialBanner() {
   const navigate = useNavigate();
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
+  const [isVisible, setIsVisible] = useState(true);
 
   const { data: profile } = useQuery({
     queryKey: ['profile'],
@@ -36,7 +37,7 @@ export function TrialBanner() {
     }
   }, [profile]);
 
-  if (!profile || profile.subscription_status !== 'trialing' || daysLeft === null) {
+  if (!profile || profile.subscription_status !== 'trialing' || daysLeft === null || !isVisible) {
     return null;
   }
 
@@ -59,12 +60,22 @@ export function TrialBanner() {
             </p>
           </div>
         </div>
-        <Button
-          onClick={() => navigate('/premium')}
-          className="bg-white text-purple-600 hover:bg-gray-100 whitespace-nowrap"
-        >
-          Subscribe Now
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => navigate('/premium')}
+            className="bg-white text-purple-600 hover:bg-gray-100 whitespace-nowrap"
+          >
+            Subscribe Now
+          </Button>
+          <Button
+            onClick={() => setIsVisible(false)}
+            variant="ghost"
+            size="icon"
+            className="text-white hover:bg-purple-500/20"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
       </div>
     </div>
   );
