@@ -87,7 +87,7 @@ export default function Premium() {
               <Button
                 onClick={handleSubscribe}
                 disabled={isLoading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-6 text-lg font-medium transition-colors"
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold tracking-wide rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Processing..." : "Start Free Trial"}
               </Button>
