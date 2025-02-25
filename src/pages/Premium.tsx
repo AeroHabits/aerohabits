@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { Crown, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -7,21 +6,21 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { toast } from "sonner";
-
 export default function Premium() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
   const handleSubscribe = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { 
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
           priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
           returnUrl: window.location.origin + '/settings'
         }
       });
-
       if (error) throw error;
       window.location.href = data.url;
     } catch (error) {
@@ -31,25 +30,11 @@ export default function Premium() {
       setIsLoading(false);
     }
   };
-
-  const features = [
-    "Advanced habit tracking and analytics",
-    "Personalized goal setting and recommendations",
-    "Priority customer support",
-    "Unlimited habit tracking",
-    "Detailed progress reports",
-    "Custom reminders and notifications"
-  ];
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+  const features = ["Advanced habit tracking and analytics", "Personalized goal setting and recommendations", "Priority customer support", "Unlimited habit tracking", "Detailed progress reports", "Custom reminders and notifications"];
+  return <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto space-y-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(-1)}
-            className="text-gray-400 hover:text-white"
-          >
+          <Button variant="ghost" onClick={() => navigate(-1)} className="text-gray-400 hover:text-white">
             ← Back
           </Button>
 
@@ -67,7 +52,7 @@ export default function Premium() {
             <div className="space-y-6">
               <div className="text-center">
                 <div className="flex justify-center items-baseline gap-2">
-                  <span className="text-4xl font-bold text-white">$9.99</span>
+                  <span className="font-bold text-white text-3xl">$9.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
                 <p className="mt-2 text-sm text-gray-400">
@@ -76,19 +61,13 @@ export default function Premium() {
               </div>
 
               <div className="space-y-4">
-                {features.map((feature, index) => (
-                  <div key={index} className="flex items-center gap-3">
+                {features.map((feature, index) => <div key={index} className="flex items-center gap-3">
                     <Check className="w-5 h-5 text-emerald-500 flex-shrink-0" />
                     <p className="text-gray-300">{feature}</p>
-                  </div>
-                ))}
+                  </div>)}
               </div>
 
-              <Button
-                onClick={handleSubscribe}
-                disabled={isLoading}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold tracking-wide rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+              <Button onClick={handleSubscribe} disabled={isLoading} className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold tracking-wide rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed">
                 {isLoading ? "Processing..." : "Start Free Trial"}
               </Button>
 
@@ -99,6 +78,5 @@ export default function Premium() {
           </Card>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
