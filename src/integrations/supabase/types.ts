@@ -401,6 +401,7 @@ export type Database = {
           subscription_id: string | null
           subscription_status: string | null
           total_points: number | null
+          trial_end_date: string | null
           updated_at: string | null
         }
         Insert: {
@@ -417,6 +418,7 @@ export type Database = {
           subscription_id?: string | null
           subscription_status?: string | null
           total_points?: number | null
+          trial_end_date?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -433,6 +435,7 @@ export type Database = {
           subscription_id?: string | null
           subscription_status?: string | null
           total_points?: number | null
+          trial_end_date?: string | null
           updated_at?: string | null
         }
         Relationships: [
@@ -668,6 +671,10 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_trial_end_date: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       can_access_advanced_challenges: {
         Args: {
           user_uid: string

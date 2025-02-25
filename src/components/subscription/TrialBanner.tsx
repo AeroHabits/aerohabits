@@ -18,7 +18,7 @@ export function TrialBanner() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('created_at, is_subscribed')
+        .select('trial_end_date, is_subscribed')
         .eq('id', user.id)
         .single();
 
@@ -28,9 +28,8 @@ export function TrialBanner() {
   });
 
   useEffect(() => {
-    if (profile?.created_at && !profile.is_subscribed) {
-      const createdDate = new Date(profile.created_at);
-      const trialEnd = new Date(createdDate.getTime() + (3 * 24 * 60 * 60 * 1000));
+    if (profile?.trial_end_date && !profile.is_subscribed) {
+      const trialEnd = new Date(profile.trial_end_date);
       const now = new Date();
       const timeLeft = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
       setDaysLeft(timeLeft > 0 ? timeLeft : 0);
