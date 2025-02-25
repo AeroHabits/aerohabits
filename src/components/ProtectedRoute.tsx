@@ -68,18 +68,19 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // If authenticated but profile is loaded and user is not in trial or subscribed
-  if (profile && !profile.is_subscribed) {
+  // Check subscription status
+  if (profile) {
+    const isSubscriptionActive = profile.subscription_status === 'active' || profile.subscription_status === 'trialing';
     const trialEndDate = profile.trial_end_date ? new Date(profile.trial_end_date) : null;
     const now = new Date();
 
-    // If trial has ended and user is not subscribed
-    if (!trialEndDate || trialEndDate < now) {
-      // Don't redirect if already on premium page
-      if (location.pathname !== '/premium') {
-        toast.error("Your trial has ended. Please subscribe to continue using the app.");
-        return <Navigate to="/premium" replace />;
-      }
+    // Only redirect if:
+    // 1. User is not subscribed AND
+    // 2. Either there's no trial or the trial has ended AND
+    // 3. Not already on premium page
+    if (!isSubscriptionActive && (!trialEndDate || trialEndDate < now) && location.pathname !== '/premium') {
+      toast.error("Your trial has ended. Please subscribe to continue using the app.");
+      return <Navigate to="/premium" replace />;
     }
   }
 
