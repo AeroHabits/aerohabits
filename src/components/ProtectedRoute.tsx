@@ -15,7 +15,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const location = useLocation();
 
-  const { data: profile } = useQuery({
+  const { data: profile, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -31,6 +31,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       return data;
     },
     enabled: isAuthenticated,
+    refetchInterval: 5000, // Refetch every 5 seconds to catch subscription updates
+    staleTime: 0, // Consider data always stale to ensure fresh checks
   });
 
   useEffect(() => {
@@ -50,6 +52,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Add URL parameter check
+  useEffect(() => {
+    if (location.search.includes('success=true')) {
+      refetch(); // Force a profile refetch when returning from successful payment
+    }
+  }, [location.search, refetch]);
 
   if (isLoading) {
     return (
@@ -74,11 +83,15 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const trialEndDate = profile.trial_end_date ? new Date(profile.trial_end_date) : null;
     const now = new Date();
 
-    // Only redirect if:
-    // 1. User is not subscribed AND
-    // 2. Either there's no trial or the trial has ended AND
-    // 3. Not already on premium page
-    if (!isSubscriptionActive && (!trialEndDate || trialEndDate < now) && location.pathname !== '/premium') {
+    // Don't redirect if:
+    // 1. User has an active subscription OR
+    // 2. User is in trial period OR
+    // 3. Already on premium page OR
+    // 4. Just completed payment (success=true in URL)
+    if (!isSubscriptionActive && 
+        (!trialEndDate || trialEndDate < now) && 
+        location.pathname !== '/premium' && 
+        !location.search.includes('success=true')) {
       toast.error("Your trial has ended. Please subscribe to continue using the app.");
       return <Navigate to="/premium" replace />;
     }
