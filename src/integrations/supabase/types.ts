@@ -395,7 +395,11 @@ export type Database = {
           full_name: string | null
           has_seen_tour: boolean | null
           id: string
+          is_subscribed: boolean | null
           push_notifications: boolean | null
+          stripe_customer_id: string | null
+          subscription_id: string | null
+          subscription_status: string | null
           total_points: number | null
           updated_at: string | null
         }
@@ -407,7 +411,11 @@ export type Database = {
           full_name?: string | null
           has_seen_tour?: boolean | null
           id: string
+          is_subscribed?: boolean | null
           push_notifications?: boolean | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
           total_points?: number | null
           updated_at?: string | null
         }
@@ -419,7 +427,11 @@ export type Database = {
           full_name?: string | null
           has_seen_tour?: boolean | null
           id?: string
+          is_subscribed?: boolean | null
           push_notifications?: boolean | null
+          stripe_customer_id?: string | null
+          subscription_id?: string | null
+          subscription_status?: string | null
           total_points?: number | null
           updated_at?: string | null
         }
