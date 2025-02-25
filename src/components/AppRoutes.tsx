@@ -1,4 +1,3 @@
-
 import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Index from "@/pages/Index";
@@ -10,6 +9,7 @@ import Challenges from "@/pages/Challenges";
 import Settings from "@/pages/Settings";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
+import Premium from "@/pages/Premium";
 
 export function AppRoutes() {
   return (
@@ -65,6 +65,7 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route path="/premium" element={<Premium />} />
     </Routes>
   );
 }
