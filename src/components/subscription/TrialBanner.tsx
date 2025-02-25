@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Calendar, DollarSign } from 'lucide-react';
 
 export function TrialBanner() {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ export function TrialBanner() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('trial_end_date, is_subscribed')
+        .select('trial_end_date, is_subscribed, subscription_status')
         .eq('id', user.id)
         .single();
 
@@ -28,7 +28,7 @@ export function TrialBanner() {
   });
 
   useEffect(() => {
-    if (profile?.trial_end_date && !profile.is_subscribed) {
+    if (profile?.trial_end_date && profile.subscription_status === 'trialing') {
       const trialEnd = new Date(profile.trial_end_date);
       const now = new Date();
       const timeLeft = Math.ceil((trialEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
@@ -36,26 +36,34 @@ export function TrialBanner() {
     }
   }, [profile]);
 
-  if (!profile || profile.is_subscribed || daysLeft === null) {
+  if (!profile || profile.subscription_status !== 'trialing' || daysLeft === null) {
     return null;
   }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 p-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg z-50">
-      <div className="container max-w-7xl mx-auto flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="h-5 w-5" />
-          <p className="text-sm font-medium">
-            {daysLeft > 0 
-              ? `${daysLeft} days left in your free trial`
-              : 'Your free trial has expired'}
-          </p>
+      <div className="container max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            <p className="text-sm font-medium">
+              {daysLeft > 0 
+                ? `${daysLeft} days left in your free trial`
+                : 'Your free trial ends today'}
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            <p className="text-sm font-medium">
+              $9.99/month after trial
+            </p>
+          </div>
         </div>
         <Button
-          onClick={() => navigate('/premium')}
-          className="bg-white text-purple-600 hover:bg-gray-100"
+          onClick={() => navigate('/settings')}
+          className="bg-white text-purple-600 hover:bg-gray-100 whitespace-nowrap"
         >
-          Upgrade Now
+          Manage Subscription
         </Button>
       </div>
     </div>

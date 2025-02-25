@@ -1,11 +1,12 @@
 
-import { Crown } from "lucide-react";
+import { Crown, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface SubscriptionCardProps {
   isLoading?: boolean;
@@ -22,7 +23,7 @@ export function SubscriptionCard({ isLoading }: SubscriptionCardProps) {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_subscribed, subscription_status')
+        .select('is_subscribed, subscription_status, trial_end_date')
         .eq('id', user.id)
         .single();
 
@@ -51,6 +52,7 @@ export function SubscriptionCard({ isLoading }: SubscriptionCardProps) {
   const getSubscriptionStatus = () => {
     if (profileLoading) return 'Loading...';
     if (!profile?.is_subscribed) return 'Not subscribed';
+    if (profile.subscription_status === 'trialing') return 'Trial Active';
     return profile.subscription_status === 'active' 
       ? 'Active' 
       : profile.subscription_status;
@@ -74,11 +76,22 @@ export function SubscriptionCard({ isLoading }: SubscriptionCardProps) {
           <span className="text-3xl font-bold text-white">$9.99</span>
           <span className="text-sm text-gray-400">/month</span>
         </div>
+
+        {profile?.subscription_status === 'trialing' && (
+          <Alert className="bg-blue-500/20 border-blue-500/30 text-white">
+            <Calendar className="h-4 w-4" />
+            <AlertDescription className="text-white">
+              You're currently in your 3-day free trial. You will be charged $9.99/month after the trial ends.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <p className="text-sm text-gray-400">
           {profile?.is_subscribed 
             ? "Manage your subscription, view billing history, and update payment methods."
-            : "Get access to advanced challenges, personalized insights, and exclusive content"}
+            : "Start with a 3-day free trial. Get access to advanced challenges, personalized insights, and exclusive content"}
         </p>
+
         {profile?.is_subscribed ? (
           <Button 
             onClick={handleManageSubscription}
@@ -93,7 +106,7 @@ export function SubscriptionCard({ isLoading }: SubscriptionCardProps) {
             disabled={isLoading}
             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium shadow-lg"
           >
-            {isLoading ? "Loading..." : "Upgrade to Premium"}
+            {isLoading ? "Loading..." : "Start 3-Day Free Trial"}
           </Button>
         )}
       </CardContent>
