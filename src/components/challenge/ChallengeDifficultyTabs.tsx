@@ -30,7 +30,9 @@ export function ChallengeDifficultyTabs({
               className="relative"
             >
               {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-              {isMaster && <Lock className="w-3 h-3 ml-1 inline-block" />}
+              {isMaster && !canAccessMaster && (
+                <Lock className="w-3 h-3 ml-1 inline-block" />
+              )}
             </TabsTrigger>
           );
         })}
