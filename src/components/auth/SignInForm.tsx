@@ -84,7 +84,7 @@ export const SignInForm = ({
             Forgot password?
           </button>
         </div>
-        <div className="flex items-center space-x-3 transition-colors p-4 rounded-lg border border-[#403E43] py-[6px] px-[7px] bg-slate-950">
+        <div className="flex items-center space-x-3 transition-colors p-4 rounded-lg border border-[#403E43] py-[6px] px-[7px] bg-black">
           <Checkbox id="rememberMe" checked={rememberMe} onCheckedChange={checked => setRememberMe(checked as boolean)} className="h-5 w-5 border-2 border-[#8E9196] rounded-sm bg-slate-50" />
           <label htmlFor="rememberMe" className="text-base font-medium text-[#C8C8C9] cursor-pointer select-none">Remember Me</label>
         </div>
