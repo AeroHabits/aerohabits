@@ -41,14 +41,6 @@ const config: CapacitorConfig = {
       launchAutoHide: true,
       launchShowDuration: 2000
     }
-  },
-  android: {
-    buildOptions: {
-      keystorePath: 'release-key.keystore',
-      keystoreAlias: 'key0',
-      keystorePassword: 'password',
-      storePassword: 'password',
-    }
   }
 };
 
