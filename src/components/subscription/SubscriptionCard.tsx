@@ -8,6 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
+import { format } from "date-fns";
 
 interface SubscriptionCardProps {
   isLoading?: boolean;
@@ -33,7 +34,11 @@ export function SubscriptionCard({
       const {
         data,
         error
-      } = await supabase.from('profiles').select('is_subscribed, subscription_status, trial_end_date').eq('id', user.id).single();
+      } = await supabase
+        .from('profiles')
+        .select('is_subscribed, subscription_status, trial_end_date, current_period_end')
+        .eq('id', user.id)
+        .single();
       if (error) throw error;
       return data;
     }
@@ -65,6 +70,11 @@ export function SubscriptionCard({
     if (!profile?.is_subscribed) return 'Not subscribed';
     if (profile.subscription_status === 'trialing') return 'Trial Active';
     return profile.subscription_status === 'active' ? 'Active' : profile.subscription_status;
+  };
+
+  const getNextBillingDate = () => {
+    if (!profile?.current_period_end) return null;
+    return format(new Date(profile.current_period_end), 'MMMM d, yyyy');
   };
 
   return (
@@ -108,6 +118,15 @@ export function SubscriptionCard({
             <Calendar className="h-5 w-5 text-red-400" />
             <AlertDescription className="text-white text-base">
               Important: After your 3-day trial, you will be charged $9.99/month.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {profile?.is_subscribed && profile?.current_period_end && (
+          <Alert className="bg-blue-900/40 border border-blue-500/30 backdrop-blur-sm">
+            <Calendar className="h-5 w-5 text-blue-400" />
+            <AlertDescription className="text-white text-base">
+              Your next billing date is {getNextBillingDate()}
             </AlertDescription>
           </Alert>
         )}
