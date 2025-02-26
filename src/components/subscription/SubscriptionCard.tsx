@@ -1,3 +1,4 @@
+
 import { Crown, Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,9 +7,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
 interface SubscriptionCardProps {
   isLoading?: boolean;
 }
+
 export function SubscriptionCard({
   isLoading
 }: SubscriptionCardProps) {
@@ -33,6 +36,7 @@ export function SubscriptionCard({
       return data;
     }
   });
+
   const handleManageSubscription = async () => {
     try {
       setIsLoadingState(true);
@@ -53,46 +57,67 @@ export function SubscriptionCard({
       setIsLoadingState(false);
     }
   };
+
   const getSubscriptionStatus = () => {
     if (profileLoading) return 'Loading...';
     if (!profile?.is_subscribed) return 'Not subscribed';
     if (profile.subscription_status === 'trialing') return 'Trial Active';
     return profile.subscription_status === 'active' ? 'Active' : profile.subscription_status;
   };
-  return <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-      <CardHeader className="border-b border-white/10">
-        <CardTitle className="text-lg font-medium text-white">
+
+  return (
+    <Card className="bg-gray-800 border-gray-700">
+      <CardHeader className="border-b border-gray-700">
+        <CardTitle className="text-2xl font-normal text-white">
           Premium Monthly
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4 pt-4">
+      <CardContent className="space-y-6 pt-6">
         <div className="flex items-center gap-2">
-          <Crown className="h-5 w-5 text-yellow-400" />
-          <h3 className="text-sm font-medium text-gray-200">
+          <Crown className="h-6 w-6 text-yellow-400" />
+          <h3 className="text-lg font-normal text-gray-200">
             Subscription Status: {getSubscriptionStatus()}
           </h3>
         </div>
+
         <div className="flex items-baseline gap-2">
-          <span className="font-bold text-white text-3xl">$9.99</span>
-          <span className="text-sm text-gray-400">/month</span>
+          <span className="text-white text-5xl font-normal">$9.99</span>
+          <span className="text-gray-400 text-xl">/month</span>
         </div>
 
-        {profile?.subscription_status === 'trialing' && <Alert className="bg-red-500/20 border-red-500/30 text-white">
-            <Calendar className="h-4 w-4" />
-            <AlertDescription className="text-white">
+        {profile?.subscription_status === 'trialing' && (
+          <Alert className="bg-red-900/40 border border-red-500/30">
+            <Calendar className="h-5 w-5" />
+            <AlertDescription className="text-white text-base">
               Important: After your 3-day trial, you'll need to subscribe to continue using the app. You will be charged $9.99/month.
             </AlertDescription>
-          </Alert>}
+          </Alert>
+        )}
 
-        <p className="text-sm text-gray-400">
-          {profile?.is_subscribed ? "Manage your subscription, view billing history, and update payment methods." : "Subscribe now to continue using all premium features after your trial period ends."}
+        <p className="text-gray-400 text-lg">
+          {profile?.is_subscribed 
+            ? "Manage your subscription, view billing history, and update payment methods."
+            : "Subscribe now to continue using all premium features after your trial period ends."}
         </p>
 
-        {profile?.is_subscribed ? <Button onClick={handleManageSubscription} disabled={isLoading || isLoadingState} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-lg">
+        {profile?.is_subscribed ? (
+          <Button 
+            onClick={handleManageSubscription}
+            disabled={isLoading || isLoadingState}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-lg"
+          >
             {isLoading || isLoadingState ? "Loading..." : "Manage Subscription"}
-          </Button> : <Button onClick={() => window.location.href = '/premium'} disabled={isLoading} className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium shadow-lg">
-            {isLoading ? "Loading..." : "Subscribe Now"}
-          </Button>}
+          </Button>
+        ) : (
+          <Button
+            onClick={() => window.location.href = '/premium'}
+            disabled={isLoading}
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-6 text-lg"
+          >
+            Subscribe Now
+          </Button>
+        )}
       </CardContent>
-    </Card>;
+    </Card>
+  );
 }
