@@ -14,6 +14,13 @@ interface SubscriptionCardProps {
   isLoading?: boolean;
 }
 
+interface ProfileData {
+  is_subscribed: boolean | null;
+  subscription_status: string | null;
+  trial_end_date: string | null;
+  current_period_end: string | null;
+}
+
 export function SubscriptionCard({
   isLoading
 }: SubscriptionCardProps) {
@@ -22,7 +29,7 @@ export function SubscriptionCard({
   const {
     data: profile,
     isLoading: profileLoading
-  } = useQuery({
+  } = useQuery<ProfileData>({
     queryKey: ['profile'],
     queryFn: async () => {
       const {

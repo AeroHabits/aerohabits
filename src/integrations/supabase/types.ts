@@ -391,6 +391,7 @@ export type Database = {
           avatar_url: string | null
           current_challenge_id: string | null
           current_difficulty: string | null
+          current_period_end: string | null
           email_notifications: boolean | null
           full_name: string | null
           has_seen_tour: boolean | null
@@ -408,6 +409,7 @@ export type Database = {
           avatar_url?: string | null
           current_challenge_id?: string | null
           current_difficulty?: string | null
+          current_period_end?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
@@ -425,6 +427,7 @@ export type Database = {
           avatar_url?: string | null
           current_challenge_id?: string | null
           current_difficulty?: string | null
+          current_period_end?: string | null
           email_notifications?: boolean | null
           full_name?: string | null
           has_seen_tour?: boolean | null
