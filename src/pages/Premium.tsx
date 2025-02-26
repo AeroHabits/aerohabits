@@ -21,7 +21,8 @@ export default function Premium() {
       } = await supabase.functions.invoke('create-checkout-session', {
         body: {
           priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-          returnUrl: window.location.origin + '/settings'
+          returnUrl: window.location.origin + '/settings',
+          includeTrialPeriod: true // This will be handled in the edge function
         }
       });
       if (error) throw error;
@@ -58,10 +59,10 @@ export default function Premium() {
           <div className="text-center space-y-4">
             <Crown className="w-12 h-12 mx-auto text-yellow-500 mb-6" />
             <h1 className="text-3xl font-semibold text-white">
-              Subscribe to Premium
+              Try Premium Free for 3 Days
             </h1>
             <p className="text-lg text-gray-300">
-              Continue enjoying all features and maximize your productivity
+              Enter your payment details to start your free trial. After 3 days, you'll be charged $9.99/month to continue your premium access.
             </p>
           </div>
 
@@ -72,6 +73,7 @@ export default function Premium() {
                   <span className="font-bold text-white text-3xl">$9.99</span>
                   <span className="text-gray-400">/month</span>
                 </div>
+                <p className="text-sm text-gray-400 mt-2">after 3-day free trial</p>
               </div>
 
               <div className="space-y-4">
@@ -88,11 +90,11 @@ export default function Premium() {
                 disabled={isLoading}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-lg font-semibold tracking-wide rounded-lg shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {isLoading ? "Processing..." : "Subscribe Now"}
+                {isLoading ? "Processing..." : "Start Free Trial"}
               </Button>
 
               <p className="text-sm text-gray-400 text-center">
-                Your free trial has ended. Subscribe now to continue using all premium features.
+                By starting your trial, you agree to be automatically charged $9.99/month after the trial ends unless you cancel.
               </p>
             </div>
           </Card>

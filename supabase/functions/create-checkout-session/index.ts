@@ -42,7 +42,7 @@ serve(async (req) => {
       throw new Error('Error fetching user')
     }
 
-    // Create a Stripe checkout session
+    // Create a Stripe checkout session with trial period
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       billing_address_collection: 'auto',
