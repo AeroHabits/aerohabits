@@ -7,8 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { PremiumFeatureCard, premiumFeatures } from "@/components/subscription/PremiumFeatureCard";
-import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
+import { PremiumFeatureCard, premiumFeatures } from "@/components/premium/PremiumFeatureCard";
+import { PremiumCard } from "@/components/premium/PremiumCard";
 
 export function AppHero() {
   const [showFeatures, setShowFeatures] = useState(false);
@@ -109,7 +109,7 @@ export function AppHero() {
             </div>
 
             <div className="max-w-md mx-auto">
-              <SubscriptionCard isLoading={isLoading} />
+              <PremiumCard isLoading={isLoading} />
             </div>
           </motion.div>
         )}
