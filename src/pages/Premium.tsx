@@ -37,7 +37,7 @@ export default function Premium() {
       console.error('Error creating checkout session:', error);
       toast.error('Failed to start checkout process. Please try again.');
     } finally {
-      setIsLoadingState(false);
+      setIsLoading(false);  // Fixed: Changed setIsLoadingState to setIsLoading
     }
   };
 
