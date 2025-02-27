@@ -1,3 +1,4 @@
+
 import { Crown, Calendar, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -46,6 +47,29 @@ export function SubscriptionCard({
     }
   });
 
+  const handleStartTrial = async () => {
+    try {
+      setIsLoadingState(true);
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
+          returnUrl: window.location.origin + '/settings',
+          includeTrialPeriod: true
+        }
+      });
+      if (error) throw error;
+      window.location.href = data.url;
+    } catch (error) {
+      console.error('Error starting trial:', error);
+      toast.error('Failed to start trial. Please try again.');
+    } finally {
+      setIsLoadingState(false);
+    }
+  };
+
   const handleManageSubscription = async () => {
     try {
       setIsLoadingState(true);
@@ -79,16 +103,21 @@ export function SubscriptionCard({
     return format(new Date(profile.current_period_end), 'MMMM d, yyyy');
   };
 
-  return <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border-gray-700 relative overflow-hidden">
+  return (
+    <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border-gray-700 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-      <motion.div className="absolute -top-32 -right-32 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl" animate={{
-      scale: [1, 1.2, 1],
-      opacity: [0.3, 0.5, 0.3]
-    }} transition={{
-      duration: 5,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }} />
+      <motion.div 
+        className="absolute -top-32 -right-32 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl" 
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3]
+        }} 
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
       <CardHeader className="border-b border-gray-700/50 relative">
         <CardTitle className="text-2xl font-normal text-white flex items-center gap-3">
           <Sparkles className="h-6 w-6 text-yellow-400 animate-pulse" />
@@ -99,7 +128,7 @@ export function SubscriptionCard({
         <div className="flex items-center gap-2">
           <Crown className="h-6 w-6 text-yellow-400 animate-glow" />
           <h3 className="text-lg font-normal bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-            Subscription Status: {getSubscriptionStatus()}
+            Status: {getSubscriptionStatus()}
           </h3>
         </div>
 
@@ -110,31 +139,51 @@ export function SubscriptionCard({
           <span className="text-gray-400 text-xl">/month</span>
         </div>
 
-        {profile?.subscription_status === 'trialing' && <Alert className="bg-red-900/40 border border-red-500/30 backdrop-blur-sm">
+        {profile?.subscription_status === 'trialing' && (
+          <Alert className="bg-red-900/40 border border-red-500/30 backdrop-blur-sm">
             <Calendar className="h-5 w-5 text-red-400" />
             <AlertDescription className="text-white text-base">
               Your card will be charged $9.99 automatically when your trial ends on {format(new Date(profile.trial_end_date || ''), 'MMMM d, yyyy')}.
             </AlertDescription>
-          </Alert>}
+          </Alert>
+        )}
 
-        {profile?.is_subscribed && profile?.current_period_end && <Alert className="bg-blue-900/40 border border-blue-500/30 backdrop-blur-sm">
+        {profile?.is_subscribed && profile?.current_period_end && (
+          <Alert className="bg-blue-900/40 border border-blue-500/30 backdrop-blur-sm">
             <Calendar className="h-5 w-5 text-blue-400" />
             <AlertDescription className="text-white text-base">
               Your next billing date is {getNextBillingDate()}
             </AlertDescription>
-          </Alert>}
+          </Alert>
+        )}
 
         <p className="text-gray-400 text-lg leading-relaxed">
-          {profile?.is_subscribed ? "Manage your subscription, view billing history, and update payment methods." : "Start your 3-day trial today with card details required. Cancel anytime during trial - no charge."}
+          {profile?.is_subscribed 
+            ? "Manage your subscription, view billing history, and update payment methods."
+            : "Start your 3-day trial today. Enter payment details now, but you won't be charged until your trial ends. Cancel anytime during trial - no charge."
+          }
         </p>
 
-        {profile?.is_subscribed ? <Button onClick={handleManageSubscription} disabled={isLoading || isLoadingState} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group">
+        {profile?.is_subscribed ? (
+          <Button
+            onClick={handleManageSubscription}
+            disabled={isLoading || isLoadingState}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group"
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-blue-400/20 to-blue-400/0 translate-x-[-100%] animate-shimmer" />
             {isLoading || isLoadingState ? "Loading..." : "Manage Subscription"}
-          </Button> : <Button onClick={() => window.location.href = '/premium'} disabled={isLoading} className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]">
+          </Button>
+        ) : (
+          <Button
+            onClick={handleStartTrial}
+            disabled={isLoading || isLoadingState}
+            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]"
+          >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] animate-shimmer" />
-            Subscribe Now
-          </Button>}
+            {isLoading || isLoadingState ? "Loading..." : "Start 3-Day Free Trial"}
+          </Button>
+        )}
       </CardContent>
-    </Card>;
+    </Card>
+  );
 }
