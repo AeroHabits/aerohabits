@@ -96,7 +96,7 @@ export function SubscriptionCard({
         </div>
 
         <div className="flex items-baseline gap-2">
-          <span className="font-bold bg-gradient-to-br from-white via-purple-200 to-purple-400 bg-clip-text text-transparent text-4xl">
+          <span className="font-bold bg-gradient-to-br from-white via-purple-200 to-purple-400 bg-clip-text text-transparent text-5xl">
             $9.99
           </span>
           <span className="text-gray-400 text-xl">/month</span>
