@@ -16,7 +16,7 @@ const Index = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "container mx-auto px-4 pt-12 pb-4 md:py-6 space-y-6 md:space-y-8 safe-top",
+          "container mx-auto px-4 pt-12 pb-4 md:py-6 space-y-6 md:space-y-8 safe-top", // Added pt-12 and safe-top
           isMobile && "pb-20"
         )}
       >
