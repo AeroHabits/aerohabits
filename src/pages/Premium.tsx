@@ -93,7 +93,10 @@ export default function Premium() {
               Start Your Premium Journey Today
             </h1>
             <p className="text-lg text-gray-300">
-              3-Day Free Trial, Then $9.99/month
+              3-Day Free Trial with Premium Access
+            </p>
+            <p className="text-sm text-yellow-400">
+              Payment details required to start trial • Cancel anytime
             </p>
           </div>
 
@@ -105,14 +108,19 @@ export default function Premium() {
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2 flex items-center justify-center gap-2">
-                  <p className="text-emerald-400 font-medium">First 3 days free</p>
+                  <p className="text-emerald-400 font-medium">Try 3 days free</p>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <Info className="w-4 h-4 text-gray-400" />
                       </TooltipTrigger>
-                      <TooltipContent>
-                        <p>You won't be charged during the trial period.<br />Cancel anytime before the trial ends.</p>
+                      <TooltipContent className="p-4 max-w-[300px]">
+                        <p className="font-medium">Important Trial Information:</p>
+                        <ul className="mt-2 space-y-1 text-sm">
+                          <li>• Payment details required to start trial</li>
+                          <li>• Automatic billing starts after 3 days</li>
+                          <li>• Cancel anytime during trial - no charge</li>
+                        </ul>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
@@ -153,17 +161,18 @@ export default function Premium() {
                     Processing...
                   </div>
                 ) : (
-                  "Start Free Trial"
+                  "Start 3-Day Trial (Card Required)"
                 )}
               </Button>
 
-              <div className="text-center space-y-2">
-                <p className="text-sm text-gray-400">
-                  By starting your trial, you agree to be charged $9.99/month after the trial ends unless you cancel.
+              <div className="space-y-3 border-t border-gray-700/50 pt-4">
+                <p className="text-sm text-gray-400 text-center">
+                  By starting your trial, you agree to provide payment details. Your card will be charged $9.99/month automatically after the 3-day trial unless you cancel.
                 </p>
-                <p className="text-sm text-gray-500">
-                  You can cancel anytime during the trial period.
-                </p>
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+                  <Info className="w-4 h-4" />
+                  <p>Cancel anytime during the trial period - no charge</p>
+                </div>
               </div>
             </div>
           </Card>

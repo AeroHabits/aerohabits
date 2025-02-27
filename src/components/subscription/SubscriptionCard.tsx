@@ -8,19 +8,23 @@ import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
+
 interface SubscriptionCardProps {
   isLoading?: boolean;
 }
+
 interface ProfileData {
   is_subscribed: boolean | null;
   subscription_status: string | null;
   trial_end_date: string | null;
   current_period_end: string | null;
 }
+
 export function SubscriptionCard({
   isLoading
 }: SubscriptionCardProps) {
   const [isLoadingState, setIsLoadingState] = useState(false);
+
   const {
     data: profile,
     isLoading: profileLoading
@@ -41,6 +45,7 @@ export function SubscriptionCard({
       return data;
     }
   });
+
   const handleManageSubscription = async () => {
     try {
       setIsLoadingState(true);
@@ -61,16 +66,19 @@ export function SubscriptionCard({
       setIsLoadingState(false);
     }
   };
+
   const getSubscriptionStatus = () => {
     if (profileLoading) return 'Loading...';
     if (!profile?.is_subscribed) return 'Not subscribed';
     if (profile.subscription_status === 'trialing') return 'Trial Active';
     return profile.subscription_status === 'active' ? 'Active' : profile.subscription_status;
   };
+
   const getNextBillingDate = () => {
     if (!profile?.current_period_end) return null;
     return format(new Date(profile.current_period_end), 'MMMM d, yyyy');
   };
+
   return <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border-gray-700 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
       <motion.div className="absolute -top-32 -right-32 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl" animate={{
@@ -105,7 +113,7 @@ export function SubscriptionCard({
         {profile?.subscription_status === 'trialing' && <Alert className="bg-red-900/40 border border-red-500/30 backdrop-blur-sm">
             <Calendar className="h-5 w-5 text-red-400" />
             <AlertDescription className="text-white text-base">
-              Important: After your 3-day trial, you will be charged $9.99/month.
+              Your card will be charged $9.99 automatically when your trial ends on {format(new Date(profile.trial_end_date || ''), 'MMMM d, yyyy')}.
             </AlertDescription>
           </Alert>}
 
@@ -117,7 +125,7 @@ export function SubscriptionCard({
           </Alert>}
 
         <p className="text-gray-400 text-lg leading-relaxed">
-          {profile?.is_subscribed ? "Manage your subscription, view billing history, and update payment methods." : "Subscribe now to continue using all premium features after your trial period ends."}
+          {profile?.is_subscribed ? "Manage your subscription, view billing history, and update payment methods." : "Start your 3-day trial today with card details required. Cancel anytime during trial - no charge."}
         </p>
 
         {profile?.is_subscribed ? <Button onClick={handleManageSubscription} disabled={isLoading || isLoadingState} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group">
