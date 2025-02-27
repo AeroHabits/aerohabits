@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -5,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SettingsHeader } from "@/components/settings/SettingsHeader";
 import { NotificationsCard } from "@/components/settings/NotificationsCard";
 import { LegalCard } from "@/components/settings/LegalCard";
-import { PremiumCard } from "@/components/subscription/SubscriptionCard";
+import { SubscriptionCard } from "@/components/settings/SubscriptionCard";
 
 export default function Settings() {
   const [loading, setLoading] = useState(true);
@@ -96,7 +97,7 @@ export default function Settings() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className="container max-w-2xl mx-auto px-4 py-8">
         <SettingsHeader loading={loading} />
-        <PremiumCard />
+        <SubscriptionCard />
         <NotificationsCard 
           settings={settings}
           updateSetting={updateSetting}
