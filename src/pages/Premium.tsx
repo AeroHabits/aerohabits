@@ -35,36 +35,36 @@ export default function Premium() {
       window.location.href = data.url;
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      toast.error('Failed to start checkout process. Please try again.');
+      toast.error('Something went wrong. Please try again.');
     } finally {
-      setIsLoading(false);  // Fixed: Changed setIsLoadingState to setIsLoading
+      setIsLoading(false);
     }
   };
 
   const features = [
     {
-      title: "Advanced habit tracking",
-      description: "Get detailed insights and analytics about your habits"
+      title: "Advanced tracking",
+      description: "Get detailed insights about your habits"
     },
     {
-      title: "Personalized recommendations",
-      description: "AI-powered suggestions to improve your habits"
+      title: "Smart suggestions",
+      description: "AI-powered recommendations to improve your habits"
     },
     {
-      title: "Priority support",
-      description: "Get help when you need it most"
+      title: "Fast support",
+      description: "Get help when you need it"
     },
     {
-      title: "Unlimited tracking",
-      description: "Track as many habits as you want"
+      title: "Track unlimited habits",
+      description: "No limits on what you can track"
     },
     {
-      title: "Detailed reports",
-      description: "Weekly and monthly progress reports"
+      title: "Progress reports",
+      description: "Weekly and monthly summaries of your progress"
     },
     {
       title: "Custom reminders",
-      description: "Set personalized notification schedules"
+      description: "Set notifications that work for you"
     }
   ];
 
@@ -90,13 +90,13 @@ export default function Premium() {
               <Crown className="w-12 h-12 mx-auto text-yellow-500 mb-6" />
             </motion.div>
             <h1 className="text-3xl font-semibold text-white">
-              Start Your Premium Journey Today
+              Try Premium for Free
             </h1>
             <p className="text-lg text-gray-300">
-              3-Day Free Trial with Premium Access
+              3-Day Free Trial, Then $9.99/month
             </p>
             <p className="text-sm text-yellow-400">
-              Payment details required to start trial • Cancel anytime
+              Cancel anytime during trial - no charge
             </p>
           </div>
 
@@ -108,17 +108,17 @@ export default function Premium() {
                   <span className="text-gray-400">/month</span>
                 </div>
                 <div className="mt-2 flex items-center justify-center gap-2">
-                  <p className="text-emerald-400 font-medium">Try 3 days free</p>
+                  <p className="text-emerald-400 font-medium">First 3 days free</p>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
                         <Info className="w-4 h-4 text-gray-400" />
                       </TooltipTrigger>
                       <TooltipContent className="p-4 max-w-[300px]">
-                        <p className="font-medium">Important Trial Information:</p>
+                        <p className="font-medium">About Your Free Trial:</p>
                         <ul className="mt-2 space-y-1 text-sm">
-                          <li>• Payment details required to start trial</li>
-                          <li>• Automatic billing starts after 3 days</li>
+                          <li>• Payment info required to start trial</li>
+                          <li>• No charge for 3 days</li>
                           <li>• Cancel anytime during trial - no charge</li>
                         </ul>
                       </TooltipContent>
@@ -161,17 +161,17 @@ export default function Premium() {
                     Processing...
                   </div>
                 ) : (
-                  "Start 3-Day Trial (Card Required)"
+                  "Start Free Trial"
                 )}
               </Button>
 
               <div className="space-y-3 border-t border-gray-700/50 pt-4">
                 <p className="text-sm text-gray-400 text-center">
-                  By starting your trial, you agree to provide payment details. Your card will be charged $9.99/month automatically after the 3-day trial unless you cancel.
+                  Payment details required. You won't be charged until your 3-day trial ends.
                 </p>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
                   <Info className="w-4 h-4" />
-                  <p>Cancel anytime during the trial period - no charge</p>
+                  <p>Cancel anytime during trial - zero cost</p>
                 </div>
               </div>
             </div>

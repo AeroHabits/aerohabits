@@ -60,14 +60,14 @@ export function TrialBanner() {
             <AlertTriangle className="h-5 w-5 text-yellow-300" />
             <p className="text-sm font-medium">
               {daysLeft > 0 
-                ? `${daysLeft} days left before app access expires`
-                : 'Your trial ends today - Subscribe to keep access'}
+                ? `${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left in your free trial`
+                : 'Your free trial ends today'}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <DollarSign className="h-5 w-5" />
             <p className="text-sm font-medium">
-              $9.99/month to continue using all features
+              $9.99/month after trial
             </p>
           </div>
         </div>
@@ -76,7 +76,7 @@ export function TrialBanner() {
             onClick={() => navigate('/premium')}
             className="bg-white text-purple-600 hover:bg-gray-100 whitespace-nowrap"
           >
-            Subscribe Now
+            Continue with Premium
           </Button>
           <Button
             onClick={handleDismiss}

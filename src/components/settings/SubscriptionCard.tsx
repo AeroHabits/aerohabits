@@ -38,7 +38,7 @@ export function SubscriptionCard() {
       window.location.href = data.url;
     } catch (error) {
       console.error('Error opening customer portal:', error);
-      toast.error('Failed to open subscription management. Please try again.');
+      toast.error('Could not open subscription settings. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -46,28 +46,30 @@ export function SubscriptionCard() {
 
   const getSubscriptionStatus = () => {
     if (profileLoading) return 'Loading...';
-    if (!profile?.is_subscribed) return 'Not subscribed';
+    if (!profile?.is_subscribed) return 'Free Plan';
     return profile.subscription_status === 'active' 
-      ? 'Active' 
-      : profile.subscription_status;
+      ? 'Premium Active' 
+      : profile.subscription_status === 'trialing' 
+        ? 'Free Trial'
+        : profile.subscription_status;
   };
 
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20">
       <CardHeader className="border-b border-white/10">
-        <CardTitle className="text-lg font-medium text-white">Premium Subscription</CardTitle>
+        <CardTitle className="text-lg font-medium text-white">Premium Membership</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
           <Crown className="h-5 w-5 text-yellow-400" />
           <h3 className="text-sm font-medium text-gray-200">
-            Subscription Status: {getSubscriptionStatus()}
+            Status: {getSubscriptionStatus()}
           </h3>
         </div>
         <p className="text-sm text-gray-400">
           {profile?.is_subscribed 
-            ? "Manage your subscription, view billing history, and update payment methods."
-            : "Get access to advanced challenges, personalized insights, and exclusive content"}
+            ? "Manage your subscription, view payment history, and update payment method."
+            : "Unlock premium features, detailed insights, and personalized tracking"}
         </p>
         {profile?.is_subscribed ? (
           <Button 
@@ -82,7 +84,7 @@ export function SubscriptionCard() {
             onClick={() => window.location.href = '/premium'}
             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium shadow-lg"
           >
-            Upgrade to Premium
+            Get Premium
           </Button>
         )}
       </CardContent>

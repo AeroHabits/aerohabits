@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
-import { format, isPast, addDays, differenceInHours } from "date-fns";
+import { format, isPast, differenceInHours } from "date-fns";
 
 interface SubscriptionCardProps {
   isLoading?: boolean;
@@ -94,7 +94,7 @@ export function SubscriptionCard({
 
   const getSubscriptionStatus = () => {
     if (profileLoading) return 'Loading...';
-    if (!profile?.is_subscribed) return 'Not subscribed';
+    if (!profile?.is_subscribed) return 'Free Plan';
     
     // If trial end date exists and has passed, but status is still trialing
     if (profile.subscription_status === 'trialing' && 
@@ -103,14 +103,14 @@ export function SubscriptionCard({
       // If it's been less than 24 hours since trial ended
       const hoursSinceTrialEnded = differenceInHours(new Date(), new Date(profile.trial_end_date));
       if (hoursSinceTrialEnded < 24) {
-        return 'Trial Ended (Payment Processing)';
+        return 'Payment Processing';
       } else {
-        return 'Trial Ended (Payment Delayed)';
+        return 'Payment Delayed';
       }
     }
     
-    if (profile.subscription_status === 'trialing') return 'Trial Active';
-    return profile.subscription_status === 'active' ? 'Active' : profile.subscription_status;
+    if (profile.subscription_status === 'trialing') return 'Free Trial';
+    return profile.subscription_status === 'active' ? 'Premium Active' : profile.subscription_status;
   };
 
   const getNextBillingDate = () => {
@@ -170,14 +170,14 @@ export function SubscriptionCard({
       const hoursSinceTrialEnded = differenceInHours(new Date(), trialEndDate);
       
       if (hoursSinceTrialEnded < 6) {
-        return `Your trial ended today (${format(trialEndDate, 'h:mm a')}). Payment processing may take up to 6 hours.`;
+        return `Your free trial ended today. Your account will be upgraded soon.`;
       } else if (hoursSinceTrialEnded < 24) {
-        return `Your trial ended ${format(trialEndDate, 'h:mm a')} today. We're processing your payment.`;
+        return `Your free trial has ended. We're processing your payment now.`;
       } else {
-        return `Your trial ended on ${formatTrialEndDate()}. There might be a delay in payment processing.`;
+        return `Your free trial ended on ${formatTrialEndDate()}. There might be a delay with your payment.`;
       }
     } else {
-      return `Your card will be charged $9.99 automatically when your trial ends on ${formatTrialEndDate()}.`;
+      return `Your free trial ends on ${formatTrialEndDate()}.`;
     }
   };
 
@@ -199,7 +199,7 @@ export function SubscriptionCard({
       <CardHeader className="border-b border-gray-700/50 relative">
         <CardTitle className="text-2xl font-normal text-white flex items-center gap-3">
           <Sparkles className="h-6 w-6 text-yellow-400 animate-pulse" />
-          Premium Monthly
+          Premium Membership
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 pt-6 relative">
@@ -228,7 +228,7 @@ export function SubscriptionCard({
                 onClick={syncSubscription}
                 disabled={isLoadingState}
               >
-                {isLoadingState ? "Syncing..." : "Process payment now"}
+                {isLoadingState ? "Updating..." : "Check payment status"}
               </Button>
             </AlertDescription>
           </Alert>
@@ -247,15 +247,15 @@ export function SubscriptionCard({
           <Alert className="bg-green-900/40 border border-green-500/30 backdrop-blur-sm">
             <Calendar className="h-5 w-5 text-green-400" />
             <AlertDescription className="text-white text-base">
-              Your next billing date is {getNextBillingDate()}
+              Your next payment is on {getNextBillingDate()}
             </AlertDescription>
           </Alert>
         )}
 
         <p className="text-gray-400 text-lg leading-relaxed">
           {profile?.is_subscribed 
-            ? "Manage your subscription, view billing history, and update payment methods."
-            : "Start your 3-day trial today. Enter payment details now, but you won't be charged until your trial ends. Cancel anytime during trial - no charge."
+            ? "Manage your subscription, view payment history, and update payment methods."
+            : "Start your 3-day free trial today. No payment needed until your trial ends. Cancel anytime - no charges if you cancel during trial."
           }
         </p>
 
