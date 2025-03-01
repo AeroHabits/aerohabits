@@ -86,35 +86,11 @@ export default function Premium() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-indigo-900 via-purple-900 to-black overflow-hidden">
-      {/* Animated background elements */}
+      {/* Static gradient background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <motion.div 
-          className="absolute top-20 left-10 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"
-          animate={{ 
-            scale: [1, 1.2, 1], 
-            x: [0, 20, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div 
-          className="absolute top-40 right-10 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"
-          animate={{ 
-            scale: [1.2, 1, 1.2], 
-            x: [0, -30, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div 
-          className="absolute bottom-40 left-1/3 w-80 h-80 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20"
-          animate={{ 
-            scale: [1, 1.3, 1], 
-            x: [0, -20, 0],
-            y: [0, -40, 0],
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        />
+        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
+        <div className="absolute top-40 right-10 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
+        <div className="absolute bottom-40 left-1/3 w-80 h-80 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
       </div>
 
       <div className="container mx-auto px-4 py-12 relative z-10">
@@ -141,11 +117,9 @@ export default function Premium() {
               <motion.div
                 className="absolute -inset-1 rounded-full blur-md bg-gradient-to-r from-yellow-400 via-amber-500 to-yellow-500 opacity-75"
                 animate={{ 
-                  rotate: [0, 360], 
                   scale: [0.95, 1.05, 0.95],
                 }}
                 transition={{ 
-                  rotate: { duration: 20, repeat: Infinity, ease: "linear" },
                   scale: { duration: 3, repeat: Infinity, ease: "easeInOut" }
                 }}
               />
