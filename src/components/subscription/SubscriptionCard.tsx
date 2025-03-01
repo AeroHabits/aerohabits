@@ -1,5 +1,5 @@
 
-import { Crown, Calendar, Sparkles } from "lucide-react";
+import { Crown, Calendar, Sparkles, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
-import { format } from "date-fns";
+import { format, isPast, addDays } from "date-fns";
 
 interface SubscriptionCardProps {
   isLoading?: boolean;
@@ -28,7 +28,8 @@ export function SubscriptionCard({
 
   const {
     data: profile,
-    isLoading: profileLoading
+    isLoading: profileLoading,
+    refetch
   } = useQuery<ProfileData>({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -94,6 +95,14 @@ export function SubscriptionCard({
   const getSubscriptionStatus = () => {
     if (profileLoading) return 'Loading...';
     if (!profile?.is_subscribed) return 'Not subscribed';
+    
+    // If trial end date exists and has passed, but status is still trialing
+    if (profile.subscription_status === 'trialing' && 
+        profile.trial_end_date && 
+        isPast(new Date(profile.trial_end_date))) {
+      return 'Trial Ended (Payment Processing)';
+    }
+    
     if (profile.subscription_status === 'trialing') return 'Trial Active';
     return profile.subscription_status === 'active' ? 'Active' : profile.subscription_status;
   };
@@ -101,6 +110,41 @@ export function SubscriptionCard({
   const getNextBillingDate = () => {
     if (!profile?.current_period_end) return null;
     return format(new Date(profile.current_period_end), 'MMMM d, yyyy');
+  };
+  
+  const hasTrialEnded = () => {
+    return profile?.trial_end_date && 
+           isPast(new Date(profile.trial_end_date)) && 
+           profile.subscription_status === 'trialing';
+  };
+
+  const formatTrialEndDate = () => {
+    if (!profile?.trial_end_date) return null;
+    
+    // Create a date object from the trial end date string
+    const trialEndDate = new Date(profile.trial_end_date);
+    return format(trialEndDate, 'MMMM d, yyyy');
+  };
+
+  const syncSubscription = async () => {
+    try {
+      setIsLoadingState(true);
+      toast.info("Checking subscription status with Stripe...");
+      
+      const { error } = await supabase.functions.invoke('sync-subscription', {
+        body: {}
+      });
+      
+      if (error) throw error;
+      
+      await refetch();
+      toast.success("Subscription status updated");
+    } catch (error) {
+      console.error('Error syncing subscription:', error);
+      toast.error('Failed to sync subscription status. Please try again.');
+    } finally {
+      setIsLoadingState(false);
+    }
   };
 
   return (
@@ -139,11 +183,28 @@ export function SubscriptionCard({
           <span className="text-gray-400 text-xl">/month</span>
         </div>
 
-        {profile?.subscription_status === 'trialing' && (
+        {hasTrialEnded() && (
+          <Alert className="bg-yellow-900/40 border border-yellow-500/30 backdrop-blur-sm">
+            <AlertTriangle className="h-5 w-5 text-yellow-400" />
+            <AlertDescription className="text-white text-base">
+              Your trial has ended on {formatTrialEndDate()}, but payment processing may take up to 24 hours. 
+              <Button 
+                variant="link" 
+                className="text-yellow-400 p-0 h-auto font-normal underline" 
+                onClick={syncSubscription}
+                disabled={isLoadingState}
+              >
+                {isLoadingState ? "Syncing..." : "Sync subscription status"}
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {profile?.subscription_status === 'trialing' && !hasTrialEnded() && (
           <Alert className="bg-red-900/40 border border-red-500/30 backdrop-blur-sm">
             <Calendar className="h-5 w-5 text-red-400" />
             <AlertDescription className="text-white text-base">
-              Your card will be charged $9.99 automatically when your trial ends on {format(new Date(profile.trial_end_date || ''), 'MMMM d, yyyy')}.
+              Your card will be charged $9.99 automatically when your trial ends on {formatTrialEndDate()}.
             </AlertDescription>
           </Alert>
         )}
