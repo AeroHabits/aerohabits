@@ -1,5 +1,6 @@
+
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno';
 
 const corsHeaders = {
@@ -25,7 +26,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.error('Missing required environment variables');
     return new Response(JSON.stringify({ error: 'Missing required environment variables' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 
@@ -46,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error('No user found');
       return new Response(JSON.stringify({ error: 'No user found' }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -60,7 +61,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error('Error fetching profile:', profileError);
       return new Response(JSON.stringify({ error: 'Error fetching profile' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -70,7 +71,7 @@ const handler = async (req: Request): Promise<Response> => {
         JSON.stringify({ message: 'Stripe customer ID not found, skipping sync' }),
         {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
         }
       );
     }
@@ -91,7 +92,8 @@ const handler = async (req: Request): Promise<Response> => {
     const current_period_end = subscription ? new Date(subscription.current_period_end * 1000).toISOString() : null;
     const trial_end = subscription?.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null;
 
-    const wasTrialing = profileData.subscription_status === 'trialing';
+    // Since we've removed the trial period functionality, we don't need to check if it was trialing
+    const wasTrialing = false;
 
     const updatedData = {
       is_subscribed: isSubscribed,
@@ -109,7 +111,7 @@ const handler = async (req: Request): Promise<Response> => {
       console.error('Error updating profile:', updateError);
       return new Response(JSON.stringify({ error: 'Error updating profile' }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -117,33 +119,8 @@ const handler = async (req: Request): Promise<Response> => {
       profileData.is_subscribed !== isSubscribed ||
       profileData.subscription_status !== subscriptionStatus;
 
-    // After successfully syncing the subscription, let's also check if we should send a welcome email
-    // This is useful when manually syncing a new user
-    if (updatedData.subscription_status === 'trialing' && !wasTrialing) {
-      try {
-        // Send the welcome email
-        const welcomeResponse = await fetch(
-          `${Deno.env.get('SUPABASE_URL')}/functions/v1/send-welcome-email`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            },
-            body: JSON.stringify({
-              userId: user.id,
-            }),
-          }
-        );
-        
-        if (!welcomeResponse.ok) {
-          console.error('Warning: Failed to send welcome email');
-        }
-      } catch (emailError) {
-        console.error('Error sending welcome email:', emailError);
-        // Don't fail the whole function if just the email fails
-      }
-    }
+    // As we've removed the trial period, we don't need to send welcome emails here
+    // We'll just sync the subscription status
 
     return new Response(
       JSON.stringify({
@@ -163,7 +140,7 @@ const handler = async (req: Request): Promise<Response> => {
     console.error('Error in sync-subscription function:', error);
     return new Response(JSON.stringify({ error: 'Failed to sync subscription' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 };
