@@ -44,13 +44,27 @@ export function AppHero() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut", delay: 0.2 }}
-        className="text-3xl md:text-4xl font-bold text-white/95 tracking-wide"
+        className="text-3xl md:text-5xl font-bold tracking-tight"
       >
-        <span className="bg-gradient-to-r from-white via-blue-200 to-white bg-clip-text text-transparent animate-gradient-x">
-          Journey To Self-Mastery
+        <span className="relative inline-block">
+          {/* Glow effect behind text */}
+          <span className="absolute inset-0 blur-md bg-gradient-to-r from-blue-400/30 via-purple-500/30 to-blue-400/30 rounded-lg -z-10"></span>
+          
+          {/* Main text with gradient */}
+          <span className="bg-gradient-to-r from-blue-300 via-indigo-400 to-blue-300 bg-clip-text text-transparent drop-shadow-sm animate-gradient-x">
+            Journey To Self-Mastery
+          </span>
         </span>
       </motion.h2>
-      <div className="h-1 w-32 mx-auto bg-gradient-to-r from-white/0 via-white/80 to-white/0 animate-pulse" />
+      
+      {/* Animated underline */}
+      <motion.div 
+        initial={{ width: 0, opacity: 0 }}
+        animate={{ width: "200px", opacity: 1 }}
+        transition={{ delay: 0.4, duration: 0.6 }}
+        className="h-1 bg-gradient-to-r from-blue-400/0 via-blue-400 to-blue-400/0 mx-auto rounded-full"
+      />
+      
       <p className="text-lg text-white/80 max-w-2xl mx-auto">
         Track your habits, build streaks, and achieve your goals.
       </p>
