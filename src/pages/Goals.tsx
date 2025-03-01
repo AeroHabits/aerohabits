@@ -35,7 +35,7 @@ const Goals = () => {
 
   const inspirationalCards = [
     {
-      icon: <Rocket className="w-8 h-8 text-[#8B5CF6] transition-all duration-300 group-hover:text-[#D946EF]" />,
+      icon: <Rocket className="w-8 h-8 text-blue-500 transition-all duration-300 group-hover:text-indigo-400" />,
       title: "Dream Big",
       description: "Your Goals are the First Step Toward Your Dreams. Make Them Count!",
       onClick: () => toast({
@@ -44,7 +44,7 @@ const Goals = () => {
       })
     },
     {
-      icon: <Target className="w-8 h-8 text-[#F97316] transition-all duration-300 group-hover:text-[#0EA5E9]" />,
+      icon: <Target className="w-8 h-8 text-emerald-500 transition-all duration-300 group-hover:text-teal-400" />,
       title: "Stay Focused",
       description: "Break Down Your Goals into Actionable Steps and Track Your Progress.",
       onClick: () => toast({
@@ -53,7 +53,7 @@ const Goals = () => {
       })
     },
     {
-      icon: <Star className="w-8 h-8 text-[#0EA5E9] transition-all duration-300 group-hover:text-[#8B5CF6]" />,
+      icon: <Star className="w-8 h-8 text-amber-500 transition-all duration-300 group-hover:text-yellow-400" />,
       title: "Celebrate Progress",
       description: "Every Step Forward is a Victory. Acknowledge Your Achievements!",
       onClick: () => toast({
@@ -68,13 +68,13 @@ const Goals = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden"
+      className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-950 overflow-hidden"
     >
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-40 -left-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-40 -right-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 right-1/4 w-60 h-60 bg-pink-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-40 -left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-40 -right-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/3 right-1/4 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl"></div>
       </div>
 
       <div className={cn(
@@ -86,7 +86,7 @@ const Goals = () => {
             initial={{ x: -20, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-purple-500 tracking-tight drop-shadow-lg"
+            className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-blue-600 tracking-tight drop-shadow-lg"
           >
             AEROHABITS
           </motion.h1>
@@ -99,14 +99,14 @@ const Goals = () => {
           transition={{ delay: 0.2, duration: 0.4 }}
           className="mb-10"
         >
-          <Card className="p-6 bg-gradient-to-r from-indigo-900/40 to-purple-900/40 backdrop-blur-sm border border-white/10 shadow-xl">
+          <Card className="p-6 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 backdrop-blur-sm border border-white/10 shadow-xl">
             <div className="flex items-center gap-4 mb-3">
-              <div className="p-3 bg-gradient-to-br from-indigo-600/30 to-purple-600/30 rounded-full">
-                <Trophy className="w-6 h-6 text-indigo-400" />
+              <div className="p-3 bg-gradient-to-br from-blue-600/30 to-indigo-600/30 rounded-full">
+                <Trophy className="w-6 h-6 text-blue-400" />
               </div>
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-white">Your Goal Tracker</h2>
-                <p className="text-indigo-200/80 text-sm">Turn your aspirations into achievements</p>
+                <p className="text-blue-200/80 text-sm">Turn your aspirations into achievements</p>
               </div>
             </div>
             <p className="text-white/70">
@@ -124,12 +124,12 @@ const Goals = () => {
               transition={{ delay: 0.1 * (index + 1), duration: 0.4 }}
             >
               <Card 
-                className="p-4 md:p-6 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all duration-300 group cursor-pointer transform hover:scale-105 hover:shadow-xl"
+                className="p-4 md:p-6 bg-white/5 backdrop-blur-sm border-white/10 hover:bg-white/10 transition-all duration-300 group cursor-pointer transform hover:scale-105 hover:shadow-xl"
                 onClick={card.onClick}
               >
                 <div className="flex flex-col items-center text-center space-y-3 md:space-y-4">
                   <motion.div 
-                    className="p-3 bg-white/10 rounded-full"
+                    className="p-3 bg-white/5 rounded-full"
                     whileHover={{ rotate: 10, scale: 1.1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 15 }}
                   >
@@ -158,10 +158,10 @@ const Goals = () => {
           transition={{ delay: 0.5, duration: 0.4 }}
           className="mb-10"
         >
-          <div className="bg-gradient-to-br from-gray-900/70 to-gray-800/70 backdrop-blur-sm rounded-lg p-6 shadow-xl border border-white/10 hover:border-purple-500/30 transition-all duration-300">
+          <div className="bg-gradient-to-br from-gray-900/70 to-slate-800/70 backdrop-blur-sm rounded-lg p-6 shadow-xl border border-white/10 hover:border-blue-500/30 transition-all duration-300">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-full">
-                <Sparkles className="w-5 h-5 text-purple-400" />
+              <div className="p-2 bg-gradient-to-br from-blue-600/30 to-indigo-600/30 rounded-full">
+                <Sparkles className="w-5 h-5 text-blue-400" />
               </div>
               <h2 className="text-xl md:text-2xl font-semibold text-white">Your Goals</h2>
             </div>
