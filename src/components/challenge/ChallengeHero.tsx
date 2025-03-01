@@ -45,21 +45,6 @@ export function ChallengeHero() {
       <div className="relative p-8 md:p-10 backdrop-blur-sm z-10 border border-white/20">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-start gap-5 mb-6">
-            {/* Trophy icon with glow effect */}
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="flex-shrink-0"
-            >
-              <div className="relative">
-                <div className="absolute inset-0 bg-yellow-400 rounded-full blur-md animate-pulse"></div>
-                <div className="relative bg-gradient-to-br from-yellow-400 to-orange-500 p-4 rounded-full shadow-lg border-2 border-white/30">
-                  <Trophy className="w-8 h-8 text-white drop-shadow-md" />
-                </div>
-              </div>
-            </motion.div>
-            
             {/* Text content */}
             <div className="flex-1">
               <motion.h2 
