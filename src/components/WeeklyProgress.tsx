@@ -92,7 +92,7 @@ export function WeeklyProgress() {
       
       <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-2xl rounded-xl overflow-hidden">
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="space-y-1">
               <h2 className="text-2xl font-semibold text-white flex items-center gap-2">
                 <motion.div 
