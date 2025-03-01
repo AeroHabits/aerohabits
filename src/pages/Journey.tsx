@@ -14,11 +14,16 @@ const Journey = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-900/50 to-black animated-bg">
-      <div className={cn(
-        "container mx-auto px-4 py-6 md:py-8",
-        isMobile && "pb-24"
-      )}>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className={cn(
+          "container mx-auto px-4 pt-12 pb-6 md:py-8 space-y-8 md:space-y-12 safe-top",
+          isMobile && "pb-20"
+        )}
+      >
         <div className="flex justify-between items-center mb-8">
           <PageHeader />
           <UserMenu />
@@ -28,23 +33,22 @@ const Journey = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
+          className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20"
         >
-          <div className="bg-black/50 backdrop-blur-xl rounded-xl p-8 shadow-2xl border border-white/20">
-            <JourneyHero />
-            <div className="mt-10 space-y-10">
-              <StatsGrid
-                totalHabits={stats.totalHabits}
-                currentStreak={stats.currentStreak}
-                completionRate={stats.completionRate}
-                weeklyProgress={stats.weeklyProgress}
-                monthlyAverage={stats.monthlyAverage}
-                bestStreak={stats.bestStreak}
-              />
-              <WeeklyProgress />
-            </div>
+          <JourneyHero />
+          <div className="mt-10 space-y-10">
+            <StatsGrid
+              totalHabits={stats.totalHabits}
+              currentStreak={stats.currentStreak}
+              completionRate={stats.completionRate}
+              weeklyProgress={stats.weeklyProgress}
+              monthlyAverage={stats.monthlyAverage}
+              bestStreak={stats.bestStreak}
+            />
+            <WeeklyProgress />
           </div>
         </motion.div>
-      </div>
+      </motion.div>
     </div>
   );
 }
