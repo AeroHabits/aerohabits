@@ -13,15 +13,22 @@ const Journey = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-900/50 to-black animated-bg">
       <div className={cn(
         "container mx-auto px-4 py-6 md:py-8",
         isMobile && "pb-24"
       )}>
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
-            AEROHABITS
-          </h1>
+          <motion.h1 
+            className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <span className="text-gradient bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500">
+              AEROHABITS
+            </span>
+          </motion.h1>
           <UserMenu />
         </div>
 
@@ -30,7 +37,7 @@ const Journey = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
+          <div className="bg-black/40 backdrop-blur-xl rounded-xl p-8 shadow-2xl border border-white/10">
             <JourneyHero />
             <div className="mt-8 space-y-8">
               <StatsGrid
@@ -48,6 +55,6 @@ const Journey = () => {
       </div>
     </div>
   );
-};
+}
 
 export default Journey;
