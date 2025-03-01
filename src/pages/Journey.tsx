@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Journey = () => {
   const { stats } = useJourneyStats();
@@ -18,7 +19,8 @@ const Journey = () => {
         "container mx-auto px-4 py-6 md:py-8",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-end items-center mb-4">
+        <div className="flex justify-between items-center mb-8">
+          <PageHeader />
           <UserMenu />
         </div>
 

@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { BadgeDisplay } from "@/components/badges/BadgeDisplay";
 import { UserMenu } from "@/components/UserMenu";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Challenges = () => {
   const isMobile = useIsMobile();
@@ -16,9 +17,7 @@ const Challenges = () => {
         isMobile && "pb-24"
       )}>
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg">
-            AEROHABITS
-          </h1>
+          <PageHeader />
           <UserMenu />
         </div>
 

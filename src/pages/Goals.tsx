@@ -1,4 +1,3 @@
-
 import { GoalForm } from "@/components/GoalForm";
 import { GoalList } from "@/components/GoalList";
 import { useQuery } from "@tanstack/react-query";
@@ -10,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Rocket, Target, Star, Sparkles, Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Goals = () => {
   const isMobile = useIsMobile();
@@ -81,14 +81,7 @@ const Goals = () => {
         isMobile && "pt-12 safe-top" // Added pt-12 and safe-top for mobile
       )}>
         <div className="flex justify-between items-center mb-8">
-          <motion.h1 
-            initial={{ x: -20, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-500 to-blue-600 tracking-tight drop-shadow-lg"
-          >
-            AEROHABITS
-          </motion.h1>
+          <PageHeader />
           <UserMenu />
         </div>
 

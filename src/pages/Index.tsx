@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
 import { UserMenu } from "@/components/UserMenu";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Index = () => {
   const isMobile = useIsMobile();
@@ -21,14 +22,7 @@ const Index = () => {
         )}
       >
         <div className="flex justify-between items-center">
-          <motion.h1 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-2xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
-          >
-            AEROHABITS
-          </motion.h1>
+          <PageHeader />
           <UserMenu />
         </div>
 

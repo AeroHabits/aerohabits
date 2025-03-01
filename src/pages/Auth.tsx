@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
@@ -7,6 +6,7 @@ import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +14,6 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const isReset = searchParams.get("reset") === "true";
 
-  // Send welcome email to newly registered users
   const sendWelcomeEmail = async (userId: string) => {
     try {
       const { error } = await supabase.functions.invoke("send-welcome-email", {
@@ -30,10 +29,8 @@ const Auth = () => {
   };
 
   useEffect(() => {
-    // Listen for auth state changes to detect new signups
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session?.user?.id) {
-        // Check if this is a new user (using localStorage to prevent duplicate emails)
         const isNewUser = !localStorage.getItem(`welcomed_${session.user.id}`);
         
         if (isNewUser) {
@@ -50,7 +47,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      {/* Animated background elements */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -63,16 +59,8 @@ const Auth = () => {
       </motion.div>
       
       <div className="w-full max-w-md space-y-8">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-4xl md:text-5xl font-bold text-center text-white tracking-tight drop-shadow-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
-        >
-          AEROHABITS
-        </motion.h1>
+        <PageHeader />
         
-        {/* Auth card with enhanced glassmorphism */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
