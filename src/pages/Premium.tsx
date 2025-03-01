@@ -49,7 +49,7 @@ export default function Premium() {
     },
     {
       title: "Smart suggestions",
-      description: "AI-powered recommendations to improve your habits",
+      description: "Personalized AI recommendations that evolve with your habits and goals",
       icon: <Sparkles className="h-5 w-5 text-blue-400" />
     },
     {
