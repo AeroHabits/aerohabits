@@ -7,32 +7,18 @@ import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
-import { GradientBackground } from "@/components/premium/GradientBackground";
 
 const Journey = () => {
   const { stats } = useJourneyStats();
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Premium gradient background */}
-      <GradientBackground />
-      
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-indigo-900/50 to-black animated-bg">
       <div className={cn(
-        "container mx-auto px-4 py-6 md:py-8 relative z-10",
+        "container mx-auto px-4 py-6 md:py-8",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-between items-center mb-6">
-          <motion.h2 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-2xl md:text-3xl font-bold text-white tracking-tight drop-shadow-lg"
-          >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-              AEROHABITS
-            </span>
-          </motion.h2>
+        <div className="flex justify-end items-center mb-4">
           <UserMenu />
         </div>
 
@@ -40,9 +26,8 @@ const Journey = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="space-y-8"
         >
-          <div className="bg-gradient-to-br from-slate-900/80 via-indigo-900/40 to-slate-900/80 backdrop-blur-xl rounded-xl p-8 shadow-2xl border border-indigo-500/20">
+          <div className="bg-black/50 backdrop-blur-xl rounded-xl p-8 shadow-2xl border border-white/20">
             <JourneyHero />
             <div className="mt-10 space-y-10">
               <StatsGrid

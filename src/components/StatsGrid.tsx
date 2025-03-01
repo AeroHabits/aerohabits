@@ -26,48 +26,33 @@ interface StatCardProps {
   value: string | number;
   description: string;
   delay: number;
-  gradientFrom: string;
-  gradientTo: string;
 }
 
-const StatCard = ({ icon, title, value, description, delay, gradientFrom, gradientTo }: StatCardProps) => (
+const StatCard = ({ icon, title, value, description, delay }: StatCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ duration: 0.3, delay }}
-    whileHover={{ y: -5, transition: { duration: 0.2 } }}
   >
     <Dialog>
       <DialogTrigger asChild>
-        <Card className={`p-6 bg-gradient-to-br from-${gradientFrom}/10 to-${gradientTo}/5 hover:from-${gradientFrom}/20 hover:to-${gradientTo}/10 border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer shadow-lg`}>
-          <div className="flex items-start gap-4">
-            <div className={`p-3 rounded-lg bg-gradient-to-br from-${gradientFrom} to-${gradientTo} shadow-md`}>
-              {icon}
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-medium text-white/80 text-sm uppercase tracking-wide">{title}</h3>
-              <p className="text-3xl font-bold text-white">{value}</p>
-              <p className="text-xs text-white/60 line-clamp-1">{description}</p>
-            </div>
+        <Card className="p-6 flex items-center space-x-4 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer shadow-2xl hover:shadow-xl">
+          <div className="p-3 rounded-lg bg-black/30">
+            {icon}
+          </div>
+          <div>
+            <h3 className="font-semibold text-white/90 text-lg">{title}</h3>
+            <p className="text-3xl font-bold text-white">{value}</p>
           </div>
         </Card>
       </DialogTrigger>
       <DialogContent className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/10">
         <DialogHeader>
-          <DialogTitle className="text-white font-bold text-xl flex items-center gap-2">
-            <span className={`p-2 rounded-lg bg-gradient-to-br from-${gradientFrom} to-${gradientTo}`}>
-              {icon}
-            </span>
-            {title}
-          </DialogTitle>
+          <DialogTitle className="text-white font-bold text-xl">{title}</DialogTitle>
           <DialogDescription className="text-white/80">
             {description}
           </DialogDescription>
         </DialogHeader>
-        <div className="mt-4 p-4 bg-white/5 rounded-lg border border-white/10">
-          <p className="text-5xl font-bold text-center text-white">{value}</p>
-          <p className="text-center text-white/60 text-sm mt-2">Current Value</p>
-        </div>
       </DialogContent>
     </Dialog>
   </motion.div>
@@ -83,76 +68,54 @@ export function StatsGrid({
 }: StatsGridProps) {
   const stats = [
     {
-      icon: <Trophy className="h-6 w-6 text-white" />,
+      icon: <Trophy className="h-10 w-10 text-amber-400" />,
       title: "Total Habits",
       value: totalHabits,
-      description: "The total number of habits you're currently tracking",
-      delay: 0,
-      gradientFrom: "amber-500",
-      gradientTo: "amber-600"
+      description: "The total number of habits you're currently tracking. Each habit represents a step towards your personal growth.",
+      delay: 0
     },
     {
-      icon: <Flame className="h-6 w-6 text-white" />,
+      icon: <Flame className="h-10 w-10 text-rose-400" />,
       title: "Current Streak",
       value: `${currentStreak} Days`,
-      description: "Your ongoing streak of consistently maintaining habits",
-      delay: 0.1,
-      gradientFrom: "rose-500",
-      gradientTo: "red-600"
+      description: "Your ongoing streak of consistently maintaining your habits. Keep it up to build lasting change!",
+      delay: 0.1
     },
     {
-      icon: <Target className="h-6 w-6 text-white" />,
+      icon: <Target className="h-10 w-10 text-sky-400" />,
       title: "Completion Rate",
       value: `${completionRate}%`,
-      description: "Your overall success rate in completing your habits",
-      delay: 0.2,
-      gradientFrom: "sky-500",
-      gradientTo: "blue-600"
+      description: "Your overall success rate in completing your habits. This percentage reflects your dedication to self-improvement.",
+      delay: 0.2
     },
     {
-      icon: <Calendar className="h-6 w-6 text-white" />,
+      icon: <Calendar className="h-10 w-10 text-emerald-400" />,
       title: "Weekly Progress",
       value: `${weeklyProgress}%`,
-      description: "Your habit completion rate for this week",
-      delay: 0.3,
-      gradientFrom: "emerald-500",
-      gradientTo: "green-600"
+      description: "Your habit completion rate for this week. Track your weekly momentum to stay motivated.",
+      delay: 0.3
     },
     {
-      icon: <CheckCircle2 className="h-6 w-6 text-white" />,
+      icon: <CheckCircle2 className="h-10 w-10 text-violet-400" />,
       title: "Monthly Average",
       value: `${monthlyAverage}%`,
-      description: "Your average habit completion rate over the past month",
-      delay: 0.4,
-      gradientFrom: "violet-500",
-      gradientTo: "purple-600"
+      description: "Your average habit completion rate over the past month. A great indicator of your long-term consistency.",
+      delay: 0.4
     },
     {
-      icon: <TrendingUp className="h-6 w-6 text-white" />,
+      icon: <TrendingUp className="h-10 w-10 text-fuchsia-400" />,
       title: "Best Streak",
       value: `${bestStreak} Days`,
-      description: "Your longest streak of consistent habit completion",
-      delay: 0.5,
-      gradientFrom: "fuchsia-500",
-      gradientTo: "pink-600"
+      description: "Your longest streak of consistent habit completion. Can you beat your personal best?",
+      delay: 0.5
     }
   ];
 
   return (
-    <div>
-      <motion.h3 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-xl font-bold text-white mb-4 flex items-center gap-2"
-      >
-        <TrendingUp className="w-5 h-5 text-indigo-400" />
-        Your Stats
-      </motion.h3>
-      <div className="grid gap-4 md:grid-cols-3">
-        {stats.map((stat, index) => (
-          <StatCard key={index} {...stat} />
-        ))}
-      </div>
+    <div className="grid gap-4 md:grid-cols-3">
+      {stats.map((stat, index) => (
+        <StatCard key={index} {...stat} />
+      ))}
     </div>
   );
 }
