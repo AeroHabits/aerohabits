@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 export function JourneyHero() {
   return <motion.div initial={{
@@ -19,13 +20,14 @@ export function JourneyHero() {
       duration: 0.5
     }}>
         <span className="text-gradient bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 glow-text">
-      </span>
+          Your Habit Journey
+        </span>
       </motion.h1>
       
-      <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-md">
+      <h2 className="text-3xl md:text-4xl font-bold text-gradient bg-gradient-to-r from-[#0EA5E9] to-[#D946EF] drop-shadow-md">
         Your Habit Journey
       </h2>
-      <p className="text-xl text-white/90 max-w-2xl mx-auto">
+      <p className="text-xl bg-gradient-to-r from-[#F97316] to-[#8B5CF6] text-transparent bg-clip-text max-w-2xl mx-auto">
         Track Your Progress and Celebrate Your Achievements Along the Way
       </p>
     </motion.div>;
