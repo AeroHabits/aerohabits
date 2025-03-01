@@ -13,13 +13,15 @@ interface HabitListContentProps {
 export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete }: HabitListContentProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {habits.map((habit) => (
+      {habits.map((habit, index) => (
         <motion.div
           key={habit.id}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.2 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+          whileHover={{ y: -5 }}
+          className="h-full"
         >
           <HabitCard
             id={habit.id}

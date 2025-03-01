@@ -1,7 +1,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trash2, Star, Trophy, AlertCircle } from "lucide-react";
+import { Trash2, Star, Trophy, AlertCircle, CheckCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -62,21 +62,24 @@ export function HabitCard({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.2 }}
+      className="h-full"
     >
       <Card className={cn(
-        "relative overflow-hidden transition-all duration-300",
-        "bg-gradient-to-br from-slate-900/90 to-slate-800/90",
-        "border border-white/10 hover:border-white/20",
-        "shadow-2xl hover:shadow-xl"
+        "relative overflow-hidden transition-all duration-300 h-full flex flex-col",
+        completed 
+          ? "bg-gradient-to-br from-blue-900/80 to-indigo-900/80 border-blue-500/30" 
+          : "bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-white/10",
+        "border hover:border-white/20",
+        "shadow-lg hover:shadow-xl"
       )}>
-        <div className="p-6">
+        <div className="p-6 flex flex-col h-full">
           <div className="flex justify-between items-start mb-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 {category && (
                   <div 
                     className="p-1.5 rounded-lg"
-                    style={{ backgroundColor: `${category.color}20` }}
+                    style={{ backgroundColor: `${category.color}30` }}
                   >
                     <LucideIcon 
                       className="h-4 w-4"
@@ -91,12 +94,13 @@ export function HabitCard({
               )}
               {category && (
                 <span 
-                  className="text-sm px-2 py-1 rounded-full" 
+                  className="text-sm px-2 py-1 rounded-full inline-flex items-center mt-2" 
                   style={{ 
-                    backgroundColor: `${category.color}20`,
+                    backgroundColor: `${category.color}30`,
                     color: category.color
                   }}
                 >
+                  <LucideIcon className="h-3 w-3 mr-1" />
                   {category.name}
                 </span>
               )}
@@ -132,7 +136,9 @@ export function HabitCard({
             </AlertDialog>
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex-grow"></div>
+          
+          <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-2">
               {streak > 0 && (
                 <div className="flex items-center space-x-1 text-blue-300">
@@ -158,7 +164,7 @@ export function HabitCard({
             >
               {completed ? (
                 <div className="flex items-center space-x-2">
-                  <Star className="h-5 w-5 text-blue-200" />
+                  <CheckCircle className="h-5 w-5 text-blue-200" />
                   <span>Completed!</span>
                 </div>
               ) : (
@@ -173,6 +179,11 @@ export function HabitCard({
           <div className="absolute -right-12 top-6 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-12 py-1 rotate-45 transform text-sm font-semibold shadow-lg">
             Champion!
           </div>
+        )}
+        
+        {/* Visual indicator for completed status */}
+        {completed && (
+          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-400"></div>
         )}
       </Card>
     </motion.div>

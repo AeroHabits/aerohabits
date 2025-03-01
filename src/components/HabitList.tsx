@@ -5,10 +5,11 @@ import { HabitListLoading } from "./HabitListLoading";
 import { HabitListContent } from "./HabitListContent";
 import { useHabits } from "@/hooks/useHabits";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, WifiOff } from "lucide-react";
+import { Loader2, WifiOff, RefreshCw } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "./ui/button";
 
 export function HabitList() {
   const {
@@ -75,6 +76,10 @@ export function HabitList() {
     pullDistance = 0;
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   if (isLoading) {
     return <HabitListLoading />;
   }
@@ -120,15 +125,33 @@ export function HabitList() {
       </AnimatePresence>
 
       <div className="space-y-6">
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            className="text-white border-white/20 hover:bg-white/10 hover:text-blue-300 transition-all"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
+        
         <HabitListContent
           habits={habits}
           onToggle={toggleHabit}
           onDelete={deleteHabit}
           setHabitToDelete={setHabitToDelete}
         />
-        <div className="max-w-md mx-auto">
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mt-12 max-w-md mx-auto"
+        >
           <AddHabitForm onAddHabit={addHabit} />
-        </div>
+        </motion.div>
       </div>
     </div>
   );

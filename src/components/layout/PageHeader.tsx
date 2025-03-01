@@ -10,7 +10,7 @@ export function PageHeader() {
       className="mb-8"
     >
       <h1 
-        className="text-4xl md:text-5xl font-extrabold tracking-tight text-white"
+        className="text-4xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-blue-300 via-indigo-400 to-purple-300 bg-clip-text text-transparent drop-shadow-sm"
       >
         AEROHABITS
       </h1>
