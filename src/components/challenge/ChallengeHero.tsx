@@ -1,5 +1,5 @@
 
-import { Trophy, Rocket, Target, Star, Award } from "lucide-react";
+import { Trophy, Rocket, Target } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function ChallengeHero() {
@@ -7,111 +7,74 @@ export function ChallengeHero() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl shadow-2xl"
+      className="relative overflow-hidden bg-gradient-to-r from-purple-800/80 via-blue-700/80 to-purple-800/80 p-8 rounded-xl backdrop-blur-sm border border-purple-400/50 shadow-2xl"
     >
-      {/* Background gradient with animated effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-600 animate-gradient-x">
-        {/* Subtle pattern overlay */}
-        <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmZmZmYiIGZpbGwtb3BhY2l0eT0iMC40Ij48cGF0aCBkPSJNMzYgMzBoLTZsMyAzeiIvPjwvZz48L2c+PC9zdmc+')]"></div>
-      </div>
+      <motion.div 
+        className="absolute top-0 left-0 w-full h-full"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 0.15 }}
+        transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+        style={{
+          background: "linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%)",
+          backgroundSize: "200% 200%",
+          animation: "shimmer 2s linear infinite",
+        }}
+      />
       
-      {/* Animated floating particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(6)].map((_, i) => (
+      <div className="relative z-10">
+        <motion.div 
+          className="flex items-center gap-4 mb-6"
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.2 }}
+        >
           <motion.div
-            key={i}
-            className="absolute rounded-full bg-white/20 backdrop-blur-sm"
-            style={{
-              width: `${Math.random() * 60 + 20}px`,
-              height: `${Math.random() * 60 + 20}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              opacity: [0.5, 0.8, 0.5],
-            }}
-            transition={{
-              duration: Math.random() * 3 + 2,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: Math.random() * 2,
-            }}
-          />
-        ))}
-      </div>
-      
-      {/* Main content area with glass effect */}
-      <div className="relative p-8 md:p-10 backdrop-blur-sm z-10 border border-white/20">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-start gap-5 mb-6">
-            {/* Text content */}
-            <div className="flex-1">
-              <motion.h2 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.5 }}
-                className="text-4xl font-extrabold mb-2 tracking-tight text-white drop-shadow-lg"
-              >
-                Epic Challenges Await!
-              </motion.h2>
-              
-              <motion.div 
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="flex items-center gap-2 mb-1"
-              >
-                <Target className="w-5 h-5 text-yellow-300" />
-                <span className="text-yellow-200 font-semibold text-lg">Level up your life</span>
-              </motion.div>
-            </div>
+            whileHover={{ rotate: 360 }}
+            transition={{ duration: 0.5 }}
+            className="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-full shadow-lg"
+          >
+            <Trophy className="w-8 h-8 text-white" />
+          </motion.div>
+          <div>
+            <motion.h2 
+              className="text-3xl font-bold text-white mb-1 drop-shadow-lg"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              Epic Challenges Await!
+            </motion.h2>
+            <motion.div 
+              className="flex items-center gap-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Target className="w-4 h-4 text-purple-200" />
+              <span className="text-purple-100 text-sm font-medium">Level up your life</span>
+            </motion.div>
           </div>
+        </motion.div>
 
-          <motion.p 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="text-xl text-white leading-relaxed font-medium mb-8 drop-shadow-md max-w-2xl"
-          >
-            Push your limits, achieve greatness, and unlock incredible rewards along the way. 
-            Each challenge is a step towards becoming your best self.
-          </motion.p>
+        <motion.p 
+          className="text-lg text-white mb-6 leading-relaxed font-medium drop-shadow-md"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          Push your limits, achieve greatness, and unlock incredible rewards along the way. 
+          Each challenge is a step towards becoming your best self.
+        </motion.p>
 
-          {/* Call to action */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 0.5 }}
-            className="flex items-center gap-3"
-          >
-            <Rocket className="w-5 h-5 text-indigo-200 animate-pulse" />
-            <span className="text-indigo-100 font-semibold">Start your journey to excellence today!</span>
-          </motion.div>
-          
-          {/* Achievement indicators */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.5 }}
-            className="flex flex-wrap mt-8 gap-2"
-          >
-            {['Focus', 'Discipline', 'Growth', 'Success'].map((tag, i) => (
-              <motion.div
-                key={tag}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + (i * 0.1) }}
-                className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-white border border-white/20"
-              >
-                <div className="flex items-center gap-1">
-                  <Star className="w-3 h-3" />
-                  <span>{tag}</span>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
+        <motion.div 
+          className="flex items-center gap-2 text-sm text-purple-100 font-medium"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Rocket className="w-4 h-4 animate-pulse" />
+          <span>Start your journey to excellence today!</span>
+        </motion.div>
       </div>
     </motion.div>
   );
