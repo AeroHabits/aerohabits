@@ -18,3 +18,6 @@ verify_jwt = true
 
 [functions.sync-subscription]
 verify_jwt = true
+
+[functions.send-welcome-email]
+verify_jwt = true

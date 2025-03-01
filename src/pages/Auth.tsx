@@ -1,17 +1,52 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [searchParams] = useSearchParams();
   const isReset = searchParams.get("reset") === "true";
+
+  // Send welcome email to newly registered users
+  const sendWelcomeEmail = async (userId: string) => {
+    try {
+      const { error } = await supabase.functions.invoke("send-welcome-email", {
+        body: { userId }
+      });
+      
+      if (error) {
+        console.error("Failed to send welcome email:", error);
+      }
+    } catch (err) {
+      console.error("Error invoking welcome email function:", err);
+    }
+  };
+
+  useEffect(() => {
+    // Listen for auth state changes to detect new signups
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.id) {
+        // Check if this is a new user (using localStorage to prevent duplicate emails)
+        const isNewUser = !localStorage.getItem(`welcomed_${session.user.id}`);
+        
+        if (isNewUser) {
+          localStorage.setItem(`welcomed_${session.user.id}`, 'true');
+          await sendWelcomeEmail(session.user.id);
+        }
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
