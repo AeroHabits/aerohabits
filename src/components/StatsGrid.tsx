@@ -77,7 +77,7 @@ export function StatsGrid({
     {
       icon: <Flame className="h-10 w-10 text-rose-400" />,
       title: "Current Streak",
-      value: `${currentStreak} days`,
+      value: `${currentStreak} Days`,
       description: "Your ongoing streak of consistently maintaining your habits. Keep it up to build lasting change!",
       delay: 0.1
     },
@@ -105,7 +105,7 @@ export function StatsGrid({
     {
       icon: <TrendingUp className="h-10 w-10 text-fuchsia-400" />,
       title: "Best Streak",
-      value: `${bestStreak} days`,
+      value: `${bestStreak} Days`,
       description: "Your longest streak of consistent habit completion. Can you beat your personal best?",
       delay: 0.5
     }

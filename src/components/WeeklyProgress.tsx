@@ -169,7 +169,7 @@ export function WeeklyProgress() {
                 
                 <div className="mt-3 flex items-center gap-2">
                   <p className="text-lg font-semibold text-white">
-                    {day.completed} of {day.total} habits completed
+                    {day.completed} of {day.total} Habits Completed
                   </p>
                 </div>
                 
