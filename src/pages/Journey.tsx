@@ -18,17 +18,7 @@ const Journey = () => {
         "container mx-auto px-4 py-6 md:py-8",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-between items-center mb-8">
-          <motion.h1 
-            className="text-3xl md:text-4xl font-bold text-white tracking-tight drop-shadow-lg"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="text-gradient bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500">
-              AEROHABITS
-            </span>
-          </motion.h1>
+        <div className="flex justify-end items-center mb-8">
           <UserMenu />
         </div>
 
