@@ -22,7 +22,7 @@ serve(async (req) => {
   }
 
   try {
-    const { priceId, returnUrl } = await req.json()
+    const { priceId, returnUrl, includeTrialPeriod = false } = await req.json()
     
     // Get the user's ID from Supabase Auth
     const supabaseClient = createClient(
@@ -42,8 +42,8 @@ serve(async (req) => {
       throw new Error('Error fetching user')
     }
 
-    // Create a Stripe checkout session with trial period
-    const session = await stripe.checkout.sessions.create({
+    // Create Stripe checkout session - with or without trial period
+    const sessionConfig: any = {
       payment_method_types: ['card'],
       billing_address_collection: 'auto',
       customer_email: user.email,
@@ -54,18 +54,30 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      subscription_data: {
-        trial_period_days: 3,
-        metadata: {
-          supabase_user_id: user.id,
-        },
-      },
       success_url: `${returnUrl}?success=true`,
       cancel_url: `${returnUrl}?success=false`,
       metadata: {
         supabase_user_id: user.id,
       },
-    });
+    };
+
+    // Only add trial period if specifically requested
+    if (includeTrialPeriod) {
+      sessionConfig.subscription_data = {
+        trial_period_days: 3,
+        metadata: {
+          supabase_user_id: user.id,
+        },
+      };
+    } else {
+      sessionConfig.subscription_data = {
+        metadata: {
+          supabase_user_id: user.id,
+        },
+      };
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     return new Response(
       JSON.stringify({ url: session.url }),

@@ -79,12 +79,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   // Check subscription status
   if (profile) {
-    const isSubscriptionActive = profile.subscription_status === 'active' || profile.subscription_status === 'trialing';
+    const isSubscriptionActive = profile.subscription_status === 'active';
     
     // Don't redirect if:
     // 1. User has an active subscription OR
     // 2. Already on premium page OR
-    // 3. Just completed payment (success=true in URL)
+    // 3. Just completed payment (success=true in URL) OR
+    // 4. On the onboarding page
     if (!isSubscriptionActive && 
         location.pathname !== '/premium' && 
         !location.search.includes('success=true') &&

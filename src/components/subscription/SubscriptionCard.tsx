@@ -17,7 +17,6 @@ interface SubscriptionCardProps {
 interface ProfileData {
   is_subscribed: boolean | null;
   subscription_status: string | null;
-  trial_end_date: string | null;
   current_period_end: string | null;
 }
 
@@ -42,13 +41,13 @@ export function SubscriptionCard({
       const {
         data,
         error
-      } = await supabase.from('profiles').select('is_subscribed, subscription_status, trial_end_date, current_period_end').eq('id', user.id).single();
+      } = await supabase.from('profiles').select('is_subscribed, subscription_status, current_period_end').eq('id', user.id).single();
       if (error) throw error;
       return data;
     }
   });
 
-  const handleStartTrial = async () => {
+  const handleSubscribe = async () => {
     try {
       setIsLoadingState(true);
       const {
@@ -58,14 +57,14 @@ export function SubscriptionCard({
         body: {
           priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
           returnUrl: window.location.origin + '/settings',
-          includeTrialPeriod: true
+          includeTrialPeriod: false
         }
       });
       if (error) throw error;
       window.location.href = data.url;
     } catch (error) {
-      console.error('Error starting trial:', error);
-      toast.error('Failed to start trial. Please try again.');
+      console.error('Error starting subscription:', error);
+      toast.error('Failed to start subscription. Please try again.');
     } finally {
       setIsLoadingState(false);
     }
@@ -96,40 +95,13 @@ export function SubscriptionCard({
     if (profileLoading) return 'Loading...';
     if (!profile?.is_subscribed) return 'Free Plan';
     
-    // If trial end date exists and has passed, but status is still trialing
-    if (profile.subscription_status === 'trialing' && 
-        profile.trial_end_date && 
-        isPast(new Date(profile.trial_end_date))) {
-      // If it's been less than 24 hours since trial ended
-      const hoursSinceTrialEnded = differenceInHours(new Date(), new Date(profile.trial_end_date));
-      if (hoursSinceTrialEnded < 24) {
-        return 'Payment Processing';
-      } else {
-        return 'Payment Delayed';
-      }
-    }
-    
-    if (profile.subscription_status === 'trialing') return 'Free Trial';
-    return profile.subscription_status === 'active' ? 'Premium Active' : profile.subscription_status;
+    if (profile.subscription_status === 'active') return 'Premium Active';
+    return profile.subscription_status;
   };
 
   const getNextBillingDate = () => {
     if (!profile?.current_period_end) return null;
     return format(new Date(profile.current_period_end), 'MMMM d, yyyy');
-  };
-  
-  const hasTrialEnded = () => {
-    return profile?.trial_end_date && 
-           isPast(new Date(profile.trial_end_date)) && 
-           profile.subscription_status === 'trialing';
-  };
-
-  const formatTrialEndDate = () => {
-    if (!profile?.trial_end_date) return null;
-    
-    // Create a date object from the trial end date string
-    const trialEndDate = new Date(profile.trial_end_date);
-    return format(trialEndDate, 'MMMM d, yyyy');
   };
 
   const syncSubscription = async () => {
@@ -158,26 +130,6 @@ export function SubscriptionCard({
       toast.error('Failed to sync subscription status. Please try again.');
     } finally {
       setIsLoadingState(false);
-    }
-  };
-
-  const getTrialStatusMessage = () => {
-    if (!profile?.trial_end_date) return null;
-    
-    const trialEndDate = new Date(profile.trial_end_date);
-    
-    if (isPast(trialEndDate)) {
-      const hoursSinceTrialEnded = differenceInHours(new Date(), trialEndDate);
-      
-      if (hoursSinceTrialEnded < 6) {
-        return `Your free trial ended today. Your account will be upgraded soon.`;
-      } else if (hoursSinceTrialEnded < 24) {
-        return `Your free trial has ended. We're processing your payment now.`;
-      } else {
-        return `Your free trial ended on ${formatTrialEndDate()}. There might be a delay with your payment.`;
-      }
-    } else {
-      return `Your free trial ends on ${formatTrialEndDate()}.`;
     }
   };
 
@@ -217,32 +169,6 @@ export function SubscriptionCard({
           <span className="text-gray-400 text-xl">/month</span>
         </div>
 
-        {hasTrialEnded() && (
-          <Alert className="bg-yellow-900/40 border border-yellow-500/30 backdrop-blur-sm">
-            <AlertTriangle className="h-5 w-5 text-yellow-400" />
-            <AlertDescription className="text-white text-base">
-              {getTrialStatusMessage()}
-              <Button 
-                variant="link" 
-                className="text-yellow-400 p-0 h-auto font-normal underline ml-1" 
-                onClick={syncSubscription}
-                disabled={isLoadingState}
-              >
-                {isLoadingState ? "Updating..." : "Check payment status"}
-              </Button>
-            </AlertDescription>
-          </Alert>
-        )}
-
-        {profile?.subscription_status === 'trialing' && !hasTrialEnded() && (
-          <Alert className="bg-blue-900/40 border border-blue-500/30 backdrop-blur-sm">
-            <Calendar className="h-5 w-5 text-blue-400" />
-            <AlertDescription className="text-white text-base">
-              {getTrialStatusMessage()}
-            </AlertDescription>
-          </Alert>
-        )}
-
         {profile?.is_subscribed && profile?.subscription_status === 'active' && profile?.current_period_end && (
           <Alert className="bg-green-900/40 border border-green-500/30 backdrop-blur-sm">
             <Calendar className="h-5 w-5 text-green-400" />
@@ -255,7 +181,7 @@ export function SubscriptionCard({
         <p className="text-gray-400 text-lg leading-relaxed">
           {profile?.is_subscribed 
             ? "Manage your subscription, view payment history, and update payment methods."
-            : "Start your 3-day free trial today. No payment needed until your trial ends. Cancel anytime - no charges if you cancel during trial."
+            : "Subscribe now to unlock all premium features and take control of your habits."
           }
         </p>
 
@@ -270,12 +196,12 @@ export function SubscriptionCard({
           </Button>
         ) : (
           <Button
-            onClick={handleStartTrial}
+            onClick={handleSubscribe}
             disabled={isLoading || isLoadingState}
             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] animate-shimmer" />
-            {isLoading || isLoadingState ? "Loading..." : "Start 3-Day Free Trial"}
+            {isLoading || isLoadingState ? "Loading..." : "Subscribe Now"}
           </Button>
         )}
       </CardContent>

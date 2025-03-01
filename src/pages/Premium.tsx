@@ -28,7 +28,7 @@ export default function Premium() {
         body: {
           priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
           returnUrl: window.location.origin + '/settings',
-          includeTrialPeriod: false // Remove trial period
+          includeTrialPeriod: false // No trial period
         }
       });
       if (error) throw error;
