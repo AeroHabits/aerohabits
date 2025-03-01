@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Crown, Check, ArrowLeft, Info, Sparkles, Star, Rocket, Award, Gem } from "lucide-react";
+import { Crown, Check, ArrowLeft, Info, Sparkles, Star, Rocket, Award, Gem, Mountain, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -71,6 +71,24 @@ export default function Premium() {
       title: "Custom reminders",
       description: "Set notifications that work for you",
       icon: <Crown className="h-5 w-5 text-amber-400" />
+    }
+  ];
+
+  const premiumChallenges = [
+    {
+      title: "Master Challenges",
+      description: "Access exclusive premium difficulty challenges designed to push your limits",
+      icon: <Mountain className="h-5 w-5 text-red-500" />
+    },
+    {
+      title: "Custom Challenge Creation",
+      description: "Create personalized challenges tailored to your specific goals and needs",
+      icon: <Target className="h-5 w-5 text-blue-500" />
+    },
+    {
+      title: "Challenge Analytics",
+      description: "Get detailed performance metrics and insights for all your challenges",
+      icon: <Award className="h-5 w-5 text-amber-500" />
     }
   ];
 
@@ -204,6 +222,13 @@ export default function Premium() {
                   animate="visible"
                   className="space-y-4"
                 >
+                  <motion.h3
+                    variants={itemVariants}
+                    className="text-xl font-bold text-white text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-purple-300"
+                  >
+                    Premium Features
+                  </motion.h3>
+                  
                   {features.map((feature, index) => (
                     <motion.div 
                       key={index}
@@ -217,6 +242,37 @@ export default function Premium() {
                       <div>
                         <p className="text-white font-medium">{feature.title}</p>
                         <p className="text-gray-400 text-sm">{feature.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </motion.div>
+
+                <motion.div 
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className="space-y-4 mt-8"
+                >
+                  <motion.h3
+                    variants={itemVariants}
+                    className="text-xl font-bold text-white text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r from-orange-300 to-red-300"
+                  >
+                    Exclusive Premium Challenges
+                  </motion.h3>
+                  
+                  {premiumChallenges.map((challenge, index) => (
+                    <motion.div 
+                      key={index}
+                      variants={itemVariants}
+                      whileHover={{ x: 5, transition: { duration: 0.2 } }}
+                      className="flex items-start gap-3 bg-gradient-to-r from-orange-900/10 to-transparent p-4 rounded-lg border border-orange-700/20 transition-all"
+                    >
+                      <div className="bg-gradient-to-br from-gray-800 to-gray-900 p-2 rounded-lg shadow-inner">
+                        {challenge.icon}
+                      </div>
+                      <div>
+                        <p className="text-white font-medium">{challenge.title}</p>
+                        <p className="text-gray-400 text-sm">{challenge.description}</p>
                       </div>
                     </motion.div>
                   ))}
