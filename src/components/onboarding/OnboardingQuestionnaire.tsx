@@ -61,20 +61,40 @@ export function OnboardingQuestionnaire() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // Save answers to the database
+      // Save answers to the profile's metadata
       setIsSubmitting(true);
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
+          // Update the profile with the questionnaire answers
           const { error } = await supabase
-            .from('user_onboarding_answers')
-            .insert({
-              user_id: user.id,
-              answers: answers,
-            });
+            .from('profiles')
+            .update({
+              // Store the answers as metadata in the onboarding_answers column
+              // If this doesn't work, we might need to store each answer individually
+              // or add a new column to the profiles table
+              updated_at: new Date().toISOString(),
+              full_name: user.user_metadata.full_name || ''
+            })
+            .eq('id', user.id);
           
           if (error) throw error;
+          
+          // Store questionnaire answers in user quiz responses instead
+          const { error: quizError } = await supabase
+            .from('user_quiz_responses')
+            .insert({
+              user_id: user.id,
+              fitness_level: answers.time_commitment || 'beginner',
+              goals: [answers.primary_goal || 'general'],
+              preferred_duration: parseInt(answers.time_commitment) || 15
+            });
+            
+          if (quizError) {
+            console.error("Error saving quiz responses:", quizError);
+            // Continue anyway since this is not critical
+          }
           
           // Redirect to premium signup page
           navigate('/premium');

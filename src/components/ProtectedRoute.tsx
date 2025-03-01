@@ -23,7 +23,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_subscribed, subscription_status, trial_end_date')
+        .select('is_subscribed, subscription_status')
         .eq('id', user.id)
         .single();
 
@@ -80,19 +80,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // Check subscription status
   if (profile) {
     const isSubscriptionActive = profile.subscription_status === 'active' || profile.subscription_status === 'trialing';
-    const trialEndDate = profile.trial_end_date ? new Date(profile.trial_end_date) : null;
-    const now = new Date();
-
+    
     // Don't redirect if:
     // 1. User has an active subscription OR
-    // 2. User is in trial period OR
-    // 3. Already on premium page OR
-    // 4. Just completed payment (success=true in URL)
+    // 2. Already on premium page OR
+    // 3. Just completed payment (success=true in URL)
     if (!isSubscriptionActive && 
-        (!trialEndDate || trialEndDate < now) && 
         location.pathname !== '/premium' && 
-        !location.search.includes('success=true')) {
-      toast.error("Your trial has ended. Please subscribe to continue using the app.");
+        !location.search.includes('success=true') &&
+        location.pathname !== '/onboarding') {
+      toast.error("Please subscribe to continue using the app.");
       return <Navigate to="/premium" replace />;
     }
   }
