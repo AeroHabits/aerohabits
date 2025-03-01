@@ -15,4 +15,3 @@ verify_jwt = true
 
 [functions.create-customer-portal]
 verify_jwt = true
-
