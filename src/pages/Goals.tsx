@@ -10,7 +10,6 @@ import { Card } from "@/components/ui/card";
 import { Rocket, Target, Star, Sparkles, Trophy } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
-import { WeeklyProgress } from "@/components/WeeklyProgress";
 
 const Goals = () => {
   const isMobile = useIsMobile();
@@ -142,15 +141,6 @@ const Goals = () => {
             </motion.div>
           ))}
         </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.4 }}
-          className="mb-10"
-        >
-          <WeeklyProgress />
-        </motion.div>
         
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
