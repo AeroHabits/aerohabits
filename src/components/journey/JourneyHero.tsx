@@ -1,23 +1,25 @@
-
 import { motion } from "framer-motion";
-
 export function JourneyHero() {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="text-center space-y-6 py-4"
-    >
-      <motion.h1 
-        className="text-5xl md:text-6xl font-bold tracking-tight drop-shadow-xl mb-8"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+  return <motion.div initial={{
+    opacity: 0,
+    y: 20
+  }} animate={{
+    opacity: 1,
+    y: 0
+  }} transition={{
+    duration: 0.5
+  }} className="text-center space-y-6 py-4">
+      <motion.h1 className="text-5xl md:text-6xl font-bold tracking-tight drop-shadow-xl mb-8" initial={{
+      opacity: 0,
+      y: -20
+    }} animate={{
+      opacity: 1,
+      y: 0
+    }} transition={{
+      duration: 0.5
+    }}>
         <span className="text-gradient bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-500 glow-text">
-          AEROHABITS
-        </span>
+      </span>
       </motion.h1>
       
       <h2 className="text-3xl md:text-4xl font-bold text-white drop-shadow-md">
@@ -26,6 +28,5 @@ export function JourneyHero() {
       <p className="text-xl text-white/90 max-w-2xl mx-auto">
         Track Your Progress and Celebrate Your Achievements Along the Way
       </p>
-    </motion.div>
-  );
+    </motion.div>;
 }
