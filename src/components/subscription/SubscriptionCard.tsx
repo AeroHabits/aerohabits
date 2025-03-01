@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
-import { format, isPast, addDays } from "date-fns";
+import { format, isPast, addDays, differenceInHours } from "date-fns";
 
 interface SubscriptionCardProps {
   isLoading?: boolean;
@@ -100,7 +100,13 @@ export function SubscriptionCard({
     if (profile.subscription_status === 'trialing' && 
         profile.trial_end_date && 
         isPast(new Date(profile.trial_end_date))) {
-      return 'Trial Ended (Payment Processing)';
+      // If it's been less than 24 hours since trial ended
+      const hoursSinceTrialEnded = differenceInHours(new Date(), new Date(profile.trial_end_date));
+      if (hoursSinceTrialEnded < 24) {
+        return 'Trial Ended (Payment Processing)';
+      } else {
+        return 'Trial Ended (Payment Delayed)';
+      }
     }
     
     if (profile.subscription_status === 'trialing') return 'Trial Active';
@@ -131,19 +137,47 @@ export function SubscriptionCard({
       setIsLoadingState(true);
       toast.info("Checking subscription status with Stripe...");
       
-      const { error } = await supabase.functions.invoke('sync-subscription', {
+      const { data, error } = await supabase.functions.invoke('sync-subscription', {
         body: {}
       });
       
       if (error) throw error;
       
       await refetch();
-      toast.success("Subscription status updated");
+      
+      if (data?.updated) {
+        toast.success("Subscription status updated successfully");
+        if (data?.status === 'active') {
+          toast.success("Your subscription is now active! Thank you for subscribing.");
+        }
+      } else {
+        toast.info("No changes to subscription status");
+      }
     } catch (error) {
       console.error('Error syncing subscription:', error);
       toast.error('Failed to sync subscription status. Please try again.');
     } finally {
       setIsLoadingState(false);
+    }
+  };
+
+  const getTrialStatusMessage = () => {
+    if (!profile?.trial_end_date) return null;
+    
+    const trialEndDate = new Date(profile.trial_end_date);
+    
+    if (isPast(trialEndDate)) {
+      const hoursSinceTrialEnded = differenceInHours(new Date(), trialEndDate);
+      
+      if (hoursSinceTrialEnded < 6) {
+        return `Your trial ended today (${format(trialEndDate, 'h:mm a')}). Payment processing may take up to 6 hours.`;
+      } else if (hoursSinceTrialEnded < 24) {
+        return `Your trial ended ${format(trialEndDate, 'h:mm a')} today. We're processing your payment.`;
+      } else {
+        return `Your trial ended on ${formatTrialEndDate()}. There might be a delay in payment processing.`;
+      }
+    } else {
+      return `Your card will be charged $9.99 automatically when your trial ends on ${formatTrialEndDate()}.`;
     }
   };
 
@@ -187,31 +221,31 @@ export function SubscriptionCard({
           <Alert className="bg-yellow-900/40 border border-yellow-500/30 backdrop-blur-sm">
             <AlertTriangle className="h-5 w-5 text-yellow-400" />
             <AlertDescription className="text-white text-base">
-              Your trial has ended on {formatTrialEndDate()}, but payment processing may take up to 24 hours. 
+              {getTrialStatusMessage()}
               <Button 
                 variant="link" 
-                className="text-yellow-400 p-0 h-auto font-normal underline" 
+                className="text-yellow-400 p-0 h-auto font-normal underline ml-1" 
                 onClick={syncSubscription}
                 disabled={isLoadingState}
               >
-                {isLoadingState ? "Syncing..." : "Sync subscription status"}
+                {isLoadingState ? "Syncing..." : "Process payment now"}
               </Button>
             </AlertDescription>
           </Alert>
         )}
 
         {profile?.subscription_status === 'trialing' && !hasTrialEnded() && (
-          <Alert className="bg-red-900/40 border border-red-500/30 backdrop-blur-sm">
-            <Calendar className="h-5 w-5 text-red-400" />
+          <Alert className="bg-blue-900/40 border border-blue-500/30 backdrop-blur-sm">
+            <Calendar className="h-5 w-5 text-blue-400" />
             <AlertDescription className="text-white text-base">
-              Your card will be charged $9.99 automatically when your trial ends on {formatTrialEndDate()}.
+              {getTrialStatusMessage()}
             </AlertDescription>
           </Alert>
         )}
 
-        {profile?.is_subscribed && profile?.current_period_end && (
-          <Alert className="bg-blue-900/40 border border-blue-500/30 backdrop-blur-sm">
-            <Calendar className="h-5 w-5 text-blue-400" />
+        {profile?.is_subscribed && profile?.subscription_status === 'active' && profile?.current_period_end && (
+          <Alert className="bg-green-900/40 border border-green-500/30 backdrop-blur-sm">
+            <Calendar className="h-5 w-5 text-green-400" />
             <AlertDescription className="text-white text-base">
               Your next billing date is {getNextBillingDate()}
             </AlertDescription>
