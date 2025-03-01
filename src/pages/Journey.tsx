@@ -18,7 +18,7 @@ const Journey = () => {
         "container mx-auto px-4 py-6 md:py-8",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-end items-center mb-8">
+        <div className="flex justify-end items-center mb-4">
           <UserMenu />
         </div>
 
@@ -27,9 +27,9 @@ const Journey = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="bg-black/40 backdrop-blur-xl rounded-xl p-8 shadow-2xl border border-white/10">
+          <div className="bg-black/50 backdrop-blur-xl rounded-xl p-8 shadow-2xl border border-white/20">
             <JourneyHero />
-            <div className="mt-8 space-y-8">
+            <div className="mt-10 space-y-10">
               <StatsGrid
                 totalHabits={stats.totalHabits}
                 currentStreak={stats.currentStreak}
