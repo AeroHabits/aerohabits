@@ -49,9 +49,7 @@ export function SubscriptionCard() {
     if (!profile?.is_subscribed) return 'Free Plan';
     return profile.subscription_status === 'active' 
       ? 'Premium Active' 
-      : profile.subscription_status === 'trialing' 
-        ? 'Free Trial'
-        : profile.subscription_status;
+      : profile.subscription_status;
   };
 
   return (

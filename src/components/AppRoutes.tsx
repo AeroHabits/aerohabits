@@ -1,3 +1,4 @@
+
 import { Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Index from "@/pages/Index";
@@ -10,6 +11,7 @@ import Settings from "@/pages/Settings";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Premium from "@/pages/Premium";
+import Onboarding from "@/pages/Onboarding";
 
 export function AppRoutes() {
   return (
@@ -17,6 +19,8 @@ export function AppRoutes() {
       <Route path="/auth" element={<Auth />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
+      <Route path="/onboarding" element={<Onboarding />} />
+      <Route path="/premium" element={<Premium />} />
       <Route
         path="/"
         element={
@@ -65,7 +69,6 @@ export function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route path="/premium" element={<Premium />} />
     </Routes>
   );
 }

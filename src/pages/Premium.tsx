@@ -28,7 +28,7 @@ export default function Premium() {
         body: {
           priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
           returnUrl: window.location.origin + '/settings',
-          includeTrialPeriod: true
+          includeTrialPeriod: false // Remove trial period
         }
       });
       if (error) throw error;
@@ -90,13 +90,10 @@ export default function Premium() {
               <Crown className="w-12 h-12 mx-auto text-yellow-500 mb-6" />
             </motion.div>
             <h1 className="text-3xl font-semibold text-white">
-              Try Premium for Free
+              Start Your Premium Subscription
             </h1>
             <p className="text-lg text-gray-300">
-              3-Day Free Trial, Then $9.99/month
-            </p>
-            <p className="text-sm text-yellow-400">
-              Cancel anytime during trial - no charge
+              Unlock All Premium Features for $9.99/month
             </p>
           </div>
 
@@ -106,24 +103,6 @@ export default function Premium() {
                 <div className="flex justify-center items-baseline gap-2">
                   <span className="font-bold text-white text-4xl">$9.99</span>
                   <span className="text-gray-400">/month</span>
-                </div>
-                <div className="mt-2 flex items-center justify-center gap-2">
-                  <p className="text-emerald-400 font-medium">First 3 days free</p>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info className="w-4 h-4 text-gray-400" />
-                      </TooltipTrigger>
-                      <TooltipContent className="p-4 max-w-[300px]">
-                        <p className="font-medium">About Your Free Trial:</p>
-                        <ul className="mt-2 space-y-1 text-sm">
-                          <li>• Payment info required to start trial</li>
-                          <li>• No charge for 3 days</li>
-                          <li>• Cancel anytime during trial - no charge</li>
-                        </ul>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
                 </div>
               </div>
 
@@ -161,17 +140,17 @@ export default function Premium() {
                     Processing...
                   </div>
                 ) : (
-                  "Start Free Trial"
+                  "Subscribe Now"
                 )}
               </Button>
 
               <div className="space-y-3 border-t border-gray-700/50 pt-4">
                 <p className="text-sm text-gray-400 text-center">
-                  Payment details required. You won't be charged until your 3-day trial ends.
+                  You'll be charged $9.99 monthly. Cancel anytime.
                 </p>
                 <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
                   <Info className="w-4 h-4" />
-                  <p>Cancel anytime during trial - zero cost</p>
+                  <p>Secure payment processing by Stripe</p>
                 </div>
               </div>
             </div>

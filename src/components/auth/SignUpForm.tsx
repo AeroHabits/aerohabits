@@ -6,6 +6,7 @@ import { FormInput } from "./FormInput";
 import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpFormProps {
   onToggleForm: () => void;
@@ -18,6 +19,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const { handleError, handleSuccess } = useAuthForm();
+  const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,20 +27,24 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
     setIsLoading(true);
 
     try {
-      const { error: authError } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
-      if (authError) throw authError;
+      if (error) throw error;
 
-      handleSuccess("Please check your email to verify your account.");
+      if (data.user) {
+        // Redirect to the onboarding questionnaire
+        navigate('/onboarding');
+      } else {
+        handleSuccess("Please check your email to verify your account.");
+      }
     } catch (error: any) {
       handleError(error);
     } finally {
