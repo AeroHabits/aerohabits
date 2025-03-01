@@ -98,17 +98,17 @@ const Goals = () => {
           transition={{ delay: 0.2, duration: 0.4 }}
           className="mb-10"
         >
-          <Card className="p-6 bg-gradient-to-r from-blue-900/40 to-indigo-900/40 backdrop-blur-sm border border-white/10 shadow-xl">
+          <Card className="p-6 bg-gradient-to-r from-blue-900/80 to-indigo-900/80 backdrop-blur-sm border border-white/10 shadow-xl">
             <div className="flex items-center gap-4 mb-3">
-              <div className="p-3 bg-gradient-to-br from-blue-600/30 to-indigo-600/30 rounded-full">
-                <Trophy className="w-6 h-6 text-blue-400" />
+              <div className="p-3 bg-gradient-to-br from-blue-600/50 to-indigo-600/50 rounded-full">
+                <Trophy className="w-6 h-6 text-blue-200" />
               </div>
               <div>
                 <h2 className="text-xl md:text-2xl font-bold text-white">Your Goal Tracker</h2>
-                <p className="text-blue-200/80 text-sm">Turn your aspirations into achievements</p>
+                <p className="text-blue-100 text-sm">Turn your aspirations into achievements</p>
               </div>
             </div>
-            <p className="text-white/70">
+            <p className="text-white/90">
               Welcome to your personal goal tracking dashboard. Set meaningful goals, track your progress, and celebrate your victories!
             </p>
           </Card>
