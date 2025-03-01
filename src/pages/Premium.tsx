@@ -16,7 +16,7 @@ export default function Premium() {
       <GradientBackground />
 
       <div className="container mx-auto px-4 py-12 relative z-10">
-        <div className="max-w-2xl mx-auto space-y-8">
+        <div className="max-w-2xl mx-auto space-y-10">
           <Button 
             variant="ghost" 
             onClick={() => navigate(-1)} 

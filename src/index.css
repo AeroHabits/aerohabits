@@ -105,3 +105,8 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+/* Custom radial gradient for premium background */
+.bg-radial-gradient {
+  background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-via) 50%, var(--tw-gradient-to) 100%);
+}
+
