@@ -114,7 +114,7 @@ export function ChallengeHero() {
             {['Focus', 'Discipline', 'Growth', 'Success'].map((tag, i) => (
               <motion.div
                 key={tag}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: Z0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 + (i * 0.1) }}
                 className="bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-white border border-white/20"
