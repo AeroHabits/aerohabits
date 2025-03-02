@@ -76,15 +76,15 @@
   }
 }
 
-/* iOS Safe Area Support with Dark Theme */
+/* iOS Safe Area Support with clean white theme */
 .safe-top {
   padding-top: max(env(safe-area-inset-top), 1rem);
-  background: linear-gradient(to bottom, rgba(26, 31, 44, 1) 0%, rgba(26, 31, 44, 0.8) 100%);
+  background: white;
 }
 
 .safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 1rem);
-  background: linear-gradient(to top, rgba(26, 31, 44, 1) 0%, rgba(26, 31, 44, 0.8) 100%);
+  background: white;
 }
 
 /* Add viewport height fix for mobile browsers */
