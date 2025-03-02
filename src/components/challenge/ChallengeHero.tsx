@@ -9,18 +9,21 @@ export function ChallengeHero() {
       animate={{ opacity: 1, y: 0 }}
       className="relative overflow-hidden rounded-xl shadow-2xl"
     >
-      {/* Animated background gradient using the Goals page blue (#0EA5E9) */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0EA5E9] via-blue-600 to-blue-700 z-0">
+      {/* Professional gradient background with Goals page blue (#0EA5E9) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0EA5E9] via-blue-600 to-blue-800 z-0">
+        {/* Advanced particle effect overlay */}
         <motion.div 
           className="absolute inset-0 opacity-20"
           animate={{ 
             background: [
-              "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.3) 0%, transparent 50%)",
-              "radial-gradient(circle at 80% 80%, rgba(255,255,255,0.3) 0%, transparent 50%)"
+              "radial-gradient(circle at 20% 20%, rgba(255,255,255,0.4) 0%, transparent 50%)",
+              "radial-gradient(circle at 80% 80%, rgba(255,255,255,0.4) 0%, transparent 50%)"
             ]
           }}
           transition={{ duration: 8, repeat: Infinity, repeatType: "reverse" }}
         />
+        
+        {/* Professional subtle pattern overlay */}
         <motion.div 
           className="absolute inset-0"
           initial={{ opacity: 0 }}
@@ -31,11 +34,23 @@ export function ChallengeHero() {
             backgroundSize: "cover"
           }}
         />
+        
+        {/* Professional subtle light beam effect */}
+        <motion.div 
+          className="absolute inset-0 opacity-20"
+          animate={{ 
+            background: [
+              "linear-gradient(45deg, transparent 65%, rgba(255,255,255,0.2) 75%, transparent 85%)",
+              "linear-gradient(45deg, transparent 10%, rgba(255,255,255,0.2) 20%, transparent 30%)"
+            ]
+          }}
+          transition={{ duration: 10, repeat: Infinity, repeatType: "mirror" }}
+        />
       </div>
       
-      <div className="relative z-10 p-8 md:p-10">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-          {/* Trophy icon with animation */}
+      <div className="relative z-10 p-8 md:p-12">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-8">
+          {/* Trophy icon with professional animation */}
           <motion.div
             initial={{ scale: 0, rotate: -15 }}
             animate={{ scale: 1, rotate: 0 }}
@@ -48,7 +63,7 @@ export function ChallengeHero() {
             className="flex-shrink-0"
           >
             <div className="relative">
-              <div className="absolute -inset-3 bg-[#0EA5E9] rounded-full blur-md opacity-70 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="absolute -inset-3 bg-gradient-to-r from-blue-500 to-[#0EA5E9] rounded-full blur-md opacity-70 group-hover:opacity-100 transition duration-1000"></div>
               <div className="relative flex items-center justify-center p-5 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full shadow-lg">
                 <Trophy className="w-12 h-12 text-white" />
                 <motion.div
@@ -76,24 +91,29 @@ export function ChallengeHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              {/* Title with animated sparkles */}
-              <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight relative">
-                <motion.span
-                  className="absolute -left-6 top-2"
-                  animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
-                >
-                  <Sparkles className="h-5 w-5 text-amber-300" />
-                </motion.span>
-                Epic Challenges Await!
-                <motion.span
-                  className="absolute -right-6 top-2"
+              {/* Professional modern title with subtle sparkle animation */}
+              <div className="relative">
+                <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
+                  <span className="relative">
+                    <motion.span
+                      className="absolute -left-6 -top-1"
+                      animate={{ rotate: [0, 15, -15, 0], scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                    >
+                      <Sparkles className="h-5 w-5 text-amber-300" />
+                    </motion.span>
+                    Excellence Awaits
+                  </span>
+                </h2>
+                
+                <motion.div
+                  className="absolute -right-2 -top-1"
                   animate={{ rotate: [0, -15, 15, 0], scale: [1, 1.2, 1] }}
                   transition={{ duration: 2, repeat: Infinity, repeatType: "reverse", delay: 0.5 }}
                 >
                   <Sparkles className="h-5 w-5 text-amber-300" />
-                </motion.span>
-              </h2>
+                </motion.div>
+              </div>
               
               <motion.div 
                 className="flex items-center gap-2 pl-1"
@@ -102,19 +122,19 @@ export function ChallengeHero() {
                 transition={{ delay: 0.7 }}
               >
                 <Target className="w-5 h-5 text-blue-200" />
-                <span className="text-blue-100 font-medium tracking-wide">Level up your life</span>
+                <span className="text-blue-100 font-medium tracking-wide">Strategic growth for high achievers</span>
               </motion.div>
             </motion.div>
 
-            {/* Main description with dynamic underline animation */}
+            {/* Professional compelling message with dynamic underline animation */}
             <motion.p 
               className="text-xl text-white/90 leading-relaxed font-medium relative"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              Push your limits, achieve greatness, and unlock incredible rewards along the way. 
-              Each challenge is a step towards becoming your best self.
+              Elevate your performance through expertly designed challenges that drive 
+              measurable growth and unlock your full potential.
               <motion.span 
                 className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-200/0 via-blue-200/80 to-blue-200/0"
                 animate={{ width: "100%" }}
@@ -122,9 +142,9 @@ export function ChallengeHero() {
               />
             </motion.p>
 
-            {/* Bottom badge with animation */}
+            {/* Professional call to action with subtle animation */}
             <motion.div 
-              className="mt-6 flex items-center gap-3"
+              className="mt-8 flex items-center gap-3"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
@@ -135,8 +155,8 @@ export function ChallengeHero() {
               >
                 <Rocket className="w-5 h-5 text-blue-200" />
               </motion.div>
-              <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white/90 font-semibold text-sm">
-                Start your journey to excellence today!
+              <span className="bg-white/10 backdrop-blur-sm px-5 py-2.5 rounded-full text-white/90 font-semibold text-sm border border-white/10 shadow-inner">
+                Begin your excellence journey today
               </span>
             </motion.div>
           </div>
