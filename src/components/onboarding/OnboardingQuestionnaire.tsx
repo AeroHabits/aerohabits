@@ -24,7 +24,7 @@ export function OnboardingQuestionnaire() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-black p-4 overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(120,70,190,0.05)_0,rgba(0,0,0,0)_60%)] pointer-events-none"></div>
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none"></div>
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-cyan-900/10 to-transparent pointer-events-none"></div>
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -39,7 +39,7 @@ export function OnboardingQuestionnaire() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.4 }}
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-purple-600">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-teal-500">
               Welcome to AeroHabits
             </span>
           </motion.h1>
