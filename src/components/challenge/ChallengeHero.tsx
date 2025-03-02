@@ -71,9 +71,9 @@ export function ChallengeHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              {/* Professional title */}
+              {/* Updated title */}
               <h2 className="text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight">
-                Excel & Achieve
+                Challenges
               </h2>
               
               <motion.div 
