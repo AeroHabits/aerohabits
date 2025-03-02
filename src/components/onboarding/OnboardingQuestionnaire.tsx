@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ArrowRight, ListChecks, Target, Clock, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,26 +15,50 @@ const questions = [
   {
     id: "primary_goal",
     question: "What is your primary goal in life right now?",
-    placeholder: "e.g., Career growth, better health, learning new skills...",
     icon: <Target className="w-6 h-6 text-purple-500" />,
+    options: [
+      "Career growth",
+      "Better health",
+      "Learning new skills",
+      "Building relationships",
+      "Financial stability"
+    ]
   },
   {
     id: "biggest_challenge",
     question: "What's your biggest challenge in building consistent habits?",
-    placeholder: "e.g., Lack of time, staying motivated, tracking progress...",
     icon: <ListChecks className="w-6 h-6 text-blue-500" />,
+    options: [
+      "Lack of time",
+      "Staying motivated",
+      "Tracking progress",
+      "Setting realistic goals",
+      "Finding accountability"
+    ]
   },
   {
     id: "time_commitment",
     question: "How much time can you commit daily to your habits?",
-    placeholder: "e.g., 15 minutes, 30 minutes, 1 hour...",
     icon: <Clock className="w-6 h-6 text-emerald-500" />,
+    options: [
+      "5-10 minutes",
+      "15-20 minutes",
+      "30 minutes",
+      "45 minutes",
+      "1 hour or more"
+    ]
   },
   {
     id: "motivation",
     question: "What motivates you most to achieve your goals?",
-    placeholder: "e.g., Family, personal growth, recognition...",
     icon: <Heart className="w-6 h-6 text-rose-500" />,
+    options: [
+      "Personal growth",
+      "Family",
+      "Recognition",
+      "Health benefits",
+      "Challenge myself"
+    ]
   },
 ];
 
@@ -46,10 +70,10 @@ export function OnboardingQuestionnaire() {
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  const handleAnswerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAnswerChange = (value: string) => {
     setAnswers({
       ...answers,
-      [currentQuestion.id]: e.target.value,
+      [currentQuestion.id]: value,
     });
   };
 
@@ -99,7 +123,7 @@ export function OnboardingQuestionnaire() {
 
   const handleNext = async () => {
     if (!answers[currentQuestion.id]?.trim()) {
-      toast.error("Please provide an answer before continuing");
+      toast.error("Please select an option before continuing");
       return;
     }
 
@@ -130,7 +154,7 @@ export function OnboardingQuestionnaire() {
               user_id: user.id,
               fitness_level: answers.time_commitment || 'beginner',
               goals: [answers.primary_goal || 'general'],
-              preferred_duration: parseInt(answers.time_commitment) || 15
+              preferred_duration: parseInt(answers.time_commitment.split(" ")[0]) || 15
             });
             
           if (quizError) {
@@ -203,12 +227,27 @@ export function OnboardingQuestionnaire() {
                 {currentQuestion.question}
               </Label>
               
-              <Input
+              <RadioGroup
                 value={answers[currentQuestion.id] || ""}
-                onChange={handleAnswerChange}
-                placeholder={currentQuestion.placeholder}
-                className="bg-gray-700/50 border-gray-600 text-white placeholder:text-gray-400"
-              />
+                onValueChange={handleAnswerChange}
+                className="gap-3 flex flex-col"
+              >
+                {currentQuestion.options.map((option) => (
+                  <div key={option} className="flex items-center space-x-2 bg-gray-700/30 hover:bg-gray-700/50 transition-colors p-3 rounded-lg cursor-pointer">
+                    <RadioGroupItem 
+                      value={option} 
+                      id={option} 
+                      className="text-purple-500"
+                    />
+                    <Label 
+                      htmlFor={option} 
+                      className="text-white font-medium cursor-pointer w-full"
+                    >
+                      {option}
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
               
               <Button
                 onClick={handleNext}
