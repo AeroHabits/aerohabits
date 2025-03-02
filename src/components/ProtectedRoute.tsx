@@ -23,7 +23,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_subscribed, subscription_status')
+        .select('is_subscribed, subscription_status, trial_end_date')
         .eq('id', user.id)
         .single();
 
@@ -57,6 +57,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   useEffect(() => {
     if (location.search.includes('success=true')) {
       refetch(); // Force a profile refetch when returning from successful payment
+      toast.success("Your subscription has been activated successfully!");
     }
   }, [location.search, refetch]);
 
@@ -80,16 +81,21 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // Check subscription status
   if (profile) {
     const isSubscriptionActive = profile.subscription_status === 'active';
+    const isInTrialPeriod = profile.trial_end_date && new Date(profile.trial_end_date) > new Date();
+    const hasActiveAccess = isSubscriptionActive || isInTrialPeriod;
     
     // Don't redirect if:
-    // 1. User has an active subscription OR
+    // 1. User has active subscription or is in trial period OR
     // 2. Already on premium page OR
     // 3. Just completed payment (success=true in URL) OR
-    // 4. On the onboarding page
-    if (!isSubscriptionActive && 
-        location.pathname !== '/premium' && 
-        !location.search.includes('success=true') &&
-        location.pathname !== '/onboarding') {
+    // 4. On the onboarding page OR
+    // 5. On the auth page
+    const isOnAuthFlow = location.pathname === '/auth' || 
+                         location.pathname === '/premium' || 
+                         location.pathname === '/onboarding' ||
+                         location.search.includes('success=true');
+                         
+    if (!hasActiveAccess && !isOnAuthFlow) {
       toast.error("Please subscribe to continue using the app.");
       return <Navigate to="/premium" replace />;
     }

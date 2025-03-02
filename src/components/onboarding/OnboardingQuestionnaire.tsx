@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight, ListChecks, Target, Clock, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthForm } from "@/hooks/useAuthForm";
 
 const questions = [
   {
@@ -41,7 +42,7 @@ export function OnboardingQuestionnaire() {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isLoading, setIsLoading, handleError } = useAuthForm();
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -50,6 +51,50 @@ export function OnboardingQuestionnaire() {
       ...answers,
       [currentQuestion.id]: e.target.value,
     });
+  };
+
+  const startSubscriptionFlow = async () => {
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Check if user already has a subscription
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('subscription_status, is_subscribed')
+          .eq('id', user.id)
+          .single();
+          
+        if (profileError) throw profileError;
+        
+        // If user already has an active subscription, redirect to home
+        if (profile?.is_subscribed || profile?.subscription_status === 'active') {
+          navigate('/habits');
+          return;
+        }
+
+        // Create checkout session with trial period enabled
+        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+          body: {
+            priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
+            returnUrl: window.location.origin + '/habits',
+            includeTrialPeriod: true
+          }
+        });
+        
+        if (error) throw error;
+        window.location.href = data.url;
+      } else {
+        throw new Error("User not authenticated");
+      }
+    } catch (error) {
+      console.error("Error starting subscription:", error);
+      handleError(error);
+      navigate('/premium'); // Fallback to premium page if checkout fails
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleNext = async () => {
@@ -62,7 +107,7 @@ export function OnboardingQuestionnaire() {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
       // Save answers to the profile's metadata
-      setIsSubmitting(true);
+      setIsLoading(true);
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
@@ -71,9 +116,6 @@ export function OnboardingQuestionnaire() {
           const { error } = await supabase
             .from('profiles')
             .update({
-              // Store the answers as metadata in the onboarding_answers column
-              // If this doesn't work, we might need to store each answer individually
-              // or add a new column to the profiles table
               updated_at: new Date().toISOString(),
               full_name: user.user_metadata.full_name || ''
             })
@@ -96,16 +138,14 @@ export function OnboardingQuestionnaire() {
             // Continue anyway since this is not critical
           }
           
-          // Redirect to premium signup page
-          navigate('/premium');
+          // Redirect to subscription flow with trial
+          startSubscriptionFlow();
         } else {
           throw new Error("User not authenticated");
         }
       } catch (error) {
         console.error("Error saving answers:", error);
-        toast.error("Failed to save your answers. Please try again.");
-      } finally {
-        setIsSubmitting(false);
+        handleError(error);
       }
     }
   };
@@ -172,17 +212,17 @@ export function OnboardingQuestionnaire() {
               
               <Button
                 onClick={handleNext}
-                disabled={isSubmitting}
+                disabled={isLoading}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white"
               >
                 {currentQuestionIndex < questions.length - 1 ? (
                   <>
                     Next Question <ArrowRight className="ml-2 h-4 w-4" />
                   </>
-                ) : isSubmitting ? (
+                ) : isLoading ? (
                   "Saving..."
                 ) : (
-                  "Complete & Continue to Premium"
+                  "Complete & Start Free Trial"
                 )}
               </Button>
             </motion.div>
