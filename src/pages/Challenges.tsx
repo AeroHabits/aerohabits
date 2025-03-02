@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { BadgeDisplay } from "@/components/badges/BadgeDisplay";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { ChallengeHero } from "@/components/challenge/ChallengeHero";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
 
 const Challenges = () => {
@@ -22,15 +21,6 @@ const Challenges = () => {
           <PageHeader />
           <UserMenu />
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-8"
-        >
-          <ChallengeHero />
-        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <motion.div
