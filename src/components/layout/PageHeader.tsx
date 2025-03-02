@@ -57,18 +57,7 @@ export function PageHeader() {
             AEROHABITS
           </motion.span>
           
-          {/* Animated colorful underline effect */}
-          <motion.span
-            className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 via-teal-300 to-cyan-400"
-            initial={{ width: "0%" }}
-            animate={{ width: ["0%", "100%", "0%"] }}
-            transition={{ 
-              duration: 3,
-              repeat: Infinity,
-              repeatType: "loop",
-              ease: "easeInOut"
-            }}
-          />
+          {/* Removed the animated colorful underline effect */}
         </h1>
       </div>
     </motion.div>
