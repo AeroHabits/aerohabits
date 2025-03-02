@@ -72,6 +72,13 @@ export function useQuestionnaire() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
+        // Update user metadata to remove is_new_user flag
+        await supabase.auth.updateUser({
+          data: {
+            is_new_user: false
+          }
+        });
+        
         // Update the profile with the questionnaire answers
         const { error } = await supabase
           .from('profiles')

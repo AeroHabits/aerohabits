@@ -34,6 +34,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
         options: {
           data: {
             full_name: fullName,
+            is_new_user: true,  // Mark the user as new
           },
         },
       });

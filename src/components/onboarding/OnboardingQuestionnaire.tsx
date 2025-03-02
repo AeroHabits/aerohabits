@@ -5,8 +5,12 @@ import { ProgressIndicator } from "./ProgressIndicator";
 import { WelcomeMessage } from "./WelcomeMessage";
 import { useQuestionnaire } from "./useQuestionnaire";
 import { questions } from "./questionnaireData";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export function OnboardingQuestionnaire() {
+  const navigate = useNavigate();
   const {
     currentQuestionIndex,
     currentQuestion,
@@ -20,6 +24,43 @@ export function OnboardingQuestionnaire() {
     startSubscriptionFlow,
     getPrimaryGoal
   } = useQuestionnaire();
+
+  // Check if user should see the questionnaire
+  useEffect(() => {
+    const checkUserStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        // Not logged in, redirect to auth
+        navigate('/auth');
+        return;
+      }
+
+      // Check if this is a new user (from metadata)
+      const isNewUser = user.user_metadata?.is_new_user;
+      
+      // Check if user has already completed the quiz
+      const { data: quizResponses } = await supabase
+        .from('user_quiz_responses')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      // Check subscription status
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_subscribed')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      // If not a new user or already has responses or already subscribed, redirect to habits
+      if (!isNewUser || quizResponses || profile?.is_subscribed) {
+        navigate('/habits');
+      }
+    };
+
+    checkUserStatus();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-black p-4 overflow-hidden">
