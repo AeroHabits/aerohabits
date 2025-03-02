@@ -1,6 +1,6 @@
 
 import { motion } from "framer-motion";
-import { Sparkles, Star } from "lucide-react";
+import { Trophy, Crown } from "lucide-react";
 
 export function PageHeader() {
   return (
@@ -18,31 +18,29 @@ export function PageHeader() {
       }} 
       className="mb-8"
     >
-      <div className="relative flex items-center justify-center group">
-        {/* Animated background glow */}
+      <div className="relative flex items-center justify-center">
+        {/* Subtle elegant background effect */}
         <motion.div 
-          className="absolute -inset-1 rounded-lg blur-xl bg-gradient-to-r from-purple-500/30 via-indigo-600/30 to-blue-500/30 opacity-60 group-hover:opacity-85 transition duration-700"
+          className="absolute -inset-1 rounded-lg blur-xl bg-gradient-to-r from-slate-600/20 via-indigo-600/15 to-slate-700/20 opacity-70 transition duration-700"
           animate={{
             background: [
-              "linear-gradient(to right, rgba(155, 135, 245, 0.3), rgba(217, 70, 239, 0.3), rgba(14, 165, 233, 0.3))",
-              "linear-gradient(to right, rgba(217, 70, 239, 0.3), rgba(14, 165, 233, 0.3), rgba(155, 135, 245, 0.3))",
-              "linear-gradient(to right, rgba(14, 165, 233, 0.3), rgba(155, 135, 245, 0.3), rgba(217, 70, 239, 0.3))"
+              "linear-gradient(to right, rgba(71, 85, 105, 0.2), rgba(79, 70, 229, 0.15), rgba(51, 65, 85, 0.2))",
+              "linear-gradient(to right, rgba(79, 70, 229, 0.15), rgba(51, 65, 85, 0.2), rgba(71, 85, 105, 0.2))",
+              "linear-gradient(to right, rgba(51, 65, 85, 0.2), rgba(71, 85, 105, 0.2), rgba(79, 70, 229, 0.15))"
             ]
           }}
           transition={{ 
-            duration: 8, 
+            duration: 10, 
             repeat: Infinity,
             repeatType: "reverse" 
           }}
         />
         
-        {/* Sparkles on either side */}
+        {/* Professional icon emblem */}
         <motion.div
-          className="absolute -left-3 -top-1"
+          className="absolute -left-5 top-1/2 transform -translate-y-1/2"
           animate={{
-            rotate: [0, 15, -15, 0],
-            scale: [1, 1.1, 1],
-            opacity: [0.7, 1, 0.7]
+            opacity: [0.85, 1, 0.85]
           }}
           transition={{
             duration: 4,
@@ -50,15 +48,13 @@ export function PageHeader() {
             repeatType: "reverse"
           }}
         >
-          <Sparkles className="h-4 w-4 text-pink-400" />
+          <Trophy className="h-5 w-5 text-indigo-400" />
         </motion.div>
         
         <motion.div
-          className="absolute -right-3 -bottom-1"
+          className="absolute -right-5 top-1/2 transform -translate-y-1/2"
           animate={{
-            rotate: [0, -15, 15, 0],
-            scale: [1, 1.1, 1],
-            opacity: [0.7, 1, 0.7]
+            opacity: [0.85, 1, 0.85]
           }}
           transition={{
             duration: 4,
@@ -67,18 +63,18 @@ export function PageHeader() {
             delay: 2
           }}
         >
-          <Star className="h-4 w-4 text-amber-300" />
+          <Crown className="h-5 w-5 text-indigo-400" />
         </motion.div>
         
-        {/* AEROHABITS text with enhanced styling */}
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight relative">
-          {/* 3D effect layer */}
-          <span className="absolute -top-0.5 -left-0.5 text-black/15">
+        {/* AEROHABITS text with sophisticated styling */}
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight relative">
+          {/* Subtle depth effect */}
+          <span className="absolute -top-0.5 -left-0.5 text-black/10">
             AEROHABITS
           </span>
           
-          {/* Main text with gradient */}
-          <span className="bg-gradient-to-r from-violet-400 via-purple-500 to-sky-400 bg-clip-text text-transparent drop-shadow-sm">
+          {/* Main text with refined gradient */}
+          <span className="bg-gradient-to-r from-gray-100 via-slate-200 to-indigo-100 bg-clip-text text-transparent">
             AEROHABITS
           </span>
         </h1>
