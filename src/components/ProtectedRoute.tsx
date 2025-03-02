@@ -17,9 +17,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
-          // Check if this is a new user who needs to complete the questionnaire
-          const isNewUser = user.user_metadata?.is_new_user;
-          
           // Check if user has already completed the quiz
           const { data: quizResponses } = await supabase
             .from('user_quiz_responses')
@@ -34,13 +31,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
             .eq('id', user.id)
             .maybeSingle();
             
+          const hasCompletedQuiz = !!quizResponses;
           const hasActiveSubscription = profile?.is_subscribed || 
             ['active', 'trialing'].includes(profile?.subscription_status || '');
           
-          // If new user without quiz responses AND without active subscription
-          // they must complete onboarding before accessing any other part of the app
-          if (isNewUser && !quizResponses && !hasActiveSubscription) {
-            console.log('User requires onboarding');
+          // If the user has neither completed the quiz nor has an active subscription, they must go through onboarding
+          if (!hasCompletedQuiz && !hasActiveSubscription) {
+            console.log('User requires onboarding - no quiz responses or subscription');
             setRequiresOnboarding(true);
             setIsAuthenticated(true);
           } else {

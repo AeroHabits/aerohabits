@@ -1,4 +1,3 @@
-
 import { motion } from "framer-motion";
 import { QuestionCard } from "./QuestionCard";
 import { ProgressIndicator } from "./ProgressIndicator";
@@ -37,9 +36,6 @@ export function OnboardingQuestionnaire() {
         return;
       }
 
-      // Check if this is a new user (from metadata)
-      const isNewUser = user.user_metadata?.is_new_user;
-      
       // Check if user has already completed the quiz
       const { data: quizResponses } = await supabase
         .from('user_quiz_responses')
@@ -54,12 +50,13 @@ export function OnboardingQuestionnaire() {
         .eq('id', user.id)
         .maybeSingle();
 
+      const hasCompletedQuiz = !!quizResponses;
       const hasActiveSubscription = profile?.is_subscribed || 
         ['active', 'trialing'].includes(profile?.subscription_status || '');
 
-      // Strict access control: Only allow new users without quiz responses AND without subscription
-      if (!isNewUser || quizResponses || hasActiveSubscription) {
-        toast.error("Onboarding is only for new users without an active subscription");
+      // Only users without quiz responses AND without subscription should be here
+      if (hasCompletedQuiz || hasActiveSubscription) {
+        toast.error("You've already completed onboarding or have an active subscription");
         navigate('/habits');
       }
     };
