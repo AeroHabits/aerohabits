@@ -17,7 +17,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { priceId, returnUrl, includeTrialPeriod = false } = await req.json();
+    const { priceId, returnUrl, includeTrialPeriod = true } = await req.json();
     
     // Verify these parameters exist
     if (!priceId || !returnUrl) {
@@ -104,6 +104,7 @@ serve(async (req: Request) => {
       mode: "subscription",
       line_items: [{ price: priceId, quantity: 1 }],
       customer: customerId,
+      payment_method_collection: 'always', // Always collect payment method even during trial
       success_url: `${returnUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${returnUrl}?canceled=true`,
       metadata: {
@@ -113,13 +114,9 @@ serve(async (req: Request) => {
         metadata: {
           userId: user.id,
         },
+        trial_period_days: includeTrialPeriod ? 3 : 0 // Default to 3-day trial
       }
     };
-
-    // Add trial period if requested
-    if (includeTrialPeriod) {
-      subscriptionData.subscription_data.trial_period_days = 3;
-    }
 
     // Create a checkout session
     const session = await stripe.checkout.sessions.create(subscriptionData);

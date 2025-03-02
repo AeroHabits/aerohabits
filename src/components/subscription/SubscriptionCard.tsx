@@ -57,7 +57,7 @@ export function SubscriptionCard({
         body: {
           priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
           returnUrl: window.location.origin + '/settings',
-          includeTrialPeriod: false
+          includeTrialPeriod: true // Always include trial period for new subscribers
         }
       });
       if (error) throw error;
@@ -181,7 +181,7 @@ export function SubscriptionCard({
         <p className="text-gray-400 text-lg leading-relaxed">
           {profile?.is_subscribed 
             ? "Manage your subscription, view payment history, and update payment methods."
-            : "Subscribe now to unlock all premium features and take control of your habits."
+            : "Start your 3-day free trial today. Your card will be charged automatically after the trial period."
           }
         </p>
 
@@ -201,7 +201,7 @@ export function SubscriptionCard({
             className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] animate-shimmer" />
-            {isLoading || isLoadingState ? "Loading..." : "Subscribe Now"}
+            {isLoading || isLoadingState ? "Loading..." : "Start 3-Day Free Trial"}
           </Button>
         )}
       </CardContent>

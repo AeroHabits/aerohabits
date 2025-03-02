@@ -90,15 +90,19 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     // 3. Just completed payment (success=true in URL) OR
     // 4. On the onboarding page OR
     // 5. On the auth page
-    const isOnAuthFlow = location.pathname === '/auth' || 
-                         location.pathname === '/premium' || 
-                         location.pathname === '/onboarding' ||
-                         location.search.includes('success=true');
+    const isOnAllowedPath = location.pathname === '/auth' || 
+                        location.pathname === '/premium' || 
+                        location.pathname === '/onboarding' ||
+                        location.search.includes('success=true');
                          
-    if (!hasActiveAccess && !isOnAuthFlow) {
+    if (!hasActiveAccess && !isOnAllowedPath) {
       toast.error("Please subscribe to continue using the app.");
       return <Navigate to="/premium" replace />;
     }
+  } else if (isAuthenticated && !profile && location.pathname !== '/premium' && location.pathname !== '/auth') {
+    // If user is authenticated but has no profile yet, redirect to premium page
+    toast.info("Please set up your payment method to start your free trial.");
+    return <Navigate to="/premium" replace />;
   }
 
   return <>{children}</>;

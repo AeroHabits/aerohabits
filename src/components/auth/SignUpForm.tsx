@@ -41,8 +41,9 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
       if (error) throw error;
 
       if (data.user) {
-        // Redirect to the onboarding questionnaire
-        navigate('/onboarding');
+        // Redirect directly to premium page to prompt for payment info
+        navigate('/premium');
+        handleSuccess("Account created successfully! Please set up your payment method to begin your free trial.");
       } else {
         handleSuccess("Please check your email to verify your account.");
       }

@@ -172,6 +172,12 @@ export function SubscribeButton() {
           )}
         </span>
       </Button>
+      
+      {!hasActiveSubscription && (
+        <p className="text-center mt-2 text-sm text-gray-300">
+          Your card will be charged automatically after the trial period
+        </p>
+      )}
     </motion.div>
   );
 }
