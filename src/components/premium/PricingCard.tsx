@@ -25,9 +25,9 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.2 }}
     >
-      <Card className="p-8 bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-md border border-purple-700/30 shadow-xl rounded-xl overflow-hidden relative">
+      <Card className="p-8 bg-white backdrop-blur-md border border-gray-200 shadow-md rounded-xl overflow-hidden relative">
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-transparent to-purple-600/10"
+          className="absolute inset-0 bg-gradient-to-r from-gray-100/50 via-transparent to-gray-100/50"
           animate={{ 
             backgroundPosition: ["0% 0%", "100% 100%"],
           }}
@@ -43,7 +43,7 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
           <div className="text-center space-y-2">
             <div className="flex justify-center items-baseline gap-2">
               <motion.span 
-                className="font-bold text-white text-5xl"
+                className="font-bold text-gray-800 text-5xl"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ 
@@ -55,32 +55,32 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
               >
                 $9.99
               </motion.span>
-              <span className="text-gray-400">/month</span>
+              <span className="text-gray-500">/month</span>
             </div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="flex items-center justify-center gap-1 text-yellow-400 my-1"
+              className="flex items-center justify-center gap-1 text-amber-500 my-1"
             >
-              <Star className="h-4 w-4 fill-yellow-400" />
-              <Star className="h-4 w-4 fill-yellow-400" />
-              <Star className="h-4 w-4 fill-yellow-400" />
-              <Star className="h-4 w-4 fill-yellow-400" />
-              <Star className="h-4 w-4 fill-yellow-400" />
+              <Star className="h-4 w-4 fill-amber-500" />
+              <Star className="h-4 w-4 fill-amber-500" />
+              <Star className="h-4 w-4 fill-amber-500" />
+              <Star className="h-4 w-4 fill-amber-500" />
+              <Star className="h-4 w-4 fill-amber-500" />
             </motion.div>
           </div>
 
           <PremiumFeatureSection 
             title="Premium Features"
             features={features}
-            titleGradient="from-blue-300 to-purple-300"
+            titleGradient="from-gray-700 to-gray-900"
           />
 
           <PremiumFeatureSection 
             title="Exclusive Premium Challenges"
             features={premiumChallenges}
-            titleGradient="from-orange-300 to-red-300"
+            titleGradient="from-gray-700 to-gray-900"
             variant="challenge"
           />
 
@@ -90,9 +90,9 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="space-y-3 border-t border-gray-800 pt-4"
+            className="space-y-3 border-t border-gray-200 pt-4"
           >
-            <p className="text-sm text-gray-400 text-center">
+            <p className="text-sm text-gray-600 text-center">
               You'll be charged $9.99 monthly. Cancel anytime.
             </p>
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
