@@ -10,6 +10,7 @@ import { ArrowRight, ListChecks, Target, Clock, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthForm } from "@/hooks/useAuthForm";
+import { WelcomeMessage } from "./WelcomeMessage";
 
 const questions = [
   {
@@ -67,6 +68,7 @@ export function OnboardingQuestionnaire() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const { isLoading, setIsLoading, handleError } = useAuthForm();
+  const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
 
   const currentQuestion = questions[currentQuestionIndex];
 
@@ -134,6 +136,60 @@ export function OnboardingQuestionnaire() {
     }
   };
 
+  const saveAnswers = async () => {
+    setIsLoading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        // Update the profile with the questionnaire answers
+        const { error } = await supabase
+          .from('profiles')
+          .update({
+            updated_at: new Date().toISOString(),
+            full_name: user.user_metadata.full_name || ''
+          })
+          .eq('id', user.id);
+        
+        if (error) throw error;
+        
+        // Get the primary goal (first one selected) or default to the first answer
+        const primaryGoal = answers.primary_goal?.[0] || 'general';
+        
+        // Calculate preferred duration from time commitment
+        // Extract the first number from the first selected option
+        const timeCommitment = answers.time_commitment?.[0] || '15-20 minutes';
+        const durationMatch = timeCommitment.match(/\d+/);
+        const preferredDuration = durationMatch ? parseInt(durationMatch[0]) : 15;
+        
+        // Store questionnaire answers in user quiz responses
+        const { error: quizError } = await supabase
+          .from('user_quiz_responses')
+          .insert({
+            user_id: user.id,
+            fitness_level: answers.time_commitment?.[0] || 'beginner',
+            goals: answers.primary_goal || ['general'],
+            preferred_duration: preferredDuration
+          });
+          
+        if (quizError) {
+          console.error("Error saving quiz responses:", quizError);
+          // Continue anyway since this is not critical
+        }
+        
+        // Show welcome message instead of immediately redirecting
+        setShowWelcomeMessage(true);
+      } else {
+        throw new Error("User not authenticated");
+      }
+    } catch (error) {
+      console.error("Error saving answers:", error);
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleNext = async () => {
     if (!answers[currentQuestion.id] || answers[currentQuestion.id].length === 0) {
       toast.error("Please select at least one option before continuing");
@@ -143,57 +199,14 @@ export function OnboardingQuestionnaire() {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      // Save answers to the profile's metadata
-      setIsLoading(true);
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-          // Update the profile with the questionnaire answers
-          const { error } = await supabase
-            .from('profiles')
-            .update({
-              updated_at: new Date().toISOString(),
-              full_name: user.user_metadata.full_name || ''
-            })
-            .eq('id', user.id);
-          
-          if (error) throw error;
-          
-          // Get the primary goal (first one selected) or default to the first answer
-          const primaryGoal = answers.primary_goal?.[0] || 'general';
-          
-          // Calculate preferred duration from time commitment
-          // Extract the first number from the first selected option
-          const timeCommitment = answers.time_commitment?.[0] || '15-20 minutes';
-          const durationMatch = timeCommitment.match(/\d+/);
-          const preferredDuration = durationMatch ? parseInt(durationMatch[0]) : 15;
-          
-          // Store questionnaire answers in user quiz responses
-          const { error: quizError } = await supabase
-            .from('user_quiz_responses')
-            .insert({
-              user_id: user.id,
-              fitness_level: answers.time_commitment?.[0] || 'beginner',
-              goals: answers.primary_goal || ['general'],
-              preferred_duration: preferredDuration
-            });
-            
-          if (quizError) {
-            console.error("Error saving quiz responses:", quizError);
-            // Continue anyway since this is not critical
-          }
-          
-          // Redirect to subscription flow with trial
-          startSubscriptionFlow();
-        } else {
-          throw new Error("User not authenticated");
-        }
-      } catch (error) {
-        console.error("Error saving answers:", error);
-        handleError(error);
-      }
+      // Save answers and show welcome message
+      await saveAnswers();
     }
+  };
+
+  // Get primary goal for personalized welcome message
+  const getPrimaryGoal = () => {
+    return answers.primary_goal?.[0] || '';
   };
 
   return (
@@ -206,90 +219,102 @@ export function OnboardingQuestionnaire() {
       >
         <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-white">Welcome to AeroHabits</h1>
-          <p className="text-gray-300 mt-2">
-            Let's personalize your experience ({currentQuestionIndex + 1}/{questions.length})
-          </p>
-          <div className="flex gap-1 justify-center mt-4">
-            {questions.map((_, index) => (
-              <div
-                key={index}
-                className={`h-1 rounded-full w-12 transition-colors duration-300 ${
-                  index <= currentQuestionIndex
-                    ? "bg-purple-500"
-                    : "bg-gray-700"
-                }`}
-              />
-            ))}
-          </div>
+          {!showWelcomeMessage && (
+            <>
+              <p className="text-gray-300 mt-2">
+                Let's personalize your experience ({currentQuestionIndex + 1}/{questions.length})
+              </p>
+              <div className="flex gap-1 justify-center mt-4">
+                {questions.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`h-1 rounded-full w-12 transition-colors duration-300 ${
+                      index <= currentQuestionIndex
+                        ? "bg-purple-500"
+                        : "bg-gray-700"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
-        <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
-          <CardContent className="pt-6 space-y-6">
-            <div className="flex items-center justify-center mb-4">
-              <motion.div
-                key={currentQuestion.id + "-icon"}
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="p-3 bg-gray-700/50 rounded-full"
-              >
-                {currentQuestion.icon}
-              </motion.div>
-            </div>
-            
-            <motion.div
-              key={currentQuestion.id}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-4"
-            >
-              <Label className="text-lg text-white text-center block">
-                {currentQuestion.question}
-              </Label>
-              
-              <div className="gap-3 flex flex-col">
-                {currentQuestion.options.map((option) => {
-                  const isChecked = answers[currentQuestion.id]?.includes(option) || false;
-                  
-                  return (
-                    <div key={option} className="flex items-center space-x-3 bg-gray-700/30 hover:bg-gray-700/50 transition-colors p-3 rounded-lg cursor-pointer">
-                      <Checkbox 
-                        id={`${currentQuestion.id}-${option}`}
-                        checked={isChecked}
-                        onCheckedChange={(checked) => handleAnswerChange(option, checked === true)}
-                        className="text-purple-500 border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
-                      />
-                      <Label 
-                        htmlFor={`${currentQuestion.id}-${option}`}
-                        className="text-white font-medium cursor-pointer w-full"
-                      >
-                        {option}
-                      </Label>
-                    </div>
-                  );
-                })}
+        {showWelcomeMessage ? (
+          <WelcomeMessage 
+            primaryGoal={getPrimaryGoal()} 
+            onContinue={startSubscriptionFlow} 
+            isLoading={isLoading} 
+          />
+        ) : (
+          <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
+            <CardContent className="pt-6 space-y-6">
+              <div className="flex items-center justify-center mb-4">
+                <motion.div
+                  key={currentQuestion.id + "-icon"}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                  className="p-3 bg-gray-700/50 rounded-full"
+                >
+                  {currentQuestion.icon}
+                </motion.div>
               </div>
               
-              <Button
-                onClick={handleNext}
-                disabled={isLoading}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+              <motion.div
+                key={currentQuestion.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className="space-y-4"
               >
-                {currentQuestionIndex < questions.length - 1 ? (
-                  <>
-                    Next Question <ArrowRight className="ml-2 h-4 w-4" />
-                  </>
-                ) : isLoading ? (
-                  "Saving..."
-                ) : (
-                  "Complete & Start Free Trial"
-                )}
-              </Button>
-            </motion.div>
-          </CardContent>
-        </Card>
+                <Label className="text-lg text-white text-center block">
+                  {currentQuestion.question}
+                </Label>
+                
+                <div className="gap-3 flex flex-col">
+                  {currentQuestion.options.map((option) => {
+                    const isChecked = answers[currentQuestion.id]?.includes(option) || false;
+                    
+                    return (
+                      <div key={option} className="flex items-center space-x-3 bg-gray-700/30 hover:bg-gray-700/50 transition-colors p-3 rounded-lg cursor-pointer">
+                        <Checkbox 
+                          id={`${currentQuestion.id}-${option}`}
+                          checked={isChecked}
+                          onCheckedChange={(checked) => handleAnswerChange(option, checked === true)}
+                          className="text-purple-500 border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
+                        />
+                        <Label 
+                          htmlFor={`${currentQuestion.id}-${option}`}
+                          className="text-white font-medium cursor-pointer w-full"
+                        >
+                          {option}
+                        </Label>
+                      </div>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  onClick={handleNext}
+                  disabled={isLoading}
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                >
+                  {currentQuestionIndex < questions.length - 1 ? (
+                    <>
+                      Next Question <ArrowRight className="ml-2 h-4 w-4" />
+                    </>
+                  ) : isLoading ? (
+                    "Saving..."
+                  ) : (
+                    "Complete"
+                  )}
+                </Button>
+              </motion.div>
+            </CardContent>
+          </Card>
+        )}
       </motion.div>
     </div>
   );
