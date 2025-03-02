@@ -26,23 +26,6 @@ interface HabitCardProps {
   onDelete: () => void;
 }
 
-// Function to get random cheerful phrases for completed habits
-const getCompletionPhrase = () => {
-  const phrases = [
-    "Great job!",
-    "Way to go!",
-    "Awesome!",
-    "You did it!",
-    "Fantastic!",
-    "Brilliant!",
-    "Well done!",
-    "Keep it up!",
-    "Amazing!",
-    "Superb!"
-  ];
-  return phrases[Math.floor(Math.random() * phrases.length)];
-};
-
 // Function to get fun icon based on streak
 const getStreakIcon = (streak: number) => {
   if (streak >= 30) return <Trophy className="h-5 w-5 text-amber-400" />;
@@ -255,7 +238,7 @@ export function HabitCard({
               {completed ? (
                 <div className="flex items-center space-x-1">
                   <CheckCircle className="h-4 w-4 mr-1" />
-                  <span>{getCompletionPhrase()}</span>
+                  <span>Completed</span>
                 </div>
               ) : (
                 "Complete"
