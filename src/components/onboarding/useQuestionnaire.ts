@@ -42,6 +42,13 @@ export function useQuestionnaire() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
+        // Remove the is_new_user flag from user metadata to indicate they've completed onboarding
+        await supabase.auth.updateUser({
+          data: {
+            is_new_user: false
+          }
+        });
+        
         // Always create checkout session with trial period enabled
         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
           body: {
@@ -72,13 +79,6 @@ export function useQuestionnaire() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        // Update user metadata to remove is_new_user flag
-        await supabase.auth.updateUser({
-          data: {
-            is_new_user: false
-          }
-        });
-        
         // Update the profile with the questionnaire answers
         const { error } = await supabase
           .from('profiles')

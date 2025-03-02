@@ -8,6 +8,7 @@ import { questions } from "./questionnaireData";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export function OnboardingQuestionnaire() {
   const navigate = useNavigate();
@@ -56,8 +57,9 @@ export function OnboardingQuestionnaire() {
       const hasActiveSubscription = profile?.is_subscribed || 
         ['active', 'trialing'].includes(profile?.subscription_status || '');
 
-      // If not a new user OR already has responses OR already subscribed, redirect to habits
+      // Strict access control: Only allow new users without quiz responses AND without subscription
       if (!isNewUser || quizResponses || hasActiveSubscription) {
+        toast.error("Onboarding is only for new users without an active subscription");
         navigate('/habits');
       }
     };
@@ -95,7 +97,7 @@ export function OnboardingQuestionnaire() {
               transition={{ delay: 0.3, duration: 0.4 }}
             >
               <p className="text-gray-300 mt-3 mb-4">
-                Let's personalize your experience ({currentQuestionIndex + 1}/{questionsLength})
+                Complete this quiz to start your free trial ({currentQuestionIndex + 1}/{questionsLength})
               </p>
               <ProgressIndicator 
                 totalSteps={questionsLength} 

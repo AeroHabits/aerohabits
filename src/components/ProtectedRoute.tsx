@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,8 +17,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
-          setIsAuthenticated(true);
-          
           // Check if this is a new user who needs to complete the questionnaire
           const isNewUser = user.user_metadata?.is_new_user;
           
@@ -39,13 +36,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
             
           const hasActiveSubscription = profile?.is_subscribed || 
             ['active', 'trialing'].includes(profile?.subscription_status || '');
-            
-          // For new users without quiz responses or active subscription, 
-          // force redirect to onboarding (except if they're already there)
+          
+          // If new user without quiz responses AND without active subscription
+          // they must complete onboarding before accessing any other part of the app
           if (isNewUser && !quizResponses && !hasActiveSubscription) {
-            if (window.location.pathname !== '/onboarding') {
-              setRequiresOnboarding(true);
-            }
+            console.log('User requires onboarding');
+            setRequiresOnboarding(true);
+            setIsAuthenticated(true);
+          } else {
+            // Otherwise, user is fully authenticated and can access the app
+            setIsAuthenticated(true);
           }
         } else {
           setIsAuthenticated(false);
@@ -62,8 +62,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setIsAuthenticated(!!session);
-        setIsLoading(false);
+        // Don't immediately set authenticated here, need to check onboarding status
+        if (session) {
+          checkUser(); // Re-run the full check
+        } else {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+        }
       }
     );
 
@@ -80,7 +85,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" replace />;
   }
   
-  if (requiresOnboarding) {
+  // This is the key change - redirect to onboarding for all routes except /onboarding
+  // if the user requires onboarding
+  if (requiresOnboarding && window.location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
   }
 

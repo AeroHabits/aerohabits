@@ -28,6 +28,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
     setIsLoading(true);
 
     try {
+      // Always set is_new_user to true for new signups
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -44,7 +45,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
       if (data.user) {
         // Direct users to onboarding questionnaire
         navigate('/onboarding');
-        handleSuccess("Account created successfully! Please complete the questionnaire to begin your free trial.");
+        handleSuccess("Please complete the questionnaire to begin your free trial.");
       } else {
         handleSuccess("Please check your email to verify your account.");
       }
