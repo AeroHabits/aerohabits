@@ -40,13 +40,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           const hasActiveSubscription = profile?.is_subscribed || 
             ['active', 'trialing'].includes(profile?.subscription_status || '');
             
-          // Only require onboarding if:
-          // 1. User is marked as new AND
-          // 2. They don't have quiz responses AND
-          // 3. They're not already on the onboarding page AND
-          // 4. They don't already have an active subscription
-          if (isNewUser && !quizResponses && window.location.pathname !== '/onboarding' && !hasActiveSubscription) {
-            setRequiresOnboarding(true);
+          // For new users without quiz responses or active subscription, 
+          // force redirect to onboarding (except if they're already there)
+          if (isNewUser && !quizResponses && !hasActiveSubscription) {
+            if (window.location.pathname !== '/onboarding') {
+              setRequiresOnboarding(true);
+            }
           }
         } else {
           setIsAuthenticated(false);
