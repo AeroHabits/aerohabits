@@ -1,11 +1,12 @@
 
-import { Crown } from "lucide-react";
+import { Crown, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { motion } from "framer-motion";
 
 export function SubscriptionCard() {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,9 +54,22 @@ export function SubscriptionCard() {
   };
 
   return (
-    <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-      <CardHeader className="border-b border-white/10">
-        <CardTitle className="text-lg font-medium text-white">Premium Membership</CardTitle>
+    <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
+      <CardHeader className="border-b border-white/10 relative">
+        <div className="absolute top-0 right-0 h-20 w-20 opacity-30 pointer-events-none">
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full blur-xl"
+            animate={{ 
+              scale: [1, 1.2, 1], 
+              opacity: [0.2, 0.3, 0.2] 
+            }}
+            transition={{ duration: 3, repeat: Infinity }}
+          />
+        </div>
+        <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
+          <Star className="h-5 w-5 text-yellow-400" />
+          Premium Membership
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
@@ -73,14 +87,16 @@ export function SubscriptionCard() {
           <Button 
             onClick={handleManageSubscription}
             disabled={isLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-lg"
+            variant="premium"
+            className="w-full font-medium shadow-lg"
           >
             {isLoading ? "Loading..." : "Manage Subscription"}
           </Button>
         ) : (
           <Button
             onClick={() => window.location.href = '/premium'}
-            className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium shadow-lg"
+            variant="premium"
+            className="w-full font-medium shadow-lg"
           >
             Get Premium
           </Button>

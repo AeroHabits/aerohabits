@@ -1,7 +1,8 @@
 
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Flame, Lock } from "lucide-react";
+import { CheckCircle2, Flame, Lock, Star } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 interface ChallengeActionsProps {
   isJoined: boolean | undefined;
@@ -76,26 +77,30 @@ export function ChallengeActions({
   }
 
   return (
-    <Button 
-      className={`w-full transition-all duration-300 ${
-        isJoined 
-          ? 'bg-green-500 hover:bg-green-600' 
-          : ''
-      }`}
-      onClick={onJoin}
-      disabled={isLoading || isJoined}
-    >
-      {isJoined ? (
-        <div className="flex items-center gap-2">
-          <CheckCircle2 className="h-4 w-4" />
-          <span>Challenge Accepted!</span>
-        </div>
-      ) : (
-        <div className="flex items-center gap-2">
-          <Flame className="h-4 w-4" />
-          <span>Accept Challenge</span>
-        </div>
-      )}
-    </Button>
+    <motion.div className="w-full" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+      <Button 
+        variant={isJoined ? "premium" : "default"}
+        className={`w-full transition-all duration-300 ${
+          isJoined 
+            ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-green-400/20' 
+            : ''
+        }`}
+        onClick={onJoin}
+        disabled={isLoading || isJoined}
+      >
+        {isJoined ? (
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="h-4 w-4" />
+            <span>Challenge Accepted!</span>
+            <Star className="h-3 w-3 text-yellow-300" />
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <Flame className="h-4 w-4 text-orange-400" />
+            <span>Accept Challenge</span>
+          </div>
+        )}
+      </Button>
+    </motion.div>
   );
 }
