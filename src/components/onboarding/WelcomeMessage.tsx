@@ -19,9 +19,9 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
       className="w-full"
     >
       <Card className="bg-gradient-to-br from-gray-800/90 to-gray-900 border-gray-700/50 shadow-xl backdrop-blur-sm overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-600/5 to-purple-900/10 z-0"></div>
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-purple-600/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-600/5 to-blue-900/10 z-0"></div>
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-blue-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-slate-600/10 rounded-full blur-3xl"></div>
         
         <CardContent className="pt-6 pb-8 space-y-6 relative z-10">
           <motion.div 
@@ -34,8 +34,8 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
               damping: 20 
             }}
           >
-            <div className="p-4 bg-gradient-to-br from-purple-500/20 to-purple-700/20 rounded-full ring-1 ring-purple-500/30 shadow-lg">
-              <Award className="w-10 h-10 text-purple-400" />
+            <div className="p-4 bg-gradient-to-br from-blue-500/20 to-blue-700/20 rounded-full ring-1 ring-blue-500/30 shadow-lg">
+              <Award className="w-10 h-10 text-blue-400" />
             </div>
           </motion.div>
           
@@ -65,7 +65,7 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
               transition={{ delay: 0.6, duration: 0.3 }}
             >
               <p className="text-gray-200 text-sm leading-relaxed">
-                <span className="font-semibold text-purple-400">Premium:</span> Advanced tracking, personalized insights, and accountability tools.
+                <span className="font-semibold text-blue-400">Premium:</span> Advanced tracking, personalized insights, and accountability tools.
               </p>
             </motion.div>
           </div>
@@ -78,7 +78,7 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
             <Button
               onClick={onContinue}
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-6 transition-all shadow-md hover:shadow-lg group"
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-6 transition-all shadow-md hover:shadow-lg group"
               size="lg"
             >
               {isLoading ? (
