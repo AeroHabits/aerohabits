@@ -1,241 +1,180 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
-import { useErrorTracking } from "@/hooks/useErrorTracking";
+import { trackPerformance } from "@/lib/analytics";
 
-// Type definitions for the query builder
-type TableNames = 'habits' | 'goals' | 'challenges' | 'profiles' | 'habit_categories';
-type QueryMethod = 'select' | 'insert' | 'update' | 'delete' | 'upsert';
-type OrderDirection = 'asc' | 'desc';
+// Track query performance
+const trackQueryPerformance = (
+  operationName: string,
+  duration: number,
+  recordCount?: number
+) => {
+  trackPerformance(`db_query_${operationName}`, duration, { recordCount });
+};
 
-interface QueryOptions {
-  limit?: number;
-  offset?: number;
-  orderBy?: string;
-  orderDirection?: OrderDirection;
-  filters?: Record<string, any>;
-  select?: string;
-  batchSize?: number;
-  relations?: string[];
-  cacheTime?: number; // in seconds
-  returnData?: boolean;
-  timeout?: number; // in milliseconds
+// Execute optimized database queries with performance tracking
+export async function optimizeSupabaseQuery<T>(
+  tableName: string,
+  queryType: 'select' | 'insert' | 'update' | 'delete',
+  options: {
+    columns?: string;
+    filters?: Record<string, any>;
+    pagination?: { page: number; pageSize: number };
+    sorting?: { column: string; ascending?: boolean };
+    data?: Record<string, any>;
+    returnData?: boolean;
+  } = {}
+): Promise<T[]> {
+  const startTime = performance.now();
+  let result;
+
+  try {
+    const {
+      columns = '*',
+      filters = {},
+      pagination,
+      sorting,
+      data,
+      returnData = true,
+    } = options;
+
+    // Initialize query based on operation type
+    let query;
+
+    switch (queryType) {
+      case 'select':
+        query = supabase.from(tableName).select(columns);
+        break;
+      case 'insert':
+        query = supabase.from(tableName).insert(data || {});
+        if (returnData) {
+          query = query.select(columns);
+        }
+        break;
+      case 'update':
+        query = supabase.from(tableName).update(data || {});
+        if (returnData) {
+          query = query.select(columns);
+        }
+        break;
+      case 'delete':
+        query = supabase.from(tableName).delete();
+        if (returnData) {
+          query = query.select(columns);
+        }
+        break;
+    }
+
+    // Apply filters based on operation type
+    if (queryType !== 'insert' && Object.keys(filters).length > 0) {
+      Object.entries(filters).forEach(([key, value]) => {
+        if (Array.isArray(value) && value.length > 0) {
+          query = query.in(key, value);
+        } else if (typeof value === 'object' && value !== null) {
+          // Handle complex filter operations
+          const operator = Object.keys(value)[0];
+          const filterValue = value[operator];
+
+          if (operator === 'gt') query = query.gt(key, filterValue);
+          else if (operator === 'gte') query = query.gte(key, filterValue);
+          else if (operator === 'lt') query = query.lt(key, filterValue);
+          else if (operator === 'lte') query = query.lte(key, filterValue);
+          else if (operator === 'like') query = query.like(key, filterValue);
+          else if (operator === 'ilike') query = query.ilike(key, filterValue);
+          else if (operator === 'neq') query = query.neq(key, filterValue);
+        } else {
+          // Simple equality filter
+          query = query.eq(key, value);
+        }
+      });
+    }
+
+    // Add pagination if provided
+    if (pagination && queryType === 'select') {
+      const { page, pageSize } = pagination;
+      const start = (page - 1) * pageSize;
+      query = query.range(start, start + pageSize - 1);
+    }
+
+    // Add sorting if provided
+    if (sorting && queryType === 'select') {
+      const { column, ascending = true } = sorting;
+      query = query.order(column, { ascending });
+    }
+
+    // Execute the query
+    const { data: resultData, error } = await query;
+
+    if (error) {
+      console.error(`Database ${queryType} error:`, error);
+      throw error;
+    }
+
+    result = resultData || [];
+  } catch (error) {
+    console.error(`Error in optimized ${queryType} query:`, error);
+    result = [];
+  } finally {
+    // Track performance
+    const duration = performance.now() - startTime;
+    trackQueryPerformance(
+      `${tableName}_${queryType}`, 
+      duration, 
+      Array.isArray(result) ? result.length : 0
+    );
+  }
+
+  return result as T[];
 }
 
-/**
- * Optimized database query builder with performance monitoring
- * and connection quality-aware features
- */
-export function useDatabaseOptimizer() {
-  const { measureAsync } = usePerformanceMonitoring();
-  const { trackError } = useErrorTracking();
-  
-  // In-memory query cache
-  const queryCache = new Map<string, { data: any; timestamp: number; cacheTime: number }>();
-  
-  // Clear expired cache entries
-  const clearExpiredCache = () => {
-    const now = Date.now();
-    queryCache.forEach((value, key) => {
-      if (now - value.timestamp > value.cacheTime * 1000) {
-        queryCache.delete(key);
-      }
-    });
-  };
-  
-  // Run cache cleanup periodically
-  setInterval(clearExpiredCache, 60000); // Every minute
-  
-  // Generate a cache key from query parameters
-  const generateCacheKey = (
-    table: TableNames, 
-    method: QueryMethod, 
-    options: QueryOptions
-  ) => {
-    return `${table}:${method}:${JSON.stringify(options)}`;
-  };
-  
-  const optimizedQuery = async <T = any>(
-    table: TableNames,
-    method: QueryMethod = 'select',
-    options: QueryOptions = {}
-  ): Promise<T> => {
-    const {
-      limit = 100,
-      offset = 0,
-      orderBy = 'created_at',
-      orderDirection = 'desc',
-      filters = {},
-      select = '*',
-      batchSize = 100,
-      relations = [],
-      cacheTime = 30, // Default 30 seconds
-      returnData = true,
-      timeout = 10000 // Default 10 seconds
-    } = options;
-    
-    // Check cache for read queries
-    const cacheKey = generateCacheKey(table, method, options);
-    if (method === 'select' && cacheTime > 0) {
-      const cached = queryCache.get(cacheKey);
-      if (cached && (Date.now() - cached.timestamp < cached.cacheTime * 1000)) {
-        console.log(`Using cached data for ${table}`, { cached: true });
-        return cached.data;
-      }
-    }
-    
-    // Set up abort controller for timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+// Function to batch insert/update records for better performance
+export async function batchOperation<T>(
+  tableName: string,
+  operation: 'insert' | 'update' | 'upsert',
+  records: Record<string, any>[],
+  batchSize = 50
+): Promise<T[]> {
+  const startTime = performance.now();
+  const results: any[] = [];
+
+  // Process in batches
+  for (let i = 0; i < records.length; i += batchSize) {
+    const batch = records.slice(i, i + batchSize);
     
     try {
-      let query = supabase.from(table);
+      let query;
       
-      // Set up query based on method
-      switch (method) {
-        case 'select':
-          query = query.select(select);
-          
-          // Add relations if specified
-          if (relations.length > 0) {
-            query = query.select(
-              `${select}${relations.map(r => `, ${r}(*)`).join('')}`
-            );
-          }
-          
-          // Apply filters
-          Object.entries(filters).forEach(([key, value]) => {
-            if (Array.isArray(value)) {
-              query = query.in(key, value);
-            } else if (value !== null && typeof value === 'object') {
-              // Handle special operators like gt, lt, etc.
-              Object.entries(value).forEach(([op, val]) => {
-                if (op === 'gt') query = query.gt(key, val);
-                else if (op === 'gte') query = query.gte(key, val);
-                else if (op === 'lt') query = query.lt(key, val);
-                else if (op === 'lte') query = query.lte(key, val);
-                else if (op === 'like') query = query.like(key, `%${val}%`);
-                else if (op === 'ilike') query = query.ilike(key, `%${val}%`);
-                else if (op === 'neq') query = query.neq(key, val);
-              });
-            } else {
-              query = query.eq(key, value);
-            }
-          });
-          
-          // Add pagination
-          query = query
-            .order(orderBy, { ascending: orderDirection === 'asc' })
-            .range(offset, offset + limit - 1);
-          
-          break;
-        
-        case 'insert':
-          query = query.insert(filters);
-          break;
-        
-        case 'update':
-          // Extract the update data and conditions
-          const { conditions, ...updateData } = filters;
-          query = query.update(updateData);
-          
-          // Apply conditions if provided
-          if (conditions) {
-            Object.entries(conditions).forEach(([key, value]) => {
-              query = query.eq(key, value);
-            });
-          }
-          break;
-        
-        case 'delete':
-          Object.entries(filters).forEach(([key, value]) => {
-            query = query.eq(key, value);
-          });
-          break;
-        
-        case 'upsert':
-          query = query.upsert(filters);
-          break;
+      if (operation === 'insert') {
+        query = supabase.from(tableName).insert(batch);
+      } else if (operation === 'update') {
+        // For update, we assume records have an id field
+        // This is simplified - in a real app, you'd need to handle updates by primary key
+        query = supabase.from(tableName).upsert(batch);
+      } else { // upsert
+        query = supabase.from(tableName).upsert(batch);
       }
       
-      // Execute the query with performance monitoring
-      const result = await measureAsync(`database.${table}.${method}`, async () => {
-        const { data, error } = await query;
-        
-        if (error) {
-          throw error;
-        }
-        
-        return data;
-      }, { table, method, hasFilters: Object.keys(filters).length > 0 });
+      // Add returning clause
+      query = query.select();
       
-      // Cache the result for read queries
-      if (method === 'select' && cacheTime > 0 && result) {
-        queryCache.set(cacheKey, {
-          data: result,
-          timestamp: Date.now(),
-          cacheTime
-        });
+      const { data, error } = await query;
+      
+      if (error) {
+        console.error(`Batch ${operation} error:`, error);
+      } else if (data) {
+        results.push(...data);
       }
-      
-      return returnData ? result : null as any;
-    } catch (error: any) {
-      return trackError(error, `Database ${method} on ${table}`, {
-        severity: method === 'select' ? 'medium' : 'high',
-        context: { table, method, options },
-        fallbackData: [] as any
-      });
-    } finally {
-      clearTimeout(timeoutId);
+    } catch (error) {
+      console.error(`Error in batch ${operation}:`, error);
     }
-  };
-  
-  const batchProcess = async <T = any>(
-    table: TableNames,
-    method: QueryMethod,
-    items: Record<string, any>[],
-    options: Omit<QueryOptions, 'filters'> = {}
-  ): Promise<T[]> => {
-    const { batchSize = 50 } = options;
-    const results: any[] = [];
-    
-    // Process in batches
-    for (let i = 0; i < items.length; i += batchSize) {
-      const batch = items.slice(i, i + batchSize);
-      
-      // Handle different methods
-      if (method === 'insert' || method === 'upsert') {
-        const result = await optimizedQuery(table, method, {
-          ...options,
-          filters: batch
-        });
-        
-        if (result) {
-          results.push(...result);
-        }
-      } else {
-        // For update and delete, process one by one but in parallel
-        const batchPromises = batch.map(item => 
-          optimizedQuery(table, method, {
-            ...options,
-            filters: item
-          })
-        );
-        
-        const batchResults = await Promise.all(batchPromises);
-        batchResults.forEach(result => {
-          if (result) {
-            results.push(result);
-          }
-        });
-      }
-    }
-    
-    return results as T[];
-  };
-  
-  return {
-    query: optimizedQuery,
-    batchProcess
-  };
+  }
+
+  // Track performance
+  const duration = performance.now() - startTime;
+  trackQueryPerformance(
+    `${tableName}_batch_${operation}`,
+    duration,
+    results.length
+  );
+
+  return results as T[];
 }

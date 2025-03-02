@@ -1,4 +1,3 @@
-
 // Enhanced analytics system for tracking user behavior and app performance
 import * as Sentry from "@sentry/react";
 
