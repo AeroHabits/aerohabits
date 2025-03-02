@@ -11,10 +11,13 @@ const Habits = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-10">
+      {/* Enhanced background effects */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20">
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-500 rounded-full filter blur-[100px] animate-float" />
         <div className="absolute bottom-1/4 left-0 w-1/4 h-1/4 bg-purple-500 rounded-full filter blur-[100px] animate-float" />
         <div className="absolute top-1/2 right-1/4 w-1/5 h-1/5 bg-indigo-500 rounded-full filter blur-[100px] animate-pulse" />
+        <div className="absolute bottom-0 right-1/3 w-1/4 h-1/4 bg-blue-600 rounded-full filter blur-[120px] animate-float" />
+        <div className="absolute top-1/3 left-1/4 w-1/6 h-1/6 bg-indigo-400 rounded-full filter blur-[80px] animate-pulse" />
       </div>
 
       <motion.div
@@ -39,8 +42,16 @@ const Habits = () => {
         >
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-white mb-2">
-              <span className="text-gradient bg-gradient-to-r from-blue-300 to-indigo-400">
-                Your Daily Habits
+              <span className="relative">
+                <span className="text-gradient bg-gradient-to-r from-blue-300 to-indigo-400">
+                  Your Daily Habits
+                </span>
+                <motion.span 
+                  className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-blue-300 to-indigo-400"
+                  initial={{ width: "0%" }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                />
               </span>
             </h2>
             <p className="text-blue-100 max-w-2xl mx-auto">

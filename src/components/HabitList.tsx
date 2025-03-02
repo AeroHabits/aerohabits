@@ -127,10 +127,10 @@ export function HabitList() {
       <div className="space-y-6">
         <div className="flex justify-end mb-4">
           <Button 
-            variant="outline" 
+            variant="glass" 
             size="sm" 
             onClick={handleRefresh}
-            className="text-white border-white/20 hover:bg-white/10 hover:text-blue-300 transition-all"
+            className="text-white hover:bg-white/20 hover:text-blue-300 transition-all"
           >
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh

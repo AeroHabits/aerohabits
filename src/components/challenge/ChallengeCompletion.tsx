@@ -46,34 +46,47 @@ export function ChallengeCompletion({ userChallengeId, onComplete, isCompleted }
 
   return (
     <div className="mt-4">
-      <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+      <motion.div 
+        whileHover={{ scale: 1.02 }} 
+        whileTap={{ scale: 0.98 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <Button
           onClick={handleMarkComplete}
           disabled={isLoading || isCompleted}
-          variant={isCompleted ? "premium" : "default"}
-          className={`w-full ${isCompleted 
-            ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 border-green-400/20' 
+          variant={isCompleted ? "success" : "premium"}
+          size="wide"
+          className={`relative overflow-hidden ${isCompleted 
+            ? '' 
             : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700'}`}
         >
-          <div className="flex items-center gap-2">
-            {isCompleted ? (
-              <>
+          {isCompleted ? (
+            <>
+              {/* Animated glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-green-400/20 to-emerald-400/20 animate-pulse"></div>
+              <div className="flex items-center gap-2 relative z-10">
                 <motion.div
                   initial={{ rotate: 0 }}
                   animate={{ rotate: [0, 15, 0, -15, 0] }}
                   transition={{ duration: 1, delay: 0.5 }}
                 >
-                  <CheckCircle2 className="h-4 w-4" />
+                  <CheckCircle2 className="h-5 w-5" />
                 </motion.div>
-                <span>Completed for Today!</span>
-              </>
-            ) : (
-              <>
-                <XCircle className="h-4 w-4" />
-                <span>Mark Today Complete</span>
-              </>
-            )}
-          </div>
+                <span className="font-medium">Completed for Today!</span>
+              </div>
+            </>
+          ) : (
+            <>
+              {/* Animated shine effect */}
+              <div className="absolute inset-0 w-1/2 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-20 animate-shimmer"></div>
+              <div className="flex items-center gap-2 relative z-10">
+                <XCircle className="h-5 w-5" />
+                <span className="font-medium">Mark Today Complete</span>
+              </div>
+            </>
+          )}
         </Button>
       </motion.div>
     </div>

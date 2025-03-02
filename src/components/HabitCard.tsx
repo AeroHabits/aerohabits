@@ -110,7 +110,7 @@ export function HabitCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-white/60 hover:text-red-400 hover:bg-red-400/10"
+                  className="text-white/60 hover:text-red-400 hover:bg-red-400/10 rounded-full"
                 >
                   <Trash2 className="h-5 w-5" />
                 </Button>
@@ -155,16 +155,18 @@ export function HabitCard({
             </div>
             <Button
               onClick={onToggle}
+              variant={completed ? "success" : "glass"}
+              size="pill"
               className={cn(
                 "transition-all duration-300",
                 completed 
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-indigo-600 hover:to-blue-600 text-white"
-                  : "bg-white/5 hover:bg-white/10 text-white border border-white/10"
+                  ? "" 
+                  : ""
               )}
             >
               {completed ? (
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-5 w-5 text-blue-200" />
+                  <CheckCircle className="h-5 w-5 text-white" />
                   <span>Completed!</span>
                 </div>
               ) : (
