@@ -18,46 +18,41 @@ export function PageHeader() {
       className="mb-8"
     >
       <div className="relative flex items-center justify-center">
-        {/* Dynamic colorful background */}
+        {/* Subtle background with softer colors */}
         <motion.div 
-          className="absolute -inset-1 rounded-lg blur-2xl bg-gradient-to-r from-cyan-500/40 via-blue-600/30 to-teal-400/40 opacity-90 transition duration-700"
+          className="absolute -inset-1 rounded-lg blur-xl bg-gradient-to-r from-blue-400/10 via-indigo-300/10 to-cyan-300/10 opacity-70"
           animate={{
             background: [
-              "linear-gradient(to right, rgba(6, 182, 212, 0.4), rgba(37, 99, 235, 0.3), rgba(45, 212, 191, 0.4))",
-              "linear-gradient(to right, rgba(45, 212, 191, 0.4), rgba(6, 182, 212, 0.4), rgba(37, 99, 235, 0.3))",
-              "linear-gradient(to right, rgba(37, 99, 235, 0.3), rgba(45, 212, 191, 0.4), rgba(6, 182, 212, 0.4))"
+              "linear-gradient(to right, rgba(96, 165, 250, 0.1), rgba(129, 140, 248, 0.1), rgba(34, 211, 238, 0.1))",
+              "linear-gradient(to right, rgba(34, 211, 238, 0.1), rgba(96, 165, 250, 0.1), rgba(129, 140, 248, 0.1))",
+              "linear-gradient(to right, rgba(129, 140, 248, 0.1), rgba(34, 211, 238, 0.1), rgba(96, 165, 250, 0.1))"
             ]
           }}
           transition={{ 
-            duration: 8, 
+            duration: 12, 
             repeat: Infinity,
             repeatType: "reverse" 
           }}
         />
         
-        {/* AEROHABITS text with exciting styling */}
+        {/* AEROHABITS text with calm styling */}
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight relative">
-          {/* Text shadow for depth */}
-          <span className="absolute -top-0.5 -left-0.5 text-cyan-500/30">
-            AEROHABITS
-          </span>
+          {/* Remove text shadow for depth */}
           
-          {/* Main text with animated gradient and glow */}
+          {/* Main text with subtle gradient */}
           <motion.span 
-            className="text-white relative inline-block"
+            className="text-blue-50/90 relative inline-block"
             animate={{ 
               textShadow: [
-                "0 0 8px rgba(255, 255, 255, 0.4)",
-                "0 0 16px rgba(20, 184, 166, 0.6)",
-                "0 0 8px rgba(255, 255, 255, 0.4)"
+                "0 0 2px rgba(255, 255, 255, 0.2)",
+                "0 0 3px rgba(186, 230, 253, 0.3)",
+                "0 0 2px rgba(255, 255, 255, 0.2)"
               ]
             }}
-            transition={{ duration: 2, repeat: Infinity }}
+            transition={{ duration: 4, repeat: Infinity }}
           >
             AEROHABITS
           </motion.span>
-          
-          {/* Removed the animated colorful underline effect */}
         </h1>
       </div>
     </motion.div>
