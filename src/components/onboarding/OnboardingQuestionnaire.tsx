@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { QuestionCard } from "./QuestionCard";
 import { ProgressIndicator } from "./ProgressIndicator";
@@ -28,36 +29,47 @@ export function OnboardingQuestionnaire() {
   // Check if user should see the questionnaire
   useEffect(() => {
     const checkUserStatus = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        // Not logged in, redirect to auth
-        navigate('/auth');
-        return;
-      }
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          // Not logged in, redirect to auth
+          navigate('/auth');
+          return;
+        }
 
-      // Check if user has already completed the quiz
-      const { data: quizResponses } = await supabase
-        .from('user_quiz_responses')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle();
+        console.log("Checking onboarding access for user:", user.id);
+        console.log("User metadata:", user.user_metadata);
 
-      // Check subscription status
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_subscribed, subscription_status')
-        .eq('id', user.id)
-        .maybeSingle();
+        // Check if user has already completed the quiz
+        const { data: quizResponses } = await supabase
+          .from('user_quiz_responses')
+          .select('id')
+          .eq('user_id', user.id)
+          .maybeSingle();
 
-      const hasCompletedQuiz = !!quizResponses;
-      const hasActiveSubscription = profile?.is_subscribed || 
-        ['active', 'trialing'].includes(profile?.subscription_status || '');
+        // Check subscription status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_subscribed, subscription_status')
+          .eq('id', user.id)
+          .maybeSingle();
 
-      // Only users without quiz responses AND without subscription should be here
-      if (hasCompletedQuiz || hasActiveSubscription) {
-        toast.error("You've already completed onboarding or have an active subscription");
-        navigate('/habits');
+        const hasCompletedQuiz = !!quizResponses;
+        const hasActiveSubscription = profile?.is_subscribed || 
+          ['active', 'trialing'].includes(profile?.subscription_status || '');
+
+        console.log("Has completed quiz:", hasCompletedQuiz);
+        console.log("Has active subscription:", hasActiveSubscription);
+
+        // Only users without quiz responses AND without subscription should be here
+        if (hasCompletedQuiz && hasActiveSubscription) {
+          toast.error("You've already completed onboarding and have an active subscription");
+          navigate('/habits');
+        }
+      } catch (error) {
+        console.error("Error checking user status:", error);
+        toast.error("An error occurred while checking your account status");
       }
     };
 

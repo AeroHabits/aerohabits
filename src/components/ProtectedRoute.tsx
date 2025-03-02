@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         const { data: { user } } = await supabase.auth.getUser();
         
         if (user) {
+          console.log("User metadata:", user.user_metadata);
+          
           // Check if user has already completed the quiz
           const { data: quizResponses } = await supabase
             .from('user_quiz_responses')
@@ -35,8 +38,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           const hasActiveSubscription = profile?.is_subscribed || 
             ['active', 'trialing'].includes(profile?.subscription_status || '');
           
-          // If the user has neither completed the quiz nor has an active subscription, they must go through onboarding
-          if (!hasCompletedQuiz && !hasActiveSubscription) {
+          console.log("Has completed quiz:", hasCompletedQuiz);
+          console.log("Has active subscription:", hasActiveSubscription);
+          
+          // If the user has neither completed the quiz NOR has an active subscription,
+          // they must go through onboarding
+          if (!hasCompletedQuiz || !hasActiveSubscription) {
             console.log('User requires onboarding - no quiz responses or subscription');
             setRequiresOnboarding(true);
             setIsAuthenticated(true);
