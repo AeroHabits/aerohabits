@@ -154,7 +154,7 @@ export function OnboardingQuestionnaire() {
               user_id: user.id,
               fitness_level: answers.time_commitment || 'beginner',
               goals: [answers.primary_goal || 'general'],
-              preferred_duration: parseInt(answers.time_commitment.split(" ")[0]) || 15
+              preferred_duration: parseInt(answers.time_commitment?.split(" ")[0]) || 15
             });
             
           if (quizError) {
