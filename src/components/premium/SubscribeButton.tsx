@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 export function SubscribeButton() {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get user's subscription status
+  // Get user's subscription status - using enabled: false initially to prevent data leakage
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ['subscription-profile'],
     queryFn: async () => {
@@ -26,6 +26,8 @@ export function SubscribeButton() {
       if (error) throw error;
       return data;
     },
+    retry: false,
+    staleTime: 0 // Don't cache this data
   });
 
   const hasActiveSubscription = profile?.is_subscribed || profile?.subscription_status === 'active';

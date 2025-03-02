@@ -26,6 +26,8 @@ export function SubscriptionCard() {
       if (error) throw error;
       return data;
     },
+    retry: false,
+    staleTime: 0 // Don't cache this data
   });
 
   const handleManageSubscription = async () => {
@@ -68,7 +70,7 @@ export function SubscriptionCard() {
         </div>
         <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
           <Star className="h-5 w-5 text-yellow-400" />
-          Premium Membership
+          AeroHabits Premium
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">

@@ -44,7 +44,9 @@ export function SubscriptionCard({
       } = await supabase.from('profiles').select('is_subscribed, subscription_status, current_period_end').eq('id', user.id).single();
       if (error) throw error;
       return data;
-    }
+    },
+    retry: false,
+    staleTime: 0 // Don't cache this data
   });
 
   const handleSubscribe = async () => {
@@ -151,7 +153,7 @@ export function SubscriptionCard({
       <CardHeader className="border-b border-gray-700/50 relative">
         <CardTitle className="text-2xl font-normal text-white flex items-center gap-3">
           <Sparkles className="h-6 w-6 text-yellow-400 animate-pulse" />
-          Premium Membership
+          AeroHabits Premium
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 pt-6 relative">

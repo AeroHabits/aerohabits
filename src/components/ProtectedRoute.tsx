@@ -33,6 +33,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     enabled: isAuthenticated,
     refetchInterval: 5000, // Refetch every 5 seconds to catch subscription updates
     staleTime: 0, // Consider data always stale to ensure fresh checks
+    retry: false, // Don't retry on failure to prevent excessive requests
   });
 
   useEffect(() => {
