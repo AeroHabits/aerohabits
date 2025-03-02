@@ -54,31 +54,31 @@ export function SubscriptionCard() {
   };
 
   return (
-    <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden">
-      <CardHeader className="border-b border-white/10 relative">
-        <div className="absolute top-0 right-0 h-20 w-20 opacity-30 pointer-events-none">
+    <Card className="bg-white border-gray-200 overflow-hidden">
+      <CardHeader className="border-b border-gray-100 relative">
+        <div className="absolute top-0 right-0 h-20 w-20 opacity-10 pointer-events-none">
           <motion.div
-            className="absolute inset-0 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full blur-xl"
+            className="absolute inset-0 bg-gradient-to-br from-gray-400 to-gray-500 rounded-full blur-xl"
             animate={{ 
               scale: [1, 1.2, 1], 
-              opacity: [0.2, 0.3, 0.2] 
+              opacity: [0.1, 0.2, 0.1] 
             }}
             transition={{ duration: 3, repeat: Infinity }}
           />
         </div>
-        <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
-          <Star className="h-5 w-5 text-yellow-400" />
+        <CardTitle className="text-lg font-medium text-gray-800 flex items-center gap-2">
+          <Star className="h-5 w-5 text-gray-700" />
           Premium Membership
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4 pt-4">
         <div className="flex items-center gap-2">
-          <Crown className="h-5 w-5 text-yellow-400" />
-          <h3 className="text-sm font-medium text-gray-200">
+          <Crown className="h-5 w-5 text-gray-700" />
+          <h3 className="text-sm font-medium text-gray-700">
             Status: {getSubscriptionStatus()}
           </h3>
         </div>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-gray-600">
           {profile?.is_subscribed 
             ? "Manage your subscription, view payment history, and update payment method."
             : "Unlock premium features, detailed insights, and personalized tracking"}
@@ -87,16 +87,14 @@ export function SubscriptionCard() {
           <Button 
             onClick={handleManageSubscription}
             disabled={isLoading}
-            variant="premium"
-            className="w-full font-medium shadow-lg"
+            className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium shadow-sm"
           >
             {isLoading ? "Loading..." : "Manage Subscription"}
           </Button>
         ) : (
           <Button
             onClick={() => window.location.href = '/premium'}
-            variant="premium"
-            className="w-full font-medium shadow-lg"
+            className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium shadow-sm"
           >
             Get Premium
           </Button>
