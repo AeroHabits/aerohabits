@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ChevronRight, Star, Award } from "lucide-react";
+import { ChevronRight, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface WelcomeMessageProps {
@@ -11,7 +11,6 @@ interface WelcomeMessageProps {
 }
 
 export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMessageProps) {
-  // Use a more general message without specifying the exact goal
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -65,29 +64,16 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6, duration: 0.3 }}
             >
-              <div className="flex items-start gap-3">
-                <Star className="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5" />
-                <p className="text-gray-200 text-sm leading-relaxed">
-                  With AeroHabits Premium, you'll get personalized recommendations, 
-                  advanced tracking tools, and accountability features to help you stay on track.
-                </p>
-              </div>
+              <p className="text-gray-200 text-sm leading-relaxed">
+                <span className="font-semibold text-purple-400">Premium:</span> Advanced tracking, personalized insights, and accountability tools.
+              </p>
             </motion.div>
-            
-            <motion.p 
-              className="text-gray-400 text-sm"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8, duration: 0.3 }}
-            >
-              Start your free trial today and unlock the full potential of your journey.
-            </motion.p>
           </div>
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1, duration: 0.3 }}
+            transition={{ delay: 0.8, duration: 0.3 }}
           >
             <Button
               onClick={onContinue}
@@ -106,7 +92,7 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
             </Button>
             
             <p className="text-gray-400 text-xs text-center mt-4">
-              Your 3-day free trial starts now. Cancel anytime.
+              3-day free trial. Cancel anytime.
             </p>
           </motion.div>
         </CardContent>
