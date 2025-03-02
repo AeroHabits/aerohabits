@@ -6,6 +6,7 @@ import { FormInput } from "./FormInput";
 import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface SignInFormProps {
   onToggleForm: () => void;
@@ -21,6 +22,10 @@ export const SignInForm = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [resetLinkSent, setResetLinkSent] = useState(false);
+  const [passwordResetStatus, setPasswordResetStatus] = useState<{
+    type: "success" | "error" | null;
+    message: string | null;
+  }>({ type: null, message: null });
   
   const {
     navigate,
@@ -37,16 +42,35 @@ export const SignInForm = ({
       return;
     }
     setIsLoading(true);
+    setPasswordResetStatus({ type: null, message: null });
+    
     try {
+      // Log the reset request for debugging
+      console.log("Sending password reset to:", email);
+      
       const {
+        data,
         error
       } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth?reset=true`
       });
+      
+      console.log("Reset password response:", { data, error });
+      
       if (error) throw error;
+      
       setResetLinkSent(true);
-      handleSuccess("We've sent you a password reset link to your email address");
-    } catch (error) {
+      setPasswordResetStatus({
+        type: "success",
+        message: "We've sent a password reset link to your email. Please check your inbox and spam folder."
+      });
+      handleSuccess("Password reset link sent! Please check your email inbox and spam folder");
+    } catch (error: any) {
+      console.error("Password reset error:", error);
+      setPasswordResetStatus({
+        type: "error", 
+        message: error?.message || "Failed to send reset link. Please try again later."
+      });
       handleError(error);
     } finally {
       setIsLoading(false);
@@ -104,19 +128,21 @@ export const SignInForm = ({
             required 
             disabled={isLoading} 
           />
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-col space-y-3">
             <button 
               onClick={handleForgotPassword} 
               disabled={isLoading} 
               type="button" 
-              className="text-sm transition-colors duration-200 text-zinc-950 self-start"
+              className="text-sm transition-colors duration-200 text-zinc-950 self-start hover:text-gray-600"
             >
               Forgot password?
             </button>
-            {resetLinkSent && (
-              <div className="text-sm text-green-600">
-                Password reset link has been sent to your email.
-              </div>
+            
+            {passwordResetStatus.type && (
+              <Alert variant={passwordResetStatus.type === "error" ? "destructive" : "default"} className="mt-2">
+                <AlertTitle>{passwordResetStatus.type === "success" ? "Success" : "Error"}</AlertTitle>
+                <AlertDescription>{passwordResetStatus.message}</AlertDescription>
+              </Alert>
             )}
           </div>
         </div>
