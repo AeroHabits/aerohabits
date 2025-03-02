@@ -21,12 +21,12 @@ export function PageHeader() {
       <div className="relative flex items-center justify-center group">
         {/* Animated background glow */}
         <motion.div 
-          className="absolute -inset-1 rounded-lg blur-xl bg-gradient-to-r from-blue-400/20 via-indigo-500/20 to-purple-500/20 opacity-50 group-hover:opacity-75 transition duration-700"
+          className="absolute -inset-1 rounded-lg blur-xl bg-gradient-to-r from-purple-500/30 via-indigo-600/30 to-blue-500/30 opacity-60 group-hover:opacity-85 transition duration-700"
           animate={{
             background: [
-              "linear-gradient(to right, rgba(96, 165, 250, 0.2), rgba(129, 140, 248, 0.2), rgba(168, 85, 247, 0.2))",
-              "linear-gradient(to right, rgba(129, 140, 248, 0.2), rgba(168, 85, 247, 0.2), rgba(96, 165, 250, 0.2))",
-              "linear-gradient(to right, rgba(168, 85, 247, 0.2), rgba(96, 165, 250, 0.2), rgba(129, 140, 248, 0.2))"
+              "linear-gradient(to right, rgba(155, 135, 245, 0.3), rgba(217, 70, 239, 0.3), rgba(14, 165, 233, 0.3))",
+              "linear-gradient(to right, rgba(217, 70, 239, 0.3), rgba(14, 165, 233, 0.3), rgba(155, 135, 245, 0.3))",
+              "linear-gradient(to right, rgba(14, 165, 233, 0.3), rgba(155, 135, 245, 0.3), rgba(217, 70, 239, 0.3))"
             ]
           }}
           transition={{ 
@@ -50,7 +50,7 @@ export function PageHeader() {
             repeatType: "reverse"
           }}
         >
-          <Sparkles className="h-4 w-4 text-blue-300" />
+          <Sparkles className="h-4 w-4 text-pink-400" />
         </motion.div>
         
         <motion.div
@@ -67,18 +67,18 @@ export function PageHeader() {
             delay: 2
           }}
         >
-          <Star className="h-4 w-4 text-indigo-300" />
+          <Star className="h-4 w-4 text-amber-300" />
         </motion.div>
         
         {/* AEROHABITS text with enhanced styling */}
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight relative">
           {/* 3D effect layer */}
-          <span className="absolute -top-0.5 -left-0.5 text-black/10">
+          <span className="absolute -top-0.5 -left-0.5 text-black/15">
             AEROHABITS
           </span>
           
           {/* Main text with gradient */}
-          <span className="bg-gradient-to-r from-blue-300 via-indigo-400 to-purple-300 bg-clip-text text-transparent drop-shadow-sm">
+          <span className="bg-gradient-to-r from-violet-400 via-purple-500 to-sky-400 bg-clip-text text-transparent drop-shadow-sm">
             AEROHABITS
           </span>
         </h1>
