@@ -9,9 +9,10 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { useChallenges } from "@/hooks/useChallenges";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Challenge } from "@/types";
 
 export function ChallengeListContainer() {
-  const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
+  const [selectedDifficulty, setSelectedDifficulty] = useState<"easy" | "medium" | "hard" | "master">("easy");
   const { challenges, userChallenges, userProfile, isLoading, joinChallengeMutation } = useChallenges();
   const [currentChallengeId, setCurrentChallengeId] = useState<string | null>(null);
   const [canAccessMaster, setCanAccessMaster] = useState(false);
@@ -93,7 +94,7 @@ export function ChallengeListContainer() {
 
   const filteredChallenges = challenges?.filter(challenge => 
     challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
-  )?.sort((a, b) => (a.sequence_order || 0) - (b.sequence_order || 0));
+  )?.sort((a, b) => (a.sequence_order || 0) - (b.sequence_order || 0)) as Challenge[] | undefined;
 
   if (isLoading) {
     return <LoadingSpinner />;
@@ -123,7 +124,7 @@ export function ChallengeListContainer() {
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <ChallengeDifficultyTabs 
           onDifficultyChange={setSelectedDifficulty}
-          currentDifficulty={userProfile?.current_difficulty || 'easy'}
+          currentDifficulty={userProfile?.current_difficulty as "easy" | "medium" | "hard" | "master" || 'easy'}
           canAccessMaster={canAccessMaster}
         />
       </motion.div>
