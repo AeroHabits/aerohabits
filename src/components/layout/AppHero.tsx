@@ -1,8 +1,8 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Sparkles, Clock } from "lucide-react";
-import { useState, useEffect } from "react";
+import { ChevronDown, ChevronUp, Sparkles } from "lucide-react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,7 +13,6 @@ import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
 export function AppHero() {
   const [showFeatures, setShowFeatures] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showTrialNotice, setShowTrialNotice] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -33,35 +32,6 @@ export function AppHero() {
       return data;
     },
   });
-
-  // Add click event listener for document to dismiss trial notice
-  useEffect(() => {
-    const handleDocumentClick = () => {
-      setShowTrialNotice(false);
-    };
-
-    document.addEventListener('click', handleDocumentClick);
-
-    return () => {
-      document.removeEventListener('click', handleDocumentClick);
-    };
-  }, []);
-
-  // Calculate days remaining in trial
-  const getDaysRemaining = () => {
-    if (!profile?.trial_end_date) return 0;
-    
-    const trialEnd = new Date(profile.trial_end_date);
-    const now = new Date();
-    const diffTime = trialEnd.getTime() - now.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    return Math.max(0, diffDays);
-  };
-
-  const daysRemaining = getDaysRemaining();
-  const isInTrial = daysRemaining > 0;
-  const isActiveSubscriber = profile?.subscription_status === 'active';
 
   return (
     <motion.div
@@ -98,24 +68,6 @@ export function AppHero() {
       <p className="text-lg text-white/80 max-w-2xl mx-auto">
         Track your habits, build streaks, and achieve your goals.
       </p>
-
-      {isInTrial && !isActiveSubscriber && showTrialNotice && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-amber-500/20 to-amber-600/20 border border-amber-500/30 rounded-lg p-3 max-w-md mx-auto"
-        >
-          <div className="flex items-center justify-center gap-2 text-amber-300">
-            <Clock className="h-5 w-5" />
-            <span className="font-medium">
-              Trial ends in {daysRemaining} day{daysRemaining !== 1 ? 's' : ''}
-            </span>
-          </div>
-          <p className="text-sm text-amber-200/80 mt-1">
-            Your credit card will be automatically charged when your trial ends.
-          </p>
-        </motion.div>
-      )}
 
       <div className="space-y-4">
         <motion.div
