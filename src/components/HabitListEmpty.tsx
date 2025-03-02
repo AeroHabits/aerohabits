@@ -16,8 +16,8 @@ export function HabitListEmpty({ onAddHabit }: HabitListEmptyProps) {
         transition={{ duration: 0.3 }}
         className="space-y-4"
       >
-        <div className="mx-auto w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mb-4">
-          <Calendar className="h-8 w-8 text-blue-300" />
+        <div className="mx-auto w-16 h-16 bg-[#9b87f5]/20 rounded-full flex items-center justify-center mb-4">
+          <Calendar className="h-8 w-8 text-[#9b87f5]" />
         </div>
         <h2 className="text-2xl font-semibold text-white">No habits yet</h2>
         <p className="text-white/80 font-medium max-w-md mx-auto">
@@ -32,7 +32,7 @@ export function HabitListEmpty({ onAddHabit }: HabitListEmptyProps) {
         className="max-w-md mx-auto bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg"
       >
         <div className="flex items-center gap-2 mb-4">
-          <PlusCircle className="h-5 w-5 text-blue-400" />
+          <PlusCircle className="h-5 w-5 text-[#9b87f5]" />
           <h3 className="text-lg font-medium text-white">Create Your First Habit</h3>
         </div>
         <AddHabitForm onAddHabit={onAddHabit} />
