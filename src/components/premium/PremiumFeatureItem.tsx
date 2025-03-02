@@ -1,6 +1,5 @@
 
 import { ReactNode } from "react";
-import { motion } from "framer-motion";
 
 interface PremiumFeatureItemProps {
   title: string;
@@ -16,14 +15,12 @@ export function PremiumFeatureItem({
   variant = "default"
 }: PremiumFeatureItemProps) {
   return (
-    <motion.div
+    <div
       className={`flex gap-4 p-4 rounded-lg border ${
         variant === "challenge"
           ? "border-gray-200 bg-gray-50"
           : "border-gray-200 bg-white"
       }`}
-      whileHover={{ y: -4 }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       <div className={`flex-shrink-0 p-2 rounded-full ${
         variant === "challenge" ? "bg-gray-100" : "bg-gray-100" 
@@ -43,6 +40,6 @@ export function PremiumFeatureItem({
           {description}
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 }
