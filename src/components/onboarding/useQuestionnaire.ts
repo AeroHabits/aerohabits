@@ -42,22 +42,7 @@ export function useQuestionnaire() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        // Check if user already has a subscription
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('subscription_status, is_subscribed')
-          .eq('id', user.id)
-          .single();
-          
-        if (profileError) throw profileError;
-        
-        // If user already has an active subscription, redirect to home
-        if (profile?.is_subscribed || profile?.subscription_status === 'active') {
-          navigate('/habits');
-          return;
-        }
-
-        // Create checkout session with trial period enabled
+        // Always create checkout session with trial period enabled
         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
           body: {
             priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
@@ -67,6 +52,8 @@ export function useQuestionnaire() {
         });
         
         if (error) throw error;
+        
+        // Redirect user to Stripe checkout page
         window.location.href = data.url;
       } else {
         throw new Error("User not authenticated");
@@ -74,7 +61,6 @@ export function useQuestionnaire() {
     } catch (error) {
       console.error("Error starting subscription:", error);
       handleError(error);
-      navigate('/premium'); // Fallback to premium page if checkout fails
     } finally {
       setIsLoading(false);
     }

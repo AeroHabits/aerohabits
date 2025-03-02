@@ -84,25 +84,28 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     const isInTrialPeriod = profile.trial_end_date && new Date(profile.trial_end_date) > new Date();
     const hasActiveAccess = isSubscriptionActive || isInTrialPeriod;
     
-    // Don't redirect if:
-    // 1. User has active subscription or is in trial period OR
-    // 2. Already on premium page OR
-    // 3. Just completed payment (success=true in URL) OR
-    // 4. On the onboarding page OR
-    // 5. On the auth page
-    const isOnAllowedPath = location.pathname === '/auth' || 
-                        location.pathname === '/premium' || 
-                        location.pathname === '/onboarding' ||
-                        location.search.includes('success=true');
+    // Define allowed paths that don't require an active subscription
+    const allowedPaths = [
+      '/auth',
+      '/premium',
+      '/onboarding'
+    ];
+    
+    const isOnAllowedPath = allowedPaths.includes(location.pathname) || 
+                             location.search.includes('success=true');
                          
     if (!hasActiveAccess && !isOnAllowedPath) {
       toast.error("Please subscribe to continue using the app.");
       return <Navigate to="/premium" replace />;
     }
-  } else if (isAuthenticated && !profile && location.pathname !== '/premium' && location.pathname !== '/auth') {
-    // If user is authenticated but has no profile yet, redirect to premium page
-    toast.info("Please set up your payment method to start your free trial.");
-    return <Navigate to="/premium" replace />;
+  } else if (isAuthenticated && !profile) {
+    // If user is authenticated but has no profile yet, redirect to onboarding
+    const isOnboardingOrAuth = location.pathname === '/onboarding' || location.pathname === '/auth';
+    
+    if (!isOnboardingOrAuth) {
+      toast.info("Please complete onboarding to start your free trial.");
+      return <Navigate to="/onboarding" replace />;
+    }
   }
 
   return <>{children}</>;

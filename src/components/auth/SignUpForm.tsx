@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -41,9 +40,9 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
       if (error) throw error;
 
       if (data.user) {
-        // Redirect directly to premium page to prompt for payment info
-        navigate('/premium');
-        handleSuccess("Account created successfully! Please set up your payment method to begin your free trial.");
+        // Direct users to onboarding questionnaire instead of premium page
+        navigate('/onboarding');
+        handleSuccess("Account created successfully! Please complete the questionnaire to begin your free trial.");
       } else {
         handleSuccess("Please check your email to verify your account.");
       }
