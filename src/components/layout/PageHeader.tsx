@@ -1,6 +1,5 @@
 
 import { motion } from "framer-motion";
-import { Trophy, Crown } from "lucide-react";
 
 export function PageHeader() {
   return (
@@ -35,36 +34,6 @@ export function PageHeader() {
             repeatType: "reverse" 
           }}
         />
-        
-        {/* Professional icon emblem */}
-        <motion.div
-          className="absolute -left-5 top-1/2 transform -translate-y-1/2"
-          animate={{
-            opacity: [0.85, 1, 0.85]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            repeatType: "reverse"
-          }}
-        >
-          <Trophy className="h-5 w-5 text-indigo-400" />
-        </motion.div>
-        
-        <motion.div
-          className="absolute -right-5 top-1/2 transform -translate-y-1/2"
-          animate={{
-            opacity: [0.85, 1, 0.85]
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            repeatType: "reverse",
-            delay: 2
-          }}
-        >
-          <Crown className="h-5 w-5 text-indigo-400" />
-        </motion.div>
         
         {/* AEROHABITS text with sophisticated styling */}
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight relative">
