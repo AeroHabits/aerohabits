@@ -165,7 +165,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
   return (
     <motion.form 
       onSubmit={handleSubmit} 
-      className="space-y-6 bg-[#1A1F2C] backdrop-blur-lg p-8 rounded-xl shadow-2xl border border-[#403E43] hover:border-[#9b87f5]/50 transition-all duration-300"
+      className="space-y-7 backdrop-blur-lg rounded-xl transition-all duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
@@ -175,28 +175,28 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="p-3 bg-[#9b87f5] rounded-full shadow-lg"
+          className="p-4 bg-[#9b87f5] rounded-full shadow-lg"
         >
-          <Brain className="w-6 h-6 text-white" />
+          <Brain className="w-8 h-8 text-white" />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.3 }}
-          className="text-xl font-semibold text-[#C8C8C9]"
+          className="text-2xl font-semibold text-[#C8C8C9]"
         >
           Create New Habit
         </motion.div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-5">
         <motion.div
           animate={isTitleFocused ? { scale: 1.02 } : { scale: 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           className="relative"
         >
-          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-            <Target className="w-5 h-5 text-[#9b87f5]" />
+          <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <Target className="w-6 h-6 text-[#9b87f5]" />
           </div>
           <Input
             placeholder="Enter your new habit..."
@@ -204,7 +204,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
             onChange={(e) => setTitle(e.target.value)}
             onFocus={() => setIsTitleFocused(true)}
             onBlur={() => setIsTitleFocused(false)}
-            className="pl-10 bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9] placeholder:text-[#8E9196] text-lg font-medium rounded-lg transition-all duration-300 hover:border-[#9b87f5]/50 focus:ring-2 focus:ring-[#9b87f5]/30"
+            className="pl-12 py-6 h-16 bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9] placeholder:text-[#8E9196] text-xl font-medium rounded-lg transition-all duration-300 hover:border-[#9b87f5]/50 focus:ring-2 focus:ring-[#9b87f5]/30"
           />
         </motion.div>
         
@@ -213,8 +213,8 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
           className="relative"
         >
-          <div className="absolute top-3 left-3 pointer-events-none">
-            <CircuitBoard className="w-5 h-5 text-[#9b87f5]" />
+          <div className="absolute top-4 left-4 pointer-events-none">
+            <CircuitBoard className="w-6 h-6 text-[#9b87f5]" />
           </div>
           <Textarea
             placeholder="Describe your habit..."
@@ -222,7 +222,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
             onChange={(e) => setDescription(e.target.value)}
             onFocus={() => setIsDescriptionFocused(true)}
             onBlur={() => setIsDescriptionFocused(false)}
-            className="pl-10 bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9] placeholder:text-[#8E9196] text-base rounded-lg min-h-[100px] transition-all duration-300 hover:border-[#9b87f5]/50 focus:ring-2 focus:ring-[#9b87f5]/30"
+            className="pl-12 pt-4 bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9] placeholder:text-[#8E9196] text-lg rounded-lg min-h-[120px] transition-all duration-300 hover:border-[#9b87f5]/50 focus:ring-2 focus:ring-[#9b87f5]/30"
           />
         </motion.div>
 
@@ -231,7 +231,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
             value={selectedCategory}
             onValueChange={setSelectedCategory}
           >
-            <SelectTrigger className="w-full bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9]">
+            <SelectTrigger className="w-full h-14 bg-[#2A2F3C] border-2 border-[#403E43] focus:border-[#9b87f5] text-[#C8C8C9] text-lg">
               <SelectValue placeholder="Select a category" />
             </SelectTrigger>
             <SelectContent className="bg-[#2A2F3C] border-[#403E43]">
@@ -239,16 +239,16 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
                 <SelectItem 
                   key={category.id} 
                   value={category.id}
-                  className="flex items-center gap-2 text-[#C8C8C9] hover:bg-[#9b87f5]/20"
+                  className="flex items-center gap-2 text-[#C8C8C9] hover:bg-[#9b87f5]/20 text-lg py-3"
                 >
                   <div className="flex items-center gap-2">
                     <div 
-                      className="w-4 h-4 rounded-full" 
+                      className="w-5 h-5 rounded-full" 
                       style={{ backgroundColor: category.color }}
                     />
                     <LucideIcon 
                       name={category.icon} 
-                      className="w-4 h-4"
+                      className="w-5 h-5"
                       style={{ color: category.color }}
                     />
                     <span>{category.name}</span>
@@ -264,30 +264,30 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
                 type="button"
                 variant="outline" 
                 size="icon"
-                className="bg-[#2A2F3C] border-2 border-[#403E43] hover:bg-[#9b87f5]/20 hover:border-[#9b87f5]"
+                className="h-14 w-14 bg-[#2A2F3C] border-2 border-[#403E43] hover:bg-[#9b87f5]/20 hover:border-[#9b87f5]"
               >
-                <Plus className="h-4 w-4 text-[#C8C8C9]" />
+                <Plus className="h-6 w-6 text-[#C8C8C9]" />
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
-                <DialogTitle>Create New Category</DialogTitle>
+                <DialogTitle className="text-xl">Create New Category</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
                 <Input
                   placeholder="Category name"
                   value={newCategoryName}
                   onChange={(e) => setNewCategoryName(e.target.value)}
-                  className="w-full"
+                  className="w-full h-12 text-lg"
                 />
                 
-                <div className="grid grid-cols-4 gap-2">
+                <div className="grid grid-cols-4 gap-3">
                   {COLORS.map((color) => (
                     <button
                       key={color.value}
                       type="button"
                       className={cn(
-                        "w-8 h-8 rounded-full transition-transform",
+                        "w-10 h-10 rounded-full transition-transform",
                         newCategoryColor === color.value && "scale-125 ring-2 ring-white"
                       )}
                       style={{ backgroundColor: color.value }}
@@ -309,7 +309,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
                       )}
                       onClick={() => setNewCategoryIcon(icon)}
                     >
-                      <LucideIcon name={icon} className="w-4 h-4" />
+                      <LucideIcon name={icon} className="w-5 h-5" />
                     </button>
                   ))}
                 </div>
@@ -319,12 +319,14 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
                     type="button"
                     variant="outline"
                     onClick={() => setIsAddingCategory(false)}
+                    className="text-base py-5"
                   >
                     Cancel
                   </Button>
                   <Button
                     type="button"
                     onClick={handleAddCategory}
+                    className="text-base py-5"
                   >
                     Create Category
                   </Button>
@@ -342,11 +344,11 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
       >
         <Button 
           type="submit"
-          className="w-full bg-[#9b87f5] hover:bg-[#8b76f4] text-white font-medium py-6 shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden rounded-lg"
+          className="w-full bg-[#9b87f5] hover:bg-[#8b76f4] text-white font-semibold py-7 text-xl shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden rounded-lg"
         >
           <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-50 transition-opacity duration-300"></span>
           <span className="relative flex items-center justify-center gap-2">
-            <Sparkles className="w-5 h-5 animate-pulse" />
+            <Sparkles className="w-6 h-6 animate-pulse" />
             Create Habit
           </span>
         </Button>
@@ -356,7 +358,7 @@ export function AddHabitForm({ onAddHabit }: AddHabitFormProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
-        className="text-center text-[#8E9196] text-sm mt-4"
+        className="text-center text-[#8E9196] text-base mt-4"
       >
         Start your journey to better habits today
       </motion.div>
