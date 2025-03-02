@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowRight, ListChecks, Target, Clock, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -65,15 +65,28 @@ const questions = [
 export function OnboardingQuestionnaire() {
   const navigate = useNavigate();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [answers, setAnswers] = useState<Record<string, string[]>>({});
   const { isLoading, setIsLoading, handleError } = useAuthForm();
 
   const currentQuestion = questions[currentQuestionIndex];
 
-  const handleAnswerChange = (value: string) => {
-    setAnswers({
-      ...answers,
-      [currentQuestion.id]: value,
+  const handleAnswerChange = (value: string, checked: boolean) => {
+    setAnswers(prev => {
+      const currentAnswers = prev[currentQuestion.id] || [];
+      
+      if (checked) {
+        // Add the value if it's checked
+        return {
+          ...prev,
+          [currentQuestion.id]: [...currentAnswers, value]
+        };
+      } else {
+        // Remove the value if it's unchecked
+        return {
+          ...prev,
+          [currentQuestion.id]: currentAnswers.filter(item => item !== value)
+        };
+      }
     });
   };
 
@@ -122,8 +135,8 @@ export function OnboardingQuestionnaire() {
   };
 
   const handleNext = async () => {
-    if (!answers[currentQuestion.id]?.trim()) {
-      toast.error("Please select an option before continuing");
+    if (!answers[currentQuestion.id] || answers[currentQuestion.id].length === 0) {
+      toast.error("Please select at least one option before continuing");
       return;
     }
 
@@ -147,14 +160,23 @@ export function OnboardingQuestionnaire() {
           
           if (error) throw error;
           
-          // Store questionnaire answers in user quiz responses instead
+          // Get the primary goal (first one selected) or default to the first answer
+          const primaryGoal = answers.primary_goal?.[0] || 'general';
+          
+          // Calculate preferred duration from time commitment
+          // Extract the first number from the first selected option
+          const timeCommitment = answers.time_commitment?.[0] || '15-20 minutes';
+          const durationMatch = timeCommitment.match(/\d+/);
+          const preferredDuration = durationMatch ? parseInt(durationMatch[0]) : 15;
+          
+          // Store questionnaire answers in user quiz responses
           const { error: quizError } = await supabase
             .from('user_quiz_responses')
             .insert({
               user_id: user.id,
-              fitness_level: answers.time_commitment || 'beginner',
-              goals: [answers.primary_goal || 'general'],
-              preferred_duration: parseInt(answers.time_commitment.split(" ")[0]) || 15
+              fitness_level: answers.time_commitment?.[0] || 'beginner',
+              goals: answers.primary_goal || ['general'],
+              preferred_duration: preferredDuration
             });
             
           if (quizError) {
@@ -227,27 +249,28 @@ export function OnboardingQuestionnaire() {
                 {currentQuestion.question}
               </Label>
               
-              <RadioGroup
-                value={answers[currentQuestion.id] || ""}
-                onValueChange={handleAnswerChange}
-                className="gap-3 flex flex-col"
-              >
-                {currentQuestion.options.map((option) => (
-                  <div key={option} className="flex items-center space-x-2 bg-gray-700/30 hover:bg-gray-700/50 transition-colors p-3 rounded-lg cursor-pointer">
-                    <RadioGroupItem 
-                      value={option} 
-                      id={option} 
-                      className="text-purple-500"
-                    />
-                    <Label 
-                      htmlFor={option} 
-                      className="text-white font-medium cursor-pointer w-full"
-                    >
-                      {option}
-                    </Label>
-                  </div>
-                ))}
-              </RadioGroup>
+              <div className="gap-3 flex flex-col">
+                {currentQuestion.options.map((option) => {
+                  const isChecked = answers[currentQuestion.id]?.includes(option) || false;
+                  
+                  return (
+                    <div key={option} className="flex items-center space-x-3 bg-gray-700/30 hover:bg-gray-700/50 transition-colors p-3 rounded-lg cursor-pointer">
+                      <Checkbox 
+                        id={`${currentQuestion.id}-${option}`}
+                        checked={isChecked}
+                        onCheckedChange={(checked) => handleAnswerChange(option, checked === true)}
+                        className="text-purple-500 border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
+                      />
+                      <Label 
+                        htmlFor={`${currentQuestion.id}-${option}`}
+                        className="text-white font-medium cursor-pointer w-full"
+                      >
+                        {option}
+                      </Label>
+                    </div>
+                  );
+                })}
+              </div>
               
               <Button
                 onClick={handleNext}
