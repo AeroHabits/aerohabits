@@ -1,5 +1,5 @@
 
-import { Trophy, Rocket, Target, Sparkles, Award } from "lucide-react";
+import { Trophy, Rocket, Target, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function ChallengeHero() {
@@ -9,8 +9,8 @@ export function ChallengeHero() {
       animate={{ opacity: 1, y: 0 }}
       className="relative overflow-hidden rounded-xl shadow-2xl"
     >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-indigo-700 via-purple-700 to-indigo-800 z-0">
+      {/* Animated background gradient using the Goals page blue (#0EA5E9) */}
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0EA5E9] via-blue-600 to-blue-700 z-0">
         <motion.div 
           className="absolute inset-0 opacity-20"
           animate={{ 
@@ -48,15 +48,15 @@ export function ChallengeHero() {
             className="flex-shrink-0"
           >
             <div className="relative">
-              <div className="absolute -inset-3 bg-gradient-to-r from-amber-400 to-amber-600 rounded-full blur-md opacity-70 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="absolute -inset-3 bg-[#0EA5E9] rounded-full blur-md opacity-70 group-hover:opacity-100 transition duration-1000"></div>
               <div className="relative flex items-center justify-center p-5 bg-gradient-to-br from-amber-400 to-amber-600 rounded-full shadow-lg">
                 <Trophy className="w-12 h-12 text-white" />
                 <motion.div
                   className="absolute -inset-1 rounded-full"
                   animate={{ 
                     boxShadow: [
-                      "0 0 0 0px rgba(255, 191, 0, 0.3)",
-                      "0 0 0 10px rgba(255, 191, 0, 0)"
+                      "0 0 0 0px rgba(14, 165, 233, 0.3)",
+                      "0 0 0 10px rgba(14, 165, 233, 0)"
                     ]
                   }}
                   transition={{ 
@@ -101,8 +101,8 @@ export function ChallengeHero() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.7 }}
               >
-                <Target className="w-5 h-5 text-blue-300" />
-                <span className="text-blue-200 font-medium tracking-wide">Level up your life</span>
+                <Target className="w-5 h-5 text-blue-200" />
+                <span className="text-blue-100 font-medium tracking-wide">Level up your life</span>
               </motion.div>
             </motion.div>
 
@@ -116,7 +116,7 @@ export function ChallengeHero() {
               Push your limits, achieve greatness, and unlock incredible rewards along the way. 
               Each challenge is a step towards becoming your best self.
               <motion.span 
-                className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400/0 via-blue-400/80 to-blue-400/0"
+                className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-200/0 via-blue-200/80 to-blue-200/0"
                 animate={{ width: "100%" }}
                 transition={{ delay: 1.5, duration: 1 }}
               />
@@ -133,19 +133,11 @@ export function ChallengeHero() {
                 animate={{ y: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
               >
-                <Rocket className="w-5 h-5 text-blue-300" />
+                <Rocket className="w-5 h-5 text-blue-200" />
               </motion.div>
               <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white/90 font-semibold text-sm">
                 Start your journey to excellence today!
               </span>
-              <motion.div 
-                className="hidden md:block"
-                initial={{ opacity: 0, scale: 0 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.2 }}
-              >
-                <Award className="w-6 h-6 text-amber-300" />
-              </motion.div>
             </motion.div>
           </div>
         </div>
