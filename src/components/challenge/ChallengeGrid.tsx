@@ -44,7 +44,7 @@ export function ChallengeGrid({
           >
             {isLocked ? (
               <ChallengeUnlockButton 
-                difficulty={challenge.difficulty}
+                difficulty={challenge.difficulty as "easy" | "medium" | "hard" | "master"}
                 userPoints={userPoints}
               />
             ) : (
