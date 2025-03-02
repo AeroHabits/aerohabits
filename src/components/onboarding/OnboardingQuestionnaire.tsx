@@ -49,12 +49,15 @@ export function OnboardingQuestionnaire() {
       // Check subscription status
       const { data: profile } = await supabase
         .from('profiles')
-        .select('is_subscribed')
+        .select('is_subscribed, subscription_status')
         .eq('id', user.id)
         .maybeSingle();
 
-      // If not a new user or already has responses or already subscribed, redirect to habits
-      if (!isNewUser || quizResponses || profile?.is_subscribed) {
+      const hasActiveSubscription = profile?.is_subscribed || 
+        ['active', 'trialing'].includes(profile?.subscription_status || '');
+
+      // If not a new user OR already has responses OR already subscribed, redirect to habits
+      if (!isNewUser || quizResponses || hasActiveSubscription) {
         navigate('/habits');
       }
     };

@@ -30,8 +30,22 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
             .eq('user_id', user.id)
             .maybeSingle();
             
-          // If new user and no quiz responses, they need to complete onboarding
-          if (isNewUser && !quizResponses && window.location.pathname !== '/onboarding') {
+          // Check if user has an active subscription
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('is_subscribed, subscription_status')
+            .eq('id', user.id)
+            .maybeSingle();
+            
+          const hasActiveSubscription = profile?.is_subscribed || 
+            ['active', 'trialing'].includes(profile?.subscription_status || '');
+            
+          // Only require onboarding if:
+          // 1. User is marked as new AND
+          // 2. They don't have quiz responses AND
+          // 3. They're not already on the onboarding page AND
+          // 4. They don't already have an active subscription
+          if (isNewUser && !quizResponses && window.location.pathname !== '/onboarding' && !hasActiveSubscription) {
             setRequiresOnboarding(true);
           }
         } else {

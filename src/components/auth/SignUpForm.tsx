@@ -42,7 +42,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
       if (error) throw error;
 
       if (data.user) {
-        // Direct users to onboarding questionnaire instead of premium page
+        // Direct users to onboarding questionnaire
         navigate('/onboarding');
         handleSuccess("Account created successfully! Please complete the questionnaire to begin your free trial.");
       } else {

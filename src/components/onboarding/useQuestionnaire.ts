@@ -84,7 +84,8 @@ export function useQuestionnaire() {
           .from('profiles')
           .update({
             updated_at: new Date().toISOString(),
-            full_name: user.user_metadata.full_name || ''
+            full_name: user.user_metadata.full_name || '',
+            subscription_status: 'pending_trial' // Mark as pending trial until they provide payment info
           })
           .eq('id', user.id);
         
