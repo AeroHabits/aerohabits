@@ -16,7 +16,7 @@ export function ProgressIndicator({ totalSteps, currentStep }: ProgressIndicator
           animate={{ 
             opacity: 1, 
             scale: 1,
-            backgroundColor: index <= currentStep ? "rgb(55, 65, 81)" : "rgb(209, 213, 219)"
+            backgroundColor: index <= currentStep ? "rgb(255, 255, 255)" : "rgb(75, 85, 99)"
           }}
           transition={{ 
             duration: 0.3,
@@ -24,8 +24,8 @@ export function ProgressIndicator({ totalSteps, currentStep }: ProgressIndicator
           }}
           className={`h-1.5 rounded-full transition-all duration-300 ${
             index <= currentStep 
-              ? "w-16 bg-gray-700" 
-              : "w-10 bg-gray-300"
+              ? "w-16 bg-white shadow-sm shadow-white/50" 
+              : "w-10 bg-gray-600"
           }`}
         />
       ))}

@@ -18,7 +18,7 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
-      className="flex items-center space-x-3 bg-white border border-gray-200 hover:border-gray-300 transition-all p-4 rounded-lg cursor-pointer shadow-sm"
+      className="flex items-center space-x-3 bg-gradient-to-r from-white/20 to-white/5 hover:from-white/30 hover:to-white/10 border border-white/30 transition-all p-4 rounded-lg cursor-pointer shadow-md"
       onClick={() => onCheckedChange(option, !isChecked)}
     >
       <div className="flex justify-center items-center">
@@ -26,12 +26,12 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
           id={`${id}-${option}`}
           checked={isChecked}
           onCheckedChange={(checked) => onCheckedChange(option, checked === true)}
-          className="text-gray-800 border-gray-400 data-[state=checked]:bg-gray-800 data-[state=checked]:text-white"
+          className="text-white border-white/70 data-[state=checked]:bg-white data-[state=checked]:text-gray-800"
         />
       </div>
       <Label 
         htmlFor={`${id}-${option}`}
-        className="text-gray-800 font-medium cursor-pointer w-full"
+        className="text-white font-medium cursor-pointer w-full"
       >
         {option}
       </Label>
