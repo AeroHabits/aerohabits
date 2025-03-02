@@ -1,8 +1,20 @@
 
-import { Trophy, Target, Rocket, Sparkles } from "lucide-react";
+import { Trophy, Target, Rocket, Sparkles, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "../ui/button";
+import { useNavigate } from "react-router-dom";
 
 export function ChallengeHero() {
+  const navigate = useNavigate();
+
+  const handleStartJourney = () => {
+    // Scroll down to the challenges grid
+    document.querySelector('.challenge-grid')?.scrollIntoView({ 
+      behavior: 'smooth',
+      block: 'start'
+    });
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
@@ -91,23 +103,41 @@ export function ChallengeHero() {
 
             {/* Professional call to action */}
             <motion.div 
-              className="mt-8 flex items-center gap-3"
+              className="mt-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
             >
-              <motion.div
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+              <Button 
+                onClick={handleStartJourney}
+                variant="glass" 
+                size="pill"
+                className="group"
               >
-                <Rocket className="w-5 h-5 text-gray-300" />
-              </motion.div>
-              <span className="bg-white/10 backdrop-blur-sm px-5 py-2.5 rounded-full text-white/90 font-semibold text-sm border border-white/10 shadow-inner">
                 Begin your excellence journey today
-              </span>
+                <ArrowRight className="ml-1 transition-transform group-hover:translate-x-1" />
+              </Button>
             </motion.div>
           </div>
         </div>
+
+        {/* Challenge summary section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="mt-8 bg-white/5 backdrop-blur-sm rounded-lg p-4 border border-white/10"
+        >
+          <div className="text-white/90 space-y-2">
+            <h3 className="text-lg font-semibold flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              How Challenges Work
+            </h3>
+            <p className="text-sm text-white/70 leading-relaxed">
+              Challenges are structured progressions designed to build habits and skills. Each challenge has a difficulty level, daily tasks, and rewards points upon completion. Complete 80% of challenges at your current level to unlock harder difficulties and earn exclusive achievements.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   );

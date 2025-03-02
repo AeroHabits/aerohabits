@@ -1,10 +1,11 @@
 
-import { ChallengeCard } from "../ChallengeCard";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info } from "lucide-react";
+import { motion } from "framer-motion";
+import { ChallengeCard } from "@/components/ChallengeCard";
+import { ChallengeUnlockButton } from "./ChallengeUnlockButton";
+import { Challenge } from "@/types";
 
 interface ChallengeGridProps {
-  challenges: any[];
+  challenges: Challenge[];
   userChallenges: string[];
   onJoinChallenge: (challengeId: string) => void;
   userPoints: number;
@@ -20,39 +21,46 @@ export function ChallengeGrid({
   canAccessDifficulty = true,
   currentChallengeId
 }: ChallengeGridProps) {
-  return (
-    <div className="space-y-6">
-      {!canAccessDifficulty && (
-        <Alert className="bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
-          <Info className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-          <AlertDescription className="text-blue-700 dark:text-blue-300">
-            Complete 80% of the challenges in your current difficulty level to unlock the next set of challenges. Keep pushing forward! 💪
-          </AlertDescription>
-        </Alert>
-      )}
-      
-      <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-        {challenges?.map((challenge) => {
-          // Only lock challenges that come after the current one
-          const currentChallenge = challenges.find(c => c.id === currentChallengeId);
-          const isLocked = currentChallengeId !== null && 
-                          currentChallenge && 
-                          challenge.sequence_order > currentChallenge.sequence_order;
-
-          return (
-            <ChallengeCard
-              key={challenge.id}
-              challenge={challenge}
-              onJoin={(challengeId) => onJoinChallenge(challengeId)}
-              isJoined={userChallenges?.includes(challenge.id)}
-              userPoints={userPoints}
-              canAccessDifficulty={canAccessDifficulty}
-              isLocked={isLocked}
-              sequenceOrder={challenge.sequence_order}
-            />
-          );
-        })}
+  if (challenges.length === 0) {
+    return (
+      <div className="text-center p-10">
+        <p className="text-gray-400">No challenges found for this difficulty level.</p>
       </div>
+    );
+  }
+
+  return (
+    <div className="challenge-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {challenges.map((challenge, index) => {
+        const isJoined = userChallenges.includes(challenge.id);
+        const isLocked = !canAccessDifficulty;
+        
+        return (
+          <motion.div
+            key={challenge.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+          >
+            {isLocked ? (
+              <ChallengeUnlockButton 
+                difficulty={challenge.difficulty}
+                userPoints={userPoints}
+              />
+            ) : (
+              <ChallengeCard
+                challenge={challenge}
+                onJoin={onJoinChallenge}
+                isJoined={isJoined}
+                userPoints={userPoints}
+                canAccessDifficulty={canAccessDifficulty}
+                isLocked={false}
+                sequenceOrder={challenge.sequence_order || index + 1}
+              />
+            )}
+          </motion.div>
+        );
+      })}
     </div>
   );
 }
