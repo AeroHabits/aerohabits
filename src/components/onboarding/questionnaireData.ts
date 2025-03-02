@@ -57,5 +57,5 @@ export const questions: Question[] = [
       "Health benefits",
       "Challenge myself"
     ]
-  },
+  }
 ];
