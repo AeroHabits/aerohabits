@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useHabitOperations } from "./useHabitOperations";
@@ -56,12 +56,13 @@ export function useHabits() {
     staleTime: 30000,
   });
 
-  // Try to sync when coming back online
-  useState(() => {
+  // Fix: Changed from useState to useEffect for proper dependency tracking 
+  // when coming back online
+  useEffect(() => {
     if (isOnline) {
       debouncedSync();
     }
-  });
+  }, [isOnline, debouncedSync]);
 
   return {
     habits,
