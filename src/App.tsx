@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,9 +9,11 @@ import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
 import { BottomNav } from "./components/layout/BottomNav";
 import { useEffect } from "react";
-import { trackPageView } from "./lib/analytics";
+import { trackPageView, initAnalytics } from "./lib/analytics";
 import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
+import { useOnlineStatus } from "./hooks/useOnlineStatus";
+import { NetworkStatusIndicator } from "./components/NetworkStatusIndicator";
 
 // Initialize Sentry
 Sentry.init({
@@ -43,10 +44,17 @@ const SentryErrorBoundary = Sentry.withErrorBoundary(ErrorBoundary, {
   showDialog: true,
 });
 
-// Analytics tracker component
+// Enhanced analytics tracker component
 const AnalyticsTracker = () => {
   const location = useLocation();
+  const isOnline = useOnlineStatus();
 
+  // Initialize analytics on mount
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
+  // Track page views
   useEffect(() => {
     trackPageView(location.pathname);
   }, [location]);
@@ -68,6 +76,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
       <Footer />
       <BottomNav />
+      <NetworkStatusIndicator />
     </div>
   );
 };
