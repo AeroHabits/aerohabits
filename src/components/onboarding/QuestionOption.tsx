@@ -26,7 +26,7 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
           id={`${id}-${option}`}
           checked={isChecked}
           onCheckedChange={(checked) => onCheckedChange(option, checked === true)}
-          className="text-blue-500 border-blue-400/50 data-[state=checked]:bg-blue-600 data-[state=checked]:text-white"
+          className="text-cyan-500 border-cyan-400/50 data-[state=checked]:bg-cyan-600 data-[state=checked]:text-white"
         />
       </div>
       <Label 

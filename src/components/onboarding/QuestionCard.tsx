@@ -66,7 +66,7 @@ export function QuestionCard({
           <Button
             onClick={onNext}
             disabled={isLoading}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white"
           >
             {isLastQuestion ? (
               isLoading ? "Saving..." : "Complete"
