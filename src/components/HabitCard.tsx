@@ -67,11 +67,16 @@ export function HabitCard({
       <Card className={cn(
         "relative overflow-hidden transition-all duration-300 h-full flex flex-col",
         completed 
-          ? "bg-gradient-to-br from-blue-900/80 to-indigo-900/80 border-blue-500/30" 
-          : "bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-white/10",
+          ? "bg-slate-800/90 border-blue-500/30" 
+          : "bg-slate-800/90 border-white/10",
         "border hover:border-white/20",
         "shadow-lg hover:shadow-xl"
       )}>
+        {/* Professional completion indicator - top border */}
+        {completed && (
+          <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
+        )}
+        
         <div className="p-6 flex flex-col h-full">
           <div className="flex justify-between items-start mb-4">
             <div className="space-y-1">
@@ -88,6 +93,9 @@ export function HabitCard({
                   </div>
                 )}
                 <h3 className="font-semibold text-lg text-white/90">{title}</h3>
+                {completed && (
+                  <CheckCircle className="h-4 w-4 text-blue-400" />
+                )}
               </div>
               {description && (
                 <p className="text-white/80">{description}</p>
@@ -155,18 +163,18 @@ export function HabitCard({
             </div>
             <Button
               onClick={onToggle}
-              variant={completed ? "success" : "glass"}
-              size="pill"
+              variant={completed ? "default" : "outline"}
+              size="sm"
               className={cn(
                 "transition-all duration-300",
                 completed 
-                  ? "" 
-                  : ""
+                  ? "bg-green-600 hover:bg-green-700 text-white border-none" 
+                  : "bg-transparent border-white/20 text-white hover:bg-white/10"
               )}
             >
               {completed ? (
                 <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-5 w-5 text-white" />
+                  <CheckCircle className="h-4 w-4 mr-1" />
                   <span>Completed!</span>
                 </div>
               ) : (
@@ -181,11 +189,6 @@ export function HabitCard({
           <div className="absolute -right-12 top-6 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-12 py-1 rotate-45 transform text-sm font-semibold shadow-lg">
             Champion!
           </div>
-        )}
-        
-        {/* Visual indicator for completed status */}
-        {completed && (
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-400"></div>
         )}
       </Card>
     </motion.div>
