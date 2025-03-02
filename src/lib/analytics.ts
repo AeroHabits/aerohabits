@@ -135,7 +135,7 @@ export const trackEvent = (
       Sentry.metrics.distribution(
         `app.${category}.${action}`, 
         value,
-        label ? { label } : undefined
+        { tags: label ? { label } : undefined }
       );
     }
   } catch (error) {
