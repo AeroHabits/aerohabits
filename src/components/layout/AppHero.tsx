@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Sparkles, Clock } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -13,6 +13,7 @@ import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
 export function AppHero() {
   const [showFeatures, setShowFeatures] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showTrialNotice, setShowTrialNotice] = useState(true);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -32,6 +33,19 @@ export function AppHero() {
       return data;
     },
   });
+
+  // Add click event listener for document to dismiss trial notice
+  useEffect(() => {
+    const handleDocumentClick = () => {
+      setShowTrialNotice(false);
+    };
+
+    document.addEventListener('click', handleDocumentClick);
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);
 
   // Calculate days remaining in trial
   const getDaysRemaining = () => {
@@ -85,7 +99,7 @@ export function AppHero() {
         Track your habits, build streaks, and achieve your goals.
       </p>
 
-      {isInTrial && !isActiveSubscriber && (
+      {isInTrial && !isActiveSubscriber && showTrialNotice && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
