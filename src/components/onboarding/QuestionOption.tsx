@@ -1,4 +1,5 @@
 
+import { motion } from "framer-motion";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -11,22 +12,29 @@ interface QuestionOptionProps {
 
 export function QuestionOption({ id, option, isChecked, onCheckedChange }: QuestionOptionProps) {
   return (
-    <div 
-      key={option} 
-      className="flex items-center space-x-3 bg-gray-700/30 hover:bg-gray-700/50 transition-colors p-3 rounded-lg cursor-pointer"
+    <motion.div
+      key={option}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2 }}
+      className="flex items-center space-x-3 bg-gradient-to-r from-gray-800/80 to-gray-800/40 hover:from-gray-700/80 hover:to-gray-700/40 border border-gray-700/50 transition-all p-4 rounded-lg cursor-pointer shadow-md"
+      onClick={() => onCheckedChange(option, !isChecked)}
     >
-      <Checkbox 
-        id={`${id}-${option}`}
-        checked={isChecked}
-        onCheckedChange={(checked) => onCheckedChange(option, checked === true)}
-        className="text-purple-500 border-gray-500 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
-      />
+      <div className="flex justify-center items-center">
+        <Checkbox 
+          id={`${id}-${option}`}
+          checked={isChecked}
+          onCheckedChange={(checked) => onCheckedChange(option, checked === true)}
+          className="text-purple-500 border-purple-400/50 data-[state=checked]:bg-purple-600 data-[state=checked]:text-white"
+        />
+      </div>
       <Label 
         htmlFor={`${id}-${option}`}
         className="text-white font-medium cursor-pointer w-full"
       >
         {option}
       </Label>
-    </div>
+    </motion.div>
   );
 }
