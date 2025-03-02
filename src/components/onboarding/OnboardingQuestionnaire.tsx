@@ -23,8 +23,8 @@ export function OnboardingQuestionnaire() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-black p-4 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(120,70,190,0.05)_0,rgba(0,0,0,0)_60%)] pointer-events-none"></div>
-      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-cyan-900/10 to-transparent pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.05)_0,rgba(0,0,0,0)_60%)] pointer-events-none"></div>
+      <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -39,7 +39,7 @@ export function OnboardingQuestionnaire() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.4 }}
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-teal-500">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-cyan-200">
               Welcome to AeroHabits
             </span>
           </motion.h1>
@@ -50,7 +50,7 @@ export function OnboardingQuestionnaire() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.4 }}
             >
-              <p className="text-gray-300 mt-3 mb-4">
+              <p className="text-white mt-3 mb-4">
                 Let's personalize your experience ({currentQuestionIndex + 1}/{questionsLength})
               </p>
               <ProgressIndicator 
@@ -79,7 +79,7 @@ export function OnboardingQuestionnaire() {
         )}
         
         <motion.div 
-          className="text-center mt-8 text-gray-400 text-sm"
+          className="text-center mt-8 text-white text-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.8, duration: 0.4 }}
