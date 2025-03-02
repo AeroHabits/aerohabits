@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { BadgeDisplay } from "@/components/badges/BadgeDisplay";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { ChallengeHero } from "@/components/challenge/ChallengeHero";
+import { AppShowcase } from "@/components/showcase/AppShowcase";
 
 const Challenges = () => {
   const isMobile = useIsMobile();
@@ -21,6 +23,15 @@ const Challenges = () => {
           <UserMenu />
         </div>
 
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-8"
+        >
+          <ChallengeHero />
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <motion.div
             className="lg:col-span-2"
@@ -28,17 +39,31 @@ const Challenges = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-6 shadow-lg border border-white/20">
+            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-6 shadow-xl border border-white/10 hover:border-white/20 transition-all duration-300">
               <ChallengeList />
             </div>
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.4 }}
-          >
-            <BadgeDisplay />
-          </motion.div>
+          
+          <div className="space-y-6">
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <BadgeDisplay />
+            </motion.div>
+            
+            {!isMobile && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+                className="hidden lg:block"
+              >
+                <AppShowcase />
+              </motion.div>
+            )}
+          </div>
         </div>
       </div>
     </div>
