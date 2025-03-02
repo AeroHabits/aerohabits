@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,7 +39,7 @@ const COLORS = [
   { name: 'Red', value: '#ef4444' },
   { name: 'Green', value: '#22c55e' },
   { name: 'Blue', value: '#3b82f6' },
-  { name: 'Purple', value: '#9b87f5' },
+  { name: 'Purple', value: '#a855f7' },
   { name: 'Yellow', value: '#f59e0b' },
   { name: 'Pink', value: '#ec4899' },
   { name: 'Indigo', value: '#6366f1' },
