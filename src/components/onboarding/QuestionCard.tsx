@@ -25,7 +25,7 @@ export function QuestionCard({
   isLastQuestion
 }: QuestionCardProps) {
   return (
-    <Card className="bg-gray-800/50 border-white/20 backdrop-blur-sm">
+    <Card className="bg-gray-800/50 border-gray-700 backdrop-blur-sm">
       <CardContent className="pt-6 space-y-6">
         <div className="flex items-center justify-center mb-4">
           <motion.div
@@ -33,7 +33,7 @@ export function QuestionCard({
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="p-3 bg-white/10 rounded-full"
+            className="p-3 bg-gray-700/50 rounded-full"
           >
             {question.icon}
           </motion.div>
@@ -66,7 +66,7 @@ export function QuestionCard({
           <Button
             onClick={onNext}
             disabled={isLoading}
-            className="w-full bg-white hover:bg-white/90 text-gray-900 font-medium"
+            className="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white"
           >
             {isLastQuestion ? (
               isLoading ? "Saving..." : "Complete"

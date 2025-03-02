@@ -1,45 +1,37 @@
 
 import { ReactNode } from "react";
+import { motion } from "framer-motion";
 
 interface PremiumFeatureItemProps {
+  icon: ReactNode;
   title: string;
   description: string;
-  icon: ReactNode;
   variant?: "default" | "challenge";
 }
 
-export function PremiumFeatureItem({
-  title,
-  description,
-  icon,
+export function PremiumFeatureItem({ 
+  icon, 
+  title, 
+  description, 
   variant = "default"
 }: PremiumFeatureItemProps) {
+  const baseClasses = "flex items-start gap-4 p-5 rounded-xl transition-all";
+  const variantClasses = variant === "challenge" 
+    ? "bg-gradient-to-r from-amber-900/20 to-transparent border border-amber-500/30 shadow-md" 
+    : "bg-gradient-to-r from-white/5 to-transparent border border-white/20 shadow-md";
+
   return (
-    <div
-      className={`flex gap-4 p-4 rounded-lg border ${
-        variant === "challenge"
-          ? "border-gray-200 bg-gray-50"
-          : "border-gray-200 bg-white"
-      }`}
+    <motion.div 
+      whileHover={{ x: 5, scale: 1.01, transition: { duration: 0.2 } }}
+      className={`${baseClasses} ${variantClasses}`}
     >
-      <div className={`flex-shrink-0 p-2 rounded-full ${
-        variant === "challenge" ? "bg-gray-100" : "bg-gray-100" 
-      }`}>
+      <div className="bg-gradient-to-br from-gray-900 to-gray-950 p-3 rounded-xl shadow-inner border border-white/10 flex-shrink-0">
         {icon}
       </div>
-      
-      <div className="flex-1 space-y-1">
-        <h3 className={`font-medium ${
-          variant === "challenge" ? "text-gray-800" : "text-gray-800" 
-        }`}>
-          {title}
-        </h3>
-        <p className={`text-sm ${
-          variant === "challenge" ? "text-gray-600" : "text-gray-600" 
-        }`}>
-          {description}
-        </p>
+      <div>
+        <p className="text-white font-semibold text-lg">{title}</p>
+        <p className="text-gray-300 text-sm mt-1">{description}</p>
       </div>
-    </div>
+    </motion.div>
   );
 }

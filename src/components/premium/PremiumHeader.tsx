@@ -25,7 +25,7 @@ export function PremiumHeader() {
         className="relative inline-block"
       >
         <motion.div
-          className="absolute -inset-1 rounded-full blur-lg bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 opacity-70"
+          className="absolute -inset-1 rounded-full blur-lg bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-600 opacity-70"
           animate={{ 
             scale: [0.95, 1.05, 0.95],
           }}
@@ -34,26 +34,26 @@ export function PremiumHeader() {
           }}
         />
         <motion.div
-          className="relative bg-white rounded-full p-5 inline-block border border-gray-200 shadow-md"
+          className="relative bg-gradient-to-br from-[#080A1A] to-[#0F1222] rounded-full p-5 inline-block border border-amber-500/30 shadow-lg"
           whileHover={{ scale: 1.05 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >
-          <Crown className="w-16 h-16 text-gray-700" />
+          <Crown className="w-16 h-16 text-amber-400" />
         </motion.div>
       </motion.div>
       
       <motion.h1 
         variants={itemVariants}
-        className="text-5xl font-bold text-gray-800"
+        className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-500"
       >
         Unlock Premium Experience
       </motion.h1>
       
       <motion.p 
         variants={itemVariants}
-        className="text-xl text-gray-600 max-w-lg mx-auto leading-relaxed"
+        className="text-xl text-gray-200 max-w-lg mx-auto leading-relaxed"
       >
-        Elevate your habit-building journey with our premium subscription for just <span className="font-bold text-gray-800">$9.99/month</span>
+        Elevate your habit-building journey with our premium subscription for just <span className="font-bold text-amber-300">$9.99/month</span>
       </motion.p>
     </motion.div>
   );

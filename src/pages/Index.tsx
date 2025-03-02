@@ -11,10 +11,13 @@ const Index = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen w-full bg-white overflow-x-hidden">
-      <div
+    <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-x-hidden">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
         className={cn(
-          "container mx-auto px-4 pt-12 pb-4 md:py-6 space-y-6 md:space-y-8 safe-top",
+          "container mx-auto px-4 pt-12 pb-4 md:py-6 space-y-6 md:space-y-8 safe-top", // Added pt-12 and safe-top
           isMobile && "pb-20"
         )}
       >
@@ -23,11 +26,16 @@ const Index = () => {
           <UserMenu />
         </div>
 
-        <div className="space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="space-y-8"
+        >
           <AppHero />
           <AppShowcase />
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 }
