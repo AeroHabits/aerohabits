@@ -67,14 +67,14 @@ export function HabitCard({
       <Card className={cn(
         "relative overflow-hidden transition-all duration-300 h-full flex flex-col",
         completed 
-          ? "bg-slate-800/90 border-[#9b87f5]/30" 
+          ? "bg-slate-800/90 border-blue-500/30" 
           : "bg-slate-800/90 border-white/10",
         "border hover:border-white/20",
         "shadow-lg hover:shadow-xl"
       )}>
         {/* Professional completion indicator - top border */}
         {completed && (
-          <div className="absolute top-0 left-0 w-full h-1 bg-[#9b87f5]"></div>
+          <div className="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
         )}
         
         <div className="p-6 flex flex-col h-full">
@@ -94,7 +94,7 @@ export function HabitCard({
                 )}
                 <h3 className="font-semibold text-lg text-white/90">{title}</h3>
                 {completed && (
-                  <CheckCircle className="h-4 w-4 text-[#9b87f5]" />
+                  <CheckCircle className="h-4 w-4 text-blue-400" />
                 )}
               </div>
               {description && (
@@ -149,7 +149,7 @@ export function HabitCard({
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-2">
               {streak > 0 && (
-                <div className="flex items-center space-x-1 text-[#9b87f5]">
+                <div className="flex items-center space-x-1 text-blue-300">
                   <Trophy className="h-5 w-5" />
                   <span className="font-medium text-white/90">{streak} day streak!</span>
                 </div>
@@ -168,7 +168,7 @@ export function HabitCard({
               className={cn(
                 "transition-all duration-300",
                 completed 
-                  ? "bg-[#9b87f5] hover:bg-[#8b76f4] text-white border-none" 
+                  ? "bg-green-600 hover:bg-green-700 text-white border-none" 
                   : "bg-transparent border-white/20 text-white hover:bg-white/10"
               )}
             >
@@ -186,7 +186,7 @@ export function HabitCard({
         
         {/* Achievement ribbon for streaks */}
         {streak >= 7 && (
-          <div className="absolute -right-12 top-6 bg-gradient-to-r from-[#9b87f5] to-[#7e69ab] text-white px-12 py-1 rotate-45 transform text-sm font-semibold shadow-lg">
+          <div className="absolute -right-12 top-6 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-12 py-1 rotate-45 transform text-sm font-semibold shadow-lg">
             Champion!
           </div>
         )}
