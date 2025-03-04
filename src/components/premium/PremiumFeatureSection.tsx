@@ -1,26 +1,19 @@
 
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { PremiumFeatureItem } from "./PremiumFeatureItem";
-
-interface Feature {
-  title: string;
-  description: string;
-  icon: ReactNode;
-}
 
 interface PremiumFeatureSectionProps {
   title: string;
-  features: Feature[];
-  titleGradient: string;
-  variant?: "default" | "challenge";
+  children: ReactNode;
+  icon?: ReactNode;
+  titleGradient?: string;
 }
 
 export function PremiumFeatureSection({
   title,
-  features,
-  titleGradient,
-  variant = "default"
+  children,
+  icon,
+  titleGradient = "from-white to-gray-300"
 }: PremiumFeatureSectionProps) {
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -41,21 +34,15 @@ export function PremiumFeatureSection({
     >
       <motion.h3
         variants={itemVariants}
-        className={`text-xl font-bold text-white text-center mb-4 bg-clip-text text-transparent bg-gradient-to-r ${titleGradient}`}
+        className={`text-xl font-bold flex items-center justify-center gap-2 mb-4 bg-clip-text text-transparent bg-gradient-to-r ${titleGradient}`}
       >
+        {icon && <span>{icon}</span>}
         {title}
       </motion.h3>
       
-      {features.map((feature, index) => (
-        <motion.div key={index} variants={itemVariants}>
-          <PremiumFeatureItem
-            title={feature.title}
-            description={feature.description}
-            icon={feature.icon}
-            variant={variant}
-          />
-        </motion.div>
-      ))}
+      <div className="space-y-3">
+        {children}
+      </div>
     </motion.div>
   );
 }
