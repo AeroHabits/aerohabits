@@ -1,4 +1,3 @@
-
 import { Crown, Star, ExternalLink } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -44,8 +43,8 @@ export function SubscriptionCard() {
     staleTime: 0 // Don't cache this data
   });
 
-  // Check if the user is on iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  // Check if the user is on iOS - using a TypeScript-safe approach
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
 
   const handleManageSubscription = async () => {
     // For iOS devices, show App Store instructions

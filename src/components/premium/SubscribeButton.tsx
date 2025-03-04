@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -46,8 +45,8 @@ export function SubscribeButton() {
 
   const hasActiveSubscription = profile?.is_subscribed || profile?.subscription_status === 'active';
   
-  // Check if the user is on iOS
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  // Check if the user is on iOS - using a TypeScript-safe approach
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
 
   const handleSubscribe = async () => {
     try {
