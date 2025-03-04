@@ -2,15 +2,16 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Crown, Sparkles, Star, Zap } from "lucide-react";
+import { Crown, Sparkles, Star, Zap, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export function SubscribeButton() {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Get user's subscription status - using enabled: false initially to prevent data leakage
+  // Get user's subscription status
   const { data: profile, isLoading: isProfileLoading } = useQuery({
     queryKey: ['subscription-profile'],
     queryFn: async () => {
@@ -176,9 +177,24 @@ export function SubscribeButton() {
       </Button>
       
       {!hasActiveSubscription && (
-        <p className="text-center mt-2 text-sm text-gray-300">
-          Your card will be charged automatically after the trial period
-        </p>
+        <div className="mt-2 text-center space-y-1">
+          <p className="text-sm text-gray-300">
+            $9.99/month after 3-day free trial
+          </p>
+          <div className="flex items-center justify-center gap-1 text-xs text-gray-400">
+            <span>Auto-renews unless canceled.</span>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Info className="h-3 w-3" />
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  <p>Your Apple ID will be charged at the end of the trial period unless canceled at least 24 hours before the end of the trial. Subscription automatically renews unless auto-renew is turned off.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
       )}
     </motion.div>
   );

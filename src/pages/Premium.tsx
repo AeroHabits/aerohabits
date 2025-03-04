@@ -6,6 +6,7 @@ import { GradientBackground } from "@/components/premium/GradientBackground";
 import { PremiumHeader } from "@/components/premium/PremiumHeader";
 import { PricingCard } from "@/components/premium/PricingCard";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { SubscriptionTerms } from "@/components/premium/SubscriptionTerms";
 
 export default function Premium() {
   const navigate = useNavigate();
@@ -60,6 +61,9 @@ export default function Premium() {
             features={premiumFeatures}
             premiumChallenges={premiumChallenges}
           />
+          
+          {/* Add subscription terms with legal details */}
+          <SubscriptionTerms />
         </div>
       </div>
     </div>

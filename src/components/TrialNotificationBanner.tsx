@@ -1,9 +1,10 @@
 
-import { Clock } from "lucide-react";
+import { Clock, CreditCard, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
 
 export function TrialNotificationBanner() {
   const [isVisible, setIsVisible] = useState(false);
@@ -64,25 +65,11 @@ export function TrialNotificationBanner() {
   }, [isInTrial, isActiveSubscriber, profile]);
   
   // Handle dismissal of the notification
-  const handleDismiss = () => {
+  const handleDismiss = (e) => {
+    e.stopPropagation();
     setIsVisible(false);
     localStorage.setItem('trialNotificationLastShown', new Date().toDateString());
   };
-  
-  // Add click event listener for document to dismiss trial notice
-  useEffect(() => {
-    if (!isVisible) return;
-    
-    const handleDocumentClick = () => {
-      handleDismiss();
-    };
-
-    document.addEventListener('click', handleDocumentClick);
-
-    return () => {
-      document.removeEventListener('click', handleDocumentClick);
-    };
-  }, [isVisible]);
   
   if (!isVisible || !isInTrial || isActiveSubscriber) {
     return null;
@@ -99,16 +86,31 @@ export function TrialNotificationBanner() {
           className="fixed top-0 left-0 right-0 z-50 p-4 flex justify-center"
         >
           <div className="bg-[#2D2416] border border-[#3D321E] text-[#E9C85D] rounded-lg p-4 shadow-lg max-w-md w-full">
-            <div className="flex flex-col items-center text-center space-y-2">
+            <div className="flex items-start justify-between">
               <div className="flex items-center gap-2">
                 <Clock className="h-5 w-5" />
                 <span className="font-medium text-lg">
                   Trial ends in {daysRemaining} day{daysRemaining !== 1 ? 's' : ''}
                 </span>
               </div>
+              <button 
+                onClick={handleDismiss}
+                className="text-[#E9C85D] hover:text-white transition-colors"
+                aria-label="Dismiss notification"
+              >
+                <XCircle className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="mt-2 space-y-2">
               <p className="text-[#c4ad69]">
-                Your credit card will be automatically charged when your trial ends.
+                Your credit card will be automatically charged $9.99/month when your trial ends unless you cancel before the trial period ends.
               </p>
+              <div className="flex items-center gap-2 mt-2 text-sm">
+                <CreditCard className="h-4 w-4" />
+                <p className="text-[#c4ad69]">
+                  Manage your subscription in your <Link to="/settings" className="underline hover:text-white">account settings</Link> or via the App Store.
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>
