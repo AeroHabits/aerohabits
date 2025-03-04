@@ -8,7 +8,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
-import { format, isPast, differenceInHours } from "date-fns";
+import { format } from "date-fns";
+import { AppleSubscriptionInfo } from "./AppleSubscriptionInfo";
 
 interface SubscriptionCardProps {
   isLoading?: boolean;
@@ -206,6 +207,9 @@ export function SubscriptionCard({
             {isLoading || isLoadingState ? "Loading..." : "Start 3-Day Free Trial"}
           </Button>
         )}
+        
+        {/* Added Apple-specific subscription information for App Store compliance */}
+        <AppleSubscriptionInfo />
       </CardContent>
     </Card>
   );
