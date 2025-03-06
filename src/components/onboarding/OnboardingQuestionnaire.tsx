@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { QuestionCard } from "./QuestionCard";
 import { ProgressIndicator } from "./ProgressIndicator";
@@ -7,8 +8,10 @@ import { questions } from "./questionnaireData";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export function OnboardingQuestionnaire() {
+  const navigate = useNavigate();
   const {
     currentQuestionIndex,
     currentQuestion,
@@ -23,41 +26,52 @@ export function OnboardingQuestionnaire() {
     getPrimaryGoal
   } = useQuestionnaire();
 
-  // Check if user should see the questionnaire
+  // Make sure user is authenticated
   useEffect(() => {
-    const checkUserStatus = async () => {
+    const checkAuthentication = async () => {
       try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (!session) {
+          console.log("User not authenticated, redirecting to login");
+          toast.error("Please sign in to continue");
+          navigate("/auth");
+          return;
+        }
+        
+        // User is authenticated, check if they should see the questionnaire
         const { data: { user } } = await supabase.auth.getUser();
         
-        // User is guaranteed to exist because of ProtectedRoute
-        console.log("Checking onboarding access for user:", user?.id);
-        console.log("User metadata:", user?.user_metadata);
+        if (user) {
+          console.log("Checking onboarding access for user:", user.id);
+          
+          // Check if user has already completed the quiz
+          const { data: quizResponses } = await supabase
+            .from('user_quiz_responses')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle();
 
-        // Check if user has already completed the quiz
-        const { data: quizResponses } = await supabase
-          .from('user_quiz_responses')
-          .select('id')
-          .eq('user_id', user?.id)
-          .maybeSingle();
+          // Check subscription status
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('is_subscribed, subscription_status')
+            .eq('id', user.id)
+            .maybeSingle();
 
-        // Check subscription status
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('is_subscribed, subscription_status')
-          .eq('id', user?.id)
-          .maybeSingle();
+          const hasCompletedQuiz = !!quizResponses;
+          const hasActiveSubscription = profile?.is_subscribed || 
+            ['active', 'trialing'].includes(profile?.subscription_status || '');
 
-        const hasCompletedQuiz = !!quizResponses;
-        const hasActiveSubscription = profile?.is_subscribed || 
-          ['active', 'trialing'].includes(profile?.subscription_status || '');
+          console.log("Has completed quiz:", hasCompletedQuiz);
+          console.log("Has active subscription:", hasActiveSubscription);
 
-        console.log("Has completed quiz:", hasCompletedQuiz);
-        console.log("Has active subscription:", hasActiveSubscription);
-
-        // Only users without quiz responses AND without subscription should be here
-        if (hasCompletedQuiz && hasActiveSubscription) {
-          toast.error("You've already completed onboarding and have an active subscription");
-          // User has already completed, no need to redirect as ProtectedRoute will handle redirection
+          // If user has already completed the quiz AND has an active subscription,
+          // redirect them to the home page
+          if (hasCompletedQuiz && hasActiveSubscription) {
+            toast.info("You've already completed onboarding");
+            navigate("/");
+          }
         }
       } catch (error) {
         console.error("Error checking user status:", error);
@@ -65,8 +79,8 @@ export function OnboardingQuestionnaire() {
       }
     };
 
-    checkUserStatus();
-  }, []);
+    checkAuthentication();
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-black p-4 overflow-hidden">

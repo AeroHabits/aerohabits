@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
@@ -21,16 +20,53 @@ const Auth = () => {
   // Check if user is already authenticated
   useEffect(() => {
     const checkAuthStatus = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (session) {
-        console.log("User already authenticated, redirecting to home");
-        navigate("/");
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        if (session) {
+          console.log("User already authenticated, redirecting");
+          
+          // Check if user needs to complete onboarding
+          const { data: { user } } = await supabase.auth.getUser();
+          
+          if (user) {
+            // Check if user has completed the quiz
+            const { data: quizResponses } = await supabase
+              .from('user_quiz_responses')
+              .select('id')
+              .eq('user_id', user.id)
+              .maybeSingle();
+              
+            // Check subscription status
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('is_subscribed, subscription_status')
+              .eq('id', user.id)
+              .maybeSingle();
+              
+            const hasCompletedQuiz = !!quizResponses;
+            const hasActiveSubscription = profile?.is_subscribed || 
+              ['active', 'trialing'].includes(profile?.subscription_status || '');
+            
+            if (!hasCompletedQuiz && !hasActiveSubscription) {
+              navigate("/onboarding");
+            } else {
+              // If user has completed onboarding or has subscription
+              // Redirect to the page they were trying to access or home
+              const from = location.state?.from?.pathname || "/";
+              navigate(from);
+            }
+          } else {
+            navigate("/");
+          }
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
       }
     };
     
     checkAuthStatus();
-  }, [navigate]);
+  }, [navigate, location]);
 
   const sendWelcomeEmail = async (userId: string) => {
     try {
@@ -61,9 +97,32 @@ const Auth = () => {
           await sendWelcomeEmail(session.user.id);
         }
         
-        // Redirect to the page the user was trying to access or home
-        const from = location.state?.from?.pathname || "/";
-        navigate(from);
+        // Check if user needs to complete onboarding
+        const { data: quizResponses } = await supabase
+          .from('user_quiz_responses')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+          
+        // Check subscription status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_subscribed, subscription_status')
+          .eq('id', session.user.id)
+          .maybeSingle();
+          
+        const hasCompletedQuiz = !!quizResponses;
+        const hasActiveSubscription = profile?.is_subscribed || 
+          ['active', 'trialing'].includes(profile?.subscription_status || '');
+        
+        if (!hasCompletedQuiz && !hasActiveSubscription) {
+          console.log("User needs to complete onboarding, redirecting");
+          navigate("/onboarding");
+        } else {
+          // Redirect to the page the user was trying to access or home
+          const from = location.state?.from?.pathname || "/";
+          navigate(from);
+        }
       }
     });
 

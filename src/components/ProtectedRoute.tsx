@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -26,59 +27,61 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           return;
         }
         
-        // If there's a session, get the user
-        if (sessionData.session) {
-          const { data: { user } } = await supabase.auth.getUser();
+        // If there's no session, user is not authenticated
+        if (!sessionData.session) {
+          console.log("No active session found, redirecting to auth");
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+        
+        // Session exists, get the user
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (user) {
+          console.log("User authenticated:", user.id);
+          console.log("User metadata:", user.user_metadata);
           
-          if (user) {
-            console.log("User authenticated:", user.id);
-            console.log("User metadata:", user.user_metadata);
+          // Check if user has already completed the quiz
+          const { data: quizResponses, error: quizError } = await supabase
+            .from('user_quiz_responses')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle();
             
-            // Check if user has already completed the quiz
-            const { data: quizResponses, error: quizError } = await supabase
-              .from('user_quiz_responses')
-              .select('id')
-              .eq('user_id', user.id)
-              .maybeSingle();
-              
-            if (quizError) {
-              console.error('Error checking quiz responses:', quizError);
-            }
-              
-            // Check if user has an active subscription
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('is_subscribed, subscription_status')
-              .eq('id', user.id)
-              .maybeSingle();
-              
-            if (profileError) {
-              console.error('Error checking profile:', profileError);
-            }
-              
-            const hasCompletedQuiz = !!quizResponses;
-            const hasActiveSubscription = profile?.is_subscribed || 
-              ['active', 'trialing'].includes(profile?.subscription_status || '');
-            
-            console.log("Has completed quiz:", hasCompletedQuiz);
-            console.log("Has active subscription:", hasActiveSubscription);
-            
-            // If the user has neither completed the quiz NOR has an active subscription,
-            // they must go through onboarding
-            if (!hasCompletedQuiz || !hasActiveSubscription) {
-              console.log('User requires onboarding - no quiz responses or subscription');
-              setRequiresOnboarding(true);
-              setIsAuthenticated(true);
-            } else {
-              // Otherwise, user is fully authenticated and can access the app
-              setIsAuthenticated(true);
-            }
-          } else {
-            console.log("No user found in session");
-            setIsAuthenticated(false);
+          if (quizError) {
+            console.error('Error checking quiz responses:', quizError);
           }
+            
+          // Check if user has an active subscription
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('is_subscribed, subscription_status')
+            .eq('id', user.id)
+            .maybeSingle();
+            
+          if (profileError) {
+            console.error('Error checking profile:', profileError);
+          }
+            
+          const hasCompletedQuiz = !!quizResponses;
+          const hasActiveSubscription = profile?.is_subscribed || 
+            ['active', 'trialing'].includes(profile?.subscription_status || '');
+          
+          console.log("Has completed quiz:", hasCompletedQuiz);
+          console.log("Has active subscription:", hasActiveSubscription);
+          
+          // If the user has neither completed the quiz NOR has an active subscription,
+          // they must go through onboarding
+          if (!hasCompletedQuiz && !hasActiveSubscription) {
+            console.log('User requires onboarding - no quiz responses or subscription');
+            setRequiresOnboarding(true);
+          }
+          
+          // User is authenticated regardless of onboarding status
+          setIsAuthenticated(true);
         } else {
-          console.log("No active session found");
+          console.log("No user found in session");
           setIsAuthenticated(false);
         }
       } catch (error) {
@@ -95,7 +98,12 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       async (event, session) => {
         console.log("Auth state changed:", event, session ? "Session exists" : "No session");
         
-        // Don't immediately set authenticated here, need to check onboarding status
+        if (event === 'SIGNED_OUT') {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+          return;
+        }
+        
         if (session) {
           checkUser(); // Re-run the full check
         } else {

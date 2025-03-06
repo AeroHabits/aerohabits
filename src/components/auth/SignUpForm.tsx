@@ -56,9 +56,15 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
       if (error) throw error;
 
       if (data.user) {
-        // Direct users to onboarding questionnaire
+        // User created, direct to onboarding questionnaire
         toast.success("Account created successfully!");
-        navigate('/onboarding');
+        
+        // Wait for auth state to propagate
+        setTimeout(() => {
+          console.log("Redirecting to onboarding after signup");
+          navigate('/onboarding');
+        }, 500);
+        
         handleSuccess("Please complete the questionnaire to begin your free trial.");
       } else {
         handleSuccess("Please check your email to verify your account.");
