@@ -1,9 +1,11 @@
+
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { GoalItem } from "./goals/GoalItem";
 import { GoalListEmpty } from "./goals/GoalListEmpty";
 import { GoalListLoading } from "./goals/GoalListLoading";
+import { motion } from "framer-motion";
 
 interface Goal {
   id: string;
@@ -131,15 +133,26 @@ export function GoalList({ onGoalUpdated }: GoalListProps) {
   }
 
   return (
-    <div className="space-y-4">
-      {goals.map((goal) => (
-        <GoalItem
+    <motion.div 
+      className="space-y-5"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {goals.map((goal, index) => (
+        <motion.div
           key={goal.id}
-          goal={goal}
-          onStatusUpdate={handleStatusUpdate}
-          onDelete={handleDelete}
-        />
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1, duration: 0.4 }}
+        >
+          <GoalItem
+            goal={goal}
+            onStatusUpdate={handleStatusUpdate}
+            onDelete={handleDelete}
+          />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }
