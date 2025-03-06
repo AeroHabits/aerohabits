@@ -1,27 +1,48 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { toast } from "sonner";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [searchParams] = useSearchParams();
   const isReset = searchParams.get("reset") === "true";
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if user is already authenticated
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session) {
+        console.log("User already authenticated, redirecting to home");
+        navigate("/");
+      }
+    };
+    
+    checkAuthStatus();
+  }, [navigate]);
 
   const sendWelcomeEmail = async (userId: string) => {
     try {
+      console.log("Sending welcome email to user:", userId);
       const { error } = await supabase.functions.invoke("send-welcome-email", {
         body: { userId }
       });
       
       if (error) {
         console.error("Failed to send welcome email:", error);
+      } else {
+        console.log("Welcome email sent successfully");
       }
     } catch (err) {
       console.error("Error invoking welcome email function:", err);
@@ -30,6 +51,8 @@ const Auth = () => {
 
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session ? "User logged in" : "No session");
+      
       if (event === 'SIGNED_IN' && session?.user?.id) {
         const isNewUser = !localStorage.getItem(`welcomed_${session.user.id}`);
         
@@ -37,13 +60,17 @@ const Auth = () => {
           localStorage.setItem(`welcomed_${session.user.id}`, 'true');
           await sendWelcomeEmail(session.user.id);
         }
+        
+        // Redirect to the page the user was trying to access or home
+        const from = location.state?.from?.pathname || "/";
+        navigate(from);
       }
     });
 
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, []);
+  }, [navigate, location]);
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
