@@ -1,5 +1,5 @@
 
-import { Info, Shield, CreditCard } from "lucide-react";
+import { Info, Shield, CreditCard, Lock } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Link } from "react-router-dom";
 
@@ -37,6 +37,19 @@ export function AppleSubscriptionInfo() {
                 support website
               </a>{" "}
               for more information on managing subscriptions.
+            </p>
+          </div>
+        </div>
+        
+        {/* Add secure receipt validation information - Apple requirement */}
+        <div className="flex items-start gap-2 bg-black/20 p-3 rounded-md border border-gray-700">
+          <Lock className="h-4 w-4 text-blue-400 mt-0.5 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="font-medium text-gray-200 mb-1">Secure Transaction</p>
+            <p className="text-gray-400">
+              All transactions are securely processed through Apple's App Store. 
+              AeroHabits uses secure receipt validation to verify your subscription status.
+              Your payment information is never stored on our servers.
             </p>
           </div>
         </div>

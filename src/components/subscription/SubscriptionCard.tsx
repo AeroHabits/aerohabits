@@ -1,4 +1,4 @@
-import { Crown, Calendar, Sparkles, AlertTriangle, ExternalLink } from "lucide-react";
+import { Crown, Calendar, Sparkles, AlertTriangle, ExternalLink, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -35,6 +35,7 @@ export function SubscriptionCard({
   isLoading
 }: SubscriptionCardProps) {
   const [isLoadingState, setIsLoadingState] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
   const { trackError } = useErrorTracking();
   const [showAppStoreInfo, setShowAppStoreInfo] = useState(false);
 
@@ -193,6 +194,45 @@ export function SubscriptionCard({
     }
   };
 
+  const handleRestorePurchases = async () => {
+    try {
+      setIsRestoring(true);
+      toast.info("Restoring your purchases...");
+      
+      // For iOS devices
+      if (isIOS) {
+        // On iOS, this would integrate with native StoreKit
+        // For web, we redirect to App Store
+        window.location.href = "https://apps.apple.com/account/subscriptions";
+        return;
+      }
+      
+      // For web/other platforms, sync with backend
+      const { data, error } = await supabase.functions.invoke('sync-subscription', {
+        body: { restore: true }
+      });
+      
+      if (error) throw error;
+      
+      await refetch();
+      
+      if (data?.restored) {
+        toast.success("Your purchases have been restored successfully!");
+      } else {
+        toast.info("No previous purchases found to restore.");
+      }
+    } catch (error) {
+      console.error('Error restoring purchases:', error);
+      trackError(error, 'restoring purchases', { 
+        severity: 'medium',
+        context: { profile }
+      });
+      toast.error('Failed to restore purchases. Please try again.');
+    } finally {
+      setIsRestoring(false);
+    }
+  };
+
   return (
     <>
       <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border-gray-700 relative overflow-hidden">
@@ -265,6 +305,17 @@ export function SubscriptionCard({
               {isLoading || isLoadingState ? "Loading..." : "Start 3-Day Free Trial"}
             </Button>
           )}
+          
+          {/* Add Restore Purchases button - Apple requirement */}
+          <Button
+            onClick={handleRestorePurchases}
+            disabled={isRestoring}
+            variant="ghost"
+            className="w-full font-medium text-gray-400 hover:text-gray-200 border border-gray-700/50 py-4"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRestoring ? 'animate-spin' : ''}`} />
+            {isRestoring ? "Restoring..." : "Restore Purchases"}
+          </Button>
           
           {/* Added Apple-specific subscription information for App Store compliance */}
           <AppleSubscriptionInfo />

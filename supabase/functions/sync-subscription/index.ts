@@ -1,148 +1,215 @@
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
-import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { stripe } from "../_shared/stripe.ts";
+import { supabaseAdmin } from "../_shared/supabaseAdmin.ts";
+import { corsHeaders } from "../_shared/cors.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS', // Add the OPTIONS method
-};
-
-const handler = async (req: Request): Promise<Response> => {
-  // Handle CORS preflight requests
+serve(async (req) => {
+  // CORS handling
   if (req.method === 'OPTIONS') {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
+    return new Response(null, { headers: corsHeaders });
   }
-
-  const supabaseUrl = Deno.env.get('SUPABASE_URL');
-  const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-  const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
-
-  if (!supabaseUrl || !supabaseKey || !stripeSecretKey) {
-    console.error('Missing required environment variables');
-    return new Response(JSON.stringify({ error: 'Missing required environment variables' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
-    });
-  }
-
-  const supabaseClient = createClient(supabaseUrl, supabaseKey, {
-    auth: {
-      persistSession: false,
-    },
-  });
-
-  const stripe = new Stripe(stripeSecretKey, {
-    apiVersion: '2022-11-15',
-  });
 
   try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabaseAdmin.auth.getUser(
+      req.headers.get('Authorization')?.replace('Bearer ', '') || ''
+    );
 
     if (!user) {
-      console.error('No user found');
-      return new Response(JSON.stringify({ error: 'No user found' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    const { data: profileData, error: profileError } = await supabaseClient
+    // Parse the request body or use an empty object if not provided
+    const requestData = req.method === 'POST' ? await req.json() : {};
+    const isRestoreRequest = requestData.restore === true;
+
+    // Get profile data to check if stripe customer exists
+    const { data: profileData, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('stripe_customer_id, is_subscribed, subscription_status')
+      .select('stripe_customer_id, subscription_id, subscription_status')
       .eq('id', user.id)
       .single();
 
     if (profileError) {
-      console.error('Error fetching profile:', profileError);
-      return new Response(JSON.stringify({ error: 'Error fetching profile' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
+      console.error('Error fetching profile data:', profileError);
+      return new Response(
+        JSON.stringify({ error: 'Failed to fetch profile data' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
-    if (!profileData?.stripe_customer_id) {
-      console.warn('Stripe customer ID not found for user:', user.id);
+    // Initialize variables
+    let status = profileData.subscription_status;
+    let subscriptionId = profileData.subscription_id;
+    let updatedProfile = false;
+    let restoredPurchase = false;
+
+    // Handle restore purchases request (Apple App Store requirement)
+    if (isRestoreRequest) {
+      console.log('Processing restore purchases request for user:', user.id);
+      
+      if (!profileData.stripe_customer_id) {
+        return new Response(
+          JSON.stringify({ 
+            restored: false, 
+            message: 'No purchase history found to restore' 
+          }),
+          { 
+            status: 200, 
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
+      }
+      
+      // For real iOS apps, this would validate receipts with Apple's servers
+      // For Stripe, we check if the customer has any active subscriptions
+      
+      try {
+        // List all customer's subscriptions
+        const subscriptions = await stripe.subscriptions.list({
+          customer: profileData.stripe_customer_id,
+          status: 'all',
+          limit: 100,
+        });
+        
+        if (subscriptions.data.length > 0) {
+          // Find the most recent active or past_due subscription
+          const activeSubscription = subscriptions.data.find(
+            sub => ['active', 'trialing', 'past_due'].includes(sub.status)
+          );
+          
+          if (activeSubscription) {
+            // Update the profile with the active subscription
+            const { error: updateError } = await supabaseAdmin
+              .from('profiles')
+              .update({
+                is_subscribed: true,
+                subscription_status: activeSubscription.status,
+                subscription_id: activeSubscription.id,
+                current_period_end: new Date(activeSubscription.current_period_end * 1000).toISOString(),
+                updated_at: new Date().toISOString(),
+              })
+              .eq('id', user.id);
+              
+            if (updateError) {
+              throw updateError;
+            }
+            
+            status = activeSubscription.status;
+            subscriptionId = activeSubscription.id;
+            updatedProfile = true;
+            restoredPurchase = true;
+          } else {
+            // No active subscriptions found
+            console.log('No active subscriptions found for customer:', profileData.stripe_customer_id);
+          }
+        } else {
+          console.log('No subscriptions found for customer:', profileData.stripe_customer_id);
+        }
+      } catch (stripeError) {
+        console.error('Error retrieving customer subscriptions:', stripeError);
+        throw stripeError;
+      }
+      
       return new Response(
-        JSON.stringify({ message: 'Stripe customer ID not found, skipping sync' }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        JSON.stringify({ 
+          restored: restoredPurchase, 
+          updated: updatedProfile,
+          status: status
+        }),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
         }
       );
     }
 
-    const subscriptions = await stripe.subscriptions.list({
-      customer: profileData.stripe_customer_id,
-      status: 'all',
-      expand: ['data.default_payment_method'],
-    });
-
-    if (!subscriptions.data.length) {
-      console.warn('No subscriptions found for customer:', profileData.stripe_customer_id);
+    // Regular subscription sync logic (non-restore flow)
+    if (!profileData.subscription_id) {
+      return new Response(
+        JSON.stringify({ 
+          updated: false, 
+          message: 'No subscription found to sync' 
+        }),
+        { 
+          status: 200, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      );
     }
 
-    const subscription = subscriptions.data[0]; // Assuming one subscription per customer
-    const subscriptionStatus = subscription ? subscription.status : null;
-    const isSubscribed = subscription ? ['active', 'trialing'].includes(subscription.status) : false;
-    const current_period_end = subscription ? new Date(subscription.current_period_end * 1000).toISOString() : null;
-    const trial_end = subscription?.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null;
+    // Fetch the subscription from Stripe
+    try {
+      const subscription = await stripe.subscriptions.retrieve(
+        profileData.subscription_id
+      );
 
-    // Since we've removed the trial period functionality, we don't need to check if it was trialing
-    const wasTrialing = false;
+      if (subscription.status !== profileData.subscription_status) {
+        // Update user profile with current subscription status
+        const isSubscribed = ['active', 'trialing'].includes(subscription.status);
+        const currentPeriodEnd = new Date(subscription.current_period_end * 1000).toISOString();
 
-    const updatedData = {
-      is_subscribed: isSubscribed,
-      subscription_status: subscriptionStatus,
-      current_period_end: current_period_end,
-      trial_end_date: trial_end
-    };
+        const { error: updateError } = await supabaseAdmin
+          .from('profiles')
+          .update({
+            is_subscribed: isSubscribed,
+            subscription_status: subscription.status,
+            current_period_end: currentPeriodEnd,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
 
-    const { error: updateError } = await supabaseClient
-      .from('profiles')
-      .update(updatedData)
-      .eq('id', user.id);
+        if (updateError) {
+          throw updateError;
+        }
 
-    if (updateError) {
-      console.error('Error updating profile:', updateError);
-      return new Response(JSON.stringify({ error: 'Error updating profile' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
+        status = subscription.status;
+        updatedProfile = true;
+      }
+    } catch (stripeError) {
+      console.error('Error retrieving subscription:', stripeError);
+      
+      // Handle the case where subscription doesn't exist in Stripe anymore
+      if (stripeError.code === 'resource_missing') {
+        const { error: updateError } = await supabaseAdmin
+          .from('profiles')
+          .update({
+            is_subscribed: false,
+            subscription_status: 'canceled',
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', user.id);
+
+        if (updateError) {
+          throw updateError;
+        }
+
+        status = 'canceled';
+        updatedProfile = true;
+      } else {
+        throw stripeError;
+      }
     }
-
-    const updated =
-      profileData.is_subscribed !== isSubscribed ||
-      profileData.subscription_status !== subscriptionStatus;
-
-    // As we've removed the trial period, we don't need to send welcome emails here
-    // We'll just sync the subscription status
 
     return new Response(
-      JSON.stringify({
-        message: 'Subscription status synced successfully',
-        updated,
-        status: subscriptionStatus,
+      JSON.stringify({ 
+        updated: updatedProfile, 
+        status: status,
+        restored: restoredPurchase
       }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          ...corsHeaders,
-        },
+      { 
+        status: 200, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );
   } catch (error) {
     console.error('Error in sync-subscription function:', error);
-    return new Response(JSON.stringify({ error: 'Failed to sync subscription' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
-    });
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
   }
-};
-
-serve(handler);
+});

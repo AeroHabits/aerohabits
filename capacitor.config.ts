@@ -25,6 +25,10 @@ const config: CapacitorConfig = {
       },
       location: {
         text: "Allow AEROHABITS to access your location for habit tracking"
+      },
+      // Add App Tracking Transparency permission (Apple requirement)
+      tracking: {
+        text: "This allows us to provide a personalized experience and help improve the app. We respect your privacy and you can change this at any time in settings."
       }
     },
     // Configure status bar

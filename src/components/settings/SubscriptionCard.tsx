@@ -1,4 +1,4 @@
-import { Crown, Star, ExternalLink } from "lucide-react";
+import { Crown, Star, ExternalLink, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -21,6 +21,7 @@ import {
 
 export function SubscriptionCard() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRestoring, setIsRestoring] = useState(false);
   const { trackError } = useErrorTracking();
   const [showAppStoreInfo, setShowAppStoreInfo] = useState(false);
 
@@ -43,11 +44,9 @@ export function SubscriptionCard() {
     staleTime: 0 // Don't cache this data
   });
 
-  // Check if the user is on iOS - using a TypeScript-safe approach
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
 
   const handleManageSubscription = async () => {
-    // For iOS devices, show App Store instructions
     if (isIOS) {
       setShowAppStoreInfo(true);
       return;
@@ -66,7 +65,6 @@ export function SubscriptionCard() {
       if (data?.url) {
         window.location.href = data.url;
       } else {
-        // Fallback if no URL is returned
         throw new Error("No portal URL returned from server");
       }
     } catch (error) {
@@ -76,10 +74,42 @@ export function SubscriptionCard() {
         context: { profile } 
       });
       toast.error('Could not open subscription settings. Please try again.');
-      // Show App Store instructions as fallback
       setShowAppStoreInfo(true);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleRestorePurchases = async () => {
+    try {
+      setIsRestoring(true);
+      toast.info("Restoring your purchases...");
+      
+      if (isIOS) {
+        window.location.href = "https://apps.apple.com/account/subscriptions";
+        return;
+      }
+      
+      const { data, error } = await supabase.functions.invoke('sync-subscription', {
+        body: { restore: true }
+      });
+      
+      if (error) throw error;
+      
+      if (data?.restored) {
+        toast.success("Your purchases have been restored successfully!");
+      } else {
+        toast.info("No previous purchases found to restore.");
+      }
+    } catch (error) {
+      console.error('Error restoring purchases:', error);
+      trackError(error, 'restoring purchases', { 
+        severity: 'medium', 
+        context: { profile } 
+      });
+      toast.error('Could not restore purchases. Please try again.');
+    } finally {
+      setIsRestoring(false);
     }
   };
 
@@ -122,6 +152,7 @@ export function SubscriptionCard() {
               ? "Manage your subscription, view payment history, and update payment method."
               : "Unlock premium features, detailed insights, and personalized tracking"}
           </p>
+          
           {profile?.is_subscribed ? (
             <Button 
               onClick={handleManageSubscription}
@@ -140,6 +171,16 @@ export function SubscriptionCard() {
               Get Premium
             </Button>
           )}
+          
+          <Button
+            onClick={handleRestorePurchases}
+            disabled={isRestoring}
+            variant="ghost"
+            className="w-full font-medium text-gray-400 hover:text-gray-200 border border-gray-700/50"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${isRestoring ? 'animate-spin' : ''}`} />
+            {isRestoring ? "Restoring..." : "Restore Purchases"}
+          </Button>
         </CardContent>
       </Card>
 
@@ -173,7 +214,6 @@ export function SubscriptionCard() {
             <AlertDialogAction 
               className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700"
               onClick={() => {
-                // Open iOS subscription settings
                 window.location.href = "https://apps.apple.com/account/subscriptions";
               }}
             >
