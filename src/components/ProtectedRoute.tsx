@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 interface ProtectedRouteProps {
@@ -11,6 +11,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [requiresOnboarding, setRequiresOnboarding] = useState(false);
+  const location = useLocation();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -89,9 +90,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" replace />;
   }
   
-  // This is the key change - redirect to onboarding for all routes except /onboarding
+  // This is the key logic - redirect to onboarding for all routes except /onboarding
   // if the user requires onboarding
-  if (requiresOnboarding && window.location.pathname !== '/onboarding') {
+  if (requiresOnboarding && location.pathname !== '/onboarding') {
     return <Navigate to="/onboarding" replace />;
   }
 

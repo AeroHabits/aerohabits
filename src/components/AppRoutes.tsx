@@ -19,7 +19,14 @@ export function AppRoutes() {
       <Route path="/auth" element={<Auth />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
-      <Route path="/onboarding" element={<Onboarding />} />
+      <Route
+        path="/onboarding"
+        element={
+          <ProtectedRoute>
+            <Onboarding />
+          </ProtectedRoute>
+        }
+      />
       <Route path="/premium" element={<Premium />} />
       <Route
         path="/"
