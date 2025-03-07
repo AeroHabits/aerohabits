@@ -12,7 +12,6 @@ import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Premium from "@/pages/Premium";
 import Onboarding from "@/pages/Onboarding";
-import Preferences from "@/pages/Preferences";
 
 export function AppRoutes() {
   return (
@@ -74,14 +73,6 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Settings />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/preferences"
-        element={
-          <ProtectedRoute>
-            <Preferences />
           </ProtectedRoute>
         }
       />
