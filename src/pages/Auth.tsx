@@ -24,7 +24,7 @@ const Auth = () => {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
-          console.log("User already authenticated, redirecting");
+          console.log("User already authenticated, checking status");
           
           // Check if user needs to complete onboarding
           const { data: { user } } = await supabase.auth.getUser();
@@ -48,8 +48,14 @@ const Auth = () => {
             const hasActiveSubscription = profile?.is_subscribed || 
               ['active', 'trialing'].includes(profile?.subscription_status || '');
             
+            // Redirect based on status:
+            // 1. If user hasn't completed quiz -> onboarding
+            // 2. If user completed quiz but no subscription -> premium
+            // 3. If user has subscription -> original destination or home
             if (!hasCompletedQuiz && !hasActiveSubscription) {
               navigate("/onboarding");
+            } else if (hasCompletedQuiz && !hasActiveSubscription) {
+              navigate("/premium");
             } else {
               // If user has completed onboarding or has subscription
               // Redirect to the page they were trying to access or home
@@ -118,6 +124,9 @@ const Auth = () => {
         if (!hasCompletedQuiz && !hasActiveSubscription) {
           console.log("User needs to complete onboarding, redirecting");
           navigate("/onboarding");
+        } else if (hasCompletedQuiz && !hasActiveSubscription) {
+          console.log("User needs to subscribe, redirecting");
+          navigate("/premium");
         } else {
           // Redirect to the page the user was trying to access or home
           const from = location.state?.from?.pathname || "/";
