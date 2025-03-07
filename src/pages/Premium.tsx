@@ -3,7 +3,6 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
 import { GradientBackground } from "@/components/premium/GradientBackground";
-import { PremiumHeader } from "@/components/premium/PremiumHeader";
 import { PricingCard } from "@/components/premium/PricingCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SubscriptionTerms } from "@/components/premium/SubscriptionTerms";
@@ -42,26 +41,59 @@ export default function Premium() {
     }
   ];
 
-  // Show a payment required prompt if the user is coming from onboarding
+  // Check user flow and ensure proper redirection
   useEffect(() => {
     const checkUserStatus = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       
-      if (!user) return;
+      if (!user) {
+        // If no user is authenticated, redirect to auth
+        console.log("No authenticated user in Premium page, redirecting to auth");
+        navigate('/auth');
+        return;
+      }
+      
+      // Check if user has completed the quiz/onboarding
+      const { data: quizResponses, error: quizError } = await supabase
+        .from('user_quiz_responses')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+        
+      if (quizError) {
+        console.error('Error checking quiz responses:', quizError);
+      }
       
       // Check if user has an active subscription
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('is_subscribed, subscription_status')
         .eq('id', user.id)
         .maybeSingle();
         
+      if (profileError) {
+        console.error('Error checking profile:', profileError);
+      }
+        
+      const hasCompletedQuiz = !!quizResponses;
       const hasActiveSubscription = profile?.is_subscribed || 
         ['active', 'trialing'].includes(profile?.subscription_status || '');
       
+      console.log("Has completed quiz in Premium:", hasCompletedQuiz);
+      console.log("Has active subscription in Premium:", hasActiveSubscription);
+      
       // If the user has already subscribed, redirect them to the home page
       if (hasActiveSubscription) {
+        console.log("User already has active subscription, redirecting to home");
         navigate('/');
+        return;
+      }
+      
+      // If the user hasn't completed onboarding yet, redirect them to onboarding
+      if (!hasCompletedQuiz) {
+        console.log("User hasn't completed onboarding, redirecting to onboarding");
+        toast.info("Please complete the onboarding questionnaire first");
+        navigate('/onboarding');
         return;
       }
       

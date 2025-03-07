@@ -62,8 +62,8 @@ export function OnboardingQuestionnaire() {
           const hasActiveSubscription = profile?.is_subscribed || 
             ['active', 'trialing'].includes(profile?.subscription_status || '');
 
-          console.log("Has completed quiz:", hasCompletedQuiz);
-          console.log("Has active subscription:", hasActiveSubscription);
+          console.log("Has completed quiz in onboarding:", hasCompletedQuiz);
+          console.log("Has active subscription in onboarding:", hasActiveSubscription);
 
           // If user has already completed the quiz, redirect them to the payment page
           // (unless they also have an active subscription)

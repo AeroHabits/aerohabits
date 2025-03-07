@@ -18,6 +18,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   useEffect(() => {
     const checkUser = async () => {
       try {
+        console.log("Checking ProtectedRoute authentication status");
         // Get the current session first
         const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
         
@@ -69,8 +70,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           const hasActiveSubscription = profile?.is_subscribed || 
             ['active', 'trialing'].includes(profile?.subscription_status || '');
           
-          console.log("Has completed quiz:", hasCompletedQuiz);
-          console.log("Has active subscription:", hasActiveSubscription);
+          console.log("Has completed quiz in ProtectedRoute:", hasCompletedQuiz);
+          console.log("Has active subscription in ProtectedRoute:", hasActiveSubscription);
           
           // User must complete these steps in order:
           // 1. Complete onboarding (quiz)
@@ -106,7 +107,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     
     const { data: authListener } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log("Auth state changed:", event, session ? "Session exists" : "No session");
+        console.log("Auth state changed in ProtectedRoute:", event, session ? "Session exists" : "No session");
         
         if (event === 'SIGNED_OUT') {
           setIsAuthenticated(false);

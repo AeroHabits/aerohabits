@@ -49,14 +49,20 @@ const Auth = () => {
             const hasActiveSubscription = profile?.is_subscribed || 
               ['active', 'trialing'].includes(profile?.subscription_status || '');
             
+            console.log("Has completed quiz:", hasCompletedQuiz);
+            console.log("Has active subscription:", hasActiveSubscription);
+            
             // Enforce the flow: onboarding → payment → app
             if (!hasCompletedQuiz) {
+              console.log("User needs to complete onboarding, redirecting to /onboarding");
               navigate("/onboarding");
             } else if (!hasActiveSubscription) {
+              console.log("User needs to subscribe, redirecting to premium page");
               navigate("/premium", { state: { fromOnboarding: true } });
             } else {
               // If user has completed all steps, redirect to the page they were trying to access or home
               const from = location.state?.from?.pathname || "/";
+              console.log("User has completed all steps, redirecting to:", from);
               navigate(from);
             }
           } else {
@@ -118,16 +124,22 @@ const Auth = () => {
         const hasActiveSubscription = profile?.is_subscribed || 
           ['active', 'trialing'].includes(profile?.subscription_status || '');
         
+        console.log("Has completed quiz after sign in:", hasCompletedQuiz);
+        console.log("Has active subscription after sign in:", hasActiveSubscription);
+        
         // Enforce the flow: onboarding → payment → app
         if (!hasCompletedQuiz) {
-          console.log("User needs to complete onboarding, redirecting");
+          console.log("User needs to complete onboarding, redirecting to /onboarding");
           navigate("/onboarding");
+          return;
         } else if (!hasActiveSubscription) {
           console.log("User needs to subscribe, redirecting to premium page");
           navigate("/premium", { state: { fromOnboarding: true } });
+          return;
         } else {
           // All steps completed, redirect to intended page or home
           const from = location.state?.from?.pathname || "/";
+          console.log("All steps completed, redirecting to:", from);
           navigate(from);
         }
       }
