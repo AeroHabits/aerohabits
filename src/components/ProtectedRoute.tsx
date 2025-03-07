@@ -12,7 +12,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [requiresOnboarding, setRequiresOnboarding] = useState(false);
-  const [requiresSubscription, setRequiresSubscription] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -72,20 +71,14 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.log("Has completed quiz:", hasCompletedQuiz);
           console.log("Has active subscription:", hasActiveSubscription);
           
-          // If the user has not completed the quiz NOR has an active subscription,
+          // If the user has neither completed the quiz NOR has an active subscription,
           // they must go through onboarding
           if (!hasCompletedQuiz && !hasActiveSubscription) {
             console.log('User requires onboarding - no quiz responses or subscription');
             setRequiresOnboarding(true);
           }
-          // If user has completed the quiz but doesn't have an active subscription,
-          // they need to subscribe
-          else if (hasCompletedQuiz && !hasActiveSubscription) {
-            console.log('User requires subscription - completed quiz but no subscription');
-            setRequiresSubscription(true);
-          }
           
-          // User is authenticated regardless of onboarding or subscription status
+          // User is authenticated regardless of onboarding status
           setIsAuthenticated(true);
         } else {
           console.log("No user found in session");
@@ -134,17 +127,11 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
   
-  // Redirect to onboarding if needed (except if already on onboarding page)
+  // This is the key logic - redirect to onboarding for all routes except /onboarding
+  // if the user requires onboarding
   if (requiresOnboarding && location.pathname !== '/onboarding') {
     console.log("User requires onboarding, redirecting to /onboarding");
     return <Navigate to="/onboarding" replace />;
-  }
-
-  // Redirect to premium page if user needs to subscribe (except if already on premium or onboarding pages)
-  if (requiresSubscription && location.pathname !== '/premium' && location.pathname !== '/onboarding') {
-    console.log("User requires subscription, redirecting to /premium");
-    toast.info("You need to subscribe to access this feature");
-    return <Navigate to="/premium" replace />;
   }
 
   return <>{children}</>;

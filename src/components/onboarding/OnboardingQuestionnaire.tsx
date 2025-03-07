@@ -66,16 +66,11 @@ export function OnboardingQuestionnaire() {
           console.log("Has completed quiz:", hasCompletedQuiz);
           console.log("Has active subscription:", hasActiveSubscription);
 
-          // If user has already completed the quiz, redirect them to premium if no subscription
-          // or home if they have a subscription
-          if (hasCompletedQuiz) {
-            if (hasActiveSubscription) {
-              toast.info("You've already completed onboarding");
-              navigate("/");
-            } else {
-              toast.info("You need to subscribe to continue");
-              navigate("/premium");
-            }
+          // If user has already completed the quiz AND has an active subscription,
+          // redirect them to the home page
+          if (hasCompletedQuiz && hasActiveSubscription) {
+            toast.info("You've already completed onboarding");
+            navigate("/");
           }
         }
       } catch (error) {
@@ -86,12 +81,6 @@ export function OnboardingQuestionnaire() {
 
     checkAuthentication();
   }, [navigate]);
-
-  // When completing onboarding, navigate to premium page instead of home
-  const handleContinue = () => {
-    startSubscriptionFlow();
-    navigate("/premium");
-  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-black p-4 overflow-hidden">
@@ -136,7 +125,7 @@ export function OnboardingQuestionnaire() {
         {showWelcomeMessage ? (
           <WelcomeMessage 
             primaryGoal={getPrimaryGoal()} 
-            onContinue={handleContinue} 
+            onContinue={startSubscriptionFlow} 
             isLoading={isLoading} 
           />
         ) : (
