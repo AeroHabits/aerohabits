@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,12 +8,11 @@ import { useAuthForm } from "@/hooks/useAuthForm";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 interface ResetPasswordFormProps {
-  onToggleForm: () => void;
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
 }
 
-export const ResetPasswordForm = ({ onToggleForm, isLoading, setIsLoading }: ResetPasswordFormProps) => {
+export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordFormProps) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [resetStatus, setResetStatus] = useState<{
@@ -77,8 +77,9 @@ export const ResetPasswordForm = ({ onToggleForm, isLoading, setIsLoading }: Res
       });
       handleSuccess("Your password has been reset successfully");
       
+      // Provide some time for the user to see the success message before redirecting
       setTimeout(() => {
-        onToggleForm();
+        navigate("/auth");
       }, 3000);
     } catch (error: any) {
       console.error("Password reset error:", error);

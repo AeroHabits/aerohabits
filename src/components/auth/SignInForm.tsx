@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -10,14 +11,12 @@ import { toast } from "sonner";
 
 interface SignInFormProps {
   onToggleForm: () => void;
-  onResetPassword: () => void;
   isLoading: boolean;
   setIsLoading: (value: boolean) => void;
 }
 
 export const SignInForm = ({
   onToggleForm,
-  onResetPassword,
   isLoading,
   setIsLoading
 }: SignInFormProps) => {
@@ -67,8 +66,6 @@ export const SignInForm = ({
         message: "We've sent a password reset link to your email. Please check your inbox and spam folder."
       });
       handleSuccess("Password reset link sent! Please check your email inbox and spam folder");
-      
-      onResetPassword();
     } catch (error: any) {
       console.error("Password reset error:", error);
       setPasswordResetStatus({

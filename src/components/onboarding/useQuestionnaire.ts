@@ -44,7 +44,7 @@ export function useQuestionnaire() {
       if (user) {
         console.log("Starting subscription flow for user:", user.id);
         
-        // Update user metadata to indicate they've completed onboarding
+        // Remove the is_new_user flag from user metadata to indicate they've completed onboarding
         await supabase.auth.updateUser({
           data: {
             is_new_user: false,
@@ -56,7 +56,7 @@ export function useQuestionnaire() {
         const { data, error } = await supabase.functions.invoke('create-checkout-session', {
           body: {
             priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-            returnUrl: window.location.origin + '/premium?checkout_success=true',
+            returnUrl: window.location.origin + '/habits',
             includeTrialPeriod: true
           }
         });
@@ -73,8 +73,6 @@ export function useQuestionnaire() {
     } catch (error) {
       console.error("Error starting subscription:", error);
       handleError(error);
-      // If payment setup fails, still redirect to payment page so user can try again
-      navigate('/premium');
     } finally {
       setIsLoading(false);
     }
@@ -97,7 +95,7 @@ export function useQuestionnaire() {
         .update({
           updated_at: new Date().toISOString(),
           full_name: user.user_metadata.full_name || '',
-          subscription_status: 'pending_payment' // Mark as pending until they provide payment info
+          subscription_status: 'pending_trial' // Mark as pending trial until they provide payment info
         })
         .eq('id', user.id);
       

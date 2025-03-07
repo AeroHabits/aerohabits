@@ -1,104 +1,184 @@
 import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { SignUpForm } from "@/components/auth/SignUpForm";
 import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader } from "@/components/ui/loader";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { toast } from "sonner";
 
-export default function Auth() {
-  const [view, setView] = useState<"sign-in" | "sign-up" | "reset-password">("sign-in");
-  const [isLoading, setIsLoading] = useState(true);
+const Auth = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const [searchParams] = useSearchParams();
+  const isReset = searchParams.get("reset") === "true";
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Check if user is already authenticated
   useEffect(() => {
-    const checkAuth = async () => {
+    const checkAuthStatus = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
-          console.log("User already authenticated, checking onboarding status");
+          console.log("User already authenticated, redirecting");
           
-          // Check if user is new and needs onboarding
+          // Check if user needs to complete onboarding
           const { data: { user } } = await supabase.auth.getUser();
           
-          if (user?.user_metadata?.is_new_user === true) {
-            console.log("New user detected, redirecting to onboarding");
-            navigate("/onboarding");
-            return;
-          }
-          
-          // If user has completed onboarding but doesn't have an active subscription,
-          // redirect to payment page
-          if (user?.user_metadata?.has_completed_onboarding === true) {
+          if (user) {
+            // Check if user has completed the quiz
+            const { data: quizResponses } = await supabase
+              .from('user_quiz_responses')
+              .select('id')
+              .eq('user_id', user.id)
+              .maybeSingle();
+              
+            // Check subscription status
             const { data: profile } = await supabase
               .from('profiles')
               .select('is_subscribed, subscription_status')
               .eq('id', user.id)
-              .single();
+              .maybeSingle();
               
+            const hasCompletedQuiz = !!quizResponses;
             const hasActiveSubscription = profile?.is_subscribed || 
               ['active', 'trialing'].includes(profile?.subscription_status || '');
-              
-            if (!hasActiveSubscription) {
-              console.log("User needs to set up payment, redirecting to premium page");
-              navigate("/premium");
-              return;
+            
+            if (!hasCompletedQuiz && !hasActiveSubscription) {
+              navigate("/onboarding");
+            } else {
+              // If user has completed onboarding or has subscription
+              // Redirect to the page they were trying to access or home
+              const from = location.state?.from?.pathname || "/";
+              navigate(from);
             }
+          } else {
+            navigate("/");
           }
-          
-          // Otherwise redirect to home
-          navigate("/");
         }
       } catch (error) {
-        console.error("Error checking authentication:", error);
-      } finally {
-        setIsLoading(false);
+        console.error("Error checking auth status:", error);
       }
     };
+    
+    checkAuthStatus();
+  }, [navigate, location]);
 
-    checkAuth();
-  }, [navigate]);
-
-  const toggleView = (newView: "sign-in" | "sign-up" | "reset-password") => {
-    setView(newView);
+  const sendWelcomeEmail = async (userId: string) => {
+    try {
+      console.log("Sending welcome email to user:", userId);
+      const { error } = await supabase.functions.invoke("send-welcome-email", {
+        body: { userId }
+      });
+      
+      if (error) {
+        console.error("Failed to send welcome email:", error);
+      } else {
+        console.log("Welcome email sent successfully");
+      }
+    } catch (err) {
+      console.error("Error invoking welcome email function:", err);
+    }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-gray-800">
-        <Loader className="text-white" size="lg" />
-      </div>
-    );
-  }
+  useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state changed:", event, session ? "User logged in" : "No session");
+      
+      if (event === 'SIGNED_IN' && session?.user?.id) {
+        const isNewUser = !localStorage.getItem(`welcomed_${session.user.id}`);
+        
+        if (isNewUser) {
+          localStorage.setItem(`welcomed_${session.user.id}`, 'true');
+          await sendWelcomeEmail(session.user.id);
+        }
+        
+        // Check if user needs to complete onboarding
+        const { data: quizResponses } = await supabase
+          .from('user_quiz_responses')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
+          
+        // Check subscription status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_subscribed, subscription_status')
+          .eq('id', session.user.id)
+          .maybeSingle();
+          
+        const hasCompletedQuiz = !!quizResponses;
+        const hasActiveSubscription = profile?.is_subscribed || 
+          ['active', 'trialing'].includes(profile?.subscription_status || '');
+        
+        if (!hasCompletedQuiz && !hasActiveSubscription) {
+          console.log("User needs to complete onboarding, redirecting");
+          navigate("/onboarding");
+        } else {
+          // Redirect to the page the user was trying to access or home
+          const from = location.state?.from?.pathname || "/";
+          navigate(from);
+        }
+      }
+    });
+
+    return () => {
+      authListener?.subscription.unsubscribe();
+    };
+  }, [navigate, location]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-900 to-gray-800 p-4">
-      <div className="w-full max-w-md">
-        {view === "sign-in" && (
-          <SignInForm 
-            onToggleForm={() => toggleView("sign-up")} 
-            onResetPassword={() => toggleView("reset-password")}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          />
-        )}
-        {view === "sign-up" && (
-          <SignUpForm 
-            onToggleForm={() => toggleView("sign-in")}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          />
-        )}
-        {view === "reset-password" && (
-          <ResetPasswordForm 
-            onToggleForm={() => toggleView("sign-in")}
-            isLoading={isLoading}
-            setIsLoading={setIsLoading}
-          />
-        )}
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}
+        className="absolute inset-0"
+      >
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#4F46E5]/20 rounded-full mix-blend-multiply filter blur-xl animate-float" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#818CF8]/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-[#6366F1]/20 rounded-full mix-blend-multiply filter blur-xl animate-float" style={{ animationDelay: '2s' }} />
+      </motion.div>
+      
+      <div className="w-full max-w-md space-y-8">
+        <PageHeader />
+        
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="relative z-10"
+        >
+          <Card className="backdrop-blur-lg bg-white/10 border border-white/20 shadow-2xl">
+            <div className="p-6 space-y-6">
+              {isReset ? (
+                <ResetPasswordForm
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                />
+              ) : isSignUp ? (
+                <SignUpForm
+                  onToggleForm={() => setIsSignUp(false)}
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                />
+              ) : (
+                <SignInForm
+                  onToggleForm={() => setIsSignUp(true)}
+                  isLoading={isLoading}
+                  setIsLoading={setIsLoading}
+                />
+              )}
+            </div>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );
-}
+};
+
+export default Auth;
