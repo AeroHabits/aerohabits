@@ -2,14 +2,14 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { GradientBackground } from "@/components/premium/GradientBackground";
-import { PricingCard } from "@/components/premium/PricingCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SubscriptionTerms } from "@/components/premium/SubscriptionTerms";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
+import { PremiumFeatureCard, premiumFeatures } from "@/components/subscription/PremiumFeatureCard";
 
 export default function Premium() {
   const navigate = useNavigate();
@@ -141,45 +141,90 @@ export default function Premium() {
   };
 
   return (
-    <div className="min-h-screen relative bg-black overflow-hidden">
-      {/* Enhanced gradient background */}
-      <GradientBackground />
-
-      <div className="container mx-auto px-4 py-12 relative z-10">
-        <div className="max-w-2xl mx-auto space-y-10">
-          <div className="flex justify-between items-center">
-            <Button 
-              variant="ghost" 
-              onClick={handleBackClick} 
-              className="text-gray-300 hover:text-white flex items-center gap-2 transition-all hover:bg-white/10 backdrop-blur-sm"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back
-            </Button>
-            
-            <PageHeader />
-          </div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center space-y-2"
+    <div className="min-h-screen relative bg-gradient-to-b from-gray-950 to-black text-white">
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0aDR2MWgtNHYtMXptMC0yaDF2NGgtMXYtNHptLTJ6TTAgMGg2MHY2MEgweiIvPjwvZz48L2c+PC9zdmc+')] opacity-20" />
+      
+      {/* Premium glow effects */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] rounded-full bg-purple-600/10 blur-[120px]" />
+      <div className="absolute bottom-1/4 right-1/2 translate-x-1/2 w-[300px] h-[300px] rounded-full bg-blue-600/10 blur-[100px]" />
+      
+      <div className="container max-w-6xl mx-auto px-4 py-12 relative z-10">
+        <div className="flex justify-between items-center mb-8">
+          <Button 
+            variant="ghost" 
+            onClick={handleBackClick} 
+            className="text-gray-400 hover:text-white flex items-center gap-2 transition-all hover:bg-white/5"
           >
-            <h2 className="text-xl text-white font-medium">Complete Your Account Setup</h2>
-            <p className="text-gray-300">
-              Your free trial begins after entering payment information.
-              <br />You won't be charged until your trial ends.
-            </p>
-          </motion.div>
-
-          <PricingCard 
-            features={premiumFeatures}
-            premiumChallenges={premiumChallenges}
-          />
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </Button>
           
-          {/* Add subscription terms with legal details */}
-          <SubscriptionTerms />
+          <PageHeader />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+          {/* Left column - features & benefits */}
+          <div className="md:col-span-5 space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-blue-200 mb-3">
+                Elevate Your Experience
+              </h1>
+              <p className="text-gray-400 leading-relaxed text-lg mb-6">
+                Join AeroHabits Premium to unlock powerful tools and features designed to accelerate your habit-building journey.
+              </p>
+            </motion.div>
+
+            <div className="space-y-4">
+              <h2 className="text-xl font-medium text-white/90">Premium Features</h2>
+              <div className="grid grid-cols-1 gap-3">
+                {premiumFeatures.map((feature, i) => (
+                  <motion.div 
+                    key={i} 
+                    className="flex gap-3 items-center bg-white/5 backdrop-blur rounded-lg p-3 border border-white/10"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.1 }}
+                  >
+                    <div className="p-1.5 rounded-full bg-purple-500/20 text-purple-400">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                        <path d="m9 12 2 2 4-4" />
+                      </svg>
+                    </div>
+                    <span className="text-gray-200">{feature}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="space-y-4 pt-4">
+              <h2 className="text-xl font-medium text-white/90">Premium Challenges</h2>
+              <div className="space-y-3">
+                {premiumChallenges.map((challenge, i) => (
+                  <PremiumFeatureCard key={i} feature={premiumFeatures[i % premiumFeatures.length]} index={i} />
+                ))}
+              </div>
+            </div>
+            
+            <SubscriptionTerms />
+          </div>
+          
+          {/* Right column - subscription card */}
+          <div className="md:col-span-7">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+            >
+              <div className="sticky top-8">
+                <SubscriptionCard />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>

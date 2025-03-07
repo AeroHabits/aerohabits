@@ -20,21 +20,21 @@ export function SubscriptionActions({
   handleRestorePurchases
 }: SubscriptionActionsProps) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       {isSubscribed ? (
         <Button
           onClick={handleManageSubscription}
           disabled={isLoading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group"
+          className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-6 text-lg relative overflow-hidden group rounded-xl"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-blue-400/20 to-blue-400/0 translate-x-[-100%] animate-shimmer" />
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:animate-shimmer" />
           {isLoading ? "Loading..." : "Manage Subscription"}
         </Button>
       ) : (
         <Button
           onClick={handleSubscribe}
           disabled={isLoading}
-          className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium py-6 text-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]"
+          className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium py-6 text-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] rounded-xl shadow-lg"
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] animate-shimmer" />
           {isLoading ? "Loading..." : "Start 3-Day Free Trial"}
@@ -45,8 +45,8 @@ export function SubscriptionActions({
       <Button
         onClick={handleRestorePurchases}
         disabled={isRestoring}
-        variant="ghost"
-        className="w-full font-medium text-gray-400 hover:text-gray-200 border border-gray-700/50 py-4"
+        variant="outline"
+        className="w-full font-medium text-gray-400 hover:text-gray-200 border border-gray-700 py-5 rounded-xl bg-transparent hover:bg-gray-800/50"
       >
         <RefreshCw className={`h-4 w-4 mr-2 ${isRestoring ? 'animate-spin' : ''}`} />
         {isRestoring ? "Restoring..." : "Restore Purchases"}
