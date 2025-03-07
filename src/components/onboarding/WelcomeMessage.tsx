@@ -22,16 +22,6 @@ export function WelcomeMessage({
         return "Your mindfulness journey starts now";
       case 'productivity':
         return "Boost your productivity starting today";
-      case 'career growth':
-        return "Accelerate your career growth";
-      case 'better health':
-        return "Your path to better health begins here";
-      case 'learning new skills':
-        return "Start mastering new skills today";
-      case 'building relationships':
-        return "Build meaningful relationships";
-      case 'financial stability':
-        return "Your journey to financial stability";
       default:
         return "Your personal journey begins now";
     }
