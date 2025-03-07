@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
@@ -8,6 +9,7 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { toast } from "sonner";
+import { Loader } from "@/components/ui/loader";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +23,7 @@ const Auth = () => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
+        setIsLoading(true);
         const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
@@ -48,10 +51,12 @@ const Auth = () => {
             const hasActiveSubscription = profile?.is_subscribed || 
               ['active', 'trialing'].includes(profile?.subscription_status || '');
             
-            if (!hasCompletedQuiz && !hasActiveSubscription) {
+            if (!hasCompletedQuiz) {
               navigate("/onboarding");
+            } else if (!hasActiveSubscription) {
+              navigate("/premium");
             } else {
-              // If user has completed onboarding or has subscription
+              // If user has completed onboarding and has subscription
               // Redirect to the page they were trying to access or home
               const from = location.state?.from?.pathname || "/";
               navigate(from);
@@ -62,6 +67,8 @@ const Auth = () => {
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     
@@ -115,13 +122,16 @@ const Auth = () => {
         const hasActiveSubscription = profile?.is_subscribed || 
           ['active', 'trialing'].includes(profile?.subscription_status || '');
         
-        if (!hasCompletedQuiz && !hasActiveSubscription) {
+        if (!hasCompletedQuiz) {
           console.log("User needs to complete onboarding, redirecting");
-          navigate("/onboarding");
+          navigate("/onboarding", { replace: true });
+        } else if (!hasActiveSubscription) {
+          console.log("User needs to complete subscription, redirecting");
+          navigate("/premium", { replace: true });
         } else {
           // Redirect to the page the user was trying to access or home
           const from = location.state?.from?.pathname || "/";
-          navigate(from);
+          navigate(from, { replace: true });
         }
       }
     });
@@ -130,6 +140,14 @@ const Auth = () => {
       authListener?.subscription.unsubscribe();
     };
   }, [navigate, location]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+        <Loader className="w-8 h-8 text-indigo-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">

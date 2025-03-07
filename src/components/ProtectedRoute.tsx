@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Loader } from "@/components/ui/loader";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,6 +13,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [requiresOnboarding, setRequiresOnboarding] = useState(false);
+  const [requiresPayment, setRequiresPayment] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -40,7 +42,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         
         if (user) {
           console.log("User authenticated:", user.id);
-          console.log("User metadata:", user.user_metadata);
           
           // Check if user has already completed the quiz
           const { data: quizResponses, error: quizError } = await supabase
@@ -71,14 +72,24 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.log("Has completed quiz:", hasCompletedQuiz);
           console.log("Has active subscription:", hasActiveSubscription);
           
-          // If the user has neither completed the quiz NOR has an active subscription,
-          // they must go through onboarding
-          if (!hasCompletedQuiz && !hasActiveSubscription) {
-            console.log('User requires onboarding - no quiz responses or subscription');
+          // Determine the user's flow state
+          if (!hasCompletedQuiz) {
+            // User needs to complete onboarding quiz first
+            console.log('User requires onboarding - no quiz responses');
             setRequiresOnboarding(true);
+            setRequiresPayment(false);
+          } else if (!hasActiveSubscription) {
+            // User completed quiz but needs subscription
+            console.log('User requires payment - no active subscription');
+            setRequiresOnboarding(false);
+            setRequiresPayment(true);
+          } else {
+            // User has completed everything
+            setRequiresOnboarding(false);
+            setRequiresPayment(false);
           }
           
-          // User is authenticated regardless of onboarding status
+          // User is authenticated regardless of onboarding/payment status
           setIsAuthenticated(true);
         } else {
           console.log("No user found in session");
@@ -119,7 +130,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }, []);
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+    return <div className="flex items-center justify-center min-h-screen bg-gray-900">
+      <Loader className="w-8 h-8 text-indigo-500" />
+    </div>;
   }
 
   if (!isAuthenticated) {
@@ -127,11 +140,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
   
-  // This is the key logic - redirect to onboarding for all routes except /onboarding
-  // if the user requires onboarding
+  // Enforce onboarding flow - redirect to onboarding if needed
   if (requiresOnboarding && location.pathname !== '/onboarding') {
     console.log("User requires onboarding, redirecting to /onboarding");
     return <Navigate to="/onboarding" replace />;
+  }
+
+  // Enforce payment flow - redirect to premium page if subscription is needed
+  if (requiresPayment && location.pathname !== '/premium') {
+    console.log("User requires payment, redirecting to /premium");
+    return <Navigate to="/premium" replace />;
   }
 
   return <>{children}</>;
