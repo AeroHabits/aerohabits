@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLocalStorage } from "./useLocalStorage";
 import { toast } from "sonner";
+import { useErrorTracking } from "./useErrorTracking";
 
 export type UserPreference = {
   theme: 'light' | 'dark' | 'system';
@@ -23,9 +24,10 @@ export function useUserPreferences() {
   const [preferences, setPreferences] = useState<UserPreference>(DEFAULT_PREFERENCES);
   const [isLoading, setIsLoading] = useState(true);
   const { loadFromStorage, saveToStorage, IMPORTANCE_LEVELS } = useLocalStorage();
+  const { trackError } = useErrorTracking();
   const PREFS_STORAGE_KEY = 'user_preferences';
   
-  // Load preferences from Supabase or fallback to local storage
+  // Load preferences from local storage
   useEffect(() => {
     const loadPreferences = async () => {
       try {
@@ -42,51 +44,50 @@ export function useUserPreferences() {
           return;
         }
         
-        // User is logged in, fetch from Supabase
-        const { data, error } = await supabase
-          .from('user_preferences')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-          
-        if (error) {
-          // If no record exists yet, create with defaults
-          if (error.code === 'PGRST116') {
-            const { error: insertError } = await supabase
-              .from('user_preferences')
-              .insert([{ 
-                user_id: user.id,
-                ...DEFAULT_PREFERENCES
-              }]);
-              
-            if (insertError) throw insertError;
-            setPreferences(DEFAULT_PREFERENCES);
-          } else {
-            throw error;
-          }
-        } else if (data) {
-          // We got preferences from the database
-          const userPrefs: UserPreference = {
-            theme: data.theme,
-            language: data.language,
-            notificationFrequency: data.notification_frequency,
-            dailyReminderTime: data.daily_reminder_time,
-            contentPreferences: data.content_preferences || [],
-          };
-          
-          setPreferences(userPrefs);
-          
-          // Cache in local storage for offline access
-          saveToStorage(PREFS_STORAGE_KEY, userPrefs, IMPORTANCE_LEVELS.HIGH);
-        }
-      } catch (error) {
-        console.error('Error loading preferences:', error);
-        
-        // Fallback to local storage
+        // Try to load from localStorage first while we wait for DB
         const cachedPrefs = loadFromStorage<UserPreference>(PREFS_STORAGE_KEY);
         if (cachedPrefs) {
           setPreferences(cachedPrefs);
         }
+        
+        // Check if we can use table-based storage
+        try {
+          // Attempt to query the preferences table
+          const { data, error } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('user_id', user.id)
+            .single();
+            
+          if (error) {
+            // If there's an error, we'll just use localStorage
+            console.warn('Could not load preferences from database:', error);
+          } else if (data) {
+            // We got preferences from the database
+            const userPrefs: UserPreference = {
+              theme: data.theme as 'light' | 'dark' | 'system',
+              language: data.language,
+              notificationFrequency: data.notification_frequency as 'daily' | 'weekly' | 'never',
+              dailyReminderTime: data.daily_reminder_time,
+              contentPreferences: data.content_preferences ? 
+                (Array.isArray(data.content_preferences) ? 
+                  data.content_preferences : []) : [],
+            };
+            
+            setPreferences(userPrefs);
+            
+            // Cache in local storage for offline access
+            saveToStorage(PREFS_STORAGE_KEY, userPrefs, IMPORTANCE_LEVELS.HIGH);
+          }
+        } catch (dbError) {
+          console.warn('Database access error:', dbError);
+          // We'll continue with localStorage preferences
+        }
+      } catch (error) {
+        trackError(error as Error, 'loading preferences', { 
+          severity: 'low', 
+          silent: true 
+        });
       } finally {
         setIsLoading(false);
       }
@@ -104,20 +105,28 @@ export function useUserPreferences() {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        // Update in Supabase
-        const { error } = await supabase
-          .from('user_preferences')
-          .update({
-            theme: updatedPreferences.theme,
-            language: updatedPreferences.language,
-            notification_frequency: updatedPreferences.notificationFrequency,
-            daily_reminder_time: updatedPreferences.dailyReminderTime,
-            content_preferences: updatedPreferences.contentPreferences,
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', user.id);
-          
-        if (error) throw error;
+        // Try to update in the database if it exists
+        try {
+          const { error } = await supabase
+            .from('user_preferences')
+            .upsert({
+              user_id: user.id,
+              theme: updatedPreferences.theme,
+              language: updatedPreferences.language,
+              notification_frequency: updatedPreferences.notificationFrequency,
+              daily_reminder_time: updatedPreferences.dailyReminderTime,
+              content_preferences: updatedPreferences.contentPreferences,
+              updated_at: new Date().toISOString()
+            })
+            .eq('user_id', user.id);
+            
+          if (error) {
+            console.warn('Error updating preferences in database:', error);
+          }
+        } catch (dbError) {
+          console.warn('Database update error:', dbError);
+          // We'll continue with localStorage updates
+        }
       }
       
       // Update local state regardless of login status
@@ -129,7 +138,9 @@ export function useUserPreferences() {
       toast.success("Preferences updated");
       return true;
     } catch (error) {
-      console.error('Error updating preferences:', error);
+      trackError(error as Error, 'updating preferences', { 
+        severity: 'medium' 
+      });
       toast.error("Failed to update preferences");
       return false;
     }

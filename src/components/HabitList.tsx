@@ -1,4 +1,3 @@
-
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
@@ -91,15 +90,12 @@ export function HabitList() {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
   
-  // Apply content preferences if the user has set any
   const filteredHabits = preferences.contentPreferences?.length > 0
     ? habits.filter(habit => {
-        // If habit has a category that matches any of the user's preferences, include it
-        if (habit.category && preferences.contentPreferences.includes(habit.category)) {
+        if (habit.category_id && preferences.contentPreferences.includes(habit.category_id)) {
           return true;
         }
-        // If habit has no category, include it regardless
-        return !habit.category;
+        return !habit.category_id;
       })
     : habits;
   
