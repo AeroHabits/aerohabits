@@ -89,14 +89,15 @@ export default function Premium() {
 
       if (error) throw error;
       return data;
-    },
-    onSuccess: (data) => {
-      // If user already has active subscription, redirect to app
-      if (data?.is_subscribed || ['active', 'trialing'].includes(data?.subscription_status || '')) {
-        navigate("/", { replace: true });
-      }
     }
   });
+  
+  // Handle redirection if user has an active subscription
+  useEffect(() => {
+    if (profile?.is_subscribed || ['active', 'trialing'].includes(profile?.subscription_status || '')) {
+      navigate("/", { replace: true });
+    }
+  }, [profile, navigate]);
 
   // Premium features list
   const features = [
