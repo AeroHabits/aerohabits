@@ -52,26 +52,13 @@ export function useQuestionnaire() {
           }
         });
         
-        // Always create checkout session with trial period enabled
-        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-          body: {
-            priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-            returnUrl: window.location.origin + '/habits',
-            includeTrialPeriod: true
-          }
-        });
-        
-        if (error) throw error;
-        
-        console.log("Redirecting to Stripe checkout:", data.url);
-        
-        // Redirect user to Stripe checkout page
-        window.location.href = data.url;
+        // Redirect to Premium page to complete payment
+        navigate('/premium');
       } else {
         throw new Error("User not authenticated");
       }
     } catch (error) {
-      console.error("Error starting subscription:", error);
+      console.error("Error completing onboarding:", error);
       handleError(error);
     } finally {
       setIsLoading(false);
@@ -95,7 +82,7 @@ export function useQuestionnaire() {
         .update({
           updated_at: new Date().toISOString(),
           full_name: user.user_metadata.full_name || '',
-          subscription_status: 'pending_trial' // Mark as pending trial until they provide payment info
+          subscription_status: 'pending_payment' // Mark as pending payment until they complete checkout
         })
         .eq('id', user.id);
       

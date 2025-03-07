@@ -12,6 +12,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [requiresOnboarding, setRequiresOnboarding] = useState(false);
+  const [requiresPayment, setRequiresPayment] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -71,14 +72,20 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.log("Has completed quiz:", hasCompletedQuiz);
           console.log("Has active subscription:", hasActiveSubscription);
           
-          // If the user has neither completed the quiz NOR has an active subscription,
-          // they must go through onboarding
-          if (!hasCompletedQuiz && !hasActiveSubscription) {
-            console.log('User requires onboarding - no quiz responses or subscription');
+          // If user has not completed onboarding (quiz), they must go through it
+          if (!hasCompletedQuiz) {
+            console.log('User requires onboarding - no quiz responses');
             setRequiresOnboarding(true);
           }
           
-          // User is authenticated regardless of onboarding status
+          // If user has completed the quiz but doesn't have an active subscription,
+          // they need to complete payment
+          if (hasCompletedQuiz && !hasActiveSubscription) {
+            console.log('User requires payment - no active subscription');
+            setRequiresPayment(true);
+          }
+          
+          // User is authenticated regardless of onboarding or payment status
           setIsAuthenticated(true);
         } else {
           console.log("No user found in session");
@@ -127,11 +134,17 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
   
-  // This is the key logic - redirect to onboarding for all routes except /onboarding
-  // if the user requires onboarding
+  // First priority: redirect to onboarding if needed
   if (requiresOnboarding && location.pathname !== '/onboarding') {
     console.log("User requires onboarding, redirecting to /onboarding");
     return <Navigate to="/onboarding" replace />;
+  }
+  
+  // Second priority: redirect to premium page for payment if needed
+  if (requiresPayment && location.pathname !== '/premium') {
+    console.log("User requires payment, redirecting to /premium");
+    toast.info("Please subscribe to continue using the app");
+    return <Navigate to="/premium" replace />;
   }
 
   return <>{children}</>;
