@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/auth/SignInForm";
@@ -48,11 +49,13 @@ const Auth = () => {
             const hasActiveSubscription = profile?.is_subscribed || 
               ['active', 'trialing'].includes(profile?.subscription_status || '');
             
-            if (!hasCompletedQuiz && !hasActiveSubscription) {
+            // Enforce the flow: onboarding → payment → app
+            if (!hasCompletedQuiz) {
               navigate("/onboarding");
+            } else if (!hasActiveSubscription) {
+              navigate("/premium", { state: { fromOnboarding: true } });
             } else {
-              // If user has completed onboarding or has subscription
-              // Redirect to the page they were trying to access or home
+              // If user has completed all steps, redirect to the page they were trying to access or home
               const from = location.state?.from?.pathname || "/";
               navigate(from);
             }
@@ -97,7 +100,7 @@ const Auth = () => {
           await sendWelcomeEmail(session.user.id);
         }
         
-        // Check if user needs to complete onboarding
+        // Check if user needs to complete the mandatory steps
         const { data: quizResponses } = await supabase
           .from('user_quiz_responses')
           .select('id')
@@ -115,11 +118,15 @@ const Auth = () => {
         const hasActiveSubscription = profile?.is_subscribed || 
           ['active', 'trialing'].includes(profile?.subscription_status || '');
         
-        if (!hasCompletedQuiz && !hasActiveSubscription) {
+        // Enforce the flow: onboarding → payment → app
+        if (!hasCompletedQuiz) {
           console.log("User needs to complete onboarding, redirecting");
           navigate("/onboarding");
+        } else if (!hasActiveSubscription) {
+          console.log("User needs to subscribe, redirecting to premium page");
+          navigate("/premium", { state: { fromOnboarding: true } });
         } else {
-          // Redirect to the page the user was trying to access or home
+          // All steps completed, redirect to intended page or home
           const from = location.state?.from?.pathname || "/";
           navigate(from);
         }

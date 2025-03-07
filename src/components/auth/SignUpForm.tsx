@@ -44,6 +44,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           data: {
             full_name: fullName,
             is_new_user: true,  // Mark the user as new
+            has_completed_onboarding: false, // Explicitly mark as not completed onboarding
           },
         },
       });
@@ -65,7 +66,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           navigate('/onboarding');
         }, 500);
         
-        handleSuccess("Please complete the questionnaire to begin your free trial.");
+        handleSuccess("Please complete the questionnaire to continue.");
       } else {
         handleSuccess("Please check your email to verify your account.");
       }

@@ -72,15 +72,18 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.log("Has completed quiz:", hasCompletedQuiz);
           console.log("Has active subscription:", hasActiveSubscription);
           
-          // If user has not completed onboarding (quiz), they must go through it
+          // User must complete these steps in order:
+          // 1. Complete onboarding (quiz)
+          // 2. Pay for subscription
+          
+          // If user has not completed the quiz, they must go through onboarding first
           if (!hasCompletedQuiz) {
             console.log('User requires onboarding - no quiz responses');
             setRequiresOnboarding(true);
           }
-          
           // If user has completed the quiz but doesn't have an active subscription,
-          // they need to complete payment
-          if (hasCompletedQuiz && !hasActiveSubscription) {
+          // they need to complete payment next
+          else if (!hasActiveSubscription) {
             console.log('User requires payment - no active subscription');
             setRequiresPayment(true);
           }
@@ -129,23 +132,25 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
   }
 
+  // Step 1: Not authenticated - redirect to auth
   if (!isAuthenticated) {
     console.log("Not authenticated, redirecting to /auth");
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
   
-  // First priority: redirect to onboarding if needed
+  // Step 2: Authenticated but needs onboarding - redirect to onboarding
   if (requiresOnboarding && location.pathname !== '/onboarding') {
     console.log("User requires onboarding, redirecting to /onboarding");
     return <Navigate to="/onboarding" replace />;
   }
   
-  // Second priority: redirect to premium page for payment if needed
+  // Step 3: Authenticated and completed onboarding but needs payment - redirect to premium
   if (requiresPayment && location.pathname !== '/premium') {
     console.log("User requires payment, redirecting to /premium");
     toast.info("Please subscribe to continue using the app");
-    return <Navigate to="/premium" replace />;
+    return <Navigate to="/premium" state={{ fromOnboarding: true }} replace />;
   }
 
+  // All conditions met - show the requested content
   return <>{children}</>;
 };

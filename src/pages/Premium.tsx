@@ -10,6 +10,7 @@ import { SubscriptionTerms } from "@/components/premium/SubscriptionTerms";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function Premium() {
   const navigate = useNavigate();
@@ -43,16 +44,69 @@ export default function Premium() {
 
   // Show a payment required prompt if the user is coming from onboarding
   useEffect(() => {
-    const isFromOnboarding = location.state?.fromOnboarding || 
-                            location.pathname.includes("onboarding");
+    const checkUserStatus = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) return;
+      
+      // Check if user has an active subscription
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_subscribed, subscription_status')
+        .eq('id', user.id)
+        .maybeSingle();
+        
+      const hasActiveSubscription = profile?.is_subscribed || 
+        ['active', 'trialing'].includes(profile?.subscription_status || '');
+      
+      // If the user has already subscribed, redirect them to the home page
+      if (hasActiveSubscription) {
+        navigate('/');
+        return;
+      }
+      
+      // Determine if the user is coming from onboarding
+      const isFromOnboarding = location.state?.fromOnboarding || 
+                              location.pathname.includes("onboarding");
+      
+      if (isFromOnboarding) {
+        toast.info("Please complete your payment information to continue", {
+          duration: 5000,
+          position: "top-center"
+        });
+      }
+    };
     
-    if (isFromOnboarding) {
-      toast.info("Please complete your payment information to continue", {
-        duration: 5000,
-        position: "top-center"
-      });
+    checkUserStatus();
+  }, [location, navigate]);
+
+  // Handle back button navigation - ensure users can't skip subscription
+  const handleBackClick = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+      // Check if user has an active subscription
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_subscribed, subscription_status')
+        .eq('id', user.id)
+        .maybeSingle();
+        
+      const hasActiveSubscription = profile?.is_subscribed || 
+        ['active', 'trialing'].includes(profile?.subscription_status || '');
+      
+      // If user doesn't have an active subscription, show a message
+      if (!hasActiveSubscription) {
+        toast.error("You need to subscribe to access the app", {
+          duration: 3000,
+          position: "top-center"
+        });
+        return;
+      }
     }
-  }, [location]);
+    
+    navigate(-1);
+  };
 
   return (
     <div className="min-h-screen relative bg-black overflow-hidden">
@@ -64,7 +118,7 @@ export default function Premium() {
           <div className="flex justify-between items-center">
             <Button 
               variant="ghost" 
-              onClick={() => navigate(-1)} 
+              onClick={handleBackClick} 
               className="text-gray-300 hover:text-white flex items-center gap-2 transition-all hover:bg-white/10 backdrop-blur-sm"
             >
               <ArrowLeft className="w-4 h-4" />
