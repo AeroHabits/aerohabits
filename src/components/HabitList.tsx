@@ -1,3 +1,4 @@
+
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
@@ -9,6 +10,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
+import { useUserPreferences } from "@/hooks/useUserPreferences";
+
 export function HabitList() {
   const {
     habits,
@@ -20,8 +23,12 @@ export function HabitList() {
     addHabit,
     refetch,
     isFetching,
-    isOnline
+    isOnline,
+    networkQuality
   } = useHabits();
+
+  const { preferences } = useUserPreferences();
+  
   const {
     data: profile
   } = useQuery({
@@ -39,15 +46,18 @@ export function HabitList() {
       return data;
     }
   });
+  
   const isMobile = useIsMobile();
   let touchStartY = 0;
   let pullDistance = 0;
   const PULL_THRESHOLD = 100;
+  
   const handleTouchStart = (e: React.TouchEvent) => {
     if (window.scrollY === 0) {
       touchStartY = e.touches[0].clientY;
     }
   };
+  
   const handleTouchMove = (e: React.TouchEvent) => {
     if (touchStartY === 0) return;
     const currentY = e.touches[0].clientY;
@@ -58,6 +68,7 @@ export function HabitList() {
       element.style.transform = `translateY(${pullDistance}px)`;
     }
   };
+  
   const handleTouchEnd = async (e: React.TouchEvent) => {
     if (pullDistance > PULL_THRESHOLD / 2) {
       await refetch();
@@ -67,65 +78,112 @@ export function HabitList() {
     touchStartY = 0;
     pullDistance = 0;
   };
+  
   const handleRefresh = () => {
     refetch();
   };
+  
   if (isLoading) {
     return <HabitListLoading />;
   }
+  
   if (habits.length === 0) {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
-  return <div className="w-full space-y-8 pb-6" onTouchStart={isMobile ? handleTouchStart : undefined} onTouchMove={isMobile ? handleTouchMove : undefined} onTouchEnd={isMobile ? handleTouchEnd : undefined}>
+  
+  // Apply content preferences if the user has set any
+  const filteredHabits = preferences.contentPreferences?.length > 0
+    ? habits.filter(habit => {
+        // If habit has a category that matches any of the user's preferences, include it
+        if (habit.category && preferences.contentPreferences.includes(habit.category)) {
+          return true;
+        }
+        // If habit has no category, include it regardless
+        return !habit.category;
+      })
+    : habits;
+  
+  return (
+    <div 
+      className="w-full space-y-8 pb-6" 
+      onTouchStart={isMobile ? handleTouchStart : undefined} 
+      onTouchMove={isMobile ? handleTouchMove : undefined} 
+      onTouchEnd={isMobile ? handleTouchEnd : undefined}
+    >
       <AnimatePresence>
-        {!isOnline && <motion.div initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} exit={{
-        opacity: 0,
-        y: -20
-      }} className="absolute top-0 left-1/2 -translate-x-1/2 z-50">
+        {!isOnline && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -20 }} 
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-50"
+          >
             <div className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg">
               <WifiOff className="h-4 w-4" />
               <span className="text-sm font-medium">Offline Mode</span>
             </div>
-          </motion.div>}
-        {isFetching && <motion.div initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} exit={{
-        opacity: 0,
-        y: -20
-      }} className="absolute top-0 left-1/2 -translate-x-1/2 z-50">
+          </motion.div>
+        )}
+        
+        {networkQuality === 'poor' && isOnline && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -20 }} 
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-50"
+          >
+            <div className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
+              <span className="text-sm font-medium">Low Connectivity Mode</span>
+            </div>
+          </motion.div>
+        )}
+        
+        {isFetching && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            exit={{ opacity: 0, y: -20 }} 
+            className="absolute top-0 left-1/2 -translate-x-1/2 z-50"
+          >
             <div className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="text-sm font-medium">Refreshing...</span>
             </div>
-          </motion.div>}
+          </motion.div>
+        )}
       </AnimatePresence>
 
       <div className="space-y-6">
         <div className="flex justify-end mb-4">
-          
+          {isOnline && !isFetching && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleRefresh} 
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="h-4 w-4" />
+              <span>Refresh</span>
+            </Button>
+          )}
         </div>
         
-        <HabitListContent habits={habits} onToggle={toggleHabit} onDelete={deleteHabit} setHabitToDelete={setHabitToDelete} />
+        <HabitListContent 
+          habits={filteredHabits} 
+          onToggle={toggleHabit} 
+          onDelete={deleteHabit} 
+          setHabitToDelete={setHabitToDelete} 
+        />
 
-        <motion.div initial={{
-        opacity: 0
-      }} animate={{
-        opacity: 1
-      }} transition={{
-        delay: 0.3
-      }} className="mt-12 max-w-md mx-auto">
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          transition={{ delay: 0.3 }} 
+          className="mt-12 max-w-md mx-auto"
+        >
           <AddHabitForm onAddHabit={addHabit} />
         </motion.div>
       </div>
-    </div>;
+    </div>
+  );
 }

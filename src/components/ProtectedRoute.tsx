@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Loader } from "@/components/ui/loader";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,8 +14,39 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [requiresOnboarding, setRequiresOnboarding] = useState(false);
   const location = useLocation();
+  const [sessionChecked, setSessionChecked] = useState(false);
+  const [cachedAuthState, setCachedAuthState] = useState<{
+    isAuthenticated: boolean;
+    requiresOnboarding: boolean;
+    timestamp: number;
+  } | null>(null);
+
+  // Cache TTL in milliseconds (5 minutes)
+  const CACHE_TTL = 5 * 60 * 1000;
 
   useEffect(() => {
+    // Try to get cached auth state first for faster rendering
+    const cachedState = localStorage.getItem('authState');
+    if (cachedState) {
+      try {
+        const parsed = JSON.parse(cachedState);
+        const now = Date.now();
+        // Only use cache if it's still valid
+        if (now - parsed.timestamp < CACHE_TTL) {
+          setCachedAuthState(parsed);
+          setIsAuthenticated(parsed.isAuthenticated);
+          setRequiresOnboarding(parsed.requiresOnboarding);
+          // Still perform the full check in the background
+        } else {
+          // Cache expired, remove it
+          localStorage.removeItem('authState');
+        }
+      } catch (e) {
+        console.error('Error parsing cached auth state:', e);
+        localStorage.removeItem('authState');
+      }
+    }
+
     const checkUser = async () => {
       try {
         // Get the current session first
@@ -24,6 +56,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.error('Session error:', sessionError);
           setIsAuthenticated(false);
           setIsLoading(false);
+          setSessionChecked(true);
           return;
         }
         
@@ -32,6 +65,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.log("No active session found, redirecting to auth");
           setIsAuthenticated(false);
           setIsLoading(false);
+          setSessionChecked(true);
           return;
         }
         
@@ -40,7 +74,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         
         if (user) {
           console.log("User authenticated:", user.id);
-          console.log("User metadata:", user.user_metadata);
+          const userMeta = user.user_metadata || {};
+          const isNewUser = userMeta.is_new_user === true;
+          const hasCompletedOnboarding = userMeta.has_completed_onboarding === true;
           
           // Check if user has already completed the quiz
           const { data: quizResponses, error: quizError } = await supabase
@@ -70,13 +106,25 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           
           console.log("Has completed quiz:", hasCompletedQuiz);
           console.log("Has active subscription:", hasActiveSubscription);
+          console.log("Is new user:", isNewUser);
+          console.log("Has completed onboarding:", hasCompletedOnboarding);
           
-          // If the user has neither completed the quiz NOR has an active subscription,
+          // If the user is new OR hasn't completed the quiz AND doesn't have an active subscription,
           // they must go through onboarding
-          if (!hasCompletedQuiz && !hasActiveSubscription) {
-            console.log('User requires onboarding - no quiz responses or subscription');
+          if ((isNewUser || !hasCompletedQuiz) && !hasActiveSubscription && !hasCompletedOnboarding) {
+            console.log('User requires onboarding - needs to complete quiz or get subscription');
             setRequiresOnboarding(true);
+          } else {
+            setRequiresOnboarding(false);
           }
+          
+          // Cache the authentication state for faster loading next time
+          const authState = {
+            isAuthenticated: true,
+            requiresOnboarding: (isNewUser || !hasCompletedQuiz) && !hasActiveSubscription && !hasCompletedOnboarding,
+            timestamp: Date.now()
+          };
+          localStorage.setItem('authState', JSON.stringify(authState));
           
           // User is authenticated regardless of onboarding status
           setIsAuthenticated(true);
@@ -89,6 +137,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         setIsAuthenticated(false);
       } finally {
         setIsLoading(false);
+        setSessionChecked(true);
       }
     };
 
@@ -99,8 +148,11 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         console.log("Auth state changed:", event, session ? "Session exists" : "No session");
         
         if (event === 'SIGNED_OUT') {
+          // Clear cached auth state on sign out
+          localStorage.removeItem('authState');
           setIsAuthenticated(false);
           setIsLoading(false);
+          setSessionChecked(true);
           return;
         }
         
@@ -109,6 +161,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         } else {
           setIsAuthenticated(false);
           setIsLoading(false);
+          setSessionChecked(true);
         }
       }
     );
@@ -118,8 +171,14 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     };
   }, []);
 
-  if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  // If initial render and we have no cache yet, show minimal loader
+  if (!sessionChecked && !cachedAuthState) {
+    return <div className="flex items-center justify-center min-h-screen"><Loader size="lg" /></div>;
+  }
+
+  // If still loading after initial check and we don't have cached state, show full loader
+  if (isLoading && !cachedAuthState) {
+    return <div className="flex items-center justify-center min-h-screen"><Loader size="lg" /></div>;
   }
 
   if (!isAuthenticated) {
