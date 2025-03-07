@@ -1,89 +1,106 @@
 
 import { motion } from "framer-motion";
-import { ArrowRight, CheckCircle, Clock, Loader2, Sparkles } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ChevronRight, Award, CreditCard } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
-export function WelcomeMessage({ 
-  primaryGoal, 
-  onContinue, 
-  isLoading 
-}: { 
-  primaryGoal: string; 
-  onContinue: () => void; 
-  isLoading: boolean; 
-}) {
-  // Get goal-specific heading
-  const getHeading = () => {
-    switch (primaryGoal) {
-      case 'weight-loss':
-        return "Ready to start your weight loss journey";
-      case 'muscle-gain':
-        return "Ready to build muscle and strength";
-      case 'mindfulness':
-        return "Your mindfulness journey starts now";
-      case 'productivity':
-        return "Boost your productivity starting today";
-      default:
-        return "Your personal journey begins now";
-    }
-  };
+interface WelcomeMessageProps {
+  primaryGoal: string;
+  onContinue: () => void;
+  isLoading: boolean;
+}
 
+export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMessageProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 shadow-xl border border-gray-700 relative overflow-hidden"
+      className="w-full"
     >
-      <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 opacity-20">
-        <Sparkles className="w-64 h-64 text-cyan-300" />
-      </div>
-      
-      <h2 className="text-2xl font-bold mb-6 text-center text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-500">
-        {getHeading()}
-      </h2>
-      
-      <div className="space-y-6 relative z-10">
-        <div className="border border-gray-700 rounded-lg p-4 bg-gray-800/50">
-          <h3 className="flex items-center text-lg font-semibold text-white mb-2">
-            <CheckCircle className="w-5 h-5 mr-2 text-green-500" />
-            Profile Created
-          </h3>
-          <p className="text-gray-300">
-            Your personalized plan is ready based on your goals and preferences.
-          </p>
-        </div>
+      <Card className="bg-gradient-to-br from-gray-800/90 to-gray-900 border-gray-700/50 shadow-xl backdrop-blur-sm overflow-hidden relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-cyan-600/5 to-teal-600/10 z-0"></div>
+        <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-teal-600/10 rounded-full blur-3xl"></div>
         
-        <div className="border border-gray-700 rounded-lg p-4 bg-gray-800/50">
-          <h3 className="flex items-center text-lg font-semibold text-white mb-2">
-            <Clock className="w-5 h-5 mr-2 text-yellow-500" />
-            Next Step: Set Up Your Account
-          </h3>
-          <p className="text-gray-300">
-            To begin your 3-day free trial, you'll need to provide your payment information. You won't be charged until your trial ends.
-          </p>
-        </div>
-        
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onContinue}
-          disabled={isLoading}
-          className="w-full py-4 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-500 text-white font-semibold flex items-center justify-center relative overflow-hidden"
-        >
-          {isLoading ? (
-            <motion.div 
-              animate={{ rotate: 360 }}
-              transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
-              className="mr-2"
+        <CardContent className="pt-6 pb-8 space-y-6 relative z-10">
+          <motion.div 
+            className="flex justify-center mb-6"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ 
+              type: "spring", 
+              stiffness: 260, 
+              damping: 20 
+            }}
+          >
+            <div className="p-4 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-full ring-1 ring-cyan-500/30 shadow-lg">
+              <Award className="w-10 h-10 text-cyan-400" />
+            </div>
+          </motion.div>
+          
+          <div className="text-center space-y-4">
+            <motion.h2 
+              className="text-3xl font-bold text-white"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.3 }}
             >
-              <Loader2 className="w-5 h-5 text-white" />
+              Congratulations!
+            </motion.h2>
+            
+            <motion.p 
+              className="text-gray-300 text-lg leading-relaxed"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4, duration: 0.3 }}
+            >
+              You've completed the first step toward achieving your goals.
+            </motion.p>
+            
+            <motion.div 
+              className="py-5 px-6 bg-gradient-to-r from-gray-800/80 to-gray-800/40 rounded-lg border border-gray-700/50 shadow-inner my-6"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6, duration: 0.3 }}
+            >
+              <p className="text-gray-200 text-sm leading-relaxed">
+                <span className="font-semibold text-cyan-400">Premium:</span> Advanced tracking, personalized insights, and accountability tools.
+              </p>
+              <div className="flex items-center justify-center mt-3 text-amber-300">
+                <CreditCard className="w-4 h-4 mr-2" />
+                <p className="text-xs">Your card will only be charged after the free trial ends.</p>
+              </div>
             </motion.div>
-          ) : (
-            <ArrowRight className="w-5 h-5 mr-2" />
-          )}
-          {isLoading ? "Processing..." : "Continue to Set Up Payment"}
-        </motion.button>
-      </div>
+          </div>
+          
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.3 }}
+          >
+            <Button
+              onClick={onContinue}
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white py-6 transition-all shadow-md hover:shadow-lg group"
+              size="lg"
+            >
+              {isLoading ? (
+                "Processing..."
+              ) : (
+                <>
+                  Set Up Payment Method
+                  <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </>
+              )}
+            </Button>
+            
+            <p className="text-gray-400 text-xs text-center mt-4">
+              3-day free trial. Cancel anytime. Your card will only be charged after the trial ends.
+            </p>
+          </motion.div>
+        </CardContent>
+      </Card>
     </motion.div>
   );
 }

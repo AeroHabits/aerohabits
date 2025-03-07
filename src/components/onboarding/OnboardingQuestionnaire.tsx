@@ -4,6 +4,7 @@ import { QuestionCard } from "./QuestionCard";
 import { ProgressIndicator } from "./ProgressIndicator";
 import { WelcomeMessage } from "./WelcomeMessage";
 import { useQuestionnaire } from "./useQuestionnaire";
+import { questions } from "./questionnaireData";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -25,7 +26,7 @@ export function OnboardingQuestionnaire() {
     getPrimaryGoal
   } = useQuestionnaire();
 
-  // Make sure user is authenticated and hasn't already completed the quiz
+  // Make sure user is authenticated
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
@@ -62,19 +63,14 @@ export function OnboardingQuestionnaire() {
           const hasActiveSubscription = profile?.is_subscribed || 
             ['active', 'trialing'].includes(profile?.subscription_status || '');
 
-          console.log("Has completed quiz in onboarding:", hasCompletedQuiz);
-          console.log("Has active subscription in onboarding:", hasActiveSubscription);
+          console.log("Has completed quiz:", hasCompletedQuiz);
+          console.log("Has active subscription:", hasActiveSubscription);
 
-          // If user has already completed the quiz, redirect them to the payment page
-          // (unless they also have an active subscription)
-          if (hasCompletedQuiz) {
-            if (hasActiveSubscription) {
-              toast.info("You've already completed onboarding");
-              navigate("/");
-            } else {
-              toast.info("Please complete your payment information");
-              navigate("/premium", { state: { fromOnboarding: true } });
-            }
+          // If user has already completed the quiz AND has an active subscription,
+          // redirect them to the home page
+          if (hasCompletedQuiz && hasActiveSubscription) {
+            toast.info("You've already completed onboarding");
+            navigate("/");
           }
         }
       } catch (error) {

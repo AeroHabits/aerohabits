@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FormInput } from "./FormInput";
 import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
+import { useAuthForm } from "@/hooks/useAuthForm";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -19,6 +20,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   
+  const { handleError, handleSuccess } = useAuthForm();
   const navigate = useNavigate();
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -42,7 +44,6 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           data: {
             full_name: fullName,
             is_new_user: true,  // Mark the user as new
-            has_completed_onboarding: false, // Explicitly mark as not completed onboarding
           },
         },
       });
@@ -63,12 +64,15 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           console.log("Redirecting to onboarding after signup");
           navigate('/onboarding');
         }, 500);
+        
+        handleSuccess("Please complete the questionnaire to begin your free trial.");
       } else {
-        toast.success("Please check your email to verify your account.");
+        handleSuccess("Please check your email to verify your account.");
       }
     } catch (error: any) {
       console.error("Sign up error:", error);
       toast.error(error?.message || "Failed to create account. Please try again.");
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
