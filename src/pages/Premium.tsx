@@ -1,3 +1,4 @@
+
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -8,21 +9,11 @@ import { useEffect } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { SubscriptionCard } from "@/components/subscription/SubscriptionCard";
-import { PremiumFeatureCard, premiumFeatures } from "@/components/subscription/PremiumFeatureCard";
+import { premiumFeatures } from "@/components/subscription/PremiumFeatureCard";
 
 export default function Premium() {
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Define features as simple strings
-  const premiumFeatures = [
-    "Advanced tracking with detailed insights",
-    "Personalized AI recommendations",
-    "Priority customer support",
-    "Track unlimited habits",
-    "Weekly and monthly progress reports",
-    "Custom reminders and notifications"
-  ];
   
   // Define challenges with title and description
   const premiumChallenges = [
@@ -183,7 +174,24 @@ export default function Premium() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {premiumFeatures.map((feature, index) => (
-                <PremiumFeatureCard key={index} feature={feature} index={index} />
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="p-4 bg-gradient-to-br from-gray-900 to-gray-950 backdrop-blur-md border border-white/10 hover:border-white/20 transition-all rounded-xl">
+                    <div className="flex items-start gap-4">
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 border border-white/5 shadow-inner">
+                        {feature.icon}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-medium text-white text-lg">{feature.title}</h3>
+                        <p className="text-gray-400">{feature.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>
