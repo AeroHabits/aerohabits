@@ -41,14 +41,13 @@ export function TrialNotificationBanner() {
 
   const daysRemaining = getDaysRemaining();
   
-  // Check if user is in trial period and not subscribed
-  const isInTrial = daysRemaining > 0;
-  const isActiveSubscriber = profile?.subscription_status === 'active';
+  // Check if user is actually in a trial period with an active subscription
+  const isInTrial = profile?.subscription_status === 'trialing' && daysRemaining > 0;
   
   // Check local storage for last shown timestamp
   useEffect(() => {
     const checkAndSetVisibility = () => {
-      if (!isInTrial || isActiveSubscriber) {
+      if (!isInTrial) {
         setIsVisible(false);
         return;
       }
@@ -62,7 +61,7 @@ export function TrialNotificationBanner() {
     };
     
     checkAndSetVisibility();
-  }, [isInTrial, isActiveSubscriber, profile]);
+  }, [isInTrial, profile]);
   
   // Handle dismissal of the notification
   const handleDismiss = (e) => {
@@ -71,7 +70,7 @@ export function TrialNotificationBanner() {
     localStorage.setItem('trialNotificationLastShown', new Date().toDateString());
   };
   
-  if (!isVisible || !isInTrial || isActiveSubscriber) {
+  if (!isVisible || !isInTrial) {
     return null;
   }
 
