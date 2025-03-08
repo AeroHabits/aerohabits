@@ -42,6 +42,9 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
           <span className="text-gray-400 ml-2">/month</span>
         </div>
         
+        {/* Moved subscription button to the top for better visibility */}
+        <SubscribeButton />
+        
         {/* Animated card divider */}
         <div className="relative h-[1px] w-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 my-4">
           <motion.div
@@ -67,8 +70,6 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
         </PremiumFeatureSection>
         
         <AppleSubscriptionInfo />
-        
-        <SubscribeButton />
       </CardContent>
     </Card>
   );

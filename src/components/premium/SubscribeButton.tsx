@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -149,11 +150,11 @@ export function SubscribeButton() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.8 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
         className="relative"
       >
         <motion.div 
-          className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg blur opacity-75"
+          className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-lg blur opacity-75"
           animate={{ 
             opacity: [0.5, 0.8, 0.5],
             scale: [0.98, 1.01, 0.98]
@@ -168,8 +169,7 @@ export function SubscribeButton() {
         <Button
           onClick={hasActiveSubscription ? handleManageSubscription : handleSubscribe}
           disabled={isLoading || isProfileLoading}
-          variant="premium"
-          className="relative w-full py-7 text-lg font-semibold tracking-wide rounded-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
+          className="relative w-full py-8 text-xl font-bold tracking-wide rounded-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white border border-indigo-500/20"
         >
           <span className="absolute w-40 h-40 -top-10 -left-10 bg-white/20 rounded-full transform scale-0 group-hover:scale-100 transition-all duration-500"></span>
           <span className="absolute w-40 h-40 -bottom-10 -right-10 bg-white/20 rounded-full transform scale-0 group-hover:scale-100 transition-all duration-500 delay-100"></span>
