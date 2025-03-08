@@ -22,49 +22,28 @@ serve(async (req) => {
     // Get current time in UTC
     const now = new Date()
     const currentHour = now.getUTCHours()
-    const todayDate = format(now, 'yyyy-MM-dd')
-    const yesterdayDate = format(new Date(now.setDate(now.getDate() - 1)), 'yyyy-MM-dd')
 
-    // If it's midnight (00:00), we should reset habits while preserving streaks
+    // If it's midnight (00:00), call the reset-habits function
     if (currentHour === 0) {
-      console.log("It's midnight! Resetting habits with streak preservation...")
+      console.log("It's midnight! Calling the reset-habits function...")
       
-      // Get habits completed yesterday to preserve streaks
-      const { data: habitsToReset, error: fetchError } = await supabaseClient
-        .from('habits')
-        .select('id, streak, updated_at')
-        .eq('completed', true)
-        .lt('updated_at', `${todayDate}T00:00:00`);
-      
-      if (fetchError) {
-        console.error("Error fetching habits to reset:", fetchError);
-      } else {
-        console.log(`Found ${habitsToReset?.length || 0} habits to reset`);
-        
-        // Process each habit to preserve streaks
-        for (const habit of habitsToReset || []) {
-          const lastUpdate = habit.updated_at ? new Date(habit.updated_at) : null;
-          const lastUpdateDate = lastUpdate ? format(lastUpdate, 'yyyy-MM-dd') : null;
-          
-          // Check if the habit was completed yesterday (to maintain streak)
-          const maintainStreak = lastUpdateDate === yesterdayDate;
-          
-          const { error } = await supabaseClient
-            .from('habits')
-            .update({ 
-              completed: false,
-              streak: maintainStreak ? habit.streak : 0,
-              streak_broken: !maintainStreak && habit.streak > 0 ? true : false,
-              last_streak: !maintainStreak && habit.streak > 0 ? habit.streak : null
-            })
-            .eq('id', habit.id);
-          
-          if (error) {
-            console.error(`Error resetting habit ${habit.id}:`, error);
+      try {
+        const resetResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/reset-habits`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+            'Content-Type': 'application/json'
           }
+        });
+        
+        if (!resetResponse.ok) {
+          throw new Error(`Reset habits function failed with status: ${resetResponse.status}`);
         }
         
-        console.log("Successfully reset habits with streak preservation");
+        const resetResult = await resetResponse.json();
+        console.log("Reset habits result:", resetResult);
+      } catch (resetError) {
+        console.error("Error calling reset-habits function:", resetError);
       }
     }
 

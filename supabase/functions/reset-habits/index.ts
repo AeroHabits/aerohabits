@@ -1,6 +1,6 @@
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-import { format } from 'https://esm.sh/date-fns@3.3.1'
+import { format, isYesterday } from 'https://esm.sh/date-fns@3.3.1'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,7 +24,8 @@ Deno.serve(async (req) => {
     const today = format(new Date(), 'yyyy-MM-dd')
     console.log(`Today's date: ${today}`)
 
-    // Reset only habits that were completed yesterday or earlier, but preserve streak data
+    // Reset only habits that were completed yesterday or earlier
+    // But preserve streak data for habits completed yesterday
     const { data: habitsToReset, error: fetchError } = await supabaseClient
       .from('habits')
       .select('id, streak, updated_at')
@@ -37,29 +38,20 @@ Deno.serve(async (req) => {
     
     // Process each habit individually to preserve streak data
     const updatePromises = habitsToReset?.map(async (habit) => {
-      // Get the habit's last update date
+      // Check if the habit was completed yesterday to preserve streak
       const lastUpdate = habit.updated_at ? new Date(habit.updated_at) : null;
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-      yesterday.setHours(0, 0, 0, 0);
-      
-      // Check if streak should be maintained (if completed yesterday)
-      // This extra logic ensures streaks are only broken if a day is missed
-      const maintainStreak = lastUpdate && 
-        lastUpdate.getDate() === yesterday.getDate() &&
-        lastUpdate.getMonth() === yesterday.getMonth() &&
-        lastUpdate.getFullYear() === yesterday.getFullYear();
+      const wasCompletedYesterday = lastUpdate && isYesterday(lastUpdate);
       
       return supabaseClient
         .from('habits')
         .update({ 
           completed: false,
-          // Only preserve streak if the habit was completed yesterday
-          streak: maintainStreak ? habit.streak : 0,
-          // If streak is broken, mark it as such
-          streak_broken: !maintainStreak && habit.streak > 0 ? true : false,
+          // Preserve streak if completed yesterday, otherwise reset
+          streak: wasCompletedYesterday ? habit.streak : 0,
+          // If streak is broken (not completed yesterday), mark it
+          streak_broken: !wasCompletedYesterday && habit.streak > 0 ? true : false,
           // Store the last streak value for reference
-          last_streak: !maintainStreak && habit.streak > 0 ? habit.streak : null
+          last_streak: !wasCompletedYesterday && habit.streak > 0 ? habit.streak : null
         })
         .eq('id', habit.id);
     }) || [];

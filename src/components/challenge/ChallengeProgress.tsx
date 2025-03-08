@@ -28,7 +28,6 @@ export function ChallengeProgress({
       // Get today's date at midnight
       const today = startOfDay(new Date());
       const yesterday = subDays(today, 1);
-      const tomorrow = startOfTomorrow();
       const todayStr = format(today, 'yyyy-MM-dd');
       
       // Get all completions for this challenge
