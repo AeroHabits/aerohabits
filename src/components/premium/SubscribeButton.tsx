@@ -1,9 +1,12 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useSubscriptionLogic } from "@/hooks/useSubscriptionLogic";
 import { AppStoreDialog } from "../subscription/AppStoreDialog";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 export function SubscribeButton() {
   const [isLoading, setIsLoading] = useState(false);
