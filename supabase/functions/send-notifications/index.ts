@@ -24,19 +24,22 @@ serve(async (req) => {
     const currentHour = now.getUTCHours()
     const todayDate = format(now, 'yyyy-MM-dd')
 
-    // If it's midnight (00:00), we should reset habits
+    // If it's midnight (00:00), we should reset habit completion status only (not streaks)
     if (currentHour === 0) {
-      console.log("It's midnight! Resetting habits...")
+      console.log("It's midnight! Resetting habit completion status...")
       const { error: resetError } = await supabaseClient
         .from('habits')
-        .update({ completed: false })
+        .update({ 
+          completed: false,
+          // We don't modify the streak here, just reset completion status
+        })
         .eq('completed', true)
         .lt('updated_at', `${todayDate}T00:00:00`)
       
       if (resetError) {
-        console.error("Error resetting habits:", resetError)
+        console.error("Error resetting habit completion status:", resetError)
       } else {
-        console.log("Successfully reset habits")
+        console.log("Successfully reset habit completion status")
       }
     }
 

@@ -24,16 +24,20 @@ Deno.serve(async (req) => {
     const today = format(new Date(), 'yyyy-MM-dd')
     console.log(`Today's date: ${today}`)
 
+    // Only reset completion status, not streaks
     // Reset only habits that were completed yesterday or earlier
     const { error, count } = await supabaseClient
       .from('habits')
-      .update({ completed: false })
+      .update({ 
+        completed: false,
+        // Don't update the streak here, just mark as not completed
+      })
       .eq('completed', true)
       .lt('updated_at', `${today}T00:00:00`)
 
     if (error) throw error
 
-    console.log(`Successfully reset ${count} habits`)
+    console.log(`Successfully reset completion status for ${count} habits`)
 
     return new Response(
       JSON.stringify({ message: 'Habits reset successfully', count }),

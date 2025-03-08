@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Habit } from "@/types";
-import { isToday, isYesterday, startOfDay, startOfTomorrow, isSameDay } from "date-fns";
+import { isToday, isYesterday, startOfDay, startOfTomorrow, isSameDay, subDays } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
 import { useLocalStorage } from "./useLocalStorage";
 
@@ -55,10 +55,15 @@ export function useHabitOperations() {
 
     try {
       const today = startOfDay(new Date());
+      const yesterday = subDays(today, 1);
       const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
       
       // Check if the last update was today or yesterday
-      const maintainedStreak = lastUpdate && (isSameDay(lastUpdate, today) || isYesterday(lastUpdate));
+      // This is crucial for maintaining streaks across midnight resets
+      const maintainedStreak = lastUpdate && (
+        isSameDay(lastUpdate, today) || 
+        (isSameDay(lastUpdate, yesterday) && habit.completed)
+      );
       
       const updatedHabit = {
         ...habit,

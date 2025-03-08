@@ -23,7 +23,7 @@ const Habits = () => {
       if (error) throw error;
       
       toast.success("Habits reset successfully", {
-        description: `${data.count || 0} habits were reset.`
+        description: `${data.count || 0} habits were reset to uncompleted status while preserving streaks.`
       });
       
       // Force refresh the habits list
@@ -84,6 +84,31 @@ const Habits = () => {
             <p className="text-blue-100 max-w-2xl mx-auto">
               Build consistency by tracking your daily habits and watching your streaks grow
             </p>
+
+            {/* Add Reset Habits button for testing - only visible in non-production */}
+            {process.env.NODE_ENV !== 'production' && (
+              <div className="mt-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResetHabits}
+                  disabled={isResetting}
+                  className="border-white/20 text-white hover:bg-white/10"
+                >
+                  {isResetting ? (
+                    <>
+                      <RefreshCcw className="h-4 w-4 mr-2 animate-spin" />
+                      Resetting...
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCcw className="h-4 w-4 mr-2" />
+                      Reset Habits (Test Midnight Reset)
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
           <HabitList />
         </motion.div>
