@@ -1,8 +1,9 @@
 
 import { useState, useEffect } from "react";
 import { useOnlineStatus } from "./useOnlineStatus";
-import { useDetailedConnectionStatus } from "./useOnlineStatus";
-import { NetworkQuality } from "./network/networkTypes";
+
+// Network quality types
+export type NetworkQuality = 'good' | 'poor' | 'offline';
 
 // Constants for better stale time management
 export const STALE_TIME = {
@@ -12,23 +13,34 @@ export const STALE_TIME = {
 
 export function useNetworkQuality() {
   const isOnline = useOnlineStatus();
-  const connectionDetails = useDetailedConnectionStatus();
-  const [networkQuality, setNetworkQuality] = useState<NetworkQuality>(
-    !isOnline ? 'offline' : connectionDetails.quality
-  );
-  const [latency, setLatency] = useState<number | null>(connectionDetails.latency);
-  const [downlinkSpeed, setDownlinkSpeed] = useState<number | null>(connectionDetails.downlinkSpeed);
-  const [reliability, setReliability] = useState<number>(connectionDetails.reliability);
-  const [lastChecked, setLastChecked] = useState<number>(connectionDetails.lastChecked);
+  const [networkQuality, setNetworkQuality] = useState<NetworkQuality>(getNetworkQuality());
 
-  // Update network quality when connection details change
+  // Get network quality
+  function getNetworkQuality(): NetworkQuality {
+    if (!navigator.onLine) return 'offline';
+    
+    // If available, use the connection API to determine network quality
+    if ('connection' in navigator && (navigator as any).connection) {
+      const conn = (navigator as any).connection;
+      if (conn.saveData || conn.effectiveType === 'slow-2g' || conn.effectiveType === '2g') {
+        return 'poor';
+      }
+    }
+    
+    return 'good';
+  }
+
+  // Update network quality when online status changes
   useEffect(() => {
-    setNetworkQuality(!isOnline ? 'offline' : connectionDetails.quality);
-    setLatency(connectionDetails.latency);
-    setDownlinkSpeed(connectionDetails.downlinkSpeed);
-    setReliability(connectionDetails.reliability);
-    setLastChecked(connectionDetails.lastChecked);
-  }, [isOnline, connectionDetails]);
+    setNetworkQuality(getNetworkQuality());
+    
+    // Setup periodic network quality check
+    const intervalId = setInterval(() => {
+      setNetworkQuality(getNetworkQuality());
+    }, 30000); // Check every 30 seconds
+    
+    return () => clearInterval(intervalId);
+  }, [isOnline]);
 
   // Determine appropriate stale time based on network conditions
   const getStaleTime = () => {
@@ -41,10 +53,6 @@ export function useNetworkQuality() {
   return {
     networkQuality,
     isOnline,
-    latency,
-    downlinkSpeed,
-    reliability,
-    lastChecked,
     getStaleTime,
     shouldSkipNetworkRequest: (lastSyncTime: number | null) => {
       if (!isOnline) return true;
