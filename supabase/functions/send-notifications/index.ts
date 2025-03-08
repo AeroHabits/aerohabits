@@ -1,5 +1,7 @@
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4"
+import { format } from "https://esm.sh/date-fns@3.3.1"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -20,8 +22,25 @@ serve(async (req) => {
     // Get current time in UTC
     const now = new Date()
     const currentHour = now.getUTCHours()
+    const todayDate = format(now, 'yyyy-MM-dd')
 
-    // Fetch notifications that should be sent at this hour
+    // If it's midnight (00:00), we should reset habits
+    if (currentHour === 0) {
+      console.log("It's midnight! Resetting habits...")
+      const { error: resetError } = await supabaseClient
+        .from('habits')
+        .update({ completed: false })
+        .eq('completed', true)
+        .lt('updated_at', `${todayDate}T00:00:00`)
+      
+      if (resetError) {
+        console.error("Error resetting habits:", resetError)
+      } else {
+        console.log("Successfully reset habits")
+      }
+    }
+
+    // Continue with normal notification logic
     const { data: notifications, error: notificationsError } = await supabaseClient
       .from('habit_notifications')
       .select(`
@@ -34,14 +53,14 @@ serve(async (req) => {
 
     if (notificationsError) throw notificationsError
 
-    // Send notifications (for now, just log them)
     console.log(`Sending ${notifications?.length ?? 0} notifications`)
     
-    // In a real implementation, you would integrate with a notification service here
-    // For example, using web push notifications or email
-
     return new Response(
-      JSON.stringify({ success: true, count: notifications?.length ?? 0 }),
+      JSON.stringify({ 
+        success: true, 
+        count: notifications?.length ?? 0,
+        resetPerformed: currentHour === 0
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,

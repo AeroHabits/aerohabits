@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Habit } from "@/types";
-import { isToday, isYesterday, startOfDay } from "date-fns";
+import { isToday, isYesterday, startOfDay, startOfTomorrow, isSameDay } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
 import { useLocalStorage } from "./useLocalStorage";
 
@@ -56,7 +56,9 @@ export function useHabitOperations() {
     try {
       const today = startOfDay(new Date());
       const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
-      const maintainedStreak = lastUpdate && (isYesterday(lastUpdate) || isToday(lastUpdate));
+      
+      // Check if the last update was today or yesterday
+      const maintainedStreak = lastUpdate && (isSameDay(lastUpdate, today) || isYesterday(lastUpdate));
       
       const updatedHabit = {
         ...habit,

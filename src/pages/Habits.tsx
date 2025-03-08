@@ -5,9 +5,36 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { Button } from "@/components/ui/button";
+import { RefreshCcw } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useState } from "react";
 
 const Habits = () => {
   const isMobile = useIsMobile();
+  const [isResetting, setIsResetting] = useState(false);
+
+  const handleResetHabits = async () => {
+    try {
+      setIsResetting(true);
+      const { data, error } = await supabase.functions.invoke('reset-habits');
+      
+      if (error) throw error;
+      
+      toast.success("Habits reset successfully", {
+        description: `${data.count || 0} habits were reset.`
+      });
+      
+      // Force refresh the habits list
+      window.location.reload();
+    } catch (error) {
+      console.error("Error resetting habits:", error);
+      toast.error("Failed to reset habits");
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">

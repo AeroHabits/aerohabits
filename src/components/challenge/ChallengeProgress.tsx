@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
-import { format, startOfDay, subDays, isAfter, parseISO } from "date-fns";
+import { format, startOfDay, subDays, isAfter, parseISO, isBefore, startOfTomorrow } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -25,9 +25,10 @@ export function ChallengeProgress({
 
   useEffect(() => {
     const checkProgress = async () => {
-      // Format today's date in UTC to match the database format
+      // Get today's date at midnight
       const today = startOfDay(new Date());
       const yesterday = subDays(today, 1);
+      const tomorrow = startOfTomorrow();
       const todayStr = format(today, 'yyyy-MM-dd');
       
       // Get all completions for this challenge
@@ -51,7 +52,7 @@ export function ChallengeProgress({
         const lastCompletionDate = parseISO(completions[0].completed_date);
         
         // If the last completion was before yesterday, it means a day was missed
-        if (isAfter(yesterday, lastCompletionDate)) {
+        if (isBefore(lastCompletionDate, yesterday)) {
           // Reset the challenge
           const { error: resetError } = await supabase
             .from('challenge_completions')
@@ -69,7 +70,7 @@ export function ChallengeProgress({
           // Show a more prominent notification about the streak loss
           toast.error("Challenge Progress Reset!", {
             description: "You missed a day in your challenge! Your progress has been reset and you'll need to start over. Remember to complete your challenge daily to maintain your streak!",
-            duration: 6000, // Show for 6 seconds
+            duration: 6000,
             action: {
               label: "Got it",
               onClick: () => console.log("User acknowledged challenge reset")
