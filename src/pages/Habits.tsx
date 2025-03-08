@@ -1,3 +1,4 @@
+
 import { HabitList } from "@/components/HabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -85,10 +86,19 @@ const Habits = () => {
               Build consistency by tracking your daily habits and watching your streaks grow
             </p>
 
-            {/* Add Reset Habits button for testing - only visible in non-production */}
-            {process.env.NODE_ENV !== 'production' && <div className="mt-4">
-                
-              </div>}
+            {/* Add Reset Habits button */}
+            <div className="mt-4">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="bg-transparent text-blue-300 border-blue-500/50 hover:bg-blue-500/10"
+                onClick={handleResetHabits}
+                disabled={isResetting}
+              >
+                <RefreshCcw className="h-4 w-4 mr-2" />
+                {isResetting ? "Resetting..." : "Reset Habits for New Day"}
+              </Button>
+            </div>
           </div>
           <HabitList />
         </motion.div>
