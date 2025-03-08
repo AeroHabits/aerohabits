@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,6 +11,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [requiresOnboarding, setRequiresOnboarding] = useState(false);
+  const [requiresSubscription, setRequiresSubscription] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -71,6 +71,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           console.log("Has completed quiz:", hasCompletedQuiz);
           console.log("Has active subscription:", hasActiveSubscription);
           
+          // New logic: If user has completed the quiz but doesn't have an active subscription,
+          // they must subscribe (unless they're already on the premium page)
+          if (hasCompletedQuiz && !hasActiveSubscription && location.pathname !== '/premium') {
+            console.log('User needs to subscribe - has completed quiz but no subscription');
+            setRequiresSubscription(true);
+          }
+          
           // If the user has neither completed the quiz NOR has an active subscription,
           // they must go through onboarding
           if (!hasCompletedQuiz && !hasActiveSubscription) {
@@ -78,7 +85,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
             setRequiresOnboarding(true);
           }
           
-          // User is authenticated regardless of onboarding status
+          // User is authenticated regardless of onboarding/subscription status
           setIsAuthenticated(true);
         } else {
           console.log("No user found in session");
@@ -116,7 +123,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [location.pathname]);
 
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -132,6 +139,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   if (requiresOnboarding && location.pathname !== '/onboarding') {
     console.log("User requires onboarding, redirecting to /onboarding");
     return <Navigate to="/onboarding" replace />;
+  }
+
+  // NEW: If the user requires a subscription, redirect them to the premium page
+  if (requiresSubscription && location.pathname !== '/premium') {
+    console.log("User requires subscription, redirecting to /premium");
+    toast.info("Please subscribe to continue using the app", {
+      description: "Your free trial has ended or you need to complete the subscription process",
+      duration: 5000
+    });
+    return <Navigate to="/premium" replace />;
   }
 
   return <>{children}</>;

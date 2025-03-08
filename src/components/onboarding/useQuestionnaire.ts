@@ -73,6 +73,9 @@ export function useQuestionnaire() {
     } catch (error) {
       console.error("Error starting subscription:", error);
       handleError(error);
+      
+      // Even if there's an error, redirect to premium page to ensure they subscribe
+      navigate("/premium");
     } finally {
       setIsLoading(false);
     }

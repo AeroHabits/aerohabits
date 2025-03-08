@@ -49,10 +49,14 @@ const Auth = () => {
             const hasActiveSubscription = profile?.is_subscribed || 
               ['active', 'trialing'].includes(profile?.subscription_status || '');
             
-            if (!hasCompletedQuiz && !hasActiveSubscription) {
+            if (!hasCompletedQuiz) {
+              // User hasn't completed onboarding quiz
               navigate("/onboarding");
+            } else if (!hasActiveSubscription) {
+              // User has completed quiz but doesn't have active subscription
+              navigate("/premium");
             } else {
-              // If user has completed onboarding or has subscription
+              // If user has completed onboarding and has subscription
               // Redirect to the page they were trying to access or home
               const from = location.state?.from?.pathname || "/";
               navigate(from);
