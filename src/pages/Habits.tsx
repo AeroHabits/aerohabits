@@ -10,25 +10,33 @@ import { RefreshCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useHabits } from "@/hooks/useHabits";
 
 const Habits = () => {
   const isMobile = useIsMobile();
   const [isResetting, setIsResetting] = useState(false);
+  const { refetch } = useHabits();
 
   const handleResetHabits = async () => {
     try {
       setIsResetting(true);
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('reset-habits');
-      if (error) throw error;
+      const { data, error } = await supabase.functions.invoke('reset-habits');
+      
+      if (error) {
+        console.error("Error resetting habits:", error);
+        toast.error("Failed to reset habits", {
+          description: "There was a problem resetting your habits. Please try again."
+        });
+        return;
+      }
+      
       toast.success("Habits reset successfully", {
         description: `${data.count || 0} habits were reset to uncompleted status while preserving streaks.`
       });
 
-      // Force refresh the habits list
-      window.location.reload();
+      // Refresh the habits list to show updated state
+      await refetch();
+      
     } catch (error) {
       console.error("Error resetting habits:", error);
       toast.error("Failed to reset habits");
@@ -89,16 +97,16 @@ const Habits = () => {
               Build consistency by tracking your daily habits and watching your streaks grow
             </p>
 
-            {/* Add Reset Habits button */}
+            {/* Improved Reset Habits button */}
             <div className="mt-4">
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="bg-transparent text-blue-300 border-blue-500/50 hover:bg-blue-500/10"
+                className="bg-transparent text-blue-300 border-blue-500/50 hover:bg-blue-500/10 transition-all duration-300"
                 onClick={handleResetHabits}
                 disabled={isResetting}
               >
-                <RefreshCcw className="h-4 w-4 mr-2" />
+                <RefreshCcw className={cn("h-4 w-4 mr-2", isResetting && "animate-spin")} />
                 {isResetting ? "Resetting..." : "Reset Habits for New Day"}
               </Button>
             </div>

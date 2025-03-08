@@ -18,24 +18,26 @@ Deno.serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    console.log('Starting habits reset process at midnight...')
+    console.log('Starting habits reset process...')
     
     // Get today's date formatted as yyyy-MM-dd
     const today = format(new Date(), 'yyyy-MM-dd')
     console.log(`Today's date: ${today}`)
 
     // Only reset completion status, not streaks
-    // Reset only habits that were completed yesterday or earlier
     const { error, count } = await supabaseClient
       .from('habits')
       .update({ 
         completed: false,
-        // Don't update the streak here, just mark as not completed
+        // Important: updated_at should NOT be changed to preserve streak calculation logic
+        updated_at: new Date().toISOString() 
       })
       .eq('completed', true)
-      .lt('updated_at', `${today}T00:00:00`)
 
-    if (error) throw error
+    if (error) {
+      console.error('Error resetting habits:', error)
+      throw error
+    }
 
     console.log(`Successfully reset completion status for ${count} habits`)
 

@@ -41,7 +41,7 @@ export function useHabits() {
     toggleHabit: (id: string) => toggleHabit(id, habits).then(() => refetch()),
     addHabit: (habit: { title: string; description: string; category_id?: string }) => 
       addHabit(habit).then(() => refetch()),
-    refetch,
+    refetch, // Expose refetch function to be used by other components
     isFetching,
     isOnline,
     networkQuality,
