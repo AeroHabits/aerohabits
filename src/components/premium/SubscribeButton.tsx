@@ -5,7 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useSubscriptionLogic } from "@/hooks/useSubscriptionLogic";
 import { AppStoreDialog } from "../subscription/AppStoreDialog";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 import { Info } from "lucide-react";
 
 export function SubscribeButton() {
@@ -22,23 +27,19 @@ export function SubscribeButton() {
   const [showAppStoreInfo, setShowAppStoreInfo] = useState(false);
 
   const handleSubscribeClick = async () => {
-    // For iOS devices, show App Store instructions
-    if (isIOS) {
+    // For iOS devices, show App Store instructions if browser fails to open
+    const browserOpened = await handleSubscribe();
+    if (isIOS && !browserOpened) {
       setShowAppStoreInfo(true);
-      return;
     }
-    
-    await handleSubscribe();
   };
 
   const handleManageClick = async () => {
-    // For iOS devices, show App Store instructions
-    if (isIOS) {
+    // For iOS devices, show App Store instructions if browser fails to open
+    const browserOpened = await handleManageSubscription();
+    if (isIOS && !browserOpened) {
       setShowAppStoreInfo(true);
-      return;
     }
-    
-    await handleManageSubscription();
   };
 
   return (
