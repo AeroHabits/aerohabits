@@ -11,6 +11,10 @@ interface QuestionOptionProps {
 }
 
 export function QuestionOption({ id, option, isChecked, onCheckedChange }: QuestionOptionProps) {
+  const handleOptionClick = () => {
+    onCheckedChange(option, !isChecked);
+  };
+
   return (
     <motion.div
       key={option}
@@ -19,7 +23,7 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
       className="flex items-center space-x-3 bg-gradient-to-r from-gray-800/80 to-gray-800/40 hover:from-gray-700/80 hover:to-gray-700/40 border border-gray-700/50 transition-all p-4 rounded-lg cursor-pointer shadow-md"
-      onClick={() => onCheckedChange(option, !isChecked)}
+      onClick={handleOptionClick}
     >
       <div className="flex justify-center items-center">
         <Checkbox 
