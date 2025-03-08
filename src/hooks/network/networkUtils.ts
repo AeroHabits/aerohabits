@@ -1,5 +1,4 @@
 
-import { trackError } from '@/hooks/useErrorTracking';
 import { PingResult } from './networkTypes';
 
 /**
@@ -7,7 +6,7 @@ import { PingResult } from './networkTypes';
  */
 export const pingEndpoint = async (
   endpoint: string,
-  trackErrorFn: typeof trackError
+  trackErrorFn: (error: Error, source: string, options?: { severity: string; silent: boolean }) => void
 ): Promise<number | null> => {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout

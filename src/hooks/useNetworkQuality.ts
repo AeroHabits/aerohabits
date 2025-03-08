@@ -16,12 +16,18 @@ export function useNetworkQuality() {
   const [networkQuality, setNetworkQuality] = useState<NetworkQuality>(
     !isOnline ? 'offline' : connectionDetails.quality
   );
+  const [latency, setLatency] = useState<number | null>(connectionDetails.latency);
+  const [downlinkSpeed, setDownlinkSpeed] = useState<number | null>(connectionDetails.downlinkSpeed);
+  const [reliability, setReliability] = useState<number>(connectionDetails.reliability);
+  const [lastChecked, setLastChecked] = useState<number>(connectionDetails.lastChecked);
 
   // Update network quality when connection details change
   useEffect(() => {
-    setNetworkQuality(
-      !isOnline ? 'offline' : connectionDetails.quality
-    );
+    setNetworkQuality(!isOnline ? 'offline' : connectionDetails.quality);
+    setLatency(connectionDetails.latency);
+    setDownlinkSpeed(connectionDetails.downlinkSpeed);
+    setReliability(connectionDetails.reliability);
+    setLastChecked(connectionDetails.lastChecked);
   }, [isOnline, connectionDetails]);
 
   // Determine appropriate stale time based on network conditions
@@ -35,6 +41,10 @@ export function useNetworkQuality() {
   return {
     networkQuality,
     isOnline,
+    latency,
+    downlinkSpeed,
+    reliability,
+    lastChecked,
     getStaleTime,
     shouldSkipNetworkRequest: (lastSyncTime: number | null) => {
       if (!isOnline) return true;
