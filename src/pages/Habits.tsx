@@ -23,7 +23,7 @@ const Habits = () => {
       if (error) throw error;
       
       toast.success("Habits reset successfully", {
-        description: `${data.count || 0} habits were reset while preserving streaks for habits completed yesterday.`
+        description: `${data.count || 0} habits were reset.`
       });
       
       // Force refresh the habits list
@@ -84,18 +84,6 @@ const Habits = () => {
             <p className="text-blue-100 max-w-2xl mx-auto">
               Build consistency by tracking your daily habits and watching your streaks grow
             </p>
-            <div className="mt-4 flex justify-center">
-              <Button
-                variant="outline" 
-                size="sm"
-                onClick={handleResetHabits}
-                disabled={isResetting}
-                className="bg-transparent border border-indigo-400/30 text-indigo-300 hover:bg-indigo-500/10"
-              >
-                <RefreshCcw className={`h-4 w-4 mr-2 ${isResetting ? 'animate-spin' : ''}`} />
-                {isResetting ? 'Resetting...' : 'Reset Habits (Testing)'}
-              </Button>
-            </div>
           </div>
           <HabitList />
         </motion.div>

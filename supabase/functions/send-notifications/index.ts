@@ -22,28 +22,21 @@ serve(async (req) => {
     // Get current time in UTC
     const now = new Date()
     const currentHour = now.getUTCHours()
+    const todayDate = format(now, 'yyyy-MM-dd')
 
-    // If it's midnight (00:00), call the reset-habits function
+    // If it's midnight (00:00), we should reset habits
     if (currentHour === 0) {
-      console.log("It's midnight! Calling the reset-habits function...")
+      console.log("It's midnight! Resetting habits...")
+      const { error: resetError } = await supabaseClient
+        .from('habits')
+        .update({ completed: false })
+        .eq('completed', true)
+        .lt('updated_at', `${todayDate}T00:00:00`)
       
-      try {
-        const resetResponse = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/reset-habits`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!resetResponse.ok) {
-          throw new Error(`Reset habits function failed with status: ${resetResponse.status}`);
-        }
-        
-        const resetResult = await resetResponse.json();
-        console.log("Reset habits result:", resetResult);
-      } catch (resetError) {
-        console.error("Error calling reset-habits function:", resetError);
+      if (resetError) {
+        console.error("Error resetting habits:", resetError)
+      } else {
+        console.log("Successfully reset habits")
       }
     }
 
