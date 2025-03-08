@@ -10,9 +10,11 @@ import { RefreshCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
+
 const Habits = () => {
   const isMobile = useIsMobile();
   const [isResetting, setIsResetting] = useState(false);
+
   const handleResetHabits = async () => {
     try {
       setIsResetting(true);
@@ -34,6 +36,7 @@ const Habits = () => {
       setIsResetting(false);
     }
   };
+
   return <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
       {/* Enhanced background effects */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20">
