@@ -42,17 +42,11 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
           <span className="text-gray-400 ml-2">/month</span>
         </div>
         
-        {/* Moved subscription button to the top for better visibility */}
+        {/* Subscription button at the top */}
         <SubscribeButton />
         
-        {/* Animated card divider */}
-        <div className="relative h-[1px] w-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 my-4">
-          <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500 to-blue-500/0"
-            animate={{ x: ["0%", "100%"] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          />
-        </div>
+        {/* Simple divider */}
+        <div className="h-[1px] w-full bg-gray-800 my-4"></div>
         
         <PremiumFeatureSection title="Everything you get">
           {features.map((feature, index) => (

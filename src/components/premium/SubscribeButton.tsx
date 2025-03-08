@@ -1,8 +1,6 @@
-
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Crown, Sparkles, Star, Zap, Info, ExternalLink } from "lucide-react";
+import { Info, ExternalLink } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -147,93 +145,19 @@ export function SubscribeButton() {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-        className="relative"
-      >
-        <motion.div 
-          className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 rounded-lg blur opacity-75"
-          animate={{ 
-            opacity: [0.5, 0.8, 0.5],
-            scale: [0.98, 1.01, 0.98]
-          }}
-          transition={{ 
-            duration: 3, 
-            repeat: Infinity, 
-            repeatType: "mirror" 
-          }}
-        />
-        
+      <div className="mb-2">
         <Button
           onClick={hasActiveSubscription ? handleManageSubscription : handleSubscribe}
           disabled={isLoading || isProfileLoading}
-          className="relative w-full py-8 text-xl font-bold tracking-wide rounded-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white border border-indigo-500/20"
+          className="w-full py-6 text-xl font-semibold bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition-colors"
         >
-          <span className="absolute w-40 h-40 -top-10 -left-10 bg-white/20 rounded-full transform scale-0 group-hover:scale-100 transition-all duration-500"></span>
-          <span className="absolute w-40 h-40 -bottom-10 -right-10 bg-white/20 rounded-full transform scale-0 group-hover:scale-100 transition-all duration-500 delay-100"></span>
-          
-          <motion.span 
-            className="absolute -top-1 -right-1 text-yellow-300"
-            animate={{ 
-              rotate: [0, 15, 0, -15, 0],
-              scale: [1, 1.2, 1]
-            }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
-              repeatType: "loop" 
-            }}
-          >
-            <Star className="h-5 w-5 drop-shadow-md" />
-          </motion.span>
-          
-          <span className="relative z-10 flex items-center justify-center gap-3">
-            {isLoading ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                >
-                  <Zap className="w-5 h-5" />
-                </motion.div>
-                Processing...
-              </>
-            ) : hasActiveSubscription ? (
-              <>
-                <motion.div
-                  animate={{ y: [0, -3, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  <Crown className="w-5 h-5 text-yellow-300" />
-                </motion.div>
-                Manage Subscription
-              </>
-            ) : (
-              <>
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    rotate: [0, 5, 0, -5, 0]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                >
-                  <Sparkles className="w-5 h-5 text-yellow-300" />
-                </motion.div>
-                Start 3-Day Free Trial
-                <motion.div
-                  animate={{ 
-                    scale: [1, 1.2, 1],
-                    rotate: [0, -5, 0, 5, 0]
-                  }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                >
-                  <Sparkles className="w-5 h-5 text-yellow-300" />
-                </motion.div>
-              </>
-            )}
-          </span>
+          {isLoading ? (
+            "Processing..."
+          ) : hasActiveSubscription ? (
+            "Manage Subscription"
+          ) : (
+            "Start 3-Day Free Trial"
+          )}
         </Button>
         
         {!hasActiveSubscription && (
@@ -256,7 +180,7 @@ export function SubscribeButton() {
             </div>
           </div>
         )}
-      </motion.div>
+      </div>
       
       <AlertDialog open={showAppStoreInfo} onOpenChange={setShowAppStoreInfo}>
         <AlertDialogContent className="bg-gray-900 border border-gray-700">
@@ -300,7 +224,7 @@ export function SubscribeButton() {
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction 
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:from-indigo-600 hover:to-purple-700"
+              className="bg-indigo-600 text-white hover:bg-indigo-700"
               onClick={() => {
                 // Open iOS subscription settings
                 window.location.href = "https://apps.apple.com/account/subscriptions";
