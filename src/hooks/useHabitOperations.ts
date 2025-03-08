@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Habit } from "@/types";
-import { isToday, isYesterday, startOfDay, startOfTomorrow, isSameDay } from "date-fns";
+import { isToday, isYesterday, startOfDay, startOfTomorrow, isSameDay, subDays } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
 import { useLocalStorage } from "./useLocalStorage";
 
@@ -55,17 +55,40 @@ export function useHabitOperations() {
 
     try {
       const today = startOfDay(new Date());
+      const yesterday = subDays(today, 1);
       const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
       
-      // Check if the last update was today or yesterday
-      const maintainedStreak = lastUpdate && (isSameDay(lastUpdate, today) || isYesterday(lastUpdate));
+      // Enhanced streak logic for midnight reset:
+      // If completing the habit for today, check various conditions for streak maintenance
+      let streakValue = habit.streak || 0;
+      
+      if (!habit.completed) {
+        // User is completing the habit
+        if (!lastUpdate) {
+          // First time completing this habit
+          streakValue = 1;
+        } else if (isSameDay(lastUpdate, today)) {
+          // Already updated today but was uncompleted
+          streakValue += 1;
+        } else if (isSameDay(lastUpdate, yesterday)) {
+          // Completed yesterday and now today - maintain streak
+          streakValue += 1;
+        } else {
+          // Habit was last completed 2+ days ago - reset streak
+          streakValue = 1;
+        }
+      } else {
+        // User is uncompleting the habit
+        // Only reduce streak if it was completed today
+        if (isSameDay(lastUpdate, today)) {
+          streakValue = Math.max(0, streakValue - 1);
+        }
+      }
       
       const updatedHabit = {
         ...habit,
         completed: !habit.completed,
-        streak: !habit.completed 
-          ? (maintainedStreak ? (habit.streak || 0) + 1 : 1)
-          : Math.max(0, (habit.streak || 0) - 1),
+        streak: streakValue,
         updated_at: new Date().toISOString()
       };
 

@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
-import { format, startOfDay, subDays, isAfter, parseISO, isBefore, startOfTomorrow } from "date-fns";
+import { format, startOfDay, subDays, isAfter, parseISO, isBefore, startOfTomorrow, isSameDay } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -52,6 +52,8 @@ export function ChallengeProgress({
         const lastCompletionDate = parseISO(completions[0].completed_date);
         
         // If the last completion was before yesterday, it means a day was missed
+        // This ensures that if you complete on day 1, and then on day 3, the streak is broken
+        // But if you complete on day 1 and day 2, the streak continues
         if (isBefore(lastCompletionDate, yesterday)) {
           // Reset the challenge
           const { error: resetError } = await supabase
