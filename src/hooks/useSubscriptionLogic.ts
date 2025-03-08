@@ -1,12 +1,10 @@
-
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useErrorTracking } from "@/hooks/useErrorTracking";
-import { App } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
-import { isPlatform } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 
 export function useSubscriptionLogic(setIsLoading: (loading: boolean) => void) {
   const { trackError } = useErrorTracking();
@@ -34,7 +32,7 @@ export function useSubscriptionLogic(setIsLoading: (loading: boolean) => void) {
   const hasActiveSubscription = profile?.is_subscribed || profile?.subscription_status === 'active';
   
   // Check if we're on iOS - both real device and simulator
-  const isIOS = isPlatform('ios');
+  const isIOS = Capacitor.getPlatform() === 'ios';
 
   // Helper to safely open URLs in Capacitor
   const safeOpenUrl = async (url: string) => {
