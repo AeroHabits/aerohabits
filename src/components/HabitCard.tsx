@@ -1,12 +1,16 @@
 
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Trash2, Star, Trophy, AlertCircle, CheckCircle, Zap, Target, Heart, Smile, Music, Book, Coffee, Code } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { icons } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import { HabitTitle } from "./habit-card/HabitTitle";
+import { StreakBadge } from "./habit-card/StreakBadge";
+import { StreakBrokenBadge } from "./habit-card/StreakBrokenBadge";
+import { CategoryTag } from "./habit-card/CategoryTag";
+import { CompleteButton } from "./habit-card/CompleteButton";
+import { DeleteButton } from "./habit-card/DeleteButton";
+import { StreakRibbon } from "./habit-card/StreakRibbon";
 
 interface HabitCardProps {
   id: string;
@@ -25,14 +29,6 @@ interface HabitCardProps {
   onToggle: () => void;
   onDelete: () => void;
 }
-
-// Function to get fun icon based on streak
-const getStreakIcon = (streak: number) => {
-  if (streak >= 30) return <Trophy className="h-5 w-5 text-amber-400" />;
-  if (streak >= 14) return <Zap className="h-5 w-5 text-indigo-400" />;
-  if (streak >= 7) return <Star className="h-5 w-5 text-blue-400" />;
-  return <Target className="h-5 w-5 text-purple-400" />;
-};
 
 // Function to get a fun background gradient based on streak
 const getStreakGradient = (streak: number, completed: boolean) => {
@@ -57,8 +53,6 @@ export function HabitCard({
   onToggle,
   onDelete,
 }: HabitCardProps) {
-  const LucideIcon = category?.icon ? (icons as any)[category.icon] : Star;
-
   // Show toast when streak is broken
   if (streak_broken && last_streak && last_streak > 0) {
     toast.warning(
@@ -79,23 +73,6 @@ export function HabitCard({
     animate: { opacity: 1, y: 0, scale: 1 },
     exit: { opacity: 0, y: -20, scale: 0.95 },
     hover: { y: -5, boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)" }
-  };
-
-  // Fun animation for the completed indicator
-  const completedVariants = {
-    initial: { scale: 0, rotate: -180 },
-    animate: completed ? { scale: 1, rotate: 0 } : { scale: 0, rotate: -180 },
-    transition: { type: "spring", stiffness: 260, damping: 20 }
-  };
-
-  // Celebration animation for the title when completed
-  const titleVariants = {
-    initial: { scale: 1 },
-    animate: completed ? 
-      {
-        scale: [1, 1.05, 1],
-        transition: { duration: 0.5, repeat: 0 }
-      } : {}
   };
 
   return (
@@ -121,37 +98,12 @@ export function HabitCard({
         <div className="p-6 flex flex-col h-full">
           <div className="flex justify-between items-start mb-4">
             <div className="space-y-1">
-              <div className="flex items-center gap-2">
-                {category && (
-                  <div 
-                    className="p-1.5 rounded-lg"
-                    style={{ backgroundColor: `${category.color}30` }}
-                  >
-                    <LucideIcon 
-                      className="h-4 w-4"
-                      style={{ color: category.color }}
-                    />
-                  </div>
-                )}
-                <motion.h3 
-                  variants={titleVariants}
-                  className={cn(
-                    "font-semibold text-lg",
-                    completed ? "text-purple-200 line-through opacity-70" : "text-white/90"
-                  )}
-                >
-                  {title}
-                </motion.h3>
-                {completed && (
-                  <motion.div
-                    variants={completedVariants}
-                    initial="initial"
-                    animate="animate"
-                  >
-                    <CheckCircle className="h-5 w-5 text-purple-400" />
-                  </motion.div>
-                )}
-              </div>
+              <HabitTitle 
+                title={title} 
+                completed={completed} 
+                category={category}
+              />
+              
               {description && (
                 <p className={cn(
                   "text-sm",
@@ -160,48 +112,11 @@ export function HabitCard({
                   {description}
                 </p>
               )}
-              {category && (
-                <span 
-                  className="text-xs px-2 py-1 rounded-full inline-flex items-center mt-2" 
-                  style={{ 
-                    backgroundColor: `${category.color}30`,
-                    color: category.color
-                  }}
-                >
-                  <LucideIcon className="h-3 w-3 mr-1" />
-                  {category.name}
-                </span>
-              )}
+              
+              <CategoryTag category={category} />
             </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-white/60 hover:text-red-400 hover:bg-red-400/10 rounded-full"
-                >
-                  <Trash2 className="h-5 w-5" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete your habit
-                    and remove it from our servers.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={onDelete}
-                    className="bg-red-500 hover:bg-red-600"
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            
+            <DeleteButton onDelete={onDelete} />
           </div>
           
           <div className="flex-grow"></div>
@@ -209,55 +124,25 @@ export function HabitCard({
           <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-2">
               {streak > 0 && (
-                <motion.div 
-                  className="flex items-center space-x-1 text-purple-300 bg-purple-400/10 px-2 py-1 rounded-full"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  {getStreakIcon(streak)}
-                  <span className="font-medium text-white/90 text-sm">{streak} day streak!</span>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <StreakBadge streak={streak} />
                 </motion.div>
               )}
-              {streak_broken && last_streak && last_streak > 0 && (
-                <div className="flex items-center space-x-1 text-yellow-300 bg-yellow-400/10 px-2 py-1 rounded-full">
-                  <AlertCircle className="h-4 w-4" />
-                  <span className="font-medium text-white/90 text-sm">Start again!</span>
-                </div>
-              )}
+              
+              <StreakBrokenBadge 
+                isVisible={!!streak_broken && !!last_streak && last_streak > 0} 
+              />
             </div>
-            <Button
-              onClick={onToggle}
-              variant={completed ? "success" : "outline"}
-              size="sm"
-              className={cn(
-                "transition-all duration-300",
-                completed 
-                  ? "bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white border-none" 
-                  : "bg-transparent border-white/20 text-white hover:bg-white/10"
-              )}
-            >
-              {completed ? (
-                <div className="flex items-center space-x-1">
-                  <CheckCircle className="h-4 w-4 mr-1" />
-                  <span>Completed</span>
-                </div>
-              ) : (
-                "Complete"
-              )}
-            </Button>
+            
+            <CompleteButton 
+              completed={completed}
+              onToggle={onToggle}
+            />
           </div>
         </div>
         
         {/* Achievement ribbon for streaks */}
-        {streak >= 7 && (
-          <div className={cn(
-            "absolute -right-12 top-6 text-white px-12 py-1 rotate-45 transform text-sm font-semibold shadow-lg",
-            streak >= 30 ? "bg-gradient-to-r from-amber-500 to-yellow-500" :
-            streak >= 14 ? "bg-gradient-to-r from-indigo-500 to-blue-500" :
-            "bg-gradient-to-r from-purple-500 to-indigo-500"
-          )}>
-            {streak >= 30 ? "Master!" : streak >= 14 ? "Expert!" : "Champion!"}
-          </div>
-        )}
+        <StreakRibbon streak={streak} />
       </Card>
     </motion.div>
   );
