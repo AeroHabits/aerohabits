@@ -29,8 +29,8 @@ const getNetworkQuality = (): 'good' | 'poor' | 'offline' => {
 
 export function useHabits() {
   const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
-  const { deleteHabit, toggleHabit, addHabit } = useHabitOperations();
-  const { debouncedSync, isOnline, isSyncing } = useOfflineSync();
+  const { deleteHabit, toggleHabit, addHabit, isOnline } = useHabitOperations();
+  const { debouncedSync, isSyncing } = useOfflineSync();
   const { loadOfflineHabits, saveOfflineHabits, IMPORTANCE_LEVELS } = useLocalStorage();
   const [networkQuality, setNetworkQuality] = useState<'good' | 'poor' | 'offline'>(getNetworkQuality());
   const [lastSyncTime, setLastSyncTime] = useState<number | null>(null);
@@ -167,7 +167,7 @@ export function useHabits() {
     refetch,
     isFetching,
     isOnline,
-    networkQuality,  // Expose network quality to UI for potential indicators
-    isSyncing        // Expose sync status for UI indicators
+    networkQuality,
+    isSyncing
   };
 }
