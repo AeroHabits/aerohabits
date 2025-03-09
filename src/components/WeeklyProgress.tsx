@@ -4,11 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { BarChart3, Trophy, Flame, Star, Rocket, Calendar, Check, Sparkles } from "lucide-react";
-import { format, subDays, startOfDay, endOfDay, startOfWeek, isWithinInterval } from "date-fns";
+import { format, subDays, startOfDay, endOfDay, startOfWeek, isWithinInterval, parseISO, isSameDay } from "date-fns";
 import { Progress } from "./ui/progress";
+import { Habit } from "@/types";
 
 export function WeeklyProgress() {
-  const { data: habits } = useQuery({
+  const { data: habits = [] } = useQuery({
     queryKey: ["habits"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -17,7 +18,7 @@ export function WeeklyProgress() {
         .order("created_at", { ascending: false });
       
       if (error) throw error;
-      return data;
+      return data || [];
     },
   });
 
@@ -30,18 +31,33 @@ export function WeeklyProgress() {
     const dayStart = startOfDay(date);
     const dayEnd = endOfDay(date);
     
-    // Filter habits for this day
-    const dayHabits = habits?.filter(habit => {
-      const habitDate = new Date(habit.updated_at);
-      return isWithinInterval(habitDate, { start: dayStart, end: dayEnd });
-    }) || [];
+    // Filter habits for this day's completion status
+    // A habit is considered completed for a day if:
+    // 1. It was marked as completed (habit.completed = true)
+    // 2. The habit was marked completed on that specific day (based on updated_at)
+    const completedHabitsForDay = habits.filter((habit: Habit) => {
+      if (!habit.completed && !wasCompletedOnDay(habit, dayStart)) {
+        return false;
+      }
+      
+      const habitUpdateDate = parseISO(habit.updated_at);
+      
+      // Check if the habit was completed on this specific day
+      // or is currently completed and was last updated on this day
+      return habit.completed && isSameDay(habitUpdateDate, date) || 
+             wasCompletedOnDay(habit, dayStart);
+    });
     
-    const completed = dayHabits.filter(habit => habit.completed).length;
-    const total = dayHabits.length;
+    // Count all habits as the "total" for the day
+    const totalHabitsForDay = habits.length;
+    
+    // Calculate percentage
+    const percentage = totalHabitsForDay > 0 
+      ? Math.round((completedHabitsForDay.length / totalHabitsForDay) * 100) 
+      : 0;
     
     // Find emoji for each day
     const getEmoji = () => {
-      const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
       if (percentage >= 80) return "🔥";
       if (percentage >= 50) return "⭐";
       if (percentage > 0) return "📈";
@@ -52,13 +68,24 @@ export function WeeklyProgress() {
       day: format(date, 'EEEE'),
       shortDay: format(date, 'EEE'),
       date: format(date, 'MMM d'),
-      completed,
-      total,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
+      completed: completedHabitsForDay.length,
+      total: totalHabitsForDay,
+      percentage,
       emoji: getEmoji(),
       isToday: format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
     };
   });
+
+  // Helper function to check if a habit was completed on a specific day
+  function wasCompletedOnDay(habit: Habit, day: Date): boolean {
+    // If the habit doesn't have an updated_at date, it can't have been completed on any day
+    if (!habit.updated_at) return false;
+    
+    const habitDate = parseISO(habit.updated_at);
+    
+    // Check if the habit's update date (when it was completed) is on the same day
+    return isSameDay(habitDate, day) && habit.completed;
+  }
 
   // Calculate weekly totals
   const totalCompleted = weeklyData.reduce((sum, day) => sum + day.completed, 0);
