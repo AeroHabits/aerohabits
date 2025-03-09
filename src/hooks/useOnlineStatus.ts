@@ -16,6 +16,9 @@ const PING_ENDPOINTS = [
   'https://www.fastly.com',
 ];
 
+// Detect if we're running on iOS - used to optimize battery usage
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+
 export interface ConnectionStatus {
   isOnline: boolean;
   latency: number | null;
@@ -243,14 +246,16 @@ export function useOnlineStatus() {
     }
   }, [isOnline, pingEndpoint, pingHistory, calculateReliability, trackError, connectionDetails.quality]);
 
-  // Set up the connection quality check interval with reduced frequency
+  // Set up the connection quality check interval with reduced frequency for iOS
   useEffect(() => {
     // Initial check
     checkConnectionQuality();
     
-    // Adaptive check frequency - more frequent when on poor connections
-    // But much less frequent overall to reduce network load
-    let checkInterval = connectionDetails.quality === 'poor' ? 60000 : 120000; // 1 or 2 minutes
+    // Adaptive check frequency - even less frequent on iOS to preserve battery
+    // Much less frequent overall to reduce network load
+    let checkInterval = isIOS 
+      ? (connectionDetails.quality === 'poor' ? 120000 : 180000) // 2 or 3 minutes on iOS
+      : (connectionDetails.quality === 'poor' ? 60000 : 120000); // 1 or 2 minutes on other platforms
     
     const intervalId = setInterval(() => {
       if (isOnline) {
