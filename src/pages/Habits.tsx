@@ -97,12 +97,12 @@ const Habits = () => {
               Build consistency by tracking your daily habits and watching your streaks grow
             </p>
 
-            {/* Improved Reset Habits button */}
+            {/* Updated Reset Habits button with more visible colors */}
             <div className="mt-4">
               <Button 
-                variant="outline" 
+                variant="glass" 
                 size="sm" 
-                className="bg-transparent text-blue-300 border-blue-500/50 hover:bg-blue-500/10 transition-all duration-300"
+                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium shadow-md border-orange-400/30 hover:border-orange-400/50 hover:shadow-lg"
                 onClick={handleResetHabits}
                 disabled={isResetting}
               >
