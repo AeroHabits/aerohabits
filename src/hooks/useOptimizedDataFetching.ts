@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { useQuery, QueryFunction, UseQueryOptions } from "@tanstack/react-query";
 import { useNetworkQuality } from "./useNetworkQuality";
@@ -83,14 +82,12 @@ export function useOptimizedDataFetching<T>({
   
   // The optimized query function
   const optimizedQueryFn = useCallback(async () => {
-    // For cache-only, don't even try network
     if (cachePolicy === 'cache-only') {
       const cached = getCachedData();
       if (cached) return cached;
       throw new Error('No cached data available and cache-only policy is set');
     }
     
-    // For offline mode with network-first or network-only, use cache or throw if no cache
     if (!isOnline && (cachePolicy === 'network-first' || cachePolicy === 'network-only')) {
       const cached = getCachedData();
       if (cached) return cached;
@@ -99,25 +96,20 @@ export function useOptimizedDataFetching<T>({
       }
     }
     
-    // Normal flow - try network
     try {
-      // Add performance measurement for development
       const startTime = performance.now();
       const result = await queryFn();
       const endTime = performance.now();
       
-      // Log performance in development
       if (process.env.NODE_ENV === 'development') {
         console.log(`Query ${queryKey.join(',')} took ${(endTime - startTime).toFixed(2)}ms`);
       }
       
-      // Save successful result to cache
       saveDataToCache(result);
       return result;
     } catch (error) {
       console.error(`Error fetching data for ${queryKey.join(',')}: `, error);
       
-      // On error, try to fall back to cache
       if (cachePolicy !== 'network-only') {
         const cached = getCachedData();
         if (cached) {
@@ -126,44 +118,32 @@ export function useOptimizedDataFetching<T>({
         }
       }
       
-      // No fallback available
       throw error;
     }
   }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey]);
   
-  // Setup the optimized React Query hook
   const queryResult = useQuery({
     queryKey,
     queryFn: optimizedQueryFn,
     staleTime: computeStaleTime(),
-    placeholderData: prepareInitialData() as any, // Fixed to resolve type issue
+    placeholderData: prepareInitialData() as any,
     retry: (failureCount, error) => {
-      // Don't retry on offline if we already returned cached data
       if (!isOnline && getCachedData()) return false;
-      
-      // Don't retry more than configured amount
       if (failureCount >= retryCount) return false;
-      
-      // On mobile with poor network, limit retries to reduce battery usage
-      if (isNative && networkQuality === 'poor' && failureCount >= 1) {
-        return false;
-      }
-      
+      if (isNative && networkQuality === 'poor' && failureCount >= 1) return false;
       return true;
     },
-    retryDelay: attempt => Math.min(1000 * Math.pow(2, attempt), 30000), // Exponential backoff with max 30 sec
-    refetchOnWindowFocus: networkQuality === 'good' && !isNative, // Only refetch on focus for good connections and not on mobile
-    refetchInterval: false, // We'll manage our own refetch strategy
+    retryDelay: attempt => Math.min(1000 * Math.pow(2, attempt), 30000),
+    refetchOnWindowFocus: networkQuality === 'good' && !isNative,
+    refetchInterval: false
   });
   
-  // Effect to mark first load as complete
   useEffect(() => {
     if (queryResult.isSuccess && isFirstLoad) {
       setIsFirstLoad(false);
     }
   }, [queryResult.isSuccess, isFirstLoad]);
   
-  // Effect to retry on network reconnection if we have errors
   useEffect(() => {
     if (isOnline && queryResult.isError && !queryResult.isFetching) {
       queryResult.refetch();
