@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +16,7 @@ import { cn } from "./lib/utils";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import { NetworkStatusIndicator } from "./components/NetworkStatusIndicator";
 import { TrialNotificationBanner } from "./components/TrialNotificationBanner";
+import { NetworkRecoveryHandler } from "./components/NetworkRecoveryHandler";
 
 // Initialize Sentry
 Sentry.init({
@@ -33,9 +35,15 @@ Sentry.init({
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: 3, // Increase retry count for network resilience
+      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000), // Exponential backoff with max 30 second delay
       staleTime: 30000,
       refetchOnWindowFocus: false,
+      // Add these options for better error handling
+      onError: (error) => {
+        console.error("Query error:", error);
+        Sentry.captureException(error);
+      }
     },
   },
 });
@@ -79,6 +87,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <Footer />
       <BottomNav />
       <NetworkStatusIndicator />
+      <NetworkRecoveryHandler />
     </div>
   );
 };
