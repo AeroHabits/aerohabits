@@ -82,7 +82,7 @@ export function OptimizedHabitList() {
   // Optimized habit operations with better error handling
   const handleToggleHabit = useCallback(async (id: string) => {
     try {
-      await toggleHabit(id, habits);
+      await toggleHabit(id, habits as Habit[]);
       refetchOptimized();
     } catch (error) {
       console.error("Error toggling habit:", error);
@@ -181,12 +181,12 @@ export function OptimizedHabitList() {
   }
   
   // Show empty state if no habits are found and not loading
-  if (habits.length === 0 && !isLoading && !isError) {
+  if ((habits as Habit[]).length === 0 && !isLoading && !isError) {
     return <HabitListEmpty onAddHabit={handleAddHabit} />;
   }
   
   // Show error state
-  if (isError && habits.length === 0) {
+  if (isError && (habits as Habit[]).length === 0) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
@@ -260,7 +260,7 @@ export function OptimizedHabitList() {
 
       <div className="space-y-6">
         <HabitListContent 
-          habits={habits} 
+          habits={habits as Habit[]} 
           onToggle={handleToggleHabit} 
           onDelete={handleDeleteHabit} 
           setHabitToDelete={setHabitToDelete} 

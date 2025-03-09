@@ -9,7 +9,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { useChallenges } from "@/hooks/useChallenges";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Challenge } from "@/types";
+import { Challenge, Profile } from "@/types";
 import { useNetworkQuality } from "@/hooks/useNetworkQuality";
 import { Button } from "@/components/ui/button";
 import { RefreshCw, AlertCircle, WifiOff } from "lucide-react";
@@ -65,7 +65,8 @@ export function ChallengeListContainer() {
 
   const handleJoinChallenge = async (challengeId: string) => {
     try {
-      const challenge = challenges?.find(c => c.id === challengeId);
+      const challengeArray = challenges as Challenge[] || [];
+      const challenge = challengeArray.find(c => c.id === challengeId);
       if (!challenge) return;
   
       const { data: { user } } = await supabase.auth.getUser();
@@ -131,15 +132,15 @@ export function ChallengeListContainer() {
     }
   };
 
-  const filteredChallenges = challenges?.filter(challenge => 
+  const filteredChallenges = ((challenges as Challenge[]) || []).filter(challenge => 
     challenge.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
-  )?.sort((a, b) => (a.sequence_order || 0) - (b.sequence_order || 0)) as Challenge[] | undefined;
+  )?.sort((a, b) => (a.sequence_order || 0) - (b.sequence_order || 0));
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  if (isError && (!challenges || challenges.length === 0)) {
+  if (isError && (!challenges || (challenges as Challenge[]).length === 0)) {
     return (
       <div className="flex flex-col items-center justify-center p-8 text-center">
         <AlertCircle className="h-12 w-12 text-red-500 mb-4" />
@@ -199,7 +200,7 @@ export function ChallengeListContainer() {
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <ChallengeDifficultyTabs 
           onDifficultyChange={setSelectedDifficulty}
-          currentDifficulty={userProfile?.current_difficulty as "easy" | "medium" | "hard" | "master" || 'easy'}
+          currentDifficulty={(userProfile as Profile)?.current_difficulty as "easy" | "medium" | "hard" | "master" || 'easy'}
           canAccessMaster={canAccessMaster}
         />
       </motion.div>
@@ -207,9 +208,9 @@ export function ChallengeListContainer() {
       <motion.div variants={{ hidden: { opacity: 0, y: 20 }, show: { opacity: 1, y: 0 } }}>
         <ChallengeGrid 
           challenges={filteredChallenges || []}
-          userChallenges={userChallenges || []}
+          userChallenges={(userChallenges as string[]) || []}
           onJoinChallenge={handleJoinChallenge}
-          userPoints={userProfile?.total_points || 0}
+          userPoints={(userProfile as Profile)?.total_points || 0}
           canAccessDifficulty={canAccessSelected}
           currentChallengeId={currentChallengeId}
         />

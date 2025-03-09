@@ -3,11 +3,12 @@ import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useOptimizedDataFetching } from "./useOptimizedDataFetching";
+import { Challenge, Profile } from "@/types";
 
 export function useChallenges() {
   const queryClient = useQueryClient();
 
-  const { data: userProfile } = useOptimizedDataFetching({
+  const { data: userProfile } = useOptimizedDataFetching<Profile | null>({
     queryKey: ["user-profile"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -31,7 +32,7 @@ export function useChallenges() {
     isLoading,
     isError,
     refetchOptimized: refetchChallenges
-  } = useOptimizedDataFetching({
+  } = useOptimizedDataFetching<Challenge[]>({
     queryKey: ["challenges"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -58,7 +59,7 @@ export function useChallenges() {
     criticalData: true
   });
 
-  const { data: userChallenges } = useOptimizedDataFetching({
+  const { data: userChallenges } = useOptimizedDataFetching<string[]>({
     queryKey: ["user-challenges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
