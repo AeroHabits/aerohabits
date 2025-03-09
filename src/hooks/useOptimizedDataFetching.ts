@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useCallback } from "react";
-import { useQuery, QueryFunction } from "@tanstack/react-query";
+import { useQuery, QueryFunction, UseQueryOptions } from "@tanstack/react-query";
 import { useNetworkQuality } from "./useNetworkQuality";
 import { useLocalStorage } from "./useLocalStorage";
 import { Capacitor } from '@capacitor/core';
@@ -136,7 +136,7 @@ export function useOptimizedDataFetching<T>({
     queryKey,
     queryFn: optimizedQueryFn,
     staleTime: computeStaleTime(),
-    placeholderData: prepareInitialData(),
+    placeholderData: prepareInitialData() as any, // Fixed to resolve type issue
     retry: (failureCount, error) => {
       // Don't retry on offline if we already returned cached data
       if (!isOnline && getCachedData()) return false;
