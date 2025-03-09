@@ -39,10 +39,12 @@ const queryClient = new QueryClient({
       retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000), // Exponential backoff with max 30 second delay
       staleTime: 30000,
       refetchOnWindowFocus: false,
-      // Add these options for better error handling
-      onError: (error) => {
-        console.error("Query error:", error);
-        Sentry.captureException(error);
+      // Update error handling to use the correct format in latest React Query
+      meta: {
+        errorHandler: (error: Error) => {
+          console.error("Query error:", error);
+          Sentry.captureException(error);
+        }
       }
     },
   },
