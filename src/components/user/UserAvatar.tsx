@@ -13,11 +13,14 @@ interface UserAvatarProps {
 }
 
 export function UserAvatar({ user, profile }: UserAvatarProps) {
-  const initials = profile?.full_name
-    ?.split(" ")
+  // Handle case where profile might be null
+  const name = profile?.full_name || user.email || '';
+  
+  const initials = name
+    .split(" ")
     .map((n) => n[0])
     .join("")
-    .toUpperCase() || user.email?.[0].toUpperCase() || "?";
+    .toUpperCase() || "?";
 
   return (
     <motion.div

@@ -19,7 +19,7 @@ export function UserMenu() {
     avatar_url: string | null;
     total_points: number;
   } | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { trackError } = useErrorTracking();
 
@@ -37,7 +37,12 @@ export function UserMenu() {
         return;
       }
 
-      setProfile(data);
+      // Ensure we have default values for the profile
+      setProfile({
+        full_name: data?.full_name || 'User',
+        avatar_url: data?.avatar_url || null,
+        total_points: data?.total_points || 0
+      });
     } catch (error) {
       console.error("Exception in fetchProfile:", error);
       trackError(error as Error, "fetchProfile.exception", { severity: "medium" });

@@ -1,3 +1,4 @@
+
 import { User } from "@supabase/supabase-js";
 import { ProfileEditor } from "./ProfileEditor";
 import { useState } from "react";
@@ -5,7 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 
-type Profile = { full_name: string; avatar_url: string | null } | null;
+type Profile = { full_name: string; avatar_url: string | null; total_points: number } | null;
 
 interface UserProfileProps {
   user: User;
@@ -20,26 +21,36 @@ export function UserProfile({ user, profile, setProfile }: UserProfileProps) {
   const handleUpdateName = async (newName: string) => {
     if (!user) return;
 
-    const { error } = await supabase
-      .from("profiles")
-      .update({ full_name: newName })
-      .eq("id", user.id);
+    try {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ full_name: newName })
+        .eq("id", user.id);
 
-    if (error) {
+      if (error) {
+        console.error("Error updating profile:", error);
+        toast({
+          title: "Error",
+          description: "Failed to update name",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      setProfile(prev => prev ? { ...prev, full_name: newName } : { full_name: newName, avatar_url: null, total_points: 0 });
+      setIsEditing(false);
+      toast({
+        title: "Success",
+        description: "Name updated successfully",
+      });
+    } catch (error) {
+      console.error("Exception updating profile:", error);
       toast({
         title: "Error",
-        description: "Failed to update name",
+        description: "An unexpected error occurred",
         variant: "destructive",
       });
-      return;
     }
-
-    setProfile(prev => prev ? { ...prev, full_name: newName } : null);
-    setIsEditing(false);
-    toast({
-      title: "Success",
-      description: "Name updated successfully",
-    });
   };
 
   return (
