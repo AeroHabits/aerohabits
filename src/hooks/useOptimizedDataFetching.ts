@@ -58,8 +58,8 @@ export function useOptimizedDataFetching<T>({
   const getCachedData = useCallback(() => {
     const storageKey = `query_${queryKey.join('_')}`;
     const importance = criticalData ? IMPORTANCE_LEVELS.CRITICAL : IMPORTANCE_LEVELS.NORMAL;
-    // Fix #1: Explicitly pass the generic type parameter to loadFromStorage
-    return loadFromStorage<T>(storageKey, importance);
+    // Fix #1: Pass undefined as the second argument to loadFromStorage
+    return loadFromStorage<T>(storageKey, importance, undefined);
   }, [queryKey, criticalData, loadFromStorage, IMPORTANCE_LEVELS]);
   
   // Save data to cache
@@ -124,19 +124,17 @@ export function useOptimizedDataFetching<T>({
     }
   }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey]);
   
-  // Fix #2: Handle placeholder data correctly for use in useQuery
-  // Create a proper placeholder data function that conforms to the expected type
+  // Fix #2: Properly implement placeholderData for useQuery
+  // Using a more compatible way to provide placeholder data
   const getPlaceholderData = useCallback(() => {
-    const data = prepareInitialData();
-    return data;
+    return prepareInitialData();
   }, [prepareInitialData]);
-  
-  const queryResult = useQuery({
+
+  // Fix type error by using the correct approach for placeholderData
+  const queryOptions: UseQueryOptions<T, Error, T, string[]> = {
     queryKey,
     queryFn: optimizedQueryFn,
     staleTime: computeStaleTime(),
-    // Fix #2: Use the correct format for placeholderData that satisfies the type constraints
-    placeholderData: getPlaceholderData,
     retry: (failureCount, error) => {
       if (!isOnline && getCachedData()) return false;
       if (failureCount >= retryCount) return false;
@@ -146,7 +144,15 @@ export function useOptimizedDataFetching<T>({
     retryDelay: attempt => Math.min(1000 * Math.pow(2, attempt), 30000),
     refetchOnWindowFocus: networkQuality === 'good' && !isNative,
     refetchInterval: false
-  });
+  };
+  
+  // Only add placeholderData if we have something to provide
+  const initialValue = prepareInitialData();
+  if (initialValue !== undefined) {
+    queryOptions.placeholderData = initialValue;
+  }
+  
+  const queryResult = useQuery(queryOptions);
   
   useEffect(() => {
     if (queryResult.isSuccess && isFirstLoad) {

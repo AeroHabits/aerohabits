@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Habit, Goal, Challenge } from "@/types";
 
@@ -81,7 +82,8 @@ export function useLocalStorage() {
     cleanupCache();
   }
 
-  const loadFromStorage = <T>(key: string, importance: number = IMPORTANCE_LEVELS.NORMAL): T | null => {
+  // Modified to accept an optional third parameter for compatibility
+  const loadFromStorage = <T>(key: string, importance: number = IMPORTANCE_LEVELS.NORMAL, _unused?: any): T | null => {
     const stored = localStorage.getItem(key);
     if (!stored) return null;
     
