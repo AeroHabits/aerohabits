@@ -58,7 +58,7 @@ export function useOptimizedDataFetching<T>({
   const getCachedData = useCallback(() => {
     const storageKey = `query_${queryKey.join('_')}`;
     const importance = criticalData ? IMPORTANCE_LEVELS.CRITICAL : IMPORTANCE_LEVELS.NORMAL;
-    // Fix #1: Pass undefined as the second argument to loadFromStorage
+    // Fix: Pass undefined as the third parameter to match the function signature
     return loadFromStorage<T>(storageKey, importance, undefined);
   }, [queryKey, criticalData, loadFromStorage, IMPORTANCE_LEVELS]);
   
@@ -124,13 +124,12 @@ export function useOptimizedDataFetching<T>({
     }
   }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey]);
   
-  // Fix #2: Properly implement placeholderData for useQuery
-  // Using a more compatible way to provide placeholder data
+  // Create a proper placeholder data function that conforms to React Query's expected type
   const getPlaceholderData = useCallback(() => {
     return prepareInitialData();
   }, [prepareInitialData]);
 
-  // Fix type error by using the correct approach for placeholderData
+  // Fix: Create query options with correct typing for placeholderData
   const queryOptions: UseQueryOptions<T, Error, T, string[]> = {
     queryKey,
     queryFn: optimizedQueryFn,
@@ -146,10 +145,10 @@ export function useOptimizedDataFetching<T>({
     refetchInterval: false
   };
   
-  // Only add placeholderData if we have something to provide
-  const initialValue = prepareInitialData();
-  if (initialValue !== undefined) {
-    queryOptions.placeholderData = initialValue;
+  // Fix: Instead of directly assigning the value to placeholderData,
+  // use the getPlaceholderData function which matches the expected type
+  if (prepareInitialData() !== undefined) {
+    queryOptions.placeholderData = getPlaceholderData;
   }
   
   const queryResult = useQuery(queryOptions);
