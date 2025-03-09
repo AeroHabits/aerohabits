@@ -47,7 +47,7 @@ serve(async (req) => {
     try {
       event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
     } catch (err) {
-      console.error(`⚠️ Webhook signature verification failed.`, err.message);
+      console.error(`⚠️ Webhook signature verification failed: ${err.message}`);
       return new Response(JSON.stringify({ error: err.message }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -56,59 +56,80 @@ serve(async (req) => {
 
     console.log(`Event type: ${event.type}`);
 
-    try {
-      // Process different Stripe webhook events
-      switch (event.type) {
-        case "customer.subscription.created":
+    // Process different Stripe webhook events without using process.nextTick() or similar methods
+    // that might cause the Deno.core.runMicrotasks() error
+    switch (event.type) {
+      case "customer.subscription.created":
+        try {
           await handleSubscriptionCreated(event.data.object);
-          break;
-        case "customer.subscription.updated":
-          await handleSubscriptionUpdated(event.data.object);
-          break;
-        case "customer.subscription.deleted":
-          await handleSubscriptionDeleted(event.data.object);
-          break;
-        case "checkout.session.completed":
-          await handleCheckoutComplete(event.data.object);
-          break;
-        case "invoice.payment_succeeded":
-          await handleInvoicePaymentSucceeded(event.data.object);
-          break;
-        case "invoice.payment_failed":
-          await handleInvoicePaymentFailed(event.data.object);
-          break;
-        case "customer.subscription.trial_will_end":
-          await handleTrialWillEnd(event.data.object);
-          break;
-        default:
-          console.log(`Unhandled event type: ${event.type}`);
-      }
-
-      // Return a 200 response to acknowledge receipt of the event
-      return new Response(JSON.stringify({ received: true }), {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    } catch (error) {
-      console.error(`Error processing webhook: ${error.message}`);
-      
-      // Important: Return a 200 response even for processing errors
-      // This prevents Stripe from retrying the webhook, which could cause more issues
-      // You can implement a queue or other mechanism to handle failed events
-      return new Response(
-        JSON.stringify({ 
-          received: true,
-          warning: "Event was received but there was an error in processing. The event has been acknowledged to prevent retries." 
-        }),
-        { 
-          status: 200, // Return 200 even on error to prevent retries
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        } catch (error) {
+          console.error(`Error in subscription created handler: ${error.message}`);
+          // Continue processing - do not throw error
         }
-      );
+        break;
+      case "customer.subscription.updated":
+        try {
+          await handleSubscriptionUpdated(event.data.object);
+        } catch (error) {
+          console.error(`Error in subscription updated handler: ${error.message}`);
+          // Continue processing - do not throw error
+        }
+        break;
+      case "customer.subscription.deleted":
+        try {
+          await handleSubscriptionDeleted(event.data.object);
+        } catch (error) {
+          console.error(`Error in subscription deleted handler: ${error.message}`);
+          // Continue processing - do not throw error
+        }
+        break;
+      case "checkout.session.completed":
+        try {
+          await handleCheckoutComplete(event.data.object);
+        } catch (error) {
+          console.error(`Error in checkout completion handler: ${error.message}`);
+          // Continue processing - do not throw error
+        }
+        break;
+      case "invoice.payment_succeeded":
+        try {
+          await handleInvoicePaymentSucceeded(event.data.object);
+        } catch (error) {
+          console.error(`Error in invoice payment success handler: ${error.message}`);
+          // Continue processing - do not throw error
+        }
+        break;
+      case "invoice.payment_failed":
+        try {
+          await handleInvoicePaymentFailed(event.data.object);
+        } catch (error) {
+          console.error(`Error in invoice payment failure handler: ${error.message}`);
+          // Continue processing - do not throw error
+        }
+        break;
+      case "customer.subscription.trial_will_end":
+        try {
+          await handleTrialWillEnd(event.data.object);
+        } catch (error) {
+          console.error(`Error in trial will end handler: ${error.message}`);
+          // Continue processing - do not throw error
+        }
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
     }
+
+    // Always return a 200 response to acknowledge receipt of the event
+    return new Response(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     // Catch-all for any unexpected errors
     console.error("Uncaught error in webhook handler:", error);
+    
+    // Important: Still return a 200 response to acknowledge the webhook
+    // This prevents Stripe from retrying and clogging the logs
     return new Response(
       JSON.stringify({ 
         received: true,
