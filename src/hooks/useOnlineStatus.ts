@@ -9,7 +9,7 @@ const LATENCY_THRESHOLDS = {
   ACCEPTABLE: 500 // Under 500ms is acceptable, over is poor
 };
 
-// Sample endpoints to ping for connection testing
+// Sample endpoints to ping for connection testing - using reliable CDNs
 const PING_ENDPOINTS = [
   'https://www.google.com',
   'https://www.cloudflare.com',
@@ -93,7 +93,7 @@ export function useOnlineStatus() {
   // Enhanced ping function with error handling and timeout
   const pingEndpoint = useCallback(async (endpoint: string): Promise<number | null> => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000); // 3s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout - increased from 3s
     
     try {
       const startTime = performance.now();
@@ -112,8 +112,12 @@ export function useOnlineStatus() {
       
       // Only track errors that aren't aborts
       if (error instanceof DOMException && error.name === 'AbortError') {
+        console.log(`Ping to ${endpoint} timed out`);
         return null;
       }
+      
+      // Don't log these as errors, just as info
+      console.log(`Failed to ping ${endpoint}:`, error);
       
       trackError(
         error instanceof Error ? error : new Error('Unknown ping error'),
@@ -125,7 +129,7 @@ export function useOnlineStatus() {
     }
   }, [trackError]);
   
-  // Comprehensive network quality check
+  // Comprehensive network quality check with better error handling
   const checkConnectionQuality = useCallback(async () => {
     if (!isOnline) return;
     
@@ -143,7 +147,11 @@ export function useOnlineStatus() {
       const latencies: number[] = [];
       const pingResults: Array<{ success: boolean; timestamp: number }> = [];
       
-      for (const endpoint of PING_ENDPOINTS) {
+      // Only try to ping one endpoint at a time to reduce network load
+      const randomEndpointIndex = Math.floor(Math.random() * PING_ENDPOINTS.length);
+      const endpoint = PING_ENDPOINTS[randomEndpointIndex];
+      
+      try {
         const latency = await pingEndpoint(endpoint);
         
         if (latency !== null) {
@@ -152,13 +160,16 @@ export function useOnlineStatus() {
         } else {
           pingResults.push({ success: false, timestamp: Date.now() });
         }
+      } catch (error) {
+        console.log(`Error pinging ${endpoint}:`, error);
+        pingResults.push({ success: false, timestamp: Date.now() });
       }
       
       // Update ping history
       setPingHistory(prev => {
         const newHistory = [...prev, ...pingResults];
-        // Limit history size to last 100 pings
-        return newHistory.slice(-100);
+        // Limit history size to last 20 pings (reduced from 100)
+        return newHistory.slice(-20);
       });
       
       // If we have latency measurements, determine quality
@@ -223,6 +234,7 @@ export function useOnlineStatus() {
         }
       }
     } catch (error) {
+      console.log("Network check error:", error);
       trackError(
         error instanceof Error ? error : new Error('Network check error'),
         'checkConnectionQuality',
@@ -231,28 +243,18 @@ export function useOnlineStatus() {
     }
   }, [isOnline, pingEndpoint, pingHistory, calculateReliability, trackError, connectionDetails.quality]);
 
-  // Set up the connection quality check interval
+  // Set up the connection quality check interval with reduced frequency
   useEffect(() => {
     // Initial check
     checkConnectionQuality();
     
     // Adaptive check frequency - more frequent when on poor connections
-    let checkInterval = connectionDetails.quality === 'poor' ? 15000 : 30000;
+    // But much less frequent overall to reduce network load
+    let checkInterval = connectionDetails.quality === 'poor' ? 60000 : 120000; // 1 or 2 minutes
     
     const intervalId = setInterval(() => {
       if (isOnline) {
         checkConnectionQuality();
-        
-        // Adjust check frequency based on connection quality
-        if (connectionDetails.quality === 'poor' && checkInterval !== 15000) {
-          clearInterval(intervalId);
-          checkInterval = 15000;
-          setInterval(checkConnectionQuality, checkInterval);
-        } else if (connectionDetails.quality !== 'poor' && checkInterval !== 30000) {
-          clearInterval(intervalId);
-          checkInterval = 30000;
-          setInterval(checkConnectionQuality, checkInterval);
-        }
       }
     }, checkInterval);
 
