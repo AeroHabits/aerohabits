@@ -47,6 +47,8 @@ export function useChallenges() {
       
       return data.map(challenge => ({
         ...challenge,
+        // Ensure difficulty is cast to the proper union type
+        difficulty: challenge.difficulty as "easy" | "medium" | "hard" | "master",
         milestones: Array.isArray(challenge.milestones) 
           ? challenge.milestones 
           : challenge.milestones 
