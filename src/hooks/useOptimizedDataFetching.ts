@@ -123,11 +123,13 @@ export function useOptimizedDataFetching<T>({
     }
   }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey]);
   
+  const initialDataValue = prepareInitialData();
+  
   const queryResult = useQuery({
     queryKey,
     queryFn: optimizedQueryFn,
     staleTime: computeStaleTime(),
-    placeholderData: prepareInitialData(),
+    placeholderData: typeof initialDataValue !== 'undefined' ? () => initialDataValue : undefined,
     retry: (failureCount, error) => {
       if (!isOnline && getCachedData()) return false;
       if (failureCount >= retryCount) return false;
