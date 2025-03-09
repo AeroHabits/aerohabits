@@ -127,7 +127,7 @@ export function useOptimizedDataFetching<T>({
     queryKey,
     queryFn: optimizedQueryFn,
     staleTime: computeStaleTime(),
-    placeholderData: prepareInitialData() as any,
+    placeholderData: prepareInitialData(),
     retry: (failureCount, error) => {
       if (!isOnline && getCachedData()) return false;
       if (failureCount >= retryCount) return false;
@@ -159,4 +159,3 @@ export function useOptimizedDataFetching<T>({
     refetchOptimized: queryResult.refetch
   };
 }
-
