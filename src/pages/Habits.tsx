@@ -1,5 +1,5 @@
 
-import { HabitList } from "@/components/HabitList";
+import { OptimizedHabitList } from "@/components/OptimizedHabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -111,7 +111,7 @@ const Habits = () => {
               </Button>
             </div>
           </div>
-          <HabitList />
+          <OptimizedHabitList />
         </motion.div>
       </motion.div>
     </div>;
