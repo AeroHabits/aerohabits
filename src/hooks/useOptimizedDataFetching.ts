@@ -58,7 +58,7 @@ export function useOptimizedDataFetching<T>({
   const getCachedData = useCallback(() => {
     const storageKey = `query_${queryKey.join('_')}`;
     const importance = criticalData ? IMPORTANCE_LEVELS.CRITICAL : IMPORTANCE_LEVELS.NORMAL;
-    return loadFromStorage(storageKey, importance);
+    return loadFromStorage<T>(storageKey, importance);
   }, [queryKey, criticalData, loadFromStorage, IMPORTANCE_LEVELS]);
   
   // Save data to cache
@@ -159,3 +159,4 @@ export function useOptimizedDataFetching<T>({
     refetchOptimized: queryResult.refetch
   };
 }
+
