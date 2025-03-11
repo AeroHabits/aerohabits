@@ -66,7 +66,7 @@ export function useOptimizedDataFetching<T>({
   
   // Add placeholder or initial data if needed
   if (placeholderData !== undefined || initialData !== undefined) {
-    queryOptions.placeholderData = () => prepareInitialData() as NonFunctionGuard<T>;
+    queryOptions.placeholderData = prepareInitialData();
   }
   
   const queryResult = useQuery<T, Error, T, string[]>(queryOptions);
