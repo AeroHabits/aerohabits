@@ -32,7 +32,6 @@ export function generateWeeklyData(habits: Habit[]): DayData[] {
   // Generate data for each day of the current week (Monday to Sunday)
   return Array.from({ length: 7 }, (_, index) => {
     // Calculate the date for each day of the week
-    // For index 6, that's Sunday which is weekStart + 6 days
     const date = new Date(weekStart);
     date.setDate(weekStart.getDate() + index);
     
@@ -40,18 +39,14 @@ export function generateWeeklyData(habits: Habit[]): DayData[] {
     const dayEnd = endOfDay(date);
     
     // Filter habits for this day's completion status
-    const completedHabitsForDay = habits.filter((habit: Habit) => {
-      if (!habit.completed && !wasCompletedOnDay(habit, dayStart)) {
-        return false;
-      }
-      
-      // Only process habits that have updated_at date
+    const completedHabitsForDay = habits.filter(habit => {
+      // First check if the habit has an updated_at date
       if (!habit.updated_at) return false;
       
       const habitUpdateDate = parseISO(habit.updated_at);
       
       // Check if the habit was completed on this specific day
-      return isSameDay(habitUpdateDate, date);
+      return isSameDay(habitUpdateDate, date) && habit.completed;
     });
     
     // Count all habits as the "total" for the day

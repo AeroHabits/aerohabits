@@ -1,112 +1,168 @@
+import {
+  useQuery,
+  QueryFunction,
+  useQueryClient,
+  QueryKey,
+} from "@tanstack/react-query";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useNetworkQuality } from "../useNetworkQuality";
+import { useIsOnline } from "../useIsOnline";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { useQuery, QueryFunction, UseQueryOptions } from "@tanstack/react-query";
-import { Capacitor } from '@capacitor/core';
-import { useCachePolicy, CachePolicy } from "./useCachePolicy";
-import { useCacheOperations } from "./useCacheOperations";
-import { useOptimizedQueryFn } from "./useOptimizedQueryFn";
-import { useRetryStrategy } from "./useRetryStrategy";
+type NonFunctionGuard<T> = T extends Function ? never : T;
 
-interface OptimizedQueryOptions<T> {
-  queryKey: string[];
-  queryFn: QueryFunction<T>;
-  cachePolicy?: CachePolicy;
-  staleTime?: number;
-  retryCount?: number;
-  placeholderData?: T;
-  criticalData?: boolean;
-  initialData?: T;
+// Custom hook to generate optimized query function based on cache policy
+function useOptimizedQueryFn<T>({
+  queryFn,
+  cachePolicy,
+  networkTimeout,
+  isOnline
+}: {
+  queryFn: QueryFunction<T, string[]>;
+  cachePolicy: 'cache-first' | 'network-first' | 'network-only';
+  networkTimeout: number;
+  isOnline: boolean;
+}) {
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+  const queryClient = useQueryClient();
+
+  return useMemo(() => {
+    const optimizedQueryFn: QueryFunction<T, string[]> = async (context) => {
+      return new Promise(async (resolve, reject) => {
+        let timeout = false;
+
+        // Start network timeout timer
+        if (cachePolicy !== 'cache-first') {
+          timeoutIdRef.current = setTimeout(() => {
+            timeout = true;
+            console.warn(`Network request timed out after ${networkTimeout}ms`);
+            reject(new Error('Network timeout'));
+          }, networkTimeout);
+        }
+
+        try {
+          const result = await queryFn(context);
+          if (!timeout) {
+            clearTimeout(timeoutIdRef.current!);
+            resolve(result);
+          }
+        } catch (error) {
+          if (!timeout) {
+            clearTimeout(timeoutIdRef.current!);
+            reject(error);
+          }
+        }
+      });
+    };
+    return optimizedQueryFn;
+  }, [queryFn, cachePolicy, networkTimeout]);
+}
+
+// Custom hook to determine retry strategy based on network and data importance
+function useRetryStrategy({
+  retryCount,
+  networkQuality,
+  isOnline,
+  criticalData
+}: {
+  retryCount: number;
+  networkQuality: string;
+  isOnline: boolean;
+  criticalData: boolean;
+}) {
+  return useCallback((failureCount: number, error: any): boolean => {
+    if (!isOnline) return false;
+    if (criticalData && failureCount < 1) return true;
+    if (networkQuality === 'poor' && failureCount > 1) return false;
+    return failureCount < retryCount;
+  }, [retryCount, networkQuality, isOnline, criticalData]);
 }
 
 export function useOptimizedDataFetching<T>({
   queryKey,
   queryFn,
-  cachePolicy = 'network-first',
-  staleTime,
-  retryCount = 3,
-  placeholderData,
   criticalData = false,
-  initialData
-}: OptimizedQueryOptions<T>) {
-  const { getCachedData, saveDataToCache } = useCacheOperations<T>({ queryKey, criticalData });
-  const { networkQuality, isOnline, computeStaleTime } = useCachePolicy({ cachePolicy, staleTime });
-  const optimizedQueryFn = useOptimizedQueryFn<T>({ queryKey, queryFn, cachePolicy, criticalData });
-  const { retryStrategy, retryDelay, shouldRefetchOnWindowFocus } = useRetryStrategy({ 
-    retryCount, 
-    getCachedData 
+  staleTime = 300000, // 5 minutes
+  cachePolicy = 'cache-first',
+  retryCount = 2,
+  networkTimeout = 10000,
+  suspense = false,
+  enabled = true,
+  onSuccess,
+  onError,
+}: {
+  queryKey: string[];
+  queryFn: QueryFunction<T, string[]>;
+  criticalData?: boolean;
+  staleTime?: number;
+  cachePolicy?: 'cache-first' | 'network-first' | 'network-only';
+  retryCount?: number;
+  networkTimeout?: number;
+  suspense?: boolean;
+  enabled?: boolean;
+  onSuccess?: (data: T) => void;
+  onError?: (error: Error) => void;
+}) {
+  const queryClient = useQueryClient();
+  const { networkQuality } = useNetworkQuality();
+  const isOnline = useIsOnline();
+
+  // Get optimized query configuration
+  const queryConfig = useOptimizedQueryFn<T>({
+    queryFn,
+    cachePolicy,
+    networkTimeout,
+    isOnline: navigator.onLine && isOnline
   });
-  
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const [lastSuccessfulFetch, setLastSuccessfulFetch] = useState<number | null>(null);
-  const isNative = Capacitor.isNativePlatform();
-  const initialFetchTimeRef = useRef<number>(Date.now());
-  
-  // Prepare initial data from cache if appropriate
-  const prepareInitialData = useCallback((): T | undefined => {
-    if (initialData) return initialData;
+
+  // Calculate stale time based on network quality and cache policy
+  const optimizedStaleTime = useMemo(() => {
+    if (cachePolicy === 'network-only') return 0;
+    if (!isOnline) return Infinity;
     
-    if (cachePolicy === 'cache-first' || cachePolicy === 'cache-only') {
-      const cached = getCachedData();
-      if (cached) return cached;
+    switch (networkQuality) {
+      case 'poor': return staleTime * 3; // Extend stale time for poor connection
+      case 'fair': return staleTime * 1.5;
+      case 'good': return staleTime;
+      default: return staleTime;
     }
-    
-    return placeholderData;
-  }, [cachePolicy, getCachedData, initialData, placeholderData]);
-  
-  // Create query options with correct typing
-  const queryOptions: UseQueryOptions<T, Error, T, string[]> = {
-    queryKey,
-    queryFn: optimizedQueryFn,
-    staleTime: computeStaleTime(),
-    retry: retryStrategy,
-    retryDelay: retryDelay,
-    refetchOnWindowFocus: shouldRefetchOnWindowFocus,
-    refetchInterval: false
-  };
-  
-  // Add placeholder or initial data if needed
-  if (placeholderData !== undefined || initialData !== undefined) {
-    // Using a function for placeholderData to avoid type errors
-    // React Query v5 is more strict about typing here
-    queryOptions.placeholderData = prepareInitialData;
-  }
-  
-  const queryResult = useQuery<T, Error, T, string[]>(queryOptions);
-  
-  useEffect(() => {
-    if (queryResult.isSuccess && isFirstLoad) {
-      setIsFirstLoad(false);
-    }
-    
-    if (queryResult.isSuccess) {
-      setLastSuccessfulFetch(Date.now());
-    }
-  }, [queryResult.isSuccess, isFirstLoad]);
-  
-  useEffect(() => {
-    // Only attempt reconnection refetch if we've been online for at least 3 seconds
-    // and the page has been loaded for more than 5 seconds
-    const now = Date.now();
-    if (
-      isOnline && 
-      queryResult.isError && 
-      !queryResult.isFetching &&
-      now - initialFetchTimeRef.current > 5000
-    ) {
-      // Use a small delay before attempting to refetch
-      const timer = setTimeout(() => {
-        queryResult.refetch();
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [isOnline, queryResult]);
-  
-  return {
-    ...queryResult,
-    isInitialLoading: isFirstLoad && queryResult.isLoading,
+  }, [staleTime, networkQuality, cachePolicy, isOnline]);
+
+  // Configure retry strategy
+  const retryStrategy = useRetryStrategy({
+    retryCount,
     networkQuality,
     isOnline,
-    refetchOptimized: queryResult.refetch
+    criticalData
+  });
+
+  // Use the query
+  const result = useQuery<T, Error, NonFunctionGuard<T>, string[]>({
+    queryKey,
+    ...queryConfig,
+    staleTime: optimizedStaleTime,
+    placeholderData: (previousData: T | undefined) => previousData as NonFunctionGuard<T> | undefined,
+    retry: retryStrategy,
+    suspense,
+    enabled: enabled && (cachePolicy !== 'network-only' || isOnline),
+    refetchOnWindowFocus: networkQuality !== 'poor',
+    refetchOnReconnect: true,
+    onSuccess,
+    onError,
+  });
+
+  // Custom refetch function to bypass cache if needed
+  const refetchOptimized = useCallback(async () => {
+    try {
+      await result.refetch();
+    } catch (error) {
+      console.error("Refetch failed:", error);
+    }
+  }, [result.refetch]);
+
+  return {
+    ...result,
+    networkQuality,
+    isOnline,
+    refetchOptimized
   };
 }
