@@ -168,7 +168,7 @@ export function useOptimizedDataFetching<T>({
   const initialDataValue = prepareInitialData();
   if (initialDataValue !== undefined) {
     // Use the function to satisfy TypeScript's requirements
-    queryOptions.placeholderData = getPlaceholderDataFn as any;
+    queryOptions.placeholderData = getPlaceholderDataFn;
   }
   
   const queryResult = useQuery(queryOptions);

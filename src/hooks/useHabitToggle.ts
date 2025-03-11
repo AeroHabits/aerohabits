@@ -1,7 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { toast } from "sonner";
+import { toast as sonnerToast } from "sonner";
 import { Habit } from "@/types";
 import { isToday, isYesterday, startOfDay, isSameDay, subDays } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
@@ -47,7 +47,7 @@ export function useHabitToggle() {
       const actionLabel = !habit.completed ? 'completed' : 'uncompleted';
       
       // Use Sonner toast for better performance 
-      toast.success(`Habit ${actionLabel}`, {
+      sonnerToast.success(`Habit ${actionLabel}`, {
         description: !habit.completed 
           ? `Great job! ${updatedHabit.streak > 1 ? `Streak: ${updatedHabit.streak} days` : ''}` 
           : "You can always try again tomorrow"
@@ -86,7 +86,7 @@ export function useHabitToggle() {
           if (error) {
             console.error('Error in background habit update:', error);
             // Revert optimistic update if network request fails
-            toast.error("Failed to save habit status");
+            sonnerToast.error("Failed to save habit status");
           }
           setPendingToggles(prev => {
             const newState = { ...prev };
