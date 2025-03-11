@@ -13,10 +13,8 @@
   "dependencies": {
     "@analytics/google-analytics": "^1.1.0",
     "@capacitor/android": "^7.0.1",
-    "@capacitor/app": "^7.0.0",
-    "@capacitor/browser": "^5.2.0",
     "@capacitor/cli": "^7.0.1",
-    "@capacitor/core": "^5.7.0",
+    "@capacitor/core": "^7.0.1",
     "@capacitor/ios": "^7.0.1",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",

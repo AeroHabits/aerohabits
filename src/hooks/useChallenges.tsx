@@ -1,48 +1,28 @@
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useOptimizedDataFetching } from "./useOptimizedDataFetching";
-import { Challenge, Profile } from "@/types";
 
 export function useChallenges() {
   const queryClient = useQueryClient();
 
-  const { data: userProfile } = useOptimizedDataFetching<Profile | null>({
+  const { data: userProfile } = useQuery({
     queryKey: ["user-profile"],
     queryFn: async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return null;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return null;
 
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
+      const { data } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .single();
 
-        if (error) {
-          console.error("Error fetching profile:", error);
-          return null;
-        }
-
-        return data;
-      } catch (error) {
-        console.error("Failed to fetch user profile:", error);
-        return null;
-      }
+      return data;
     },
-    cachePolicy: 'cache-first',
-    staleTime: 300000, // 5 minutes
-    criticalData: true
   });
 
-  const { 
-    data: challenges, 
-    isLoading,
-    isError,
-    refetchOptimized: refetchChallenges
-  } = useOptimizedDataFetching<Challenge[]>({
+  const { data: challenges, isLoading } = useQuery({
     queryKey: ["challenges"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -57,8 +37,6 @@ export function useChallenges() {
       
       return data.map(challenge => ({
         ...challenge,
-        // Ensure difficulty is cast to the proper union type
-        difficulty: challenge.difficulty as "easy" | "medium" | "hard" | "master",
         milestones: Array.isArray(challenge.milestones) 
           ? challenge.milestones 
           : challenge.milestones 
@@ -66,12 +44,9 @@ export function useChallenges() {
             : []
       }));
     },
-    cachePolicy: 'network-first',
-    staleTime: 300000, // 5 minutes
-    criticalData: true
   });
 
-  const { data: userChallenges } = useOptimizedDataFetching<string[]>({
+  const { data: userChallenges } = useQuery({
     queryKey: ["user-challenges"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -85,12 +60,10 @@ export function useChallenges() {
       if (error) throw error;
       return data.map(uc => uc.challenge_id);
     },
-    cachePolicy: 'cache-first',
-    staleTime: 300000 // 5 minutes
   });
 
-  const joinChallengeMutation = async (challengeId: string) => {
-    try {
+  const joinChallengeMutation = useMutation({
+    mutationFn: async (challengeId: string) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Not authenticated");
 
@@ -102,25 +75,21 @@ export function useChallenges() {
         });
 
       if (error) throw error;
-      
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user-challenges"] });
       toast.success("Successfully joined the challenge! Let's crush this goal together! 💪");
-      
-      return true;
-    } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : "Failed to join the challenge";
-      toast.error(errorMsg);
-      return false;
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to join the challenge");
     }
-  };
+  });
 
   return {
     userProfile,
     challenges,
     userChallenges,
     isLoading,
-    isError,
-    joinChallengeMutation,
-    refetchChallenges
+    joinChallengeMutation
   };
 }

@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useOnlineStatus } from "./useOnlineStatus";
 
 // Network quality types
@@ -7,15 +7,13 @@ export type NetworkQuality = 'good' | 'poor' | 'offline';
 
 // Constants for better stale time management
 export const STALE_TIME = {
-  DEFAULT: 60000,          // 1 minute (increased from 30 seconds)
-  EXTENDED: 10 * 60 * 1000 // 10 minutes when network is slow/unstable (increased from 5 minutes)
+  DEFAULT: 30000,         // 30 seconds
+  EXTENDED: 5 * 60 * 1000 // 5 minutes when network is slow/unstable
 };
 
 export function useNetworkQuality() {
   const isOnline = useOnlineStatus();
   const [networkQuality, setNetworkQuality] = useState<NetworkQuality>(getNetworkQuality());
-  const lastQualityCheckTime = useRef<number>(Date.now());
-  const checkIntervalRef = useRef<number | null>(null);
 
   // Get network quality
   function getNetworkQuality(): NetworkQuality {
@@ -32,49 +30,25 @@ export function useNetworkQuality() {
     return 'good';
   }
 
-  // Update network quality when online status changes - with throttling
+  // Update network quality when online status changes
   useEffect(() => {
-    // Only update if it's been more than 10 seconds since last check
-    const now = Date.now();
-    if (now - lastQualityCheckTime.current > 10000) {
+    setNetworkQuality(getNetworkQuality());
+    
+    // Setup periodic network quality check
+    const intervalId = setInterval(() => {
       setNetworkQuality(getNetworkQuality());
-      lastQualityCheckTime.current = now;
-    }
+    }, 30000); // Check every 30 seconds
     
-    // Cleanup previous interval if exists
-    if (checkIntervalRef.current) {
-      clearInterval(checkIntervalRef.current);
-    }
-    
-    // Setup periodic network quality check with adaptive frequency
-    // Based on current quality and platform
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    const intervalTime = isIOS 
-      ? (networkQuality === 'good' ? 120000 : 180000) // 2-3 minutes on iOS to save battery
-      : (networkQuality === 'good' ? 60000 : 90000);  // 1-1.5 minutes on other platforms
-      
-    checkIntervalRef.current = window.setInterval(() => {
-      if (isOnline) {
-        setNetworkQuality(getNetworkQuality());
-        lastQualityCheckTime.current = Date.now();
-      }
-    }, intervalTime);
-    
-    return () => {
-      if (checkIntervalRef.current) {
-        clearInterval(checkIntervalRef.current);
-        checkIntervalRef.current = null;
-      }
-    };
-  }, [isOnline, networkQuality]);
+    return () => clearInterval(intervalId);
+  }, [isOnline]);
 
   // Determine appropriate stale time based on network conditions
-  const getStaleTime = useCallback(() => {
+  const getStaleTime = () => {
     if (networkQuality === 'poor') {
       return STALE_TIME.EXTENDED;
     }
     return STALE_TIME.DEFAULT;
-  }, [networkQuality]);
+  };
 
   return {
     networkQuality,
@@ -83,8 +57,8 @@ export function useNetworkQuality() {
     shouldSkipNetworkRequest: (lastSyncTime: number | null) => {
       if (!isOnline) return true;
       
-      // If network is poor and we have recent data (extended to 30 minutes), use cache
-      if (networkQuality === 'poor' && lastSyncTime && (Date.now() - lastSyncTime < 30 * 60 * 1000)) {
+      // If network is poor and we have recent data (within 15 minutes), use cache
+      if (networkQuality === 'poor' && lastSyncTime && (Date.now() - lastSyncTime < 15 * 60 * 1000)) {
         return true;
       }
       

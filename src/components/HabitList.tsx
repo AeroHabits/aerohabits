@@ -9,7 +9,7 @@ import { Loader2, WifiOff, RefreshCw } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
+import { Button } from "./ui/button";
 export function HabitList() {
   const {
     habits,
@@ -69,7 +69,9 @@ export function HabitList() {
     touchStartY = 0;
     pullDistance = 0;
   };
-  
+  const handleRefresh = () => {
+    refetch();
+  };
   if (isLoading) {
     return <HabitListLoading />;
   }
@@ -126,7 +128,17 @@ export function HabitList() {
       </AnimatePresence>
 
       <div className="space-y-6">
-        {/* Removed the Refresh button from here */}
+        <div className="flex justify-end mb-4">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="bg-transparent text-blue-300 border-blue-500/50 hover:bg-blue-500/10"
+            onClick={handleRefresh}
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
         
         <HabitListContent habits={habits} onToggle={toggleHabit} onDelete={deleteHabit} setHabitToDelete={setHabitToDelete} />
 

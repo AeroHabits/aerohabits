@@ -1,5 +1,5 @@
 
-import { OptimizedHabitList } from "@/components/OptimizedHabitList";
+import { HabitList } from "@/components/HabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -10,33 +10,23 @@ import { RefreshCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
-import { useHabits } from "@/hooks/useHabits";
-
 const Habits = () => {
   const isMobile = useIsMobile();
   const [isResetting, setIsResetting] = useState(false);
-  const { refetch } = useHabits();
-
   const handleResetHabits = async () => {
     try {
       setIsResetting(true);
-      const { data, error } = await supabase.functions.invoke('reset-habits');
-      
-      if (error) {
-        console.error("Error resetting habits:", error);
-        toast.error("Failed to reset habits", {
-          description: "There was a problem resetting your habits. Please try again."
-        });
-        return;
-      }
-      
+      const {
+        data,
+        error
+      } = await supabase.functions.invoke('reset-habits');
+      if (error) throw error;
       toast.success("Habits reset successfully", {
         description: `${data.count || 0} habits were reset to uncompleted status while preserving streaks.`
       });
 
-      // Refresh the habits list to show updated state
-      await refetch();
-      
+      // Force refresh the habits list
+      window.location.reload();
     } catch (error) {
       console.error("Error resetting habits:", error);
       toast.error("Failed to reset habits");
@@ -44,7 +34,6 @@ const Habits = () => {
       setIsResetting(false);
     }
   };
-
   return <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
       {/* Enhanced background effects */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20">
@@ -97,21 +86,21 @@ const Habits = () => {
               Build consistency by tracking your daily habits and watching your streaks grow
             </p>
 
-            {/* Updated Reset Habits button with more visible colors */}
+            {/* Add Reset Habits button */}
             <div className="mt-4">
               <Button 
-                variant="glass" 
+                variant="outline" 
                 size="sm" 
-                className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-medium shadow-md border-orange-400/30 hover:border-orange-400/50 hover:shadow-lg"
+                className="bg-transparent text-blue-300 border-blue-500/50 hover:bg-blue-500/10"
                 onClick={handleResetHabits}
                 disabled={isResetting}
               >
-                <RefreshCcw className={cn("h-4 w-4 mr-2", isResetting && "animate-spin")} />
+                <RefreshCcw className="h-4 w-4 mr-2" />
                 {isResetting ? "Resetting..." : "Reset Habits for New Day"}
               </Button>
             </div>
           </div>
-          <OptimizedHabitList />
+          <HabitList />
         </motion.div>
       </motion.div>
     </div>;

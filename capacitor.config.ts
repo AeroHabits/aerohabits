@@ -37,13 +37,6 @@ const config: CapacitorConfig = {
       backgroundColor: '#ffffff',
       overlaysWebView: true
     },
-    // Configure web view settings
-    webView: {
-      allowingReadAccessTo: '*',  // Allow access to all domains
-      allowsBackForwardNavigationGestures: true,
-      allowsLinkPreview: true,
-      ignoresViewportScaleLimits: false
-    },
     // Configure splash screen
     splash: {
       backgroundColor: '#ffffff',
@@ -83,14 +76,6 @@ const config: CapacitorConfig = {
       targetSdkVersion: 33, // Android 13
       resizeableActivity: true,
       useLegacyPackaging: false,
-    }
-  },
-  plugins: {
-    // Configure Browser plugin
-    Browser: {
-      presentationStyle: 'popover',
-      toolbarColor: '#333333',
-      browserCloseButtonCaption: 'Done'
     }
   }
 };

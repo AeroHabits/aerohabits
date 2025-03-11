@@ -9,116 +9,69 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { toast } from "sonner";
-import { useErrorTracking } from "@/hooks/useErrorTracking";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [sessionCheckComplete, setSessionCheckComplete] = useState(false);
   const [searchParams] = useSearchParams();
   const isReset = searchParams.get("reset") === "true";
   const navigate = useNavigate();
   const location = useLocation();
-  const { trackError } = useErrorTracking();
-  const sessionRetryParam = searchParams.get("retry");
 
   // Check if user is already authenticated
   useEffect(() => {
-    let isMounted = true;
-    
     const checkAuthStatus = async () => {
       try {
-        // If we have a retry parameter, clear local storage session data to force a fresh auth check
-        if (sessionRetryParam) {
-          console.log("Session retry requested, clearing local storage session data");
-          localStorage.removeItem('supabase.auth.token');
-          localStorage.removeItem('supabase.auth.expires_at');
-        }
-        
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error("Error checking session:", error);
-          trackError(error, "auth.getSession", { severity: "high" });
-          if (isMounted) setSessionCheckComplete(true);
-          return;
-        }
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (session) {
           console.log("User already authenticated, redirecting");
           
-          try {
-            // Check if user needs to complete onboarding
-            const { data: { user } } = await supabase.auth.getUser();
-            
-            if (user) {
-              // Check if user has completed the quiz
-              const { data: quizResponses, error: quizError } = await supabase
-                .from('user_quiz_responses')
-                .select('id')
-                .eq('user_id', user.id)
-                .maybeSingle();
-                
-              if (quizError) {
-                console.error("Error checking quiz responses:", quizError);
-                trackError(quizError, "quizResponses.select", { severity: "medium" });
-              }
-                
-              // Check subscription status
-              const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('is_subscribed, subscription_status')
-                .eq('id', user.id)
-                .maybeSingle();
-                
-              if (profileError) {
-                console.error("Error checking profile:", profileError);
-                trackError(profileError, "profile.select", { severity: "medium" });
-              }
-                
-              const hasCompletedQuiz = !!quizResponses;
-              const hasActiveSubscription = profile?.is_subscribed || 
-                ['active', 'trialing'].includes(profile?.subscription_status || '');
+          // Check if user needs to complete onboarding
+          const { data: { user } } = await supabase.auth.getUser();
+          
+          if (user) {
+            // Check if user has completed the quiz
+            const { data: quizResponses } = await supabase
+              .from('user_quiz_responses')
+              .select('id')
+              .eq('user_id', user.id)
+              .maybeSingle();
               
-              if (!hasCompletedQuiz) {
-                // User hasn't completed onboarding quiz
-                navigate("/onboarding");
-              } else if (!hasActiveSubscription) {
-                // User has completed quiz but doesn't have active subscription
-                navigate("/premium");
-              } else {
-                // If user has completed onboarding and has subscription
-                // Redirect to the page they were trying to access or home
-                const from = location.state?.from?.pathname || "/";
-                navigate(from);
-              }
-            } else {
-              navigate("/");
-            }
-          } catch (error) {
-            console.error("Error processing authenticated user:", error);
-            trackError(error as Error, "processAuthenticatedUser", { severity: "high" });
+            // Check subscription status
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('is_subscribed, subscription_status')
+              .eq('id', user.id)
+              .maybeSingle();
+              
+            const hasCompletedQuiz = !!quizResponses;
+            const hasActiveSubscription = profile?.is_subscribed || 
+              ['active', 'trialing'].includes(profile?.subscription_status || '');
             
-            // Still consider the user authenticated if we have their session
+            if (!hasCompletedQuiz) {
+              // User hasn't completed onboarding quiz
+              navigate("/onboarding");
+            } else if (!hasActiveSubscription) {
+              // User has completed quiz but doesn't have active subscription
+              navigate("/premium");
+            } else {
+              // If user has completed onboarding and has subscription
+              // Redirect to the page they were trying to access or home
+              const from = location.state?.from?.pathname || "/";
+              navigate(from);
+            }
+          } else {
             navigate("/");
           }
-        } else {
-          console.log("No active session found, showing auth page");
         }
       } catch (error) {
         console.error("Error checking auth status:", error);
-        trackError(error as Error, "checkAuthStatus", { severity: "high" });
-      } finally {
-        if (isMounted) setSessionCheckComplete(true);
       }
     };
     
     checkAuthStatus();
-    
-    return () => {
-      isMounted = false;
-    };
-  }, [navigate, location, sessionRetryParam, trackError]);
+  }, [navigate, location]);
 
   const sendWelcomeEmail = async (userId: string) => {
     try {
@@ -129,13 +82,11 @@ const Auth = () => {
       
       if (error) {
         console.error("Failed to send welcome email:", error);
-        trackError(error, "sendWelcomeEmail", { severity: "medium" });
       } else {
         console.log("Welcome email sent successfully");
       }
     } catch (err) {
       console.error("Error invoking welcome email function:", err);
-      trackError(err as Error, "sendWelcomeEmail.invoke", { severity: "medium" });
     }
   };
 
@@ -151,52 +102,31 @@ const Auth = () => {
           await sendWelcomeEmail(session.user.id);
         }
         
-        try {
-          // Check if user needs to complete onboarding
-          const { data: quizResponses, error: quizError } = await supabase
-            .from('user_quiz_responses')
-            .select('id')
-            .eq('user_id', session.user.id)
-            .maybeSingle();
-            
-          if (quizError) {
-            console.error("Error checking quiz responses:", quizError);
-            trackError(quizError, "quizResponses.select", { severity: "medium" });
-          }
-            
-          // Check subscription status
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('is_subscribed, subscription_status')
-            .eq('id', session.user.id)
-            .maybeSingle();
-            
-          if (profileError) {
-            console.error("Error checking profile:", profileError);
-            trackError(profileError, "profile.select", { severity: "medium" });
-          }
-            
-          const hasCompletedQuiz = !!quizResponses;
-          const hasActiveSubscription = profile?.is_subscribed || 
-            ['active', 'trialing'].includes(profile?.subscription_status || '');
+        // Check if user needs to complete onboarding
+        const { data: quizResponses } = await supabase
+          .from('user_quiz_responses')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .maybeSingle();
           
-          if (!hasCompletedQuiz && !hasActiveSubscription) {
-            console.log("User needs to complete onboarding, redirecting");
-            navigate("/onboarding");
-          } else if (!hasActiveSubscription) {
-            console.log("User needs subscription, redirecting");
-            navigate("/premium");
-          } else {
-            // Redirect to the page the user was trying to access or home
-            const from = location.state?.from?.pathname || "/";
-            navigate(from);
-          }
-        } catch (error) {
-          console.error("Error processing auth state change:", error);
-          trackError(error as Error, "authStateChange.process", { severity: "high" });
+        // Check subscription status
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('is_subscribed, subscription_status')
+          .eq('id', session.user.id)
+          .maybeSingle();
           
-          // Default action - go to home page
-          navigate('/');
+        const hasCompletedQuiz = !!quizResponses;
+        const hasActiveSubscription = profile?.is_subscribed || 
+          ['active', 'trialing'].includes(profile?.subscription_status || '');
+        
+        if (!hasCompletedQuiz && !hasActiveSubscription) {
+          console.log("User needs to complete onboarding, redirecting");
+          navigate("/onboarding");
+        } else {
+          // Redirect to the page the user was trying to access or home
+          const from = location.state?.from?.pathname || "/";
+          navigate(from);
         }
       }
     });
@@ -204,19 +134,7 @@ const Auth = () => {
     return () => {
       authListener?.subscription.unsubscribe();
     };
-  }, [navigate, location, trackError]);
-
-  // Show loading state before session check completes
-  if (!sessionCheckComplete) {
-    return (
-      <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 shadow-lg border border-white/20 text-center">
-          <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-400 mx-auto mb-4"></div>
-          <p className="text-white font-medium">Checking authentication...</p>
-        </div>
-      </div>
-    );
-  }
+  }, [navigate, location]);
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">

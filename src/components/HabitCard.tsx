@@ -28,7 +28,6 @@ interface HabitCardProps {
   };
   onToggle: () => void;
   onDelete: () => void;
-  isPending?: boolean;
 }
 
 // Function to get a fun background gradient based on streak
@@ -53,7 +52,6 @@ export function HabitCard({
   category,
   onToggle,
   onDelete,
-  isPending = false,
 }: HabitCardProps) {
   // Show toast when streak is broken
   if (streak_broken && last_streak && last_streak > 0) {
@@ -139,7 +137,6 @@ export function HabitCard({
             <CompleteButton 
               completed={completed}
               onToggle={onToggle}
-              isPending={isPending}
             />
           </div>
         </div>
