@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useQuery, QueryFunction, UseQueryOptions, PlaceholderDataFunction } from "@tanstack/react-query";
+import { useQuery, QueryFunction, UseQueryOptions } from "@tanstack/react-query";
 import { Capacitor } from '@capacitor/core';
 import { useCachePolicy, CachePolicy } from "./useCachePolicy";
 import { useCacheOperations } from "./useCacheOperations";
@@ -64,9 +64,11 @@ export function useOptimizedDataFetching<T>({
     refetchInterval: false
   };
   
-  // Add placeholder or initial data if needed - using a placeholder data function to ensure type compatibility
+  // Add placeholder or initial data if needed
   if (placeholderData !== undefined || initialData !== undefined) {
-    queryOptions.placeholderData = () => prepareInitialData();
+    // Using a function for placeholderData to avoid type errors
+    // React Query v5 is more strict about typing here
+    queryOptions.placeholderData = prepareInitialData;
   }
   
   const queryResult = useQuery<T, Error, T, string[]>(queryOptions);

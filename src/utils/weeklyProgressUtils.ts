@@ -26,12 +26,16 @@ export function wasCompletedOnDay(habit: Habit, day: Date): boolean {
 
 // Generate data for the weekly progress
 export function generateWeeklyData(habits: Habit[]): DayData[] {
-  // Get the start of the current week
+  // Get the start of the current week (Monday)
   const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start from Monday
-
-  // Generate data for the current week
+  
+  // Generate data for each day of the current week (Monday to Sunday)
   return Array.from({ length: 7 }, (_, index) => {
-    const date = subDays(new Date(), 6 - index);
+    // Calculate the date for each day of the week
+    // For index 6, that's Sunday which is weekStart + 6 days
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + index);
+    
     const dayStart = startOfDay(date);
     const dayEnd = endOfDay(date);
     
@@ -41,12 +45,13 @@ export function generateWeeklyData(habits: Habit[]): DayData[] {
         return false;
       }
       
+      // Only process habits that have updated_at date
+      if (!habit.updated_at) return false;
+      
       const habitUpdateDate = parseISO(habit.updated_at);
       
       // Check if the habit was completed on this specific day
-      // or is currently completed and was last updated on this day
-      return habit.completed && isSameDay(habitUpdateDate, date) || 
-             wasCompletedOnDay(habit, dayStart);
+      return isSameDay(habitUpdateDate, date);
     });
     
     // Count all habits as the "total" for the day
@@ -65,6 +70,9 @@ export function generateWeeklyData(habits: Habit[]): DayData[] {
       return "🎯";
     };
     
+    // Check if this is today
+    const isToday = isSameDay(date, new Date());
+    
     return {
       day: format(date, 'EEEE'),
       shortDay: format(date, 'EEE'),
@@ -73,7 +81,7 @@ export function generateWeeklyData(habits: Habit[]): DayData[] {
       total: totalHabitsForDay,
       percentage,
       emoji: getEmoji(),
-      isToday: format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+      isToday
     };
   });
 }

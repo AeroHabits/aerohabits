@@ -47,7 +47,7 @@ export function useOptimizedQueryFn<T>({
     try {
       // Measure performance
       const startTime = performance.now();
-      // Pass an empty object to the queryFn since it expects a QueryFunctionContext parameter
+      // Pass an empty object to queryFn as a minimal context
       const result = await queryFn({} as any);
       const endTime = performance.now();
       
@@ -76,7 +76,6 @@ export function useOptimizedQueryFn<T>({
     cachePolicy, 
     isOnline, 
     getCachedData,
-
     saveDataToCache, 
     queryKey, 
     shouldUseCacheOnly, 
