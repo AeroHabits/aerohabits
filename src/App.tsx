@@ -9,7 +9,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
 import { BottomNav } from "./components/layout/BottomNav";
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, memo, lazy, Suspense } from "react";
 import { trackPageView, initAnalytics } from "./lib/analytics";
 import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
@@ -44,15 +44,20 @@ Sentry.init({
   }
 });
 
-// Create query client with platform-optimized settings
+// Create query client with optimized settings for better performance
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 3, // Increase retry count for network resilience
-      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000), // Exponential backoff with max 30 second delay
-      staleTime: isNative ? 60000 : 30000, // Longer stale time on mobile to reduce network requests
-      refetchOnWindowFocus: !isNative, // Disable refetch on focus for mobile to save battery
-      // Update error handling to use the correct format in latest React Query
+      retry: 2, // Reduced from 3 to minimize unnecessary retries
+      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000),
+      // Significantly increased stale time to reduce unnecessary refetches
+      staleTime: isNative ? 300000 : 180000, // 5 min on mobile, 3 min on web
+      // Disable automatic background refetching
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: 'always',
+      refetchOnMount: false,
+      // Improved caching policy
+      gcTime: 24 * 60 * 60 * 1000, // Keep cache for 24 hours
       meta: {
         errorHandler: (error: Error) => {
           console.error("Query error:", error);
@@ -63,7 +68,7 @@ const createQueryClient = () => new QueryClient({
   },
 });
 
-// Use lazy initialization for query client
+// Use lazy initialization for query client and prevent recreation on re-renders
 const queryClient = createQueryClient();
 
 // Wrap the app with Sentry's error boundary
@@ -71,7 +76,7 @@ const SentryErrorBoundary = Sentry.withErrorBoundary(ErrorBoundary, {
   showDialog: true,
 });
 
-// Enhanced analytics tracker component
+// Enhanced analytics tracker component with better performance
 const AnalyticsTracker = memo(() => {
   const location = useLocation();
   const isOnline = useOnlineStatus();
@@ -81,20 +86,23 @@ const AnalyticsTracker = memo(() => {
     initAnalytics();
   }, []);
 
-  // Track page views
+  // Track page views - optimized to reduce unnecessary tracking
   useEffect(() => {
-    // Only track page views when online to prevent queueing too many events
     if (isOnline) {
-      trackPageView(location.pathname);
+      const timer = setTimeout(() => {
+        trackPageView(location.pathname);
+      }, 1000); // Debounce to prevent excessive tracking during rapid navigation
+      
+      return () => clearTimeout(timer);
     }
-  }, [location, isOnline]);
+  }, [location.pathname, isOnline]);
 
   return null;
 });
 AnalyticsTracker.displayName = 'AnalyticsTracker';
 
 // Layout component to handle common layout elements
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = memo(({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
   
   return (
@@ -112,7 +120,18 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <NetworkRecoveryHandler />
     </div>
   );
-};
+});
+Layout.displayName = 'Layout';
+
+// Loading fallback component
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-pulse text-center">
+      <div className="h-12 w-12 rounded-full bg-blue-500/20 mx-auto mb-3"></div>
+      <p className="text-blue-500">Loading...</p>
+    </div>
+  </div>
+);
 
 const App = () => {
   // On iOS, disable right-click menu and text selection for app-like feel
@@ -141,7 +160,9 @@ const App = () => {
           <BrowserRouter>
             <AnalyticsTracker />
             <Layout>
-              <AppRoutes />
+              <Suspense fallback={<LoadingFallback />}>
+                <AppRoutes />
+              </Suspense>
             </Layout>
           </BrowserRouter>
         </TooltipProvider>

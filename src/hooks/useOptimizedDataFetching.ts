@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery, QueryFunction, UseQueryOptions } from "@tanstack/react-query";
 import { useNetworkQuality } from "./useNetworkQuality";
 import { useLocalStorage } from "./useLocalStorage";
@@ -33,6 +33,7 @@ export function useOptimizedDataFetching<T>({
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [lastSuccessfulFetch, setLastSuccessfulFetch] = useState<number | null>(null);
   const isNative = Capacitor.isNativePlatform();
+  const initialFetchTimeRef = useRef<number>(Date.now());
   
   // Compute optimized stale time based on platform and network conditions
   const computeStaleTime = useCallback(() => {
@@ -58,7 +59,7 @@ export function useOptimizedDataFetching<T>({
   const getCachedData = useCallback(() => {
     const storageKey = `query_${queryKey.join('_')}`;
     const importance = criticalData ? IMPORTANCE_LEVELS.CRITICAL : IMPORTANCE_LEVELS.NORMAL;
-    // Fix: Pass undefined as the third parameter to match the function signature
+    // Pass undefined as the third parameter to match the function signature
     return loadFromStorage<T>(storageKey, importance, undefined);
   }, [queryKey, criticalData, loadFromStorage, IMPORTANCE_LEVELS]);
   
@@ -82,14 +83,16 @@ export function useOptimizedDataFetching<T>({
     return placeholderData;
   }, [cachePolicy, getCachedData, initialData, placeholderData]);
   
-  // The optimized query function
+  // The optimized query function with better caching behaviors
   const optimizedQueryFn = useCallback(async () => {
+    // If we're in cache-only mode, only use the cache
     if (cachePolicy === 'cache-only') {
       const cached = getCachedData();
       if (cached) return cached;
       throw new Error('No cached data available and cache-only policy is set');
     }
     
+    // For network-first and network-only when offline, attempt to use cache
     if (!isOnline && (cachePolicy === 'network-first' || cachePolicy === 'network-only')) {
       const cached = getCachedData();
       if (cached) return cached;
@@ -98,7 +101,23 @@ export function useOptimizedDataFetching<T>({
       }
     }
     
+    // Performance optimization for rapid successive queries (debounce)
+    const now = Date.now();
+    if (
+      lastSuccessfulFetch && 
+      (now - lastSuccessfulFetch < 2000) && 
+      cachePolicy !== 'network-only'
+    ) {
+      const cached = getCachedData();
+      if (cached) {
+        console.log(`Using cache due to recent fetch for ${queryKey.join(',')}`);
+        return cached;
+      }
+    }
+    
+    // Attempt the network request
     try {
+      // Measure performance
       const startTime = performance.now();
       const result = await queryFn();
       const endTime = performance.now();
@@ -112,6 +131,7 @@ export function useOptimizedDataFetching<T>({
     } catch (error) {
       console.error(`Error fetching data for ${queryKey.join(',')}: `, error);
       
+      // For non-network-only policies, try the cache as fallback
       if (cachePolicy !== 'network-only') {
         const cached = getCachedData();
         if (cached) {
@@ -122,7 +142,7 @@ export function useOptimizedDataFetching<T>({
       
       throw error;
     }
-  }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey]);
+  }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey, lastSuccessfulFetch]);
   
   // Create a proper placeholder data function that conforms to React Query's expected type
   const getPlaceholderData = useCallback(() => {
@@ -160,8 +180,21 @@ export function useOptimizedDataFetching<T>({
   }, [queryResult.isSuccess, isFirstLoad]);
   
   useEffect(() => {
-    if (isOnline && queryResult.isError && !queryResult.isFetching) {
-      queryResult.refetch();
+    // Only attempt reconnection refetch if we've been online for at least 3 seconds
+    // and the page has been loaded for more than 5 seconds
+    const now = Date.now();
+    if (
+      isOnline && 
+      queryResult.isError && 
+      !queryResult.isFetching &&
+      now - initialFetchTimeRef.current > 5000
+    ) {
+      // Use a small delay before attempting to refetch
+      const timer = setTimeout(() => {
+        queryResult.refetch();
+      }, 2000);
+      
+      return () => clearTimeout(timer);
     }
   }, [isOnline, queryResult]);
   

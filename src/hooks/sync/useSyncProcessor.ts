@@ -1,63 +1,97 @@
 
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { BATCH_SIZE, SYNC_QUEUE_KEY } from "./syncTypes";
 import { useSyncRetry } from "./useSyncRetry";
 import { useOnlineStatus } from "../useOnlineStatus";
+import { toast } from "sonner";
 
 export function useSyncProcessor() {
   const [isSyncing, setIsSyncing] = useState(false);
+  const syncInProgressRef = useRef(false);
   const isOnline = useOnlineStatus();
   const { scheduleRetry } = useSyncRetry();
+  const lastSyncTimeRef = useRef<number | null>(null);
 
-  // Process sync queue with batching and prioritization
-  const processSyncQueue = async () => {
-    if (!isOnline || isSyncing) return;
+  // Process sync queue with batching and prioritization - with debouncing
+  const processSyncQueue = useCallback(async () => {
+    // Prevent concurrent sync operations
+    if (syncInProgressRef.current || !isOnline) return;
+    
+    // Rate limiting - don't sync more than once every 30 seconds unless forced
+    const now = Date.now();
+    if (lastSyncTimeRef.current && (now - lastSyncTimeRef.current < 30000)) {
+      return;
+    }
 
     try {
+      syncInProgressRef.current = true;
       setIsSyncing(true);
+      lastSyncTimeRef.current = now;
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Get queue items from both Supabase and local storage
-      const { data: queueItems } = await supabase
-        .from('habit_sync_queue')
-        .select('*')
-        .is('synced_at', null)
-        .order('created_at', { ascending: true })
-        .limit(BATCH_SIZE);
-
-      let localQueue = JSON.parse(localStorage.getItem(SYNC_QUEUE_KEY) || '[]');
+      // Get queue items from local storage first - more efficient
+      let localQueue = [];
+      try {
+        const queueJson = localStorage.getItem(SYNC_QUEUE_KEY);
+        localQueue = queueJson ? JSON.parse(queueJson) : [];
+      } catch (error) {
+        console.error("Error parsing sync queue:", error);
+        localQueue = [];
+      }
       
-      if (!queueItems?.length && !localQueue.length) return;
-
-      // Combine and sort by priority (higher first) then by timestamp
-      const allItems = [...(queueItems || []), ...localQueue]
-        .sort((a, b) => {
-          // Sort by priority first (high to low)
-          const priorityDiff = (b.priority || 1) - (a.priority || 1);
-          if (priorityDiff !== 0) return priorityDiff;
+      // Only fetch from Supabase if we have a user and there are potential items to sync
+      let supabaseItems = [];
+      
+      try {
+        const { data: queueItems } = await supabase
+          .from('habit_sync_queue')
+          .select('*')
+          .is('synced_at', null)
+          .order('created_at', { ascending: true })
+          .limit(BATCH_SIZE);
           
-          // Then by creation date (old to new)
-          return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        });
+        supabaseItems = queueItems || [];
+      } catch (error) {
+        console.error("Error fetching sync queue from Supabase:", error);
+      }
       
-      // Group operations by type for more efficient processing
-      const groupedItems: Record<string, any[]> = {
+      const allItems = [...supabaseItems, ...localQueue];
+      
+      if (!allItems.length) return;
+
+      // Group by operation type and create a processing map
+      const processingGroups: Record<string, any[]> = {
         add: [],
         update: [],
         delete: []
       };
       
+      // Track processed IDs to avoid duplicates
+      const processedIds = new Set<string>();
+      
       allItems.forEach(item => {
-        if (groupedItems[item.action]) {
-          groupedItems[item.action].push(item);
+        // Skip if we've already processed this item (could be duplicated between local and server)
+        if (item.habit_id && processedIds.has(item.habit_id)) {
+          return;
+        }
+        
+        if (processingGroups[item.action]) {
+          processingGroups[item.action].push(item);
+          if (item.habit_id) {
+            processedIds.add(item.habit_id);
+          }
         }
       });
       
-      // Process each operation type in batches
-      for (const [action, items] of Object.entries(groupedItems)) {
+      // Process each operation type in priority order: delete, update, add
+      const processingOrder = ['delete', 'update', 'add'];
+      const successfulItems: any[] = [];
+      
+      for (const action of processingOrder) {
+        const items = processingGroups[action];
         if (!items.length) continue;
         
         for (let i = 0; i < items.length; i += BATCH_SIZE) {
@@ -65,53 +99,55 @@ export function useSyncProcessor() {
           
           try {
             if (action === 'add') {
-              // For adds, we can do a bulk insert
               const insertData = batch.map(item => item.data);
               const { error } = await supabase.from('habits').insert(insertData);
-              if (error) throw error;
+              if (error) {
+                console.error('Batch error adding habits:', error);
+                // Individual retry will be scheduled below
+                continue;
+              }
+              
+              successfulItems.push(...batch);
             } else if (action === 'update') {
-              // For updates, we need to do them individually
-              for (const item of batch) {
-                const { error } = await supabase
+              // For updates, process in parallel with Promise.all
+              const updatePromises = batch.map(item => 
+                supabase
                   .from('habits')
                   .update(item.data)
-                  .eq('id', item.habit_id);
-                
-                if (error) {
-                  console.error('Error updating habit:', error);
+                  .eq('id', item.habit_id)
+                  .then(({ error }) => {
+                    if (error) {
+                      throw { item, error };
+                    }
+                    return item;
+                  })
+              );
+              
+              const results = await Promise.allSettled(updatePromises);
+              
+              results.forEach((result, index) => {
+                if (result.status === 'fulfilled') {
+                  successfulItems.push(result.value);
+                } else {
+                  // Schedule retry for failed items
+                  const { item, error } = result.reason;
+                  console.error(`Error updating habit ${item.habit_id}:`, error);
                   scheduleRetry(item, processSyncQueue);
-                  continue;
                 }
-              }
+              });
             } else if (action === 'delete') {
-              // For deletes, we can do a batch delete
               const idsToDelete = batch.map(item => item.habit_id);
               const { error } = await supabase
                 .from('habits')
                 .delete()
                 .in('id', idsToDelete);
               
-              if (error) throw error;
-            }
-            
-            // Mark processed items in Supabase
-            const supabaseIds = batch
-              .filter(item => item.id)
-              .map(item => item.id as string);
-            
-            if (supabaseIds.length) {
-              await supabase
-                .from('habit_sync_queue')
-                .update({ synced_at: new Date().toISOString() })
-                .in('id', supabaseIds);
-            }
-            
-            // Remove processed items from local storage
-            const processedLocalItems = batch.filter(item => !item.id);
-            if (processedLocalItems.length) {
-              const processedIds = new Set(processedLocalItems.map(item => item.habit_id));
-              localQueue = localQueue.filter(item => !processedIds.has(item.habit_id));
-              localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(localQueue));
+              if (error) {
+                console.error('Batch error deleting habits:', error);
+                continue;
+              }
+              
+              successfulItems.push(...batch);
             }
           } catch (error) {
             console.error(`Error processing ${action} batch:`, error);
@@ -120,10 +156,55 @@ export function useSyncProcessor() {
           }
         }
       }
+      
+      // Mark processed supabase items
+      if (successfulItems.length) {
+        const supabaseIds = successfulItems
+          .filter(item => item.id)
+          .map(item => item.id);
+          
+        if (supabaseIds.length) {
+          await supabase
+            .from('habit_sync_queue')
+            .update({ synced_at: new Date().toISOString() })
+            .in('id', supabaseIds);
+        }
+        
+        // Remove processed local items
+        const processedLocalItemIds = new Set(
+          successfulItems
+            .filter(item => !item.id && item.habit_id)
+            .map(item => item.habit_id)
+        );
+        
+        if (processedLocalItemIds.size > 0) {
+          const updatedQueue = localQueue.filter(
+            item => !processedLocalItemIds.has(item.habit_id)
+          );
+          
+          localStorage.setItem(SYNC_QUEUE_KEY, JSON.stringify(updatedQueue));
+        }
+        
+        // Show success toast only if there were substantial syncs
+        if (successfulItems.length > 2) {
+          toast.success(`Synced ${successfulItems.length} items`, {
+            description: "Your data is now up to date",
+            duration: 3000,
+          });
+        }
+      }
+      
+    } catch (error) {
+      console.error("Error processing sync queue:", error);
     } finally {
+      syncInProgressRef.current = false;
       setIsSyncing(false);
     }
-  };
+  }, [isOnline, scheduleRetry]);
 
-  return { processSyncQueue, isSyncing };
+  return { 
+    processSyncQueue, 
+    isSyncing,
+    lastSyncTime: lastSyncTimeRef.current
+  };
 }

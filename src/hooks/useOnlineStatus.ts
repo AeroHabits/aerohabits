@@ -1,5 +1,4 @@
-
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useErrorTracking } from './useErrorTracking';
 import { trackNetworkChange } from '@/lib/analytics';
 
@@ -10,10 +9,9 @@ const LATENCY_THRESHOLDS = {
 };
 
 // Sample endpoints to ping for connection testing - using reliable CDNs
+// Reduced number of endpoints to minimize network requests
 const PING_ENDPOINTS = [
-  'https://www.google.com',
   'https://www.cloudflare.com',
-  'https://www.fastly.com',
 ];
 
 // Detect if we're running on iOS - used to optimize battery usage
@@ -42,6 +40,8 @@ export function useOnlineStatus() {
   
   // Track ping history for reliability calculation
   const [pingHistory, setPingHistory] = useState<Array<{ success: boolean; timestamp: number }>>([]);
+  const checkIntervalRef = useRef<number | null>(null);
+  const lastPingTime = useRef<number>(0);
   
   // Basic online/offline status
   useEffect(() => {
@@ -93,10 +93,18 @@ export function useOnlineStatus() {
     return Math.round((successCount / recentPings.length) * 100);
   }, []);
   
-  // Enhanced ping function with error handling and timeout
+  // Enhanced ping function with error handling and timeout - optimized to reduce network load
   const pingEndpoint = useCallback(async (endpoint: string): Promise<number | null> => {
+    const now = Date.now();
+    
+    // Throttle pings to once every 30 seconds maximum
+    if (now - lastPingTime.current < 30000) {
+      return null;
+    }
+    
+    lastPingTime.current = now;
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout - increased from 3s
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
     
     try {
       const startTime = performance.now();
@@ -115,13 +123,13 @@ export function useOnlineStatus() {
       
       // Only track errors that aren't aborts
       if (error instanceof DOMException && error.name === 'AbortError') {
-        console.log(`Ping to ${endpoint} timed out`);
         return null;
       }
       
       // Don't log these as errors, just as info
-      console.log(`Failed to ping ${endpoint}:`, error);
+      console.log(`Failed to ping ${endpoint}`);
       
+      // Use a lower severity for these common errors
       trackError(
         error instanceof Error ? error : new Error('Unknown ping error'),
         'pingEndpoint',
@@ -146,74 +154,63 @@ export function useOnlineStatus() {
         }
       }
       
-      // Try pinging multiple endpoints and take the fastest response
-      const latencies: number[] = [];
-      const pingResults: Array<{ success: boolean; timestamp: number }> = [];
-      
-      // Only try to ping one endpoint at a time to reduce network load
-      const randomEndpointIndex = Math.floor(Math.random() * PING_ENDPOINTS.length);
-      const endpoint = PING_ENDPOINTS[randomEndpointIndex];
-      
-      try {
-        const latency = await pingEndpoint(endpoint);
-        
-        if (latency !== null) {
-          latencies.push(latency);
-          pingResults.push({ success: true, timestamp: Date.now() });
-        } else {
-          pingResults.push({ success: false, timestamp: Date.now() });
-        }
-      } catch (error) {
-        console.log(`Error pinging ${endpoint}:`, error);
-        pingResults.push({ success: false, timestamp: Date.now() });
+      // Only ping if we're online and we haven't pinged recently
+      const now = Date.now();
+      if (now - lastPingTime.current < 30000) {
+        return;
       }
       
-      // Update ping history
+      // Try pinging our single endpoint
+      const endpoint = PING_ENDPOINTS[0];
+      const latency = await pingEndpoint(endpoint);
+      
+      const pingResult = { 
+        success: latency !== null, 
+        timestamp: now
+      };
+      
+      // Update ping history - keep history very small
       setPingHistory(prev => {
-        const newHistory = [...prev, ...pingResults];
-        // Limit history size to last 20 pings (reduced from 100)
-        return newHistory.slice(-20);
+        const newHistory = [...prev, pingResult];
+        // Limit history size to last 10 pings (reduced from 20)
+        return newHistory.slice(-10);
       });
       
       // If we have latency measurements, determine quality
-      if (latencies.length > 0) {
-        // Use the median latency for more stability
-        latencies.sort((a, b) => a - b);
-        const medianLatency = latencies[Math.floor(latencies.length / 2)];
-        
+      if (latency !== null) {
         // Determine quality based on latency
         let quality: 'good' | 'acceptable' | 'poor' | 'offline' = 'good';
-        if (medianLatency > LATENCY_THRESHOLDS.ACCEPTABLE) {
+        if (latency > LATENCY_THRESHOLDS.ACCEPTABLE) {
           quality = 'poor';
-        } else if (medianLatency > LATENCY_THRESHOLDS.GOOD) {
+        } else if (latency > LATENCY_THRESHOLDS.GOOD) {
           quality = 'acceptable';
         }
         
         // Calculate reliability
-        const reliability = calculateReliability([...pingHistory, ...pingResults]);
+        const reliability = calculateReliability([...pingHistory, pingResult]);
         
         // Update connection details
         setConnectionDetails(prev => {
           const newDetails = {
             ...prev,
-            latency: medianLatency,
+            latency,
             quality,
             downlinkSpeed,
-            lastChecked: Date.now(),
+            lastChecked: now,
             reliability
           };
           
-          // Only track network changes if quality changed
+          // Only track network changes if quality changed significantly
           if (prev.quality !== quality) {
-            if (quality === 'poor') {
+            if (quality === 'poor' && prev.quality !== 'poor') {
               trackNetworkChange('poor', { 
-                latency: medianLatency,
+                latency,
                 downlinkSpeed,
                 reliability
               });
-            } else if (quality === 'good') {
+            } else if (quality === 'good' && prev.quality !== 'good') {
               trackNetworkChange('good', { 
-                latency: medianLatency,
+                latency,
                 downlinkSpeed,
                 reliability
               });
@@ -222,48 +219,51 @@ export function useOnlineStatus() {
           
           return newDetails;
         });
-      } else if (isOnline) {
-        // All pings failed but we're still "online" according to the browser
-        setConnectionDetails(prev => ({
-          ...prev,
-          quality: 'poor',
-          lastChecked: Date.now(),
-          reliability: calculateReliability([...pingHistory, ...pingResults])
-        }));
-          
-        // Track network change if quality changed
-        if (connectionDetails.quality !== 'poor') {
-          trackNetworkChange('poor');
-        }
-      }
+      } 
     } catch (error) {
-      console.log("Network check error:", error);
+      // Only log significant errors
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Network check error:", error);
+      }
+      
       trackError(
         error instanceof Error ? error : new Error('Network check error'),
         'checkConnectionQuality',
         { severity: 'low', silent: true }
       );
     }
-  }, [isOnline, pingEndpoint, pingHistory, calculateReliability, trackError, connectionDetails.quality]);
+  }, [isOnline, pingEndpoint, pingHistory, calculateReliability, trackError]);
 
-  // Set up the connection quality check interval with reduced frequency for iOS
+  // Set up the connection quality check interval with reduced frequency
   useEffect(() => {
-    // Initial check
-    checkConnectionQuality();
+    // Initial check - but add a delay to not block page load
+    const initialCheckTimeout = setTimeout(() => {
+      checkConnectionQuality();
+    }, 5000);
     
-    // Adaptive check frequency - even less frequent on iOS to preserve battery
-    // Much less frequent overall to reduce network load
+    // Much less frequent checks - dramatically increased intervals
     let checkInterval = isIOS 
-      ? (connectionDetails.quality === 'poor' ? 120000 : 180000) // 2 or 3 minutes on iOS
-      : (connectionDetails.quality === 'poor' ? 60000 : 120000); // 1 or 2 minutes on other platforms
+      ? 300000  // 5 minutes on iOS to preserve battery
+      : 180000; // 3 minutes on other platforms
     
-    const intervalId = setInterval(() => {
-      if (isOnline) {
+    // Further increase interval when connection is good
+    if (connectionDetails.quality === 'good') {
+      checkInterval *= 1.5;
+    }
+    
+    checkIntervalRef.current = window.setInterval(() => {
+      if (isOnline && document.visibilityState === 'visible') {
         checkConnectionQuality();
       }
     }, checkInterval);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      clearTimeout(initialCheckTimeout);
+      if (checkIntervalRef.current) {
+        clearInterval(checkIntervalRef.current);
+        checkIntervalRef.current = null;
+      }
+    };
   }, [isOnline, checkConnectionQuality, connectionDetails.quality]);
 
   // For backward compatibility, return isOnline boolean directly
@@ -283,7 +283,6 @@ export function useDetailedConnectionStatus(): ConnectionStatus {
 
   useEffect(() => {
     // Implementation leveraging the shared functionality from useOnlineStatus
-    // ... Similar implementation as useOnlineStatus
   }, []);
 
   return connectionDetails;
