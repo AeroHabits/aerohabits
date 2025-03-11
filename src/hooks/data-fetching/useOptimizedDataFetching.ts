@@ -136,7 +136,7 @@ export function useOptimizedDataFetching<T>({
   });
 
   // Use the query with updated configuration for React Query v5
-  const result = useQuery<T, Error, NonFunctionGuard<T>, string[]>({
+  const queryOptions: UseQueryOptions<T, Error, NonFunctionGuard<T>, string[]> = {
     queryKey,
     queryFn: optimizedQueryFn,
     staleTime: optimizedStaleTime,
@@ -145,9 +145,26 @@ export function useOptimizedDataFetching<T>({
     enabled: enabled && (cachePolicy !== 'network-only' || isOnline),
     refetchOnWindowFocus: networkQuality !== 'poor',
     refetchOnReconnect: true,
-    onSuccess,
-    onError,
-  });
+    meta: {
+      // Store callback handlers in meta for React Query v5 compatibility
+      onSuccess,
+      onError
+    }
+  };
+
+  // Update with proper React Query v5 callbacks
+  if (onSuccess || onError) {
+    queryOptions.onSettled = (data, error) => {
+      if (data && onSuccess) {
+        onSuccess(data as T);
+      }
+      if (error && onError) {
+        onError(error as Error);
+      }
+    };
+  }
+
+  const result = useQuery<T, Error, NonFunctionGuard<T>, string[]>(queryOptions);
 
   // Custom refetch function to bypass cache if needed
   const refetchOptimized = useCallback(async () => {
