@@ -9,9 +9,13 @@ import { RefreshCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useHabits } from "@/hooks/useHabits";
+
 const Habits = () => {
   const isMobile = useIsMobile();
   const [isResetting, setIsResetting] = useState(false);
+  const { refetch } = useHabits();
+  
   const handleResetHabits = async () => {
     try {
       setIsResetting(true);
@@ -24,8 +28,8 @@ const Habits = () => {
         description: `${data.count || 0} habits were reset to uncompleted status while preserving streaks.`
       });
 
-      // Force refresh the habits list
-      window.location.reload();
+      // Refresh habits without full page reload
+      refetch();
     } catch (error) {
       console.error("Error resetting habits:", error);
       toast.error("Failed to reset habits");
@@ -33,6 +37,7 @@ const Habits = () => {
       setIsResetting(false);
     }
   };
+
   return <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
       {/* Enhanced background effects */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-20">

@@ -14,7 +14,7 @@ export function useHabitToggle() {
 
   const toggleHabit = async (id: string, habits: Habit[]) => {
     const habit = habits.find(h => h.id === id);
-    if (!habit) return false;
+    if (!habit) return { success: false, updatedHabit: null };
 
     try {
       const today = startOfDay(new Date());
@@ -53,7 +53,7 @@ export function useHabitToggle() {
           title: "Success",
           description: `Habit ${!habit.completed ? 'completed' : 'uncompleted'} for today! (offline mode)`,
         });
-        return true;
+        return { success: true, updatedHabit };
       }
 
       const { error } = await supabase
@@ -71,7 +71,7 @@ export function useHabitToggle() {
         title: "Success",
         description: `Habit ${!habit.completed ? 'completed' : 'uncompleted'} for today!`,
       });
-      return true;
+      return { success: true, updatedHabit };
     } catch (error) {
       console.error('Error toggling habit:', error);
       toast({
@@ -79,7 +79,7 @@ export function useHabitToggle() {
         description: "Failed to update habit",
         variant: "destructive",
       });
-      return false;
+      return { success: false, updatedHabit: null };
     }
   };
 
