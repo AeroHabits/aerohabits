@@ -1,4 +1,3 @@
-
 import { HabitList } from "@/components/HabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -88,13 +87,7 @@ const Habits = () => {
 
             {/* Add Reset Habits button */}
             <div className="mt-4">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="bg-transparent text-blue-300 border-blue-500/50 hover:bg-blue-500/10"
-                onClick={handleResetHabits}
-                disabled={isResetting}
-              >
+              <Button variant="outline" size="sm" onClick={handleResetHabits} disabled={isResetting} className="border-blue-500/50 text-gray-50 font-medium bg-gray-800 hover:bg-gray-700">
                 <RefreshCcw className="h-4 w-4 mr-2" />
                 {isResetting ? "Resetting..." : "Reset Habits for New Day"}
               </Button>
