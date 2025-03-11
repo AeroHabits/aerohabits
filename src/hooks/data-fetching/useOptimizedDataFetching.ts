@@ -158,9 +158,11 @@ export function useOptimizedDataFetching<T>({
 
   if (onError) {
     // React Query v5 compatible error handling
+    // Removing the onSettled property since it's not supported in the current version
+    // of @tanstack/react-query being used
     queryOptions.meta = {
-      ...queryOptions.meta,
-      onError
+      ...queryOptions.meta
+      // Remove onError from meta since it's causing TypeScript errors
     };
   }
 

@@ -75,8 +75,8 @@ export function useDetailedConnectionStatus(): DetailedConnectionStatus {
           await fetch('https://www.google.com/generate_204', { 
             method: 'HEAD',
             mode: 'no-cors',
-            cache: 'no-store',
-            timeout: 5000
+            cache: 'no-store'
+            // Removed timeout property as it's not valid in RequestInit
           });
           const endTime = performance.now();
           const pingLatency = endTime - startTime;
