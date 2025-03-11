@@ -21,8 +21,9 @@ export function useHabits() {
 
   // Update local habits when fetched habits change
   useEffect(() => {
-    if (fetchedHabits) {
+    if (fetchedHabits && fetchedHabits.length > 0) {
       setLocalHabits(fetchedHabits);
+      console.log("Updated local habits:", fetchedHabits);
     }
   }, [fetchedHabits]);
 
@@ -51,9 +52,10 @@ export function useHabits() {
       );
       
       // In the background, refetch to ensure server-client consistency
+      // Using a longer timeout to avoid visible "Refreshing..." indicator for quick operations
       setTimeout(() => {
         refetch();
-      }, 2000); // Delay refetch to ensure good UX
+      }, 5000); // Longer delay for better UX
     }
   };
 
@@ -75,8 +77,13 @@ export function useHabits() {
   const handleAddHabit = async (habit: { title: string; description: string; category_id?: string }) => {
     const newHabit = await addHabit(habit);
     if (newHabit) {
-      // Refetch to get the server-created habit with proper ID
-      refetch();
+      // Add the new habit to the local state immediately
+      setLocalHabits(prev => [newHabit, ...prev]);
+      
+      // Silently refetch in the background without showing "Refreshing..." indicator
+      setTimeout(() => {
+        refetch();
+      }, 3000);
     }
   };
 

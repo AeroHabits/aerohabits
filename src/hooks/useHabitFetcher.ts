@@ -21,6 +21,8 @@ export function useHabitFetcher() {
     queryKey: ["habits"],
     queryFn: async () => {
       try {
+        console.log("Fetching habits, online status:", isOnline);
+        
         // Check if we should use offline data
         if (shouldSkipNetworkRequest(lastSyncTime)) {
           console.log(`Using cached habits due to ${!isOnline ? 'offline' : 'poor network'} status`);
@@ -49,7 +51,7 @@ export function useHabitFetcher() {
           .order('created_at', { ascending: false });
 
         const queryTime = performance.now() - startTime;
-        console.log(`Habits query completed in ${queryTime.toFixed(2)}ms`);
+        console.log(`Habits query completed in ${queryTime.toFixed(2)}ms, got ${habitsData?.length || 0} habits`);
 
         if (habitsError) {
           console.error('Error fetching habits:', habitsError);
@@ -80,8 +82,8 @@ export function useHabitFetcher() {
       return true;
     },
     staleTime: getStaleTime(),
-    refetchOnWindowFocus: networkQuality === 'good', // Only refetch automatically on good connections
-    refetchInterval: networkQuality === 'good' ? 60000 : false, // Refresh every minute on good connections
+    refetchOnWindowFocus: false, // Disable auto-refetch to avoid refreshing indicator
+    refetchInterval: false, // Disable auto-refresh
   });
 
   return {

@@ -1,3 +1,4 @@
+
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
@@ -8,7 +9,8 @@ import { Loader2, WifiOff, RefreshCw } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "./ui/button";
+import { useEffect } from "react";
+
 export function HabitList() {
   const {
     habits,
@@ -23,6 +25,15 @@ export function HabitList() {
     isOnline,
     networkQuality
   } = useHabits();
+  
+  // Initial fetch on component mount
+  useEffect(() => {
+    // Only trigger an initial refetch if habits array is empty
+    if (habits.length === 0) {
+      refetch();
+    }
+  }, []);
+  
   const {
     data: profile
   } = useQuery({
@@ -40,6 +51,7 @@ export function HabitList() {
       return data;
     }
   });
+  
   const isMobile = useIsMobile();
   let touchStartY = 0;
   let pullDistance = 0;
@@ -68,15 +80,16 @@ export function HabitList() {
     touchStartY = 0;
     pullDistance = 0;
   };
-  const handleRefresh = () => {
-    refetch();
-  };
+  
   if (isLoading) {
     return <HabitListLoading />;
   }
-  if (habits.length === 0) {
+  
+  // Show empty state only when we've confirmed habits are loaded but array is empty
+  if (!isLoading && habits.length === 0) {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
+  
   return <div className="w-full space-y-8 pb-6" onTouchStart={isMobile ? handleTouchStart : undefined} onTouchMove={isMobile ? handleTouchMove : undefined} onTouchEnd={isMobile ? handleTouchEnd : undefined}>
       <AnimatePresence>
         {!isOnline && <motion.div initial={{
