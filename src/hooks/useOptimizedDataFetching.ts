@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery, QueryFunction, UseQueryOptions } from "@tanstack/react-query";
 import { useNetworkQuality } from "./useNetworkQuality";
@@ -70,7 +71,7 @@ export function useOptimizedDataFetching<T>({
   }, [queryKey, criticalData, saveToStorage, IMPORTANCE_LEVELS]);
   
   // Prepare initial data from cache if appropriate
-  const prepareInitialData = useCallback(() => {
+  const prepareInitialData = useCallback((): T | undefined => {
     if (initialData) return initialData;
     
     if (cachePolicy === 'cache-first' || cachePolicy === 'cache-only') {
@@ -141,11 +142,6 @@ export function useOptimizedDataFetching<T>({
       throw error;
     }
   }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey, lastSuccessfulFetch]);
-  
-  // Fix: Use a function that returns the right type to satisfy React Query's typing requirements
-  const getPlaceholderDataFn = useCallback(() => {
-    return prepareInitialData();
-  }, [prepareInitialData]);
 
   // Create query options with correct typing
   const queryOptions: UseQueryOptions<T, Error, T, string[]> = {
@@ -166,7 +162,7 @@ export function useOptimizedDataFetching<T>({
   // Only add placeholder data if we have something to provide
   const initialDataValue = prepareInitialData();
   if (initialDataValue !== undefined) {
-    queryOptions.placeholderData = getPlaceholderDataFn;
+    queryOptions.placeholderData = initialDataValue;
   }
   
   const queryResult = useQuery(queryOptions);
