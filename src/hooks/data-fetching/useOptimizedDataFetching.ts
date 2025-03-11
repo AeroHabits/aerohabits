@@ -145,26 +145,33 @@ export function useOptimizedDataFetching<T>({
     enabled: enabled && (cachePolicy !== 'network-only' || isOnline),
     refetchOnWindowFocus: networkQuality !== 'poor',
     refetchOnReconnect: true,
-    meta: {
-      // Store callback handlers in meta for React Query v5 compatibility
-      onSuccess,
-      onError
-    }
+    gcTime: optimizedStaleTime * 2
   };
 
-  // Update with proper React Query v5 callbacks
-  if (onSuccess || onError) {
-    queryOptions.onSettled = (data, error) => {
-      if (data && onSuccess) {
-        onSuccess(data as T);
-      }
-      if (error && onError) {
-        onError(error as Error);
-      }
+  // In React Query v5, we need to handle callbacks differently
+  if (onSuccess) {
+    queryOptions.select = (data: T) => {
+      onSuccess(data);
+      return data as NonFunctionGuard<T>;
+    };
+  }
+
+  if (onError) {
+    // React Query v5 compatible error handling
+    queryOptions.meta = {
+      ...queryOptions.meta,
+      onError
     };
   }
 
   const result = useQuery<T, Error, NonFunctionGuard<T>, string[]>(queryOptions);
+
+  // We need to manually call the onError callback since it's in the meta
+  useEffect(() => {
+    if (result.error && onError) {
+      onError(result.error);
+    }
+  }, [result.error, onError]);
 
   // Custom refetch function to bypass cache if needed
   const refetchOptimized = useCallback(async () => {
