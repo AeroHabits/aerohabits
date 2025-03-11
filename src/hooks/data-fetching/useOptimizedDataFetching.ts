@@ -1,12 +1,14 @@
+
 import {
   useQuery,
   QueryFunction,
   useQueryClient,
   QueryKey,
+  UseQueryOptions,
 } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNetworkQuality } from "../useNetworkQuality";
-import { useIsOnline } from "../useIsOnline";
+import { useNetworkQuality, NetworkQuality } from "../useNetworkQuality";
+import { useOnlineStatus } from "../useOnlineStatus";
 
 type NonFunctionGuard<T> = T extends Function ? never : T;
 
@@ -65,7 +67,7 @@ function useRetryStrategy({
   criticalData
 }: {
   retryCount: number;
-  networkQuality: string;
+  networkQuality: NetworkQuality;
   isOnline: boolean;
   criticalData: boolean;
 }) {
@@ -85,7 +87,6 @@ export function useOptimizedDataFetching<T>({
   cachePolicy = 'cache-first',
   retryCount = 2,
   networkTimeout = 10000,
-  suspense = false,
   enabled = true,
   onSuccess,
   onError,
@@ -97,17 +98,16 @@ export function useOptimizedDataFetching<T>({
   cachePolicy?: 'cache-first' | 'network-first' | 'network-only';
   retryCount?: number;
   networkTimeout?: number;
-  suspense?: boolean;
   enabled?: boolean;
   onSuccess?: (data: T) => void;
   onError?: (error: Error) => void;
 }) {
   const queryClient = useQueryClient();
   const { networkQuality } = useNetworkQuality();
-  const isOnline = useIsOnline();
+  const isOnline = useOnlineStatus();
 
   // Get optimized query configuration
-  const queryConfig = useOptimizedQueryFn<T>({
+  const optimizedQueryFn = useOptimizedQueryFn<T>({
     queryFn,
     cachePolicy,
     networkTimeout,
@@ -121,8 +121,8 @@ export function useOptimizedDataFetching<T>({
     
     switch (networkQuality) {
       case 'poor': return staleTime * 3; // Extend stale time for poor connection
-      case 'fair': return staleTime * 1.5;
       case 'good': return staleTime;
+      case 'offline': return Infinity;
       default: return staleTime;
     }
   }, [staleTime, networkQuality, cachePolicy, isOnline]);
@@ -135,14 +135,13 @@ export function useOptimizedDataFetching<T>({
     criticalData
   });
 
-  // Use the query
+  // Use the query with updated configuration for React Query v5
   const result = useQuery<T, Error, NonFunctionGuard<T>, string[]>({
     queryKey,
-    ...queryConfig,
+    queryFn: optimizedQueryFn,
     staleTime: optimizedStaleTime,
     placeholderData: (previousData: T | undefined) => previousData as NonFunctionGuard<T> | undefined,
     retry: retryStrategy,
-    suspense,
     enabled: enabled && (cachePolicy !== 'network-only' || isOnline),
     refetchOnWindowFocus: networkQuality !== 'poor',
     refetchOnReconnect: true,
