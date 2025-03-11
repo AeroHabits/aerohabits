@@ -46,13 +46,12 @@ export function useHabitToggle() {
       // Apply optimistic UI update before network operation completes
       const actionLabel = !habit.completed ? 'completed' : 'uncompleted';
       
-      // Use Sonner toast for better performance 
-      sonnerToast(
-        `Habit ${actionLabel}`,
-        !habit.completed 
+      // Use Sonner toast with correct API
+      sonnerToast(`Habit ${actionLabel}`, {
+        description: !habit.completed 
           ? `Great job! ${updatedHabit.streak > 1 ? `Streak: ${updatedHabit.streak} days` : ''}` 
           : "You can always try again tomorrow"
-      );
+      });
 
       if (!isOnline) {
         const currentHabits = loadOfflineHabits();

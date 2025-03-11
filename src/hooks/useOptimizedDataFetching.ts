@@ -143,6 +143,11 @@ export function useOptimizedDataFetching<T>({
     }
   }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey, lastSuccessfulFetch]);
 
+  // Function to provide placeholder data (to fix TypeScript error)
+  const getPlaceholderDataFn = useCallback(() => {
+    return prepareInitialData();
+  }, [prepareInitialData]);
+
   // Create query options with correct typing
   const queryOptions: UseQueryOptions<T, Error, T, string[]> = {
     queryKey,
@@ -159,10 +164,9 @@ export function useOptimizedDataFetching<T>({
     refetchInterval: false
   };
   
-  // Only add placeholder data if we have something to provide
-  const initialDataValue = prepareInitialData();
-  if (initialDataValue !== undefined) {
-    queryOptions.placeholderData = initialDataValue;
+  // Add placeholder data if we have something to provide
+  if (placeholderData !== undefined || initialData !== undefined) {
+    queryOptions.placeholderData = getPlaceholderDataFn;
   }
   
   const queryResult = useQuery(queryOptions);

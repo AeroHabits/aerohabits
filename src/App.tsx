@@ -22,80 +22,81 @@ import { Capacitor } from '@capacitor/core';
 // Detect if we're running in a native app context
 const isNative = Capacitor.isNativePlatform();
 
-// Initialize Sentry with platform-specific settings
+// Initialize Sentry with optimized settings for performance
 Sentry.init({
   dsn: "https://7f41f5a0a9c0c2d9f8b6e3a1d4c5b2a8@o4506779798454272.ingest.sentry.io/4506779799502848",
   integrations: [
     new Sentry.BrowserTracing({
       tracePropagationTargets: ["localhost", /^https:\/\/areohabits\.com/],
     }),
-    new Sentry.Replay(),
+    new Sentry.Replay({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
   ],
-  // Adjust sampling rates based on platform for better performance on mobile
-  tracesSampleRate: isNative ? 0.5 : 1.0,
-  replaysSessionSampleRate: isNative ? 0.05 : 0.1,
-  replaysOnErrorSampleRate: 1.0,
+  // Adjust sampling rates for better performance
+  tracesSampleRate: isNative ? 0.2 : 0.5, // Reduced sampling rate
+  replaysSessionSampleRate: isNative ? 0.01 : 0.05, // Significantly reduced
+  replaysOnErrorSampleRate: isNative ? 0.5 : 1.0, // Still capture most errors
   // Add platform info to help with debugging
   initialScope: {
     tags: {
       platform: Capacitor.getPlatform(),
       isNative: isNative.toString()
     }
-  }
+  },
+  // Prevent memory leaks from large payloads
+  maxBreadcrumbs: 50, // Default is 100
 });
 
-// Create query client with optimized settings for better performance
+// Create query client with optimized settings
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 2, // Reduced from 3 to minimize unnecessary retries
-      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 30000),
-      // Significantly increased stale time to reduce unnecessary refetches
-      staleTime: isNative ? 300000 : 180000, // 5 min on mobile, 3 min on web
-      // Disable automatic background refetching
+      retry: 1, // Reduced from 2 to minimize retries which can cause performance issues
+      retryDelay: attempt => Math.min(1000 * 2 ** attempt, 10000), // Cap at 10 seconds
+      staleTime: isNative ? 600000 : 300000, // 10 min on mobile, 5 min on web
       refetchOnWindowFocus: false,
-      refetchOnReconnect: 'always',
+      refetchOnReconnect: false, // Let the app control reconnection behavior 
       refetchOnMount: false,
-      // Improved caching policy
-      gcTime: 24 * 60 * 60 * 1000, // Keep cache for 24 hours
-      meta: {
-        errorHandler: (error: Error) => {
-          console.error("Query error:", error);
-          Sentry.captureException(error);
-        }
-      }
+      gcTime: 12 * 60 * 60 * 1000, // Keep cache for 12 hours instead of 24
+      enabled: typeof window !== 'undefined' // Prevent queries during SSR
     },
   },
 });
 
-// Use lazy initialization for query client and prevent recreation on re-renders
+// Use lazy initialization for query client
 const queryClient = createQueryClient();
 
 // Wrap the app with Sentry's error boundary
 const SentryErrorBoundary = Sentry.withErrorBoundary(ErrorBoundary, {
-  showDialog: true,
+  showDialog: false, // Don't show dialog by default to reduce disruption
 });
 
 // Enhanced analytics tracker component with better performance
 const AnalyticsTracker = memo(() => {
   const location = useLocation();
   const isOnline = useOnlineStatus();
+  const [isAnalyticsInitialized, setIsAnalyticsInitialized] = useState(false);
 
-  // Initialize analytics on mount
+  // Initialize analytics only once
   useEffect(() => {
-    initAnalytics();
-  }, []);
+    if (!isAnalyticsInitialized) {
+      initAnalytics();
+      setIsAnalyticsInitialized(true);
+    }
+  }, [isAnalyticsInitialized]);
 
-  // Track page views - optimized to reduce unnecessary tracking
+  // Track page views with more aggressive debouncing
   useEffect(() => {
-    if (isOnline) {
+    if (isOnline && isAnalyticsInitialized) {
       const timer = setTimeout(() => {
         trackPageView(location.pathname);
-      }, 1000); // Debounce to prevent excessive tracking during rapid navigation
+      }, 2000); // Increased debounce to 2 seconds
       
       return () => clearTimeout(timer);
     }
-  }, [location.pathname, isOnline]);
+  }, [location.pathname, isOnline, isAnalyticsInitialized]);
 
   return null;
 });
@@ -108,14 +109,14 @@ const Layout = memo(({ children }: { children: React.ReactNode }) => {
   return (
     <div className={cn(
       "min-h-screen flex flex-col",
-      isMobile && "pb-16" // Add padding at the bottom on mobile to account for the navigation bar
+      isMobile && "pb-16" // Add padding at the bottom on mobile
     )}>
       <TrialNotificationBanner />
       <div className="flex-1">
         {children}
       </div>
       <Footer />
-      <BottomNav />
+      {isMobile && <BottomNav />}
       <NetworkStatusIndicator />
       <NetworkRecoveryHandler />
     </div>
@@ -134,10 +135,11 @@ const LoadingFallback = () => (
 );
 
 const App = () => {
-  // On iOS, disable right-click menu and text selection for app-like feel
+  // Limit context menu on iOS
   useEffect(() => {
     if (Capacitor.getPlatform() === 'ios') {
-      document.addEventListener('contextmenu', e => e.preventDefault());
+      // Use passive event listeners for better performance
+      document.addEventListener('contextmenu', e => e.preventDefault(), { passive: true });
       
       // Add iOS-specific body classes
       document.body.classList.add('ios-device');
@@ -155,8 +157,9 @@ const App = () => {
     <SentryErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
+          {/* Only render toasts when needed */}
           <Toaster />
-          <Sonner />
+          <Sonner position="top-right" closeButton toastOptions={{ duration: 3000 }} />
           <BrowserRouter>
             <AnalyticsTracker />
             <Layout>

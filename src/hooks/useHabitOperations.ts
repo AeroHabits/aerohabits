@@ -3,6 +3,7 @@ import { useHabitDelete } from "./useHabitDelete";
 import { useHabitToggle } from "./useHabitToggle";
 import { useHabitAdd } from "./useHabitAdd";
 import { useOfflineSync } from "./useOfflineSync";
+import { useMemo } from "react";
 
 export function useHabitOperations() {
   const { deleteHabit } = useHabitDelete();
@@ -10,11 +11,14 @@ export function useHabitOperations() {
   const { addHabit } = useHabitAdd();
   const { isOnline } = useOfflineSync();
 
-  return {
+  // Use memoization to prevent unnecessary re-renders
+  const operationsAPI = useMemo(() => ({
     deleteHabit,
     toggleHabit,
     addHabit,
     isOnline,
     pendingToggles
-  };
+  }), [deleteHabit, toggleHabit, addHabit, isOnline, pendingToggles]);
+
+  return operationsAPI;
 }
