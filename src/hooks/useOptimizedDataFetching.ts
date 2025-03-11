@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery, QueryFunction, UseQueryOptions } from "@tanstack/react-query";
 import { useNetworkQuality } from "./useNetworkQuality";
@@ -145,7 +144,7 @@ export function useOptimizedDataFetching<T>({
   
   // Fix: Use a function that returns the right type to satisfy React Query's typing requirements
   const getPlaceholderDataFn = useCallback(() => {
-    return prepareInitialData() as any;
+    return prepareInitialData();
   }, [prepareInitialData]);
 
   // Create query options with correct typing
@@ -167,7 +166,6 @@ export function useOptimizedDataFetching<T>({
   // Only add placeholder data if we have something to provide
   const initialDataValue = prepareInitialData();
   if (initialDataValue !== undefined) {
-    // Use the function to satisfy TypeScript's requirements
     queryOptions.placeholderData = getPlaceholderDataFn;
   }
   

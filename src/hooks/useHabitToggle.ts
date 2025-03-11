@@ -47,7 +47,8 @@ export function useHabitToggle() {
       const actionLabel = !habit.completed ? 'completed' : 'uncompleted';
       
       // Use Sonner toast for better performance 
-      sonnerToast.success(`Habit ${actionLabel}`, {
+      sonnerToast({
+        title: `Habit ${actionLabel}`,
         description: !habit.completed 
           ? `Great job! ${updatedHabit.streak > 1 ? `Streak: ${updatedHabit.streak} days` : ''}` 
           : "You can always try again tomorrow"
@@ -86,7 +87,10 @@ export function useHabitToggle() {
           if (error) {
             console.error('Error in background habit update:', error);
             // Revert optimistic update if network request fails
-            sonnerToast.error("Failed to save habit status");
+            sonnerToast({
+              title: "Failed to save habit status",
+              style: { backgroundColor: 'red', color: 'white' }
+            });
           }
           setPendingToggles(prev => {
             const newState = { ...prev };
