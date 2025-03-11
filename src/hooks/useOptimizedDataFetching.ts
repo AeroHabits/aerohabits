@@ -59,8 +59,7 @@ export function useOptimizedDataFetching<T>({
   const getCachedData = useCallback(() => {
     const storageKey = `query_${queryKey.join('_')}`;
     const importance = criticalData ? IMPORTANCE_LEVELS.CRITICAL : IMPORTANCE_LEVELS.NORMAL;
-    // Pass undefined as the third parameter to match the function signature
-    return loadFromStorage<T>(storageKey, importance, undefined);
+    return loadFromStorage<T>(storageKey, importance);
   }, [queryKey, criticalData, loadFromStorage, IMPORTANCE_LEVELS]);
   
   // Save data to cache
@@ -144,12 +143,12 @@ export function useOptimizedDataFetching<T>({
     }
   }, [queryFn, cachePolicy, isOnline, getCachedData, saveDataToCache, queryKey, lastSuccessfulFetch]);
   
-  // Create a proper placeholder data function that conforms to React Query's expected type
-  const getPlaceholderData = useCallback(() => {
-    return prepareInitialData();
+  // Fix: Use a function that returns the right type to satisfy React Query's typing requirements
+  const getPlaceholderDataFn = useCallback(() => {
+    return prepareInitialData() as any;
   }, [prepareInitialData]);
 
-  // Fix: Create query options with correct typing for placeholderData
+  // Create query options with correct typing
   const queryOptions: UseQueryOptions<T, Error, T, string[]> = {
     queryKey,
     queryFn: optimizedQueryFn,
@@ -165,10 +164,11 @@ export function useOptimizedDataFetching<T>({
     refetchInterval: false
   };
   
-  // Fix: Instead of directly assigning the value to placeholderData,
-  // use the getPlaceholderData function which matches the expected type
-  if (prepareInitialData() !== undefined) {
-    queryOptions.placeholderData = getPlaceholderData;
+  // Only add placeholder data if we have something to provide
+  const initialDataValue = prepareInitialData();
+  if (initialDataValue !== undefined) {
+    // Use the function to satisfy TypeScript's requirements
+    queryOptions.placeholderData = getPlaceholderDataFn as any;
   }
   
   const queryResult = useQuery(queryOptions);

@@ -6,7 +6,7 @@ import { useOfflineSync } from "./useOfflineSync";
 
 export function useHabitOperations() {
   const { deleteHabit } = useHabitDelete();
-  const { toggleHabit } = useHabitToggle();
+  const { toggleHabit, pendingToggles } = useHabitToggle();
   const { addHabit } = useHabitAdd();
   const { isOnline } = useOfflineSync();
 
@@ -15,5 +15,6 @@ export function useHabitOperations() {
     toggleHabit,
     addHabit,
     isOnline,
+    pendingToggles
   };
 }

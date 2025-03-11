@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { toast } from "sonner";
 import { AddHabitForm } from "./AddHabitForm";
@@ -15,7 +14,7 @@ import { Habit } from "@/types";
 import { Button } from "./ui/button";
 
 export function OptimizedHabitList() {
-  const { deleteHabit, toggleHabit, addHabit, isOnline } = useHabitOperations();
+  const { deleteHabit, toggleHabit, addHabit, isOnline, pendingToggles } = useHabitOperations();
   const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
   const isMobile = useIsMobile();
   const [refreshing, setRefreshing] = useState(false);
@@ -83,7 +82,10 @@ export function OptimizedHabitList() {
   const handleToggleHabit = useCallback(async (id: string) => {
     try {
       await toggleHabit(id, habits as Habit[]);
-      refetchOptimized();
+      
+      setTimeout(() => {
+        refetchOptimized();
+      }, 1000);
     } catch (error) {
       console.error("Error toggling habit:", error);
       toast.error("Failed to update habit status", {
@@ -263,7 +265,8 @@ export function OptimizedHabitList() {
           habits={habits as Habit[]} 
           onToggle={handleToggleHabit} 
           onDelete={handleDeleteHabit} 
-          setHabitToDelete={setHabitToDelete} 
+          setHabitToDelete={setHabitToDelete}
+          pendingToggles={pendingToggles}
         />
 
         <motion.div 

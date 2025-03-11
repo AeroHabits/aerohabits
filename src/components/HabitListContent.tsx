@@ -8,9 +8,16 @@ interface HabitListContentProps {
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
   setHabitToDelete: (id: string | null) => void;
+  pendingToggles?: Record<string, boolean>;
 }
 
-export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete }: HabitListContentProps) {
+export function HabitListContent({ 
+  habits, 
+  onToggle, 
+  onDelete, 
+  setHabitToDelete, 
+  pendingToggles = {} 
+}: HabitListContentProps) {
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {habits.map((habit, index) => (
@@ -34,6 +41,7 @@ export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete 
             category={habit.habit_categories}
             onToggle={() => onToggle(habit.id)}
             onDelete={() => onDelete(habit.id)}
+            isPending={!!pendingToggles[habit.id]}
           />
         </motion.div>
       ))}
