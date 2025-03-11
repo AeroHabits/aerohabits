@@ -64,7 +64,7 @@ const Habits = () => {
       }} transition={{
         duration: 0.5,
         delay: 0.2
-      }} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-white/20 hover:border-white/30 transition-all duration-300">
+      }} className="backdrop-blur-sm rounded-xl p-6 shadow-2xl border border-white/20 hover:border-white/30 transition-all duration-300 bg-slate-800">
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-white mb-2">
               <span className="relative">
