@@ -1,5 +1,6 @@
 
 import { stripe } from "./stripe.ts";
+import { webhookRegistry } from "./webhookRegistry.ts";
 
 // Get signature from request headers
 export function getStripeSignature(req: Request): string | null {
@@ -20,17 +21,18 @@ export function verifyStripeWebhook(body: string, signature: string, webhookSecr
   }
 }
 
-// Map event type to handler function
-export function getEventHandler(eventType: string) {
-  const handlers = {
-    "customer.subscription.created": "handleSubscriptionCreated",
-    "customer.subscription.updated": "handleSubscriptionUpdated",
-    "customer.subscription.deleted": "handleSubscriptionDeleted",
-    "checkout.session.completed": "handleCheckoutComplete",
-    "invoice.payment_succeeded": "handleInvoicePaymentSucceeded",
-    "invoice.payment_failed": "handleInvoicePaymentFailed",
-    "customer.subscription.trial_will_end": "handleTrialWillEnd"
-  };
+// Process an event using the registry
+export async function processWebhookEvent(eventType: string, eventData: any): Promise<boolean> {
+  console.log(`Processing event type: ${eventType}`);
   
-  return handlers[eventType] || null;
+  if (webhookRegistry.hasHandler(eventType)) {
+    const handler = webhookRegistry.getHandler(eventType);
+    if (handler) {
+      await handler(eventData);
+      return true;
+    }
+  }
+  
+  console.log(`No handler registered for event type: ${eventType}`);
+  return false;
 }
