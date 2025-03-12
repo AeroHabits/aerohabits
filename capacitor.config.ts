@@ -15,16 +15,16 @@ const config: CapacitorConfig = {
     preferredContentMode: 'mobile',
     backgroundColor: '#ffffff',
     allowsLinkPreview: true,
-    // Define permissions needed by the app
+    // Define permissions needed by the app with clear descriptions (required by Apple)
     permissions: {
       camera: {
-        text: "Allow AEROHABITS to access your camera for profile pictures"
+        text: "AEROHABITS requires camera access for profile pictures and tracking visual habit progress"
       },
       notifications: {
-        text: "Allow AEROHABITS to send you reminders about your habits"
+        text: "AEROHABITS sends notifications to remind you about your habit tracking and challenge progress"
       },
       location: {
-        text: "Allow AEROHABITS to access your location for habit tracking"
+        text: "AEROHABITS uses your location to deliver location-based habit recommendations and tracking"
       }
     },
     // Configure status bar
@@ -40,6 +40,26 @@ const config: CapacitorConfig = {
       spinnerColor: '#2563eb',
       launchAutoHide: true,
       launchShowDuration: 2000
+    },
+    // Add App Store specific settings
+    allowsBackForwardNavigationGestures: true,
+    useUserAgentString: false,
+    limitsNavigationsToAppBoundDomains: true,
+    // Required for App Store review
+    requiresFullScreen: false,
+    overrideUserInterfaceStyle: 'light'
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 2000,
+      launchAutoHide: true,
+      backgroundColor: "#ffffff",
+      androidSplashResourceName: "splash",
+      androidScaleType: "CENTER_CROP",
+      showSpinner: true,
+      spinnerColor: "#2563eb",
+      splashFullScreen: true,
+      splashImmersive: true
     }
   }
 };

@@ -15,6 +15,21 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const location = useLocation();
 
+  // Handle app tracking transparency for iOS
+  useEffect(() => {
+    // This would be replaced with actual implementation when using Capacitor
+    // For demonstration purposes only - in production, use Capacitor plugins
+    const requestAppTrackingTransparency = async () => {
+      if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
+        console.log('Would request App Tracking Transparency permission on real iOS device');
+        // In a real implementation with Capacitor:
+        // const { status } = await Plugins.AppTrackingTransparency.requestPermission();
+      }
+    };
+
+    requestAppTrackingTransparency();
+  }, []);
+
   const { data: profile, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -67,8 +82,16 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"
-        />
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="rounded-full h-12 w-12 border-b-2 border-white"
+          />
+          <p className="text-white mt-4">Loading your habits...</p>
+        </motion.div>
       </div>
     );
   }

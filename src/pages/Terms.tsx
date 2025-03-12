@@ -7,30 +7,55 @@ export default function Terms() {
       <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
       
       <div className="prose dark:prose-invert max-w-none">
-        <h2 className="text-2xl font-semibold mt-6 mb-4">1. Company Information</h2>
+        <p className="text-gray-600 mb-6">Last Updated: July 5, 2024</p>
+
+        <h2 className="text-2xl font-semibold mt-6 mb-4">1. Agreement to Terms</h2>
+        <p>By accessing or using AEROHABITS, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing this app.</p>
+
+        <h2 className="text-2xl font-semibold mt-6 mb-4">2. Company Information</h2>
         <p>AEROHABITS<br />
         1101 Parc Central Dr<br />
         Festus, MO 63028<br />
         United States<br />
         Email: Support@AeroHabits.com</p>
 
-        <h2 className="text-2xl font-semibold mt-6 mb-4">2. Acceptance of Terms</h2>
-        <p>By accessing and using AEROHABITS, You agree to be bound by these Terms of Service.</p>
-
-        <h2 className="text-2xl font-semibold mt-6 mb-4">3. Description of Service</h2>
-        <p>AEROHABITS is a Habit Tracking Application that helps Users build and maintain positive habits.</p>
+        <h2 className="text-2xl font-semibold mt-6 mb-4">3. Subscription Terms</h2>
+        <p>AeroHabits offers subscription services that provide access to premium features. The following terms apply to all subscriptions:</p>
+        <ul className="list-disc pl-6 space-y-2">
+          <li>Subscriptions are billed on a monthly basis at the rate indicated at the time of purchase.</li>
+          <li>Your subscription will automatically renew unless you cancel at least 24 hours before the end of the current billing period.</li>
+          <li>You can cancel anytime through your account settings, or by contacting customer support.</li>
+          <li>No refunds or credits will be provided for partial subscription periods or unused subscription time.</li>
+          <li>We may change subscription fees at any time, but will provide notice before these changes affect you.</li>
+          <li>Trial periods, when offered, provide access to premium features for a limited time without charge. If you do not cancel before the end of the trial, you will be automatically charged for a subscription.</li>
+        </ul>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">4. User Accounts</h2>
-        <p>Users must register for an Account and maintain accurate information. You are responsible for maintaining the security of Your Account.</p>
+        <p>Users must register for an Account and maintain accurate information. You are responsible for maintaining the security of your Account and for all activities that occur under your account.</p>
 
-        <h2 className="text-2xl font-semibold mt-6 mb-4">5. Privacy</h2>
-        <p>Your Privacy is important to Us. Please review Our <Link to="/privacy" className="text-blue-500 hover:underline">Privacy Policy</Link>.</p>
+        <h2 className="text-2xl font-semibold mt-6 mb-4">5. Acceptable Use</h2>
+        <p>You agree not to use the App for any purpose that is unlawful or prohibited by these Terms. You may not:</p>
+        <ul className="list-disc pl-6 space-y-2">
+          <li>Use the App in any way that could disable, overburden, or impair the App</li>
+          <li>Attempt to gain unauthorized access to any part of the App</li>
+          <li>Use the App to harass, abuse, or harm another person or group</li>
+          <li>Use any robot, spider, or other automatic device to access the App</li>
+        </ul>
 
-        <h2 className="text-2xl font-semibold mt-6 mb-4">6. Modifications to Service</h2>
-        <p>We reserve the right to modify or discontinue the Service at any time.</p>
+        <h2 className="text-2xl font-semibold mt-6 mb-4">6. Privacy</h2>
+        <p>Your privacy is important to us. Please review our <Link to="/privacy" className="text-blue-500 hover:underline">Privacy Policy</Link>, which explains how we collect, use, and share information about you.</p>
 
-        <h2 className="text-2xl font-semibold mt-6 mb-4">7. Limitation of Liability</h2>
-        <p>AEROHABITS is provided "as is" without warranties of any kind.</p>
+        <h2 className="text-2xl font-semibold mt-6 mb-4">7. Modifications to Service</h2>
+        <p>We reserve the right to modify or discontinue the Service at any time without notice. We shall not be liable to you or any third party for any modification, suspension, or discontinuance of the Service.</p>
+
+        <h2 className="text-2xl font-semibold mt-6 mb-4">8. Limitation of Liability</h2>
+        <p>In no event shall AEROHABITS, its officers, directors, employees, or agents, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.</p>
+
+        <h2 className="text-2xl font-semibold mt-6 mb-4">9. Governing Law</h2>
+        <p>These Terms shall be governed by and defined following the laws of the United States. AEROHABITS and yourself irrevocably consent that the courts of Missouri shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.</p>
+
+        <h2 className="text-2xl font-semibold mt-6 mb-4">10. Contact Us</h2>
+        <p>If you have any questions about these Terms, please contact us at Support@AeroHabits.com.</p>
 
         <div className="mt-8">
           <Link to="/" className="text-blue-500 hover:underline">← Back to Home</Link>
