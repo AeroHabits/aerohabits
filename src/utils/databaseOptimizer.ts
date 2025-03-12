@@ -134,12 +134,13 @@ export function useDatabaseOptimizer() {
         }
         
         case 'insert': {
-          // Handle insert method - needs appropriate typing
+          // Fix: Handle the insert case with proper typing
           if (Array.isArray(filters)) {
-            query = supabase.from(table).insert(filters);
+            // If filters is already an array, we can pass it directly
+            query = supabase.from(table).insert(filters as any[]);
           } else {
-            // For single object insert, convert to array
-            query = supabase.from(table).insert([filters]);
+            // For single object, we need to cast it to any[] to avoid type issues
+            query = supabase.from(table).insert([filters] as any[]);
           }
           break;
         }
@@ -167,12 +168,13 @@ export function useDatabaseOptimizer() {
         }
         
         case 'upsert': {
-          // Handle upsert method - needs appropriate typing
+          // Fix: Handle the upsert case with proper typing
           if (Array.isArray(filters)) {
-            query = supabase.from(table).upsert(filters);
+            // If filters is already an array, we can pass it directly
+            query = supabase.from(table).upsert(filters as any[]);
           } else {
-            // For single object upsert, convert to array
-            query = supabase.from(table).upsert([filters]);
+            // For single object, we need to cast it to any[] to avoid type issues
+            query = supabase.from(table).upsert([filters] as any[]);
           }
           break;
         }
