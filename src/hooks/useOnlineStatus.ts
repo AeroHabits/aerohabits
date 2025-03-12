@@ -191,14 +191,17 @@ export function useOnlineStatus() {
           // Only track network changes if quality changed
           if (prev.quality !== quality) {
             // Convert our quality to the format expected by trackNetworkChange
-            // Fix: Use correct type for the quality comparison
             let networkStatus: 'online' | 'offline' | 'poor' | 'good';
             
+            // Fixed comparison: Use string comparison instead of comparing enum-like values
             if (quality === 'offline') {
               networkStatus = 'offline';
             } else if (quality === 'poor') {
               networkStatus = 'poor';
+            } else if (quality === 'good') {
+              networkStatus = 'good';
             } else {
+              // Default case for 'acceptable' quality
               networkStatus = 'online';
             }
             
