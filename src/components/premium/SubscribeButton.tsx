@@ -94,7 +94,7 @@ export function SubscribeButton() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.8 }}
-      className="relative"
+      className="relative space-y-4"
     >
       <motion.div 
         className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg blur opacity-75"
@@ -179,6 +179,13 @@ export function SubscribeButton() {
           )}
         </span>
       </Button>
+
+      <div className="text-center text-sm text-gray-400 mt-2 px-4">
+        <p>Payment will be charged to your Apple ID account at the confirmation of purchase.</p>
+        <p className="mt-1">Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period.</p>
+        <p className="mt-1">Your account will be charged for renewal within 24 hours prior to the end of the current period.</p>
+        <p className="mt-1">You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.</p>
+      </div>
     </motion.div>
   );
 }

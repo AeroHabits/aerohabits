@@ -81,11 +81,12 @@ export function PricingCard({ features }: PricingCardProps) {
             className="space-y-3 border-t border-gray-800 pt-4"
           >
             <p className="text-sm text-gray-400 text-center">
-              You'll be charged $9.99 monthly. Cancel anytime.
+              Subscriptions will be charged to your credit card through your Apple ID account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period.
             </p>
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-              <Info className="w-4 h-4" />
-              <p>Secure payment processing by Stripe</p>
+            <div className="flex items-center justify-center gap-2">
+              <a href="/terms" className="text-sm text-blue-400 hover:underline">Terms of Service</a>
+              <span className="text-gray-500">•</span>
+              <a href="/privacy" className="text-sm text-blue-400 hover:underline">Privacy Policy</a>
             </div>
           </motion.div>
         </div>

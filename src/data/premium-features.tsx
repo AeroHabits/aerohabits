@@ -28,8 +28,8 @@ export const premiumFeatures = [
     icon: <Gem className="h-5 w-5 text-indigo-400" />
   },
   {
-    title: "Standard Support",
-    description: "Email support for technical issues and questions",
+    title: "Priority Support",
+    description: "Priority email support for all your questions",
     icon: <Crown className="h-5 w-5 text-amber-400" />
   }
 ];

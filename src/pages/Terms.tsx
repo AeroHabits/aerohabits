@@ -19,15 +19,18 @@ export default function Terms() {
         United States<br />
         Email: Support@AeroHabits.com</p>
 
-        <h2 className="text-2xl font-semibold mt-6 mb-4">3. Subscription Terms</h2>
+        <h2 className="text-2xl font-semibold mt-6 mb-4" id="subscription-terms">3. Subscription Terms</h2>
         <p>AeroHabits offers subscription services that provide access to premium features. The following terms apply to all subscriptions:</p>
         <ul className="list-disc pl-6 space-y-2">
-          <li>Subscriptions are billed on a monthly basis at the rate indicated at the time of purchase.</li>
-          <li>Your subscription will automatically renew unless you cancel at least 24 hours before the end of the current billing period.</li>
-          <li>You can cancel anytime through your account settings, or by contacting customer support.</li>
-          <li>No refunds or credits will be provided for partial subscription periods or unused subscription time.</li>
-          <li>We may change subscription fees at any time, but will provide notice before these changes affect you.</li>
+          <li>Subscriptions are billed on a monthly basis at the rate of $9.99 per month.</li>
+          <li>Payment will be charged to your Apple ID account at the confirmation of purchase.</li>
+          <li>Your subscription will automatically renew unless auto-renew is turned off at least 24 hours before the end of the current billing period.</li>
+          <li>Your account will be charged for renewal within 24 hours prior to the end of the current period.</li>
+          <li>You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.</li>
+          <li>No refunds will be provided for the unused portion of any subscription period.</li>
+          <li>We reserve the right to change subscription fees. Any price changes will be communicated to you in advance and will apply to the next billing cycle.</li>
           <li>Trial periods, when offered, provide access to premium features for a limited time without charge. If you do not cancel before the end of the trial, you will be automatically charged for a subscription.</li>
+          <li>By subscribing, you authorize us to charge the payment method associated with your Apple ID account.</li>
         </ul>
 
         <h2 className="text-2xl font-semibold mt-6 mb-4">4. User Accounts</h2>
