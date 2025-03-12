@@ -180,7 +180,7 @@ export function useOnlineStatus() {
         
         // Update connection details
         setConnectionDetails(prev => {
-          const newDetails: ConnectionStatus = {
+          const newDetails = {
             ...prev,
             latency: medianLatency,
             quality,
@@ -191,22 +191,7 @@ export function useOnlineStatus() {
           
           // Only track network changes if quality changed
           if (prev.quality !== quality) {
-            // Convert our quality to the format expected by trackNetworkChange
-            let networkStatus: 'online' | 'offline' | 'poor' | 'good';
-            
-            // Fixed comparison: Use string comparison with proper type narrowing
-            if (quality === 'offline') {
-              networkStatus = 'offline';
-            } else if (quality === 'poor') {
-              networkStatus = 'poor';
-            } else if (quality === 'good') {
-              networkStatus = 'good';
-            } else {
-              // Default case for 'acceptable' quality
-              networkStatus = 'online';
-            }
-            
-            trackNetworkChange(networkStatus, { 
+            trackNetworkChange(quality, { 
               latency: medianLatency,
               downlinkSpeed,
               reliability
@@ -218,7 +203,7 @@ export function useOnlineStatus() {
       } else if (isOnline) {
         // All pings failed but we're still "online" according to the browser
         setConnectionDetails(prev => {
-          const newDetails: ConnectionStatus = {
+          const newDetails = {
             ...prev,
             quality: 'poor',
             lastChecked: Date.now(),

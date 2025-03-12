@@ -1,3 +1,4 @@
+
 // Enhanced analytics system for tracking user behavior and app performance
 import * as Sentry from "@sentry/react";
 
@@ -135,7 +136,7 @@ export const trackEvent = (
       Sentry.metrics.distribution(
         `app.${category}.${action}`, 
         value,
-        { tags: label ? { label } : undefined }
+        label ? { label } : undefined
       );
     }
   } catch (error) {
@@ -205,7 +206,6 @@ export const trackSyncOperation = (
   );
 };
 
-// Update the trackNetworkChange function to match the expected parameter types
 export const trackNetworkChange = (
   status: 'online' | 'offline' | 'poor' | 'good',
   properties?: Record<string, any>

@@ -89,18 +89,18 @@ export function useDatabaseOptimizer() {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     
     try {
-      // Initialize the query builder correctly based on the method type
-      let query: any;
+      let query = supabase.from(table);
       
       // Set up query based on method
       switch (method) {
-        case 'select': {
-          query = supabase.from(table).select(select);
+        case 'select':
+          query = query.select(select);
           
           // Add relations if specified
           if (relations.length > 0) {
-            const relationSelects = relations.map(r => `, ${r}(*)`).join('');
-            query = supabase.from(table).select(`${select}${relationSelects}`);
+            query = query.select(
+              `${select}${relations.map(r => `, ${r}(*)`).join('')}`
+            );
           }
           
           // Apply filters
@@ -110,15 +110,13 @@ export function useDatabaseOptimizer() {
             } else if (value !== null && typeof value === 'object') {
               // Handle special operators like gt, lt, etc.
               Object.entries(value).forEach(([op, val]) => {
-                switch (op) {
-                  case 'gt': query = query.gt(key, val); break;
-                  case 'gte': query = query.gte(key, val); break;
-                  case 'lt': query = query.lt(key, val); break;
-                  case 'lte': query = query.lte(key, val); break;
-                  case 'like': query = query.like(key, `%${val}%`); break;
-                  case 'ilike': query = query.ilike(key, `%${val}%`); break;
-                  case 'neq': query = query.neq(key, val); break;
-                }
+                if (op === 'gt') query = query.gt(key, val);
+                else if (op === 'gte') query = query.gte(key, val);
+                else if (op === 'lt') query = query.lt(key, val);
+                else if (op === 'lte') query = query.lte(key, val);
+                else if (op === 'like') query = query.like(key, `%${val}%`);
+                else if (op === 'ilike') query = query.ilike(key, `%${val}%`);
+                else if (op === 'neq') query = query.neq(key, val);
               });
             } else {
               query = query.eq(key, value);
@@ -131,24 +129,15 @@ export function useDatabaseOptimizer() {
             .range(offset, offset + limit - 1);
           
           break;
-        }
         
-        case 'insert': {
-          // Fix: Handle the insert case with proper typing
-          if (Array.isArray(filters)) {
-            // If filters is already an array, we can pass it directly
-            query = supabase.from(table).insert(filters as any[]);
-          } else {
-            // For single object, we need to cast it to any[] to avoid type issues
-            query = supabase.from(table).insert([filters] as any[]);
-          }
+        case 'insert':
+          query = query.insert(filters);
           break;
-        }
         
-        case 'update': {
+        case 'update':
           // Extract the update data and conditions
           const { conditions, ...updateData } = filters;
-          query = supabase.from(table).update(updateData);
+          query = query.update(updateData);
           
           // Apply conditions if provided
           if (conditions) {
@@ -157,27 +146,16 @@ export function useDatabaseOptimizer() {
             });
           }
           break;
-        }
         
-        case 'delete': {
-          query = supabase.from(table).delete();
+        case 'delete':
           Object.entries(filters).forEach(([key, value]) => {
             query = query.eq(key, value);
           });
           break;
-        }
         
-        case 'upsert': {
-          // Fix: Handle the upsert case with proper typing
-          if (Array.isArray(filters)) {
-            // If filters is already an array, we can pass it directly
-            query = supabase.from(table).upsert(filters as any[]);
-          } else {
-            // For single object, we need to cast it to any[] to avoid type issues
-            query = supabase.from(table).upsert([filters] as any[]);
-          }
+        case 'upsert':
+          query = query.upsert(filters);
           break;
-        }
       }
       
       // Execute the query with performance monitoring
