@@ -11,23 +11,18 @@ interface PricingCardProps {
     description: string;
     icon: React.ReactNode;
   }[];
-  premiumChallenges: {
-    title: string;
-    description: string;
-    icon: React.ReactNode;
-  }[];
 }
 
-export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
+export function PricingCard({ features }: PricingCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.2 }}
     >
-      <Card className="p-8 bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-md border border-purple-700/30 shadow-xl rounded-xl overflow-hidden relative">
+      <Card className="p-8 bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-md border border-gray-700/30 shadow-xl rounded-xl overflow-hidden relative">
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-transparent to-purple-600/10"
+          className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-transparent to-blue-600/10"
           animate={{ 
             backgroundPosition: ["0% 0%", "100% 100%"],
           }}
@@ -74,14 +69,7 @@ export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
           <PremiumFeatureSection 
             title="Premium Features"
             features={features}
-            titleGradient="from-blue-300 to-purple-300"
-          />
-
-          <PremiumFeatureSection 
-            title="Exclusive Premium Challenges"
-            features={premiumChallenges}
-            titleGradient="from-orange-300 to-red-300"
-            variant="challenge"
+            titleGradient="from-blue-300 to-blue-300"
           />
 
           <SubscribeButton />

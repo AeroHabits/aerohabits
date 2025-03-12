@@ -3,51 +3,33 @@ import { Star, Sparkles, Rocket, Award, Gem, Crown, Mountain, Target } from "luc
 
 export const premiumFeatures = [
   {
-    title: "Advanced tracking",
-    description: "Get detailed insights about your habits",
+    title: "Advanced Analytics",
+    description: "Access detailed insights and performance metrics",
     icon: <Star className="h-5 w-5 text-yellow-400" />
   },
   {
-    title: "Smart suggestions",
-    description: "Personalized AI recommendations that evolve with your habits and goals",
+    title: "AI-Powered Recommendations",
+    description: "Personalized suggestions based on your usage patterns",
     icon: <Sparkles className="h-5 w-5 text-blue-400" />
   },
   {
-    title: "Fast support",
-    description: "Get help when you need it",
+    title: "Priority Support",
+    description: "Get immediate assistance when you need it",
     icon: <Rocket className="h-5 w-5 text-purple-400" />
   },
   {
-    title: "Track unlimited habits",
-    description: "No limits on what you can track",
+    title: "Unlimited Tracking",
+    description: "No restrictions on the number of items you can monitor",
     icon: <Award className="h-5 w-5 text-emerald-400" />
   },
   {
-    title: "Progress reports",
-    description: "Weekly and monthly summaries of your progress",
+    title: "Performance Reports",
+    description: "Comprehensive weekly and monthly analysis",
     icon: <Gem className="h-5 w-5 text-indigo-400" />
   },
   {
-    title: "Custom reminders",
-    description: "Set notifications that work for you",
+    title: "Custom Notifications",
+    description: "Configure alerts that fit your workflow",
     icon: <Crown className="h-5 w-5 text-amber-400" />
-  }
-];
-
-export const premiumChallenges = [
-  {
-    title: "Master Challenges",
-    description: "Access exclusive premium difficulty challenges designed to push your limits",
-    icon: <Mountain className="h-5 w-5 text-red-500" />
-  },
-  {
-    title: "Custom Challenge Creation",
-    description: "Create personalized challenges tailored to your specific goals and needs",
-    icon: <Target className="h-5 w-5 text-blue-500" />
-  },
-  {
-    title: "Challenge Analytics",
-    description: "Get detailed performance metrics and insights for all your challenges",
-    icon: <Award className="h-5 w-5 text-amber-500" />
   }
 ];

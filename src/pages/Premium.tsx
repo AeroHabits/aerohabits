@@ -3,9 +3,8 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { GradientBackground } from "@/components/premium/GradientBackground";
-import { PremiumHeader } from "@/components/premium/PremiumHeader";
 import { PricingCard } from "@/components/premium/PricingCard";
-import { premiumFeatures, premiumChallenges } from "@/data/premium-features";
+import { premiumFeatures } from "@/data/premium-features";
 import { PageHeader } from "@/components/layout/PageHeader";
 
 export default function Premium() {
@@ -31,9 +30,15 @@ export default function Premium() {
             <PageHeader />
           </div>
 
+          <div className="text-center space-y-6 mb-10">
+            <h1 className="text-5xl font-bold text-white">Premium Membership</h1>
+            <p className="text-xl text-gray-300 max-w-lg mx-auto">
+              Elevate your productivity with advanced tools designed for professionals.
+            </p>
+          </div>
+
           <PricingCard 
             features={premiumFeatures}
-            premiumChallenges={premiumChallenges}
           />
         </div>
       </div>
