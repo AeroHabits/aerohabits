@@ -1,5 +1,4 @@
 
-// Enhanced analytics system for tracking user behavior and app performance
 import * as Sentry from "@sentry/react";
 
 // Define event categories for consistent tracking
@@ -136,124 +135,12 @@ export const trackEvent = (
       Sentry.metrics.distribution(
         `app.${category}.${action}`, 
         value,
-        { tags: label ? { label } : undefined }  // Fixed: Using tags property instead of direct label
+        { tags: label ? { label } : undefined }
       );
     }
   } catch (error) {
     console.error('Error sending analytics:', error);
   }
-};
-
-// Specific tracking methods
-export const trackPageView = (path: string) => {
-  trackEvent(
-    EVENT_CATEGORIES.PAGE_VIEW, 
-    EVENT_ACTIONS.VIEW,
-    path
-  );
-};
-
-export const trackHabitAction = (
-  action: 'create' | 'complete' | 'delete' | 'update', 
-  habitTitle: string,
-  properties?: Record<string, any>
-) => {
-  trackEvent(
-    EVENT_CATEGORIES.HABIT,
-    action.toUpperCase(),
-    habitTitle,
-    undefined,
-    properties
-  );
-};
-
-export const trackGoalAction = (
-  action: 'create' | 'complete' | 'delete' | 'update', 
-  goalTitle: string,
-  properties?: Record<string, any>
-) => {
-  trackEvent(
-    EVENT_CATEGORIES.GOAL,
-    action.toUpperCase(),
-    goalTitle,
-    undefined,
-    properties
-  );
-};
-
-export const trackSyncOperation = (
-  action: 'start' | 'complete' | 'error',
-  itemCount: number,
-  duration?: number,
-  properties?: Record<string, any>
-) => {
-  trackEvent(
-    EVENT_CATEGORIES.SYNC,
-    action === 'start' 
-      ? EVENT_ACTIONS.SYNC_START 
-      : action === 'complete' 
-        ? EVENT_ACTIONS.SYNC_COMPLETE 
-        : EVENT_ACTIONS.SYNC_ERROR,
-    undefined,
-    duration,
-    {
-      itemCount,
-      ...properties
-    },
-    {
-      deduplicationKey: action === 'start' ? 'sync_operation' : undefined
-    }
-  );
-};
-
-// Network quality detection
-export const trackNetworkChange = (
-  status: 'online' | 'offline' | 'poor' | 'good',
-  properties?: Record<string, any>
-) => {
-  trackEvent(
-    EVENT_CATEGORIES.NETWORK,
-    EVENT_ACTIONS.NETWORK_CHANGE,
-    status,
-    undefined,
-    properties,
-    {
-      deduplicationKey: `network_${status}`,
-      deduplicationWindow: 5 * 60 * 1000 // 5 minutes
-    }
-  );
-};
-
-export const trackPerformance = (
-  label: string, 
-  duration: number,
-  properties?: Record<string, any>
-) => {
-  trackEvent(
-    EVENT_CATEGORIES.APP_PERFORMANCE,
-    EVENT_ACTIONS.LOAD,
-    label,
-    duration,
-    properties
-  );
-};
-
-export const trackError = (
-  errorMessage: string,
-  source: string,
-  properties?: Record<string, any>
-) => {
-  trackEvent(
-    EVENT_CATEGORIES.ERROR,
-    EVENT_ACTIONS.ERROR,
-    source,
-    undefined,
-    {
-      errorMessage,
-      ...properties
-    },
-    { forceSample: true } // Always track errors
-  );
 };
 
 // Initialize analytics system
@@ -263,4 +150,13 @@ export const initAnalytics = () => {
   
   // Track initial network status
   trackNetworkChange(navigator.onLine ? 'online' : 'offline');
+};
+
+// Basic page view tracking
+export const trackPageView = (path: string) => {
+  trackEvent(
+    EVENT_CATEGORIES.PAGE_VIEW, 
+    EVENT_ACTIONS.VIEW,
+    path
+  );
 };

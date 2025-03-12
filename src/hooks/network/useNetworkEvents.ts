@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { trackNetworkChange } from '@/lib/analytics';
+import { trackNetworkChange } from '@/lib/analytics/networkTracking';
 
 export function useNetworkEvents() {
   const [isOnline, setIsOnline] = useState(window.navigator.onLine);

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,7 +10,7 @@ import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
 import { BottomNav } from "./components/layout/BottomNav";
 import { useEffect } from "react";
-import { trackPageView, initAnalytics } from "./lib/analytics";
+import { trackPageView, initAnalytics } from "./lib/analytics"; // Updated import path
 import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";

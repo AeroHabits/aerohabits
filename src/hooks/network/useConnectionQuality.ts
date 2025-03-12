@@ -4,7 +4,7 @@ import { usePingService } from './usePingService';
 import { useReliabilityTracker } from './useReliabilityTracker';
 import { useNetworkEvents } from './useNetworkEvents';
 import { useErrorTracking } from '../useErrorTracking';
-import { trackNetworkChange } from '@/lib/analytics';
+import { trackNetworkChange } from '@/lib/analytics/networkTracking';
 import { ConnectionStatus, LATENCY_THRESHOLDS, PING_ENDPOINTS } from './types';
 
 export function useConnectionQuality() {
