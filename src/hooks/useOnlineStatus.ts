@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback } from 'react';
 import { useErrorTracking } from './useErrorTracking';
 import { trackNetworkChange } from '@/lib/analytics';
@@ -193,7 +194,7 @@ export function useOnlineStatus() {
             // Convert our quality to the format expected by trackNetworkChange
             let networkStatus: 'online' | 'offline' | 'poor' | 'good';
             
-            // Fixed comparison: Use string comparison instead of comparing enum-like values
+            // Fixed comparison: Use string comparison with proper type narrowing
             if (quality === 'offline') {
               networkStatus = 'offline';
             } else if (quality === 'poor') {
