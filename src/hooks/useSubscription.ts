@@ -24,14 +24,15 @@ export function useSubscription() {
       
       if (!user) throw new Error('Not authenticated');
       
+      // Query the database for subscription fields
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_subscribed, subscription_status, current_period_end, app_store_subscription_id')
+        .select('is_subscribed, subscription_status, current_period_end')
         .eq('id', user.id)
         .single();
         
       if (error) throw error;
-      return data;
+      return data as SubscriptionProfile;
     }
   });
 

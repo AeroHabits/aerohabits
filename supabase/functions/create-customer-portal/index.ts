@@ -1,88 +1,103 @@
 
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { corsHeaders } from "../_shared/cors.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3"
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno';
 
-const supabaseAdmin = createClient(
-  Deno.env.get('SUPABASE_URL') ?? '',
-  Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-);
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
   }
 
   try {
-    console.log('Processing customer portal request');
-    const authHeader = req.headers.get('Authorization');
-    
-    if (!authHeader) {
-      console.error('No authorization header provided');
-      return new Response(
-        JSON.stringify({ error: 'No authorization header provided' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
+
+    if (!supabaseUrl || !supabaseKey) {
+      return new Response(JSON.stringify({ error: 'Missing Supabase credentials' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
     }
     
-    const token = authHeader.replace('Bearer ', '');
-    console.log('Auth token received, getting user');
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
+      auth: { persistSession: false },
+    });
     
-    const { data: { user }, error: userError } = await supabaseAdmin.auth.getUser(token);
-
-    if (userError || !user) {
-      console.error('Authentication error:', userError?.message || 'User not found');
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized', details: userError?.message }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // Get the requesting user
+    const { data: { session }, error: authError } = await supabaseAdmin.auth.getSession();
+    if (authError || !session) {
+      return new Response(JSON.stringify({ error: 'Not authenticated' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
     }
-
-    console.log('User authenticated, user ID:', user.id);
     
-    // Get user's subscription information from profiles
+    const { data: body } = await req.json();
+    const returnUrl = body.returnUrl || 'https://yourapp.com/settings';
+    
+    // Get user profile to check if they have a Stripe customer ID
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('subscription_status, app_store_subscription_id')
-      .eq('id', user.id)
+      .select('stripe_customer_id, app_store_subscription_id')
+      .eq('id', session.user.id)
       .single();
-
+    
     if (profileError) {
-      console.error('Error fetching profile:', profileError.message);
-      return new Response(
-        JSON.stringify({ error: 'Error fetching profile', details: profileError.message }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+      console.error('Error getting user profile:', profileError);
+      return new Response(JSON.stringify({ error: 'Error retrieving user profile' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
     }
-
-    if (!profile?.subscription_status || profile.subscription_status === 'inactive') {
-      console.error('No active subscription found for user');
-      return new Response(
-        JSON.stringify({ error: 'No active subscription found' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    
+    // Check if subscription is from App Store
+    if (profile.app_store_subscription_id) {
+      console.log('User has App Store subscription');
+      return new Response(JSON.stringify({ shouldUseAppStore: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
     }
-
-    // For iOS subscriptions, we need to return a response instructing the app to open 
-    // the App Store subscription management page
-    console.log('Returning App Store subscription management URL');
-    return new Response(
-      JSON.stringify({ 
-        shouldUseAppStore: true,
-        message: "Please manage your subscription through App Store Settings"
-      }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    
+    // No Stripe secret key or Stripe customer ID indicates we're in development or the user doesn't have a subscription
+    if (!stripeSecretKey || !profile.stripe_customer_id) {
+      console.log('Missing Stripe credentials or customer ID');
+      return new Response(JSON.stringify({ error: 'Stripe not configured or no subscription found' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+    
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: '2022-11-15',
+    });
+    
+    // Create a Stripe customer portal session
+    const session = await stripe.billingPortal.sessions.create({
+      customer: profile.stripe_customer_id,
+      return_url: returnUrl,
+    });
+    
+    return new Response(JSON.stringify({ url: session.url }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
   } catch (error) {
-    console.error('Error handling customer portal request:', error.message, error.stack);
-    return new Response(
-      JSON.stringify({ 
-        error: 'Failed to process subscription management request', 
-        details: error.message,
-        stack: error.stack
-      }),
-      { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    console.error('Error creating customer portal:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
   }
-})
+});
