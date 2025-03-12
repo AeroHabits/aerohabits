@@ -101,7 +101,15 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Check subscription status
+  // Check if user is in onboarding flow
+  const isOnboardingRoute = location.pathname === '/onboarding';
+  
+  // If user is authenticated and on the onboarding path, allow them to continue
+  if (isOnboardingRoute) {
+    return <>{children}</>;
+  }
+
+  // Check subscription status for non-onboarding paths
   if (profile) {
     const isSubscriptionActive = profile.subscription_status === 'active';
     const isInTrialPeriod = profile.trial_end_date && new Date(profile.trial_end_date) > new Date();
@@ -110,15 +118,11 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     // Don't redirect if:
     // 1. User has active subscription or is in trial period OR
     // 2. Already on premium page OR
-    // 3. Just completed payment (success=true in URL) OR
-    // 4. On the onboarding page OR
-    // 5. On the auth page
-    const isOnAuthFlow = location.pathname === '/auth' || 
-                         location.pathname === '/premium' || 
-                         location.pathname === '/onboarding' ||
-                         location.search.includes('success=true');
+    // 3. Just completed payment (success=true in URL)
+    const isOnPremiumOrPaymentFlow = location.pathname === '/premium' || 
+                                    location.search.includes('success=true');
                          
-    if (!hasActiveAccess && !isOnAuthFlow) {
+    if (!hasActiveAccess && !isOnPremiumOrPaymentFlow) {
       toast.error("Please subscribe to continue using the app.");
       return <Navigate to="/premium" replace />;
     }
