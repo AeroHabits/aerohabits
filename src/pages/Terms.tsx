@@ -29,7 +29,6 @@ export default function Terms() {
           <li>You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.</li>
           <li>No refunds will be provided for the unused portion of any subscription period.</li>
           <li>We reserve the right to change subscription fees. Any price changes will be communicated to you in advance and will apply to the next billing cycle.</li>
-          <li>Trial periods, when offered, provide access to premium features for a limited time without charge. If you do not cancel before the end of the trial, you will be automatically charged for a subscription.</li>
           <li>By subscribing, you authorize us to charge the payment method associated with your Apple ID account.</li>
         </ul>
 

@@ -19,7 +19,7 @@ export function SubscribeButton() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('subscription_status, is_subscribed, subscription_id, stripe_customer_id')
+        .select('subscription_status, is_subscribed, subscription_id')
         .eq('id', user.id)
         .single();
 
@@ -34,7 +34,7 @@ export function SubscribeButton() {
     try {
       setIsLoading(true);
       
-      // Get current auth token for authorization
+      // Get current auth session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error('You need to be logged in to subscribe');
@@ -42,47 +42,33 @@ export function SubscribeButton() {
         return;
       }
       
-      // Check if user already has an active subscription
       if (hasActiveSubscription) {
-        // Verify user has a Stripe customer ID
-        if (!profile?.stripe_customer_id) {
-          toast.error('Unable to manage subscription. Please contact support.');
-          return;
-        }
+        // For iOS: Redirect to subscription management in Settings app
+        toast.info('Please manage your subscription in your device settings');
         
-        // Redirect to customer portal instead of creating a new subscription
-        const { data: portalData, error: portalError } = await supabase.functions.invoke('create-customer-portal', {
-          body: { returnUrl: window.location.origin + '/settings' }
-        });
-        
-        if (portalError) throw portalError;
-        
-        if (!portalData?.url) {
-          throw new Error('No portal URL returned from Stripe');
-        }
-        
-        window.location.href = portalData.url;
+        // Note: In a real implementation, you would use something like:
+        // if (capacitor available) {
+        //   // Use Capacitor plugin to open iOS subscription settings
+        //   App.openUrl({ url: 'app-settings:' });
+        // }
         return;
       }
       
-      // Create a new subscription with trial period
-      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: {
-          priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-          returnUrl: window.location.origin + '/settings',
-          includeTrialPeriod: true
-        }
-      });
+      // For iOS: This is where you would trigger the StoreKit purchase flow
+      // This is just a placeholder for now
+      toast.info('This will initiate the Apple in-app purchase in the final implementation');
       
-      if (error) throw error;
+      // Note: In a real StoreKit implementation, you'd do something like:
+      // 1. Request available products from App Store
+      // 2. Present purchase UI
+      // 3. Handle purchase completion
+      // 4. Verify receipt with your server
+      // 5. Update the user's subscription status in your database
       
-      if (!data?.url) {
-        throw new Error('No checkout URL returned from Stripe');
-      }
+      console.log('StoreKit purchase would be initiated here');
       
-      window.location.href = data.url;
     } catch (error) {
-      console.error('Error creating checkout session:', error);
+      console.error('Error initiating subscription:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
@@ -165,7 +151,7 @@ export function SubscribeButton() {
               >
                 <Sparkles className="w-5 h-5 text-yellow-300" />
               </motion.div>
-              Start 3-Day Free Trial
+              Subscribe Now
               <motion.div
                 animate={{ 
                   scale: [1, 1.2, 1],
@@ -179,13 +165,6 @@ export function SubscribeButton() {
           )}
         </span>
       </Button>
-
-      <div className="text-center text-sm text-gray-400 mt-2 px-4">
-        <p>Payment will be charged to your Apple ID account at the confirmation of purchase.</p>
-        <p className="mt-1">Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period.</p>
-        <p className="mt-1">Your account will be charged for renewal within 24 hours prior to the end of the current period.</p>
-        <p className="mt-1">You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.</p>
-      </div>
     </motion.div>
   );
 }

@@ -81,7 +81,7 @@ export function PricingCard({ features }: PricingCardProps) {
             className="space-y-3 border-t border-gray-800 pt-4"
           >
             <p className="text-sm text-gray-400 text-center">
-              Subscriptions will be charged to your credit card through your Apple ID account. Subscription automatically renews unless cancelled at least 24 hours before the end of the current period.
+              Payment will be charged to your Apple ID account at the confirmation of purchase. Subscription automatically renews unless it is canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period.
             </p>
             <div className="flex items-center justify-center gap-2">
               <a href="/terms" className="text-sm text-blue-400 hover:underline">Terms of Service</a>
