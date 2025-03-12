@@ -19,7 +19,7 @@ export function SubscriptionCard() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_subscribed, subscription_status')
+        .select('is_subscribed, subscription_status, stripe_customer_id')
         .eq('id', user.id)
         .single();
 
@@ -31,12 +31,31 @@ export function SubscriptionCard() {
   const handleManageSubscription = async () => {
     try {
       setIsLoading(true);
+      
+      // Get current auth token for authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('You need to be logged in to manage your subscription');
+        return;
+      }
+      
+      // Check if user has a Stripe customer ID
+      if (!profile?.stripe_customer_id) {
+        toast.error('No subscription found. Please subscribe first.');
+        return;
+      }
+      
       const { data, error } = await supabase.functions.invoke('create-customer-portal', {
         body: { returnUrl: window.location.origin + '/settings' }
       });
 
       if (error) throw error;
-      window.location.href = data.url;
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No portal URL returned from Stripe');
+      }
     } catch (error) {
       console.error('Error opening customer portal:', error);
       toast.error('Could not open subscription settings. Please try again.');

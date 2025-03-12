@@ -19,7 +19,7 @@ export function SubscribeButton() {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('subscription_status, is_subscribed, subscription_id')
+        .select('subscription_status, is_subscribed, subscription_id, stripe_customer_id')
         .eq('id', user.id)
         .single();
 
@@ -34,14 +34,33 @@ export function SubscribeButton() {
     try {
       setIsLoading(true);
       
+      // Get current auth token for authorization
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error('You need to be logged in to subscribe');
+        window.location.href = '/auth';
+        return;
+      }
+      
       // Check if user already has an active subscription
       if (hasActiveSubscription) {
+        // Verify user has a Stripe customer ID
+        if (!profile?.stripe_customer_id) {
+          toast.error('Unable to manage subscription. Please contact support.');
+          return;
+        }
+        
         // Redirect to customer portal instead of creating a new subscription
         const { data: portalData, error: portalError } = await supabase.functions.invoke('create-customer-portal', {
           body: { returnUrl: window.location.origin + '/settings' }
         });
         
         if (portalError) throw portalError;
+        
+        if (!portalData?.url) {
+          throw new Error('No portal URL returned from Stripe');
+        }
+        
         window.location.href = portalData.url;
         return;
       }
@@ -56,26 +75,14 @@ export function SubscribeButton() {
       });
       
       if (error) throw error;
+      
+      if (!data?.url) {
+        throw new Error('No checkout URL returned from Stripe');
+      }
+      
       window.location.href = data.url;
     } catch (error) {
       console.error('Error creating checkout session:', error);
-      toast.error('Something went wrong. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleManageSubscription = async () => {
-    try {
-      setIsLoading(true);
-      const { data, error } = await supabase.functions.invoke('create-customer-portal', {
-        body: { returnUrl: window.location.origin + '/settings' }
-      });
-      
-      if (error) throw error;
-      window.location.href = data.url;
-    } catch (error) {
-      console.error('Error creating customer portal:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
@@ -103,7 +110,7 @@ export function SubscribeButton() {
       />
       
       <Button
-        onClick={hasActiveSubscription ? handleManageSubscription : handleSubscribe}
+        onClick={handleSubscribe}
         disabled={isLoading || isProfileLoading}
         variant="premium"
         className="relative w-full py-7 text-lg font-semibold tracking-wide rounded-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group"
