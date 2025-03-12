@@ -8,6 +8,7 @@ import { premiumFeatures } from "@/data/premium-features";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { PremiumFeatureCard } from "@/components/subscription/PremiumFeatureCard";
 
 export default function Premium() {
   const navigate = useNavigate();
@@ -64,11 +65,15 @@ export default function Premium() {
               <div className="mt-4">
                 <Button
                   onClick={() => navigate('/auth')}
-                  variant="secondary"
-                  className="bg-white/10 hover:bg-white/20 text-white"
+                  variant="premium"
+                  size="lg"
+                  className="px-8 py-6 text-lg"
                 >
                   Sign in to get started
                 </Button>
+                <p className="text-gray-400 mt-4">
+                  New to AeroHabits? Create an account to start your free trial.
+                </p>
               </div>
             )}
           </div>
@@ -76,6 +81,43 @@ export default function Premium() {
           <PricingCard 
             features={premiumFeatures}
           />
+          
+          {/* Feature highlights */}
+          <div className="mt-12">
+            <h2 className="text-2xl font-semibold text-white text-center mb-6">
+              Premium Features
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                {
+                  icon: <span className="text-yellow-500 text-2xl">✨</span>,
+                  title: "Advanced Analytics",
+                  description: "Access detailed insights and performance metrics"
+                },
+                {
+                  icon: <span className="text-blue-500 text-2xl">🤖</span>,
+                  title: "AI-Powered Recommendations",
+                  description: "Personalized suggestions based on your usage patterns"
+                },
+                {
+                  icon: <span className="text-green-500 text-2xl">🎯</span>,
+                  title: "Advanced Goal Tracking",
+                  description: "Set complex goals with detailed progress tracking"
+                },
+                {
+                  icon: <span className="text-purple-500 text-2xl">🏆</span>,
+                  title: "Exclusive Challenges",
+                  description: "Access premium challenges for expert habit builders"
+                }
+              ].map((feature, index) => (
+                <PremiumFeatureCard 
+                  key={index}
+                  feature={feature}
+                  index={index}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>

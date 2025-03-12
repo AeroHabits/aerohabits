@@ -16,13 +16,13 @@ import Onboarding from "@/pages/Onboarding";
 export function AppRoutes() {
   return (
     <Routes>
-      {/* Non-protected routes */}
+      {/* Public routes - accessible without authentication */}
       <Route path="/auth" element={<Auth />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
       <Route path="/premium" element={<Premium />} />
       
-      {/* Protected routes */}
+      {/* Protected routes - require authentication */}
       <Route
         path="/onboarding"
         element={
