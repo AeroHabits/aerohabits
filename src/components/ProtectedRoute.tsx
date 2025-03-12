@@ -30,28 +30,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     requestAppTrackingTransparency();
   }, []);
 
-  // First, check if user is authenticated
-  useEffect(() => {
-    // Check for existing session on component mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log("Auth session check:", !!session);
-      setIsAuthenticated(!!session);
-      setIsLoading(false);
-    });
-
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state change:", !!session);
-      setIsAuthenticated(!!session);
-      setIsLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
-
-  // Only fetch profile data if the user is authenticated
   const { data: profile, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -67,20 +45,37 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       if (error) throw error;
       return data;
     },
-    enabled: isAuthenticated, // Only run this query if the user is authenticated
+    enabled: isAuthenticated,
     refetchInterval: 5000, // Refetch every 5 seconds to catch subscription updates
     staleTime: 0, // Consider data always stale to ensure fresh checks
   });
 
+  useEffect(() => {
+    // Check for existing session on component mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+      setIsLoading(false);
+    });
+
+    // Listen for auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+      setIsLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Add URL parameter check
   useEffect(() => {
-    if (location.search.includes('success=true') && isAuthenticated) {
+    if (location.search.includes('success=true')) {
       refetch(); // Force a profile refetch when returning from successful payment
       toast.success("Your subscription has been activated successfully!");
     }
-  }, [location.search, refetch, isAuthenticated]);
+  }, [location.search, refetch]);
 
-  // Show loading state
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
@@ -103,7 +98,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   // If not authenticated, always redirect to auth page
   if (!isAuthenticated) {
-    console.log("User not authenticated, redirecting to /auth");
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
@@ -129,7 +123,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
                                     location.search.includes('success=true');
                          
     if (!hasActiveAccess && !isOnPremiumOrPaymentFlow) {
-      console.log("User needs to subscribe: redirecting to /premium");
       toast.error("Please subscribe to continue using the app.");
       return <Navigate to="/premium" replace />;
     }
