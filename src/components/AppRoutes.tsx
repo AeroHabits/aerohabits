@@ -16,11 +16,21 @@ import Onboarding from "@/pages/Onboarding";
 export function AppRoutes() {
   return (
     <Routes>
+      {/* Non-protected routes */}
       <Route path="/auth" element={<Auth />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
-      <Route path="/onboarding" element={<Onboarding />} />
       <Route path="/premium" element={<Premium />} />
+      
+      {/* Protected routes */}
+      <Route
+        path="/onboarding"
+        element={
+          <ProtectedRoute>
+            <Onboarding />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/"
         element={

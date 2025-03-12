@@ -96,7 +96,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
-  // If not authenticated, redirect to auth page
+  // If not authenticated, always redirect to auth page
   if (!isAuthenticated) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
@@ -109,7 +109,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <>{children}</>;
   }
 
-  // Check subscription status for non-onboarding paths
+  // Only check subscription status for authenticated users on non-onboarding paths
   if (profile) {
     const isSubscriptionActive = profile.subscription_status === 'active';
     const isInTrialPeriod = profile.trial_end_date && new Date(profile.trial_end_date) > new Date();
