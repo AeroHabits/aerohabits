@@ -5,7 +5,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Sparkles, Star, Fire } from "lucide-react";
+import { Sparkles, Star, Flame } from "lucide-react";
 
 const Habits = () => {
   const isMobile = useIsMobile();
@@ -49,7 +49,7 @@ const Habits = () => {
               className="mb-3 inline-flex gap-2"
             >
               <Star className="h-5 w-5 text-yellow-300 animate-pulse" />
-              <Fire className="h-5 w-5 text-orange-400 animate-pulse" />
+              <Flame className="h-5 w-5 text-orange-400 animate-pulse" />
               <Sparkles className="h-5 w-5 text-blue-300 animate-pulse" />
             </motion.div>
             
