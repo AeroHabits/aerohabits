@@ -1,3 +1,4 @@
+
 // Enhanced analytics system for tracking user behavior and app performance
 import * as Sentry from "@sentry/react";
 
@@ -135,7 +136,7 @@ export const trackEvent = (
       Sentry.metrics.distribution(
         `app.${category}.${action}`, 
         value,
-        label ? { label } : undefined
+        { tags: label ? { label } : undefined }  // Fixed: Using tags property instead of direct label
       );
     }
   } catch (error) {
