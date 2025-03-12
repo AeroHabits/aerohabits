@@ -134,7 +134,13 @@ export function useDatabaseOptimizer() {
         }
         
         case 'insert': {
-          query = supabase.from(table).insert(filters);
+          // Handle insert method - needs appropriate typing
+          if (Array.isArray(filters)) {
+            query = supabase.from(table).insert(filters);
+          } else {
+            // For single object insert, convert to array
+            query = supabase.from(table).insert([filters]);
+          }
           break;
         }
         
@@ -161,7 +167,13 @@ export function useDatabaseOptimizer() {
         }
         
         case 'upsert': {
-          query = supabase.from(table).upsert(filters);
+          // Handle upsert method - needs appropriate typing
+          if (Array.isArray(filters)) {
+            query = supabase.from(table).upsert(filters);
+          } else {
+            // For single object upsert, convert to array
+            query = supabase.from(table).upsert([filters]);
+          }
           break;
         }
       }

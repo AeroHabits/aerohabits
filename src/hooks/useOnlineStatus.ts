@@ -193,7 +193,7 @@ export function useOnlineStatus() {
           if (prev.quality !== quality) {
             // Convert our quality to the format expected by trackNetworkChange
             const networkStatus = quality === 'offline' ? 'offline' : 
-                                  quality === 'poor' ? 'poor' : 'online';
+                                 quality === 'poor' ? 'poor' : 'online';
             
             trackNetworkChange(networkStatus, { 
               latency: medianLatency,
