@@ -1,5 +1,4 @@
 
-import { stripe } from "./stripe.ts";
 import { updateUserSubscription, findUserByCustomerId } from "./webhookHandlerUtils.ts";
 
 // Handle checkout completion events
@@ -14,15 +13,14 @@ export async function handleCheckoutComplete(session) {
   console.log(`Checkout completed. Subscription: ${subscriptionId}, Customer: ${customerId}`);
   
   try {
-    // Fetch the subscription to get the latest status
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    const status = subscription.status;
-    const isTrialing = status === 'trialing';
-    const trialEnd = isTrialing ? new Date(subscription.trial_end * 1000).toISOString() : null;
-    const currentPeriodEnd = new Date(subscription.current_period_end * 1000).toISOString();
+    // Get subscription status from the session
+    const status = session.status || 'active';
+    const isTrialing = session.trial_period ? true : false;
+    const trialEnd = isTrialing && session.trial_end ? new Date(session.trial_end * 1000).toISOString() : null;
+    const currentPeriodEnd = session.expires_at ? new Date(session.expires_at * 1000).toISOString() : null;
     
     // Get the user ID from the metadata
-    const userId = session.metadata?.userId || subscription.metadata?.userId;
+    const userId = session.metadata?.userId;
     
     if (userId) {
       await updateUserSubscription(userId, customerId, subscriptionId, status, trialEnd, currentPeriodEnd);

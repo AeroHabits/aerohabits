@@ -4,6 +4,12 @@ import { getAppStoreSignature, verifyAppStoreWebhook, processWebhookEvent } from
 import { registerWebhookHandlers } from "../_shared/webhookHandlers.ts";
 import * as handlers from "../_shared/webhookHandlers.ts";
 
+// Define CORS headers for browser-based requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
 // Register all webhook handlers
 registerWebhookHandlers({
   "SUBSCRIPTION_PURCHASED": handlers.handleSubscriptionCreated,
@@ -15,11 +21,17 @@ registerWebhookHandlers({
 });
 
 serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
   const signature = getAppStoreSignature(req);
 
   if (!signature) {
     return new Response(JSON.stringify({ error: "No signature provided" }), {
       status: 400,
+      headers: corsHeaders
     });
   }
 
@@ -30,8 +42,10 @@ serve(async (req) => {
   try {
     event = verifyAppStoreWebhook(body, signature, webhookSecret);
   } catch (err) {
+    console.error("Webhook verification failed:", err.message);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 400,
+      headers: corsHeaders
     });
   }
 
@@ -46,12 +60,16 @@ serve(async (req) => {
       processed: processed
     }), {
       status: 200,
+      headers: corsHeaders
     });
   } catch (error) {
     console.error(`Error processing webhook: ${error.message}`);
     return new Response(
       JSON.stringify({ error: "An error occurred processing the webhook" }),
-      { status: 500 }
+      { 
+        status: 500,
+        headers: corsHeaders
+      }
     );
   }
 });

@@ -1,5 +1,4 @@
 
-import { stripe } from "./stripe.ts";
 import { supabaseAdmin } from "./supabaseAdmin.ts";
 import { updateUserSubscription, findUserByCustomerId } from "./webhookHandlerUtils.ts";
 
@@ -15,12 +14,11 @@ export async function handleInvoicePaymentSucceeded(invoice) {
   console.log(`Invoice payment succeeded. Subscription: ${subscriptionId}, Customer: ${customerId}`);
   
   try {
-    // Fetch the subscription to get the latest status
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-    const status = subscription.status;
-    const isTrialing = status === 'trialing';
-    const trialEnd = isTrialing ? new Date(subscription.trial_end * 1000).toISOString() : null;
-    const currentPeriodEnd = new Date(subscription.current_period_end * 1000).toISOString();
+    // Use invoice data to update subscription
+    const status = 'active';
+    const isTrialing = false;
+    const trialEnd = null;
+    const currentPeriodEnd = invoice.period_end ? new Date(invoice.period_end * 1000).toISOString() : null;
     
     // Lookup user by customer ID
     const userId = await findUserByCustomerId(customerId);
