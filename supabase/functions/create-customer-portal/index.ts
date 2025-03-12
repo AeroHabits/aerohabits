@@ -1,7 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { corsHeaders } from "../_shared/cors.ts"
-import { stripe } from "../_shared/stripe.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3"
 
 const supabaseAdmin = createClient(
@@ -42,10 +41,10 @@ serve(async (req) => {
 
     console.log('User authenticated, user ID:', user.id);
     
-    // Get user's Stripe customer ID from profiles
+    // Get user's subscription information from profiles
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('stripe_customer_id')
+      .select('subscription_status, app_store_subscription_id')
       .eq('id', user.id)
       .single();
 
@@ -57,37 +56,29 @@ serve(async (req) => {
       );
     }
 
-    if (!profile?.stripe_customer_id) {
-      console.error('No Stripe customer ID found for user');
+    if (!profile?.subscription_status || profile.subscription_status === 'inactive') {
+      console.error('No active subscription found for user');
       return new Response(
-        JSON.stringify({ error: 'No subscription found. User does not have a Stripe customer ID.' }),
+        JSON.stringify({ error: 'No active subscription found' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    console.log('Creating portal session for customer:', profile.stripe_customer_id);
-    
-    // Get returnUrl from request body
-    const { returnUrl } = await req.json();
-    const validReturnUrl = returnUrl || `${req.headers.get('Origin') || ''}/settings`;
-    
-    // Create customer portal session
-    console.log('Return URL:', validReturnUrl);
-    const session = await stripe.billingPortal.sessions.create({
-      customer: profile.stripe_customer_id,
-      return_url: validReturnUrl,
-    });
-
-    console.log('Portal session created successfully');
+    // For iOS subscriptions, we need to return a response instructing the app to open 
+    // the App Store subscription management page
+    console.log('Returning App Store subscription management URL');
     return new Response(
-      JSON.stringify({ url: session.url }),
+      JSON.stringify({ 
+        shouldUseAppStore: true,
+        message: "Please manage your subscription through App Store Settings"
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error creating customer portal session:', error.message, error.stack);
+    console.error('Error handling customer portal request:', error.message, error.stack);
     return new Response(
       JSON.stringify({ 
-        error: 'Failed to create customer portal session', 
+        error: 'Failed to process subscription management request', 
         details: error.message,
         stack: error.stack
       }),

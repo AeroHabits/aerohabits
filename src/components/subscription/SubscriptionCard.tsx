@@ -1,4 +1,3 @@
-
 import { Crown, Calendar, Sparkles, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -47,14 +46,19 @@ export function SubscriptionCard({
     }
   });
 
+  // Helper function to detect if running in iOS app
+  const isRunningInIOSApp = () => {
+    return window.navigator.userAgent.includes('iPhone') || 
+           window.navigator.userAgent.includes('iPad') || 
+           (window as any).webkit?.messageHandlers?.storeKit;
+  };
+
   const handleSubscribe = async () => {
     try {
       setIsLoadingState(true);
       
-      // Check if running in iOS app (this would be set by your app)
-      const isIOS = window.navigator.userAgent.includes('iPhone') || 
-                    window.navigator.userAgent.includes('iPad') || 
-                    (window as any).webkit?.messageHandlers?.storeKit;
+      // Check if running in iOS app
+      const isIOS = isRunningInIOSApp();
       
       if (isIOS) {
         // For iOS, we'll initiate the purchase through the native app
@@ -66,23 +70,8 @@ export function SubscriptionCard({
           });
           toast.info("Opening App Store purchase...");
         } else {
-          // Fallback for when testing in browser
-          const {
-            data,
-            error
-          } = await supabase.functions.invoke('create-checkout-session', {
-            body: {
-              priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-              returnUrl: window.location.origin + '/settings',
-              includeTrialPeriod: false
-            }
-          });
-          
-          if (error) throw error;
-          
-          if (data.shouldUseAppStore) {
-            toast.info("Please purchase through the App Store in the native app");
-          }
+          // Fallback for when testing in browser but simulating iOS
+          toast.info("Please purchase through the App Store in the native app");
         }
       } else {
         // For web, use the existing flow
@@ -99,10 +88,7 @@ export function SubscriptionCard({
         
         if (error) throw error;
         
-        // If we get a URL back, redirect to it
-        if (data.url) {
-          window.location.href = data.url;
-        } else if (data.shouldUseAppStore) {
+        if (data.shouldUseAppStore) {
           toast.info("Please purchase through the App Store");
         }
       }
@@ -119,9 +105,7 @@ export function SubscriptionCard({
       setIsLoadingState(true);
       
       // Check if running in iOS app
-      const isIOS = window.navigator.userAgent.includes('iPhone') || 
-                    window.navigator.userAgent.includes('iPad') || 
-                    (window as any).webkit?.messageHandlers?.storeKit;
+      const isIOS = isRunningInIOSApp();
       
       if (isIOS) {
         // For iOS, open the App Store subscription management
@@ -134,7 +118,7 @@ export function SubscriptionCard({
           toast.info("Please manage your subscription through the App Store Settings");
         }
       } else {
-        // For web, use the customer portal
+        // For web, use the updated customer portal function
         const {
           data,
           error
@@ -146,10 +130,8 @@ export function SubscriptionCard({
         
         if (error) throw error;
         
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          toast.error('Could not open subscription management.');
+        if (data.shouldUseAppStore) {
+          toast.info("Please manage your subscription through the App Store Settings");
         }
       }
     } catch (error) {
