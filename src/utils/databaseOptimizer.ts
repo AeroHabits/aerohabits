@@ -89,18 +89,18 @@ export function useDatabaseOptimizer() {
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     
     try {
-      let query = supabase.from(table);
+      // Initialize the query builder correctly based on the method type
+      let query: any;
       
       // Set up query based on method
       switch (method) {
-        case 'select':
-          query = query.select(select);
+        case 'select': {
+          query = supabase.from(table).select(select);
           
           // Add relations if specified
           if (relations.length > 0) {
-            query = query.select(
-              `${select}${relations.map(r => `, ${r}(*)`).join('')}`
-            );
+            const relationSelects = relations.map(r => `, ${r}(*)`).join('');
+            query = supabase.from(table).select(`${select}${relationSelects}`);
           }
           
           // Apply filters
@@ -110,13 +110,15 @@ export function useDatabaseOptimizer() {
             } else if (value !== null && typeof value === 'object') {
               // Handle special operators like gt, lt, etc.
               Object.entries(value).forEach(([op, val]) => {
-                if (op === 'gt') query = query.gt(key, val);
-                else if (op === 'gte') query = query.gte(key, val);
-                else if (op === 'lt') query = query.lt(key, val);
-                else if (op === 'lte') query = query.lte(key, val);
-                else if (op === 'like') query = query.like(key, `%${val}%`);
-                else if (op === 'ilike') query = query.ilike(key, `%${val}%`);
-                else if (op === 'neq') query = query.neq(key, val);
+                switch (op) {
+                  case 'gt': query = query.gt(key, val); break;
+                  case 'gte': query = query.gte(key, val); break;
+                  case 'lt': query = query.lt(key, val); break;
+                  case 'lte': query = query.lte(key, val); break;
+                  case 'like': query = query.like(key, `%${val}%`); break;
+                  case 'ilike': query = query.ilike(key, `%${val}%`); break;
+                  case 'neq': query = query.neq(key, val); break;
+                }
               });
             } else {
               query = query.eq(key, value);
@@ -129,15 +131,17 @@ export function useDatabaseOptimizer() {
             .range(offset, offset + limit - 1);
           
           break;
+        }
         
-        case 'insert':
-          query = query.insert(filters);
+        case 'insert': {
+          query = supabase.from(table).insert(filters);
           break;
+        }
         
-        case 'update':
+        case 'update': {
           // Extract the update data and conditions
           const { conditions, ...updateData } = filters;
-          query = query.update(updateData);
+          query = supabase.from(table).update(updateData);
           
           // Apply conditions if provided
           if (conditions) {
@@ -146,16 +150,20 @@ export function useDatabaseOptimizer() {
             });
           }
           break;
+        }
         
-        case 'delete':
+        case 'delete': {
+          query = supabase.from(table).delete();
           Object.entries(filters).forEach(([key, value]) => {
             query = query.eq(key, value);
           });
           break;
+        }
         
-        case 'upsert':
-          query = query.upsert(filters);
+        case 'upsert': {
+          query = supabase.from(table).upsert(filters);
           break;
+        }
       }
       
       // Execute the query with performance monitoring
