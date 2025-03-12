@@ -1,7 +1,6 @@
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { corsHeaders } from "../_shared/cors.ts";
-import { stripe } from "../_shared/stripe.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1";
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
@@ -48,7 +47,7 @@ serve(async (req: Request) => {
     // Get user's profile to check subscription status
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
-      .select("stripe_customer_id, subscription_status, is_subscribed")
+      .select("subscription_status, is_subscribed")
       .eq("id", user.id)
       .single();
 
@@ -60,77 +59,31 @@ serve(async (req: Request) => {
       );
     }
 
-    // If user already has an active subscription, redirect to customer portal instead
+    // If user already has an active subscription, return success with a message
     if (profile.is_subscribed || profile.subscription_status === 'active') {
-      // Create customer portal session
-      const portalSession = await stripe.billingPortal.sessions.create({
-        customer: profile.stripe_customer_id,
-        return_url: returnUrl,
-      });
-
       return new Response(
-        JSON.stringify({ url: portalSession.url }),
+        JSON.stringify({ 
+          success: true, 
+          message: "User already has an active subscription",
+          shouldUseAppStore: true
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Get or create customer
-    let customerId = profile.stripe_customer_id;
-    
-    if (!customerId) {
-      // Create a new customer
-      const customer = await stripe.customers.create({
-        email: user.email,
-        metadata: {
-          supabaseUUID: user.id,
-        },
-      });
-      
-      customerId = customer.id;
-      
-      // Update the user's profile with the new Stripe customer ID
-      await supabase
-        .from("profiles")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", user.id);
-        
-      console.log(`Created new customer: ${customerId} for user: ${user.id}`);
-    } else {
-      console.log(`Using existing customer: ${customerId} for user: ${user.id}`);
-    }
-
-    // Set up subscription details with or without trial
-    const subscriptionData: any = {
-      mode: "subscription",
-      line_items: [{ price: priceId, quantity: 1 }],
-      customer: customerId,
-      success_url: `${returnUrl}?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${returnUrl}?canceled=true`,
-      metadata: {
-        userId: user.id,
-      },
-      subscription_data: {
-        metadata: {
-          userId: user.id,
-        },
-      }
-    };
-
-    // Add trial period if requested
-    if (includeTrialPeriod) {
-      subscriptionData.subscription_data.trial_period_days = 3;
-    }
-
-    // Create a checkout session
-    const session = await stripe.checkout.sessions.create(subscriptionData);
-
-    // Return the session URL
+    // For iOS apps, we'll return a response indicating that the app should use StoreKit
+    // The frontend will handle initiating the purchase through StoreKit
     return new Response(
-      JSON.stringify({ url: session.url }),
+      JSON.stringify({ 
+        success: true, 
+        message: "Use App Store for payment",
+        shouldUseAppStore: true,
+        productId: priceId  // This should match the product ID in App Store Connect
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error creating checkout session:", error);
+    console.error("Error processing checkout request:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }

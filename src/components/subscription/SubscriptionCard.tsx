@@ -50,18 +50,62 @@ export function SubscriptionCard({
   const handleSubscribe = async () => {
     try {
       setIsLoadingState(true);
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('create-checkout-session', {
-        body: {
-          priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-          returnUrl: window.location.origin + '/settings',
-          includeTrialPeriod: false
+      
+      // Check if running in iOS app (this would be set by your app)
+      const isIOS = window.navigator.userAgent.includes('iPhone') || 
+                    window.navigator.userAgent.includes('iPad') || 
+                    (window as any).webkit?.messageHandlers?.storeKit;
+      
+      if (isIOS) {
+        // For iOS, we'll initiate the purchase through the native app
+        if ((window as any).webkit?.messageHandlers?.storeKit) {
+          // Call the iOS native method to start the purchase flow
+          (window as any).webkit.messageHandlers.storeKit.postMessage({
+            action: 'purchase',
+            productId: 'premium_subscription_monthly'
+          });
+          toast.info("Opening App Store purchase...");
+        } else {
+          // Fallback for when testing in browser
+          const {
+            data,
+            error
+          } = await supabase.functions.invoke('create-checkout-session', {
+            body: {
+              priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
+              returnUrl: window.location.origin + '/settings',
+              includeTrialPeriod: false
+            }
+          });
+          
+          if (error) throw error;
+          
+          if (data.shouldUseAppStore) {
+            toast.info("Please purchase through the App Store in the native app");
+          }
         }
-      });
-      if (error) throw error;
-      window.location.href = data.url;
+      } else {
+        // For web, use the existing flow
+        const {
+          data,
+          error
+        } = await supabase.functions.invoke('create-checkout-session', {
+          body: {
+            priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
+            returnUrl: window.location.origin + '/settings',
+            includeTrialPeriod: false
+          }
+        });
+        
+        if (error) throw error;
+        
+        // If we get a URL back, redirect to it
+        if (data.url) {
+          window.location.href = data.url;
+        } else if (data.shouldUseAppStore) {
+          toast.info("Please purchase through the App Store");
+        }
+      }
     } catch (error) {
       console.error('Error starting subscription:', error);
       toast.error('Failed to start subscription. Please try again.');
@@ -73,18 +117,43 @@ export function SubscriptionCard({
   const handleManageSubscription = async () => {
     try {
       setIsLoadingState(true);
-      const {
-        data,
-        error
-      } = await supabase.functions.invoke('create-customer-portal', {
-        body: {
-          returnUrl: window.location.origin + '/settings'
+      
+      // Check if running in iOS app
+      const isIOS = window.navigator.userAgent.includes('iPhone') || 
+                    window.navigator.userAgent.includes('iPad') || 
+                    (window as any).webkit?.messageHandlers?.storeKit;
+      
+      if (isIOS) {
+        // For iOS, open the App Store subscription management
+        if ((window as any).webkit?.messageHandlers?.storeKit) {
+          (window as any).webkit.messageHandlers.storeKit.postMessage({
+            action: 'manageSubscriptions'
+          });
+          toast.info("Opening subscription settings...");
+        } else {
+          toast.info("Please manage your subscription through the App Store Settings");
         }
-      });
-      if (error) throw error;
-      window.location.href = data.url;
+      } else {
+        // For web, use the customer portal
+        const {
+          data,
+          error
+        } = await supabase.functions.invoke('create-customer-portal', {
+          body: {
+            returnUrl: window.location.origin + '/settings'
+          }
+        });
+        
+        if (error) throw error;
+        
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          toast.error('Could not open subscription management.');
+        }
+      }
     } catch (error) {
-      console.error('Error opening customer portal:', error);
+      console.error('Error opening subscription management:', error);
       toast.error('Failed to open subscription management. Please try again.');
     } finally {
       setIsLoadingState(false);
@@ -107,7 +176,7 @@ export function SubscriptionCard({
   const syncSubscription = async () => {
     try {
       setIsLoadingState(true);
-      toast.info("Checking subscription status with Stripe...");
+      toast.info("Checking subscription status...");
       
       const { data, error } = await supabase.functions.invoke('sync-subscription', {
         body: {}
