@@ -1,6 +1,4 @@
 
-import { Stripe } from 'https://esm.sh/stripe@12.4.0?target=deno';
-
 // Define the handler type for webhook events
 export type WebhookEventHandler = (eventData: any) => Promise<void>;
 
@@ -12,7 +10,7 @@ interface WebhookRegistry {
 }
 
 // Implement the webhook registry
-class StripeWebhookRegistry implements WebhookRegistry {
+class AppStoreWebhookRegistry implements WebhookRegistry {
   private handlers: Map<string, WebhookEventHandler> = new Map();
 
   registerHandler(eventType: string, handler: WebhookEventHandler): void {
@@ -30,7 +28,7 @@ class StripeWebhookRegistry implements WebhookRegistry {
 }
 
 // Create and export a singleton instance
-export const webhookRegistry = new StripeWebhookRegistry();
+export const webhookRegistry = new AppStoreWebhookRegistry();
 
 // Helper function to register multiple handlers at once
 export function registerWebhookHandlers(handlersMap: Record<string, WebhookEventHandler>): void {

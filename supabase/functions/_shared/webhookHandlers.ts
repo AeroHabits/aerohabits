@@ -8,13 +8,13 @@ export {
 } from "./subscriptionHandlers.ts";
 
 export { 
-  handleCheckoutComplete 
-} from "./checkoutHandlers.ts";
+  handlePurchaseComplete 
+} from "./appStorePurchaseHandler.ts";
 
 export { 
-  handleInvoicePaymentSucceeded,
-  handleInvoicePaymentFailed
-} from "./invoiceHandlers.ts";
+  handleRenewalSucceeded,
+  handleRenewalFailed
+} from "./renewalHandlers.ts";
 
 // Re-export utility functions that might be needed by the main webhook handler
 export { updateUserSubscription } from "./webhookHandlerUtils.ts";
