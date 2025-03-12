@@ -4,7 +4,7 @@ import { HabitListLoading } from "./HabitListLoading";
 import { HabitListContent } from "./HabitListContent";
 import { useHabits } from "@/hooks/useHabits";
 import { motion, AnimatePresence } from "framer-motion";
-import { Loader2, WifiOff, RefreshCw } from "lucide-react";
+import { Loader2, WifiOff } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -112,12 +112,7 @@ export function HabitList() {
       </AnimatePresence>
 
       <div className="space-y-8">
-        <div className="flex justify-end mb-2">
-          <Button onClick={handleRefresh} variant="outline" size="sm" className="border border-indigo-400/30 text-indigo-200 bg-slate-900 hover:bg-slate-800">
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Refresh
-          </Button>
-        </div>
+        
         
         <HabitListContent habits={habits} onToggle={toggleHabit} onDelete={deleteHabit} setHabitToDelete={setHabitToDelete} />
 
