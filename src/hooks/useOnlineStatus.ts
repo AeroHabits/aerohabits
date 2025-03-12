@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { useErrorTracking } from './useErrorTracking';
 import { trackNetworkChange } from '@/lib/analytics';
@@ -191,7 +190,21 @@ export function useOnlineStatus() {
           
           // Only track network changes if quality changed
           if (prev.quality !== quality) {
-            trackNetworkChange(quality, { 
+            // Fix the type error by mapping quality to the correct network status
+            let networkStatus: 'online' | 'offline' | 'poor' | 'good';
+            
+            if (quality === 'offline') {
+              networkStatus = 'offline';
+            } else if (quality === 'poor') {
+              networkStatus = 'poor';
+            } else if (quality === 'good') {
+              networkStatus = 'good';
+            } else {
+              // For 'acceptable', we'll use 'online'
+              networkStatus = 'online';
+            }
+            
+            trackNetworkChange(networkStatus, { 
               latency: medianLatency,
               downlinkSpeed,
               reliability

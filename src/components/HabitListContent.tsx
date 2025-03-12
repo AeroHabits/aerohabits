@@ -16,11 +16,16 @@ export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete 
       {habits.map((habit, index) => (
         <motion.div
           key={habit.id}
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3, delay: index * 0.1 }}
-          whileHover={{ y: -5 }}
+          transition={{ 
+            duration: 0.4, 
+            delay: index * 0.1,
+            type: "spring",
+            stiffness: 100
+          }}
+          whileHover={{ y: -8, transition: { duration: 0.2 } }}
           className="h-full"
         >
           <HabitCard

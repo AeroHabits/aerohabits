@@ -1,4 +1,3 @@
-
 // Enhanced analytics system for tracking user behavior and app performance
 import * as Sentry from "@sentry/react";
 
@@ -206,6 +205,7 @@ export const trackSyncOperation = (
   );
 };
 
+// Network quality detection
 export const trackNetworkChange = (
   status: 'online' | 'offline' | 'poor' | 'good',
   properties?: Record<string, any>
