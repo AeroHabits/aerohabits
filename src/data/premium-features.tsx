@@ -28,8 +28,8 @@ export const premiumFeatures = [
     icon: <Gem className="h-5 w-5 text-indigo-400" />
   },
   {
-    title: "Custom Notifications",
-    description: "Configure alerts that fit your workflow",
+    title: "Standard Support",
+    description: "Email support for technical issues and questions",
     icon: <Crown className="h-5 w-5 text-amber-400" />
   }
 ];
