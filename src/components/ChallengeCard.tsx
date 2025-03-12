@@ -7,10 +7,22 @@ import { ChallengeHeader } from "./challenge/ChallengeHeader";
 import { ChallengeProgressSection } from "./challenge/ChallengeProgressSection";
 import { ChallengeContent } from "./challenge/ChallengeContent";
 import { ChallengeActions } from "./challenge/ChallengeActions";
-import { Challenge } from "@/types";
 
 interface ChallengeCardProps {
-  challenge: Challenge;
+  challenge: {
+    id: string;
+    title: string;
+    description: string | null;
+    difficulty: string;
+    duration_days: number;
+    category: string | null;
+    reward_points: number | null;
+    completion_criteria: string | null;
+    motivation_text: string | null;
+    milestones: any[] | null;
+    tips: string[] | null;
+    sequence_order: number;
+  };
   onJoin: (challengeId: string) => void;
   isJoined?: boolean;
   userPoints: number;

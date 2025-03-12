@@ -7,7 +7,6 @@ import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
 
 interface SignUpFormProps {
   onToggleForm: () => void;
@@ -26,52 +25,28 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isLoading) return;
-    
-    if (!email || !password || !fullName) {
-      toast.error("Please fill in all fields");
-      return;
-    }
-    
     setIsLoading(true);
-    console.log("Attempting sign up with:", { email, fullName });
-    
+
     try {
-      // Always set is_new_user to true for new signups
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim(),
+        email,
         password,
         options: {
           data: {
             full_name: fullName,
-            is_new_user: true,  // Mark the user as new
           },
         },
       });
 
-      console.log("Sign up response:", { 
-        user: data.user ? "User created" : "No user", 
-        error: error?.message || null 
-      });
-      
       if (error) throw error;
 
       if (data.user) {
-        // User created, direct to onboarding questionnaire
-        toast.success("Account created successfully!");
-        
-        // Wait for auth state to propagate
-        setTimeout(() => {
-          console.log("Redirecting to onboarding after signup");
-          navigate('/onboarding');
-        }, 500);
-        
-        handleSuccess("Please complete the questionnaire to begin your free trial.");
+        // Redirect to the onboarding questionnaire
+        navigate('/onboarding');
       } else {
         handleSuccess("Please check your email to verify your account.");
       }
     } catch (error: any) {
-      console.error("Sign up error:", error);
-      toast.error(error?.message || "Failed to create account. Please try again.");
       handleError(error);
     } finally {
       setIsLoading(false);
@@ -95,7 +70,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           label="Email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value.trim())}
+          onChange={(e) => setEmail(e.target.value)}
           required
           disabled={isLoading}
         />

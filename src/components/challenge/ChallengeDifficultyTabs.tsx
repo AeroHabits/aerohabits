@@ -3,7 +3,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Lock } from "lucide-react";
 
 interface ChallengeDifficultyTabsProps {
-  onDifficultyChange: (difficulty: "easy" | "medium" | "hard" | "master") => void;
+  onDifficultyChange: (difficulty: string) => void;
   currentDifficulty: string;
   canAccessMaster: boolean;
 }
@@ -25,7 +25,7 @@ export function ChallengeDifficultyTabs({
             <TabsTrigger
               key={difficulty}
               value={difficulty}
-              onClick={() => onDifficultyChange(difficulty as "easy" | "medium" | "hard" | "master")}
+              onClick={() => onDifficultyChange(difficulty)}
               disabled={isMaster && !canAccessMaster}
               className="relative"
             >

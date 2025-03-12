@@ -1,247 +1,241 @@
 
-/**
- * Database Optimizer Utility
- * Provides optimized database operations with caching, batching, and error handling
- */
 import { supabase } from "@/integrations/supabase/client";
-import { trackError } from "@/lib/analytics";
+import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
+import { useErrorTracking } from "@/hooks/useErrorTracking";
 
-// Simplified approach to handle database operations
-export const databaseOptimizer = {
-  /**
-   * Select data from a table with optimized query
-   */
-  async select(tableName: string, options: {
-    columns?: string,
-    filters?: Record<string, any>,
-    pagination?: { page: number, pageSize: number },
-    orderBy?: { column: string, ascending?: boolean },
-    single?: boolean
-  } = {}) {
+// Type definitions for the query builder
+type TableNames = 'habits' | 'goals' | 'challenges' | 'profiles' | 'habit_categories';
+type QueryMethod = 'select' | 'insert' | 'update' | 'delete' | 'upsert';
+type OrderDirection = 'asc' | 'desc';
+
+interface QueryOptions {
+  limit?: number;
+  offset?: number;
+  orderBy?: string;
+  orderDirection?: OrderDirection;
+  filters?: Record<string, any>;
+  select?: string;
+  batchSize?: number;
+  relations?: string[];
+  cacheTime?: number; // in seconds
+  returnData?: boolean;
+  timeout?: number; // in milliseconds
+}
+
+/**
+ * Optimized database query builder with performance monitoring
+ * and connection quality-aware features
+ */
+export function useDatabaseOptimizer() {
+  const { measureAsync } = usePerformanceMonitoring();
+  const { trackError } = useErrorTracking();
+  
+  // In-memory query cache
+  const queryCache = new Map<string, { data: any; timestamp: number; cacheTime: number }>();
+  
+  // Clear expired cache entries
+  const clearExpiredCache = () => {
+    const now = Date.now();
+    queryCache.forEach((value, key) => {
+      if (now - value.timestamp > value.cacheTime * 1000) {
+        queryCache.delete(key);
+      }
+    });
+  };
+  
+  // Run cache cleanup periodically
+  setInterval(clearExpiredCache, 60000); // Every minute
+  
+  // Generate a cache key from query parameters
+  const generateCacheKey = (
+    table: TableNames, 
+    method: QueryMethod, 
+    options: QueryOptions
+  ) => {
+    return `${table}:${method}:${JSON.stringify(options)}`;
+  };
+  
+  const optimizedQuery = async <T = any>(
+    table: TableNames,
+    method: QueryMethod = 'select',
+    options: QueryOptions = {}
+  ): Promise<T> => {
+    const {
+      limit = 100,
+      offset = 0,
+      orderBy = 'created_at',
+      orderDirection = 'desc',
+      filters = {},
+      select = '*',
+      batchSize = 100,
+      relations = [],
+      cacheTime = 30, // Default 30 seconds
+      returnData = true,
+      timeout = 10000 // Default 10 seconds
+    } = options;
+    
+    // Check cache for read queries
+    const cacheKey = generateCacheKey(table, method, options);
+    if (method === 'select' && cacheTime > 0) {
+      const cached = queryCache.get(cacheKey);
+      if (cached && (Date.now() - cached.timestamp < cached.cacheTime * 1000)) {
+        console.log(`Using cached data for ${table}`, { cached: true });
+        return cached.data;
+      }
+    }
+    
+    // Set up abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
     try {
-      // @ts-ignore - Dynamic table name
-      let query = supabase.from(tableName).select(options.columns || '*');
+      let query = supabase.from(table);
       
-      // Apply filters if provided
-      if (options.filters) {
-        Object.entries(options.filters).forEach(([key, value]) => {
-          if (key && value !== undefined) {
-            // @ts-ignore - Dynamic filtering
+      // Set up query based on method
+      switch (method) {
+        case 'select':
+          query = query.select(select);
+          
+          // Add relations if specified
+          if (relations.length > 0) {
+            query = query.select(
+              `${select}${relations.map(r => `, ${r}(*)`).join('')}`
+            );
+          }
+          
+          // Apply filters
+          Object.entries(filters).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              query = query.in(key, value);
+            } else if (value !== null && typeof value === 'object') {
+              // Handle special operators like gt, lt, etc.
+              Object.entries(value).forEach(([op, val]) => {
+                if (op === 'gt') query = query.gt(key, val);
+                else if (op === 'gte') query = query.gte(key, val);
+                else if (op === 'lt') query = query.lt(key, val);
+                else if (op === 'lte') query = query.lte(key, val);
+                else if (op === 'like') query = query.like(key, `%${val}%`);
+                else if (op === 'ilike') query = query.ilike(key, `%${val}%`);
+                else if (op === 'neq') query = query.neq(key, val);
+              });
+            } else {
+              query = query.eq(key, value);
+            }
+          });
+          
+          // Add pagination
+          query = query
+            .order(orderBy, { ascending: orderDirection === 'asc' })
+            .range(offset, offset + limit - 1);
+          
+          break;
+        
+        case 'insert':
+          query = query.insert(filters);
+          break;
+        
+        case 'update':
+          // Extract the update data and conditions
+          const { conditions, ...updateData } = filters;
+          query = query.update(updateData);
+          
+          // Apply conditions if provided
+          if (conditions) {
+            Object.entries(conditions).forEach(([key, value]) => {
+              query = query.eq(key, value);
+            });
+          }
+          break;
+        
+        case 'delete':
+          Object.entries(filters).forEach(([key, value]) => {
             query = query.eq(key, value);
+          });
+          break;
+        
+        case 'upsert':
+          query = query.upsert(filters);
+          break;
+      }
+      
+      // Execute the query with performance monitoring
+      const result = await measureAsync(`database.${table}.${method}`, async () => {
+        const { data, error } = await query;
+        
+        if (error) {
+          throw error;
+        }
+        
+        return data;
+      }, { table, method, hasFilters: Object.keys(filters).length > 0 });
+      
+      // Cache the result for read queries
+      if (method === 'select' && cacheTime > 0 && result) {
+        queryCache.set(cacheKey, {
+          data: result,
+          timestamp: Date.now(),
+          cacheTime
+        });
+      }
+      
+      return returnData ? result : null as any;
+    } catch (error: any) {
+      return trackError(error, `Database ${method} on ${table}`, {
+        severity: method === 'select' ? 'medium' : 'high',
+        context: { table, method, options },
+        fallbackData: [] as any
+      });
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  };
+  
+  const batchProcess = async <T = any>(
+    table: TableNames,
+    method: QueryMethod,
+    items: Record<string, any>[],
+    options: Omit<QueryOptions, 'filters'> = {}
+  ): Promise<T[]> => {
+    const { batchSize = 50 } = options;
+    const results: any[] = [];
+    
+    // Process in batches
+    for (let i = 0; i < items.length; i += batchSize) {
+      const batch = items.slice(i, i + batchSize);
+      
+      // Handle different methods
+      if (method === 'insert' || method === 'upsert') {
+        const result = await optimizedQuery(table, method, {
+          ...options,
+          filters: batch
+        });
+        
+        if (result) {
+          results.push(...result);
+        }
+      } else {
+        // For update and delete, process one by one but in parallel
+        const batchPromises = batch.map(item => 
+          optimizedQuery(table, method, {
+            ...options,
+            filters: item
+          })
+        );
+        
+        const batchResults = await Promise.all(batchPromises);
+        batchResults.forEach(result => {
+          if (result) {
+            results.push(result);
           }
         });
       }
-      
-      // Apply pagination if provided
-      if (options.pagination) {
-        const { page, pageSize } = options.pagination;
-        const start = (page - 1) * pageSize;
-        const end = start + pageSize - 1;
-        // @ts-ignore - Range methods exist but TypeScript doesn't recognize them
-        query = query.range(start, end);
-      }
-      
-      // Apply ordering if provided
-      if (options.orderBy) {
-        const { column, ascending = true } = options.orderBy;
-        // @ts-ignore - Order method exists but TypeScript doesn't recognize it
-        query = query.order(column, { ascending });
-      }
-      
-      // Execute as single item or list
-      if (options.single) {
-        // @ts-ignore - Single method exists but TypeScript doesn't recognize it
-        return await query.single();
-      }
-      
-      return await query;
-    } catch (error) {
-      console.error(`Error in select operation on ${tableName}:`, error);
-      trackError(`Database select error: ${tableName}`, 'databaseOptimizer', { error });
-      throw error;
     }
-  },
-
-  /**
-   * Insert data into a table
-   */
-  async insert(tableName: string, data: Record<string, any> | Record<string, any>[], options: {
-    onConflict?: string,
-    returning?: string
-  } = {}) {
-    try {
-      // @ts-ignore - Dynamic table name and methods
-      let query = supabase.from(tableName).insert(data);
-      
-      if (options.onConflict) {
-        // @ts-ignore - onConflict method exists but TypeScript doesn't recognize it
-        query = query.onConflict(options.onConflict);
-      }
-      
-      if (options.returning) {
-        // @ts-ignore - returning method exists but TypeScript doesn't recognize it
-        query = query.select(options.returning);
-      }
-      
-      return await query;
-    } catch (error) {
-      console.error(`Error in insert operation on ${tableName}:`, error);
-      trackError(`Database insert error: ${tableName}`, 'databaseOptimizer', { error });
-      throw error;
-    }
-  },
-
-  /**
-   * Update data in a table
-   */
-  async update(tableName: string, data: Record<string, any>, filters: Record<string, any>, options: {
-    returning?: string
-  } = {}) {
-    try {
-      // @ts-ignore - Dynamic table name
-      let query = supabase.from(tableName).update(data);
-      
-      // Apply filters
-      Object.entries(filters).forEach(([key, value]) => {
-        if (key && value !== undefined) {
-          // @ts-ignore - Dynamic filtering
-          query = query.eq(key, value);
-        }
-      });
-      
-      if (options.returning) {
-        // @ts-ignore - returning method exists but TypeScript doesn't recognize it
-        query = query.select(options.returning);
-      }
-      
-      return await query;
-    } catch (error) {
-      console.error(`Error in update operation on ${tableName}:`, error);
-      trackError(`Database update error: ${tableName}`, 'databaseOptimizer', { error });
-      throw error;
-    }
-  },
-
-  /**
-   * Delete data from a table
-   */
-  async delete(tableName: string, filters: Record<string, any>, options: {
-    returning?: string
-  } = {}) {
-    try {
-      // @ts-ignore - Dynamic table name
-      let query = supabase.from(tableName).delete();
-      
-      // Apply filters
-      Object.entries(filters).forEach(([key, value]) => {
-        if (key && value !== undefined) {
-          // @ts-ignore - Dynamic filtering
-          query = query.eq(key, value);
-        }
-      });
-      
-      if (options.returning) {
-        // @ts-ignore - returning method exists but TypeScript doesn't recognize it
-        query = query.select(options.returning);
-      }
-      
-      return await query;
-    } catch (error) {
-      console.error(`Error in delete operation on ${tableName}:`, error);
-      trackError(`Database delete error: ${tableName}`, 'databaseOptimizer', { error });
-      throw error;
-    }
-  },
+    
+    return results as T[];
+  };
   
-  /**
-   * Perform a batch operation
-   */
-  async batchOperation(operations: Array<{
-    type: 'select' | 'insert' | 'update' | 'delete',
-    tableName: string,
-    data?: Record<string, any> | Record<string, any>[],
-    filters?: Record<string, any>,
-    options?: Record<string, any>
-  }>) {
-    const results = [];
-    const errors = [];
-    
-    for (const operation of operations) {
-      try {
-        let result;
-        
-        switch (operation.type) {
-          case 'select':
-            result = await this.select(
-              operation.tableName, 
-              { 
-                filters: operation.filters,
-                ...operation.options
-              }
-            );
-            break;
-            
-          case 'insert':
-            if (!operation.data) {
-              throw new Error('Data is required for insert operations');
-            }
-            result = await this.insert(
-              operation.tableName, 
-              operation.data, 
-              operation.options
-            );
-            break;
-            
-          case 'update':
-            if (!operation.data || !operation.filters) {
-              throw new Error('Data and filters are required for update operations');
-            }
-            result = await this.update(
-              operation.tableName, 
-              operation.data as Record<string, any>, 
-              operation.filters, 
-              operation.options
-            );
-            break;
-            
-          case 'delete':
-            if (!operation.filters) {
-              throw new Error('Filters are required for delete operations');
-            }
-            result = await this.delete(
-              operation.tableName, 
-              operation.filters, 
-              operation.options
-            );
-            break;
-            
-          default:
-            throw new Error(`Unsupported operation type: ${operation.type}`);
-        }
-        
-        results.push(result);
-      } catch (error) {
-        console.error(`Error in batch operation for ${operation.type} on ${operation.tableName}:`, error);
-        errors.push({
-          operation,
-          error
-        });
-        
-        // Track error but don't throw to allow other operations to continue
-        trackError(`Batch operation error: ${operation.type} on ${operation.tableName}`, 'databaseOptimizer', { 
-          operation, 
-          error 
-        });
-      }
-    }
-    
-    return {
-      results,
-      errors,
-      hasErrors: errors.length > 0,
-      success: results.length === operations.length
-    };
-  }
-};
-
-export default databaseOptimizer;
+  return {
+    query: optimizedQuery,
+    batchProcess
+  };
+}

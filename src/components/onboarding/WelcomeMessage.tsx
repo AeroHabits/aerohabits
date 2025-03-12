@@ -1,7 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Award, CreditCard } from "lucide-react";
+import { ChevronRight, Award } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface WelcomeMessageProps {
@@ -67,10 +67,6 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
               <p className="text-gray-200 text-sm leading-relaxed">
                 <span className="font-semibold text-cyan-400">Premium:</span> Advanced tracking, personalized insights, and accountability tools.
               </p>
-              <div className="flex items-center justify-center mt-3 text-amber-300">
-                <CreditCard className="w-4 h-4 mr-2" />
-                <p className="text-xs">Your card will only be charged after the free trial ends.</p>
-              </div>
             </motion.div>
           </div>
           
@@ -89,14 +85,14 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
                 "Processing..."
               ) : (
                 <>
-                  Set Up Payment Method
+                  Start Free Trial
                   <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </>
               )}
             </Button>
             
             <p className="text-gray-400 text-xs text-center mt-4">
-              3-day free trial. Cancel anytime. Your card will only be charged after the trial ends.
+              3-day free trial. Cancel anytime.
             </p>
           </motion.div>
         </CardContent>

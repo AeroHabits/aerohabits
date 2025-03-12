@@ -1,4 +1,3 @@
-
 import { AddHabitForm } from "./AddHabitForm";
 import { HabitListEmpty } from "./HabitListEmpty";
 import { HabitListLoading } from "./HabitListLoading";
@@ -9,8 +8,7 @@ import { Loader2, WifiOff, RefreshCw } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
-
+import { Button } from "./ui/button";
 export function HabitList() {
   const {
     habits,
@@ -22,18 +20,8 @@ export function HabitList() {
     addHabit,
     refetch,
     isFetching,
-    isOnline,
-    networkQuality
+    isOnline
   } = useHabits();
-  
-  // Initial fetch on component mount
-  useEffect(() => {
-    // Only trigger an initial refetch if habits array is empty
-    if (habits.length === 0) {
-      refetch();
-    }
-  }, []);
-  
   const {
     data: profile
   } = useQuery({
@@ -51,7 +39,6 @@ export function HabitList() {
       return data;
     }
   });
-  
   const isMobile = useIsMobile();
   let touchStartY = 0;
   let pullDistance = 0;
@@ -80,16 +67,15 @@ export function HabitList() {
     touchStartY = 0;
     pullDistance = 0;
   };
-  
+  const handleRefresh = () => {
+    refetch();
+  };
   if (isLoading) {
     return <HabitListLoading />;
   }
-  
-  // Show empty state only when we've confirmed habits are loaded but array is empty
-  if (!isLoading && habits.length === 0) {
+  if (habits.length === 0) {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
-  
   return <div className="w-full space-y-8 pb-6" onTouchStart={isMobile ? handleTouchStart : undefined} onTouchMove={isMobile ? handleTouchMove : undefined} onTouchEnd={isMobile ? handleTouchEnd : undefined}>
       <AnimatePresence>
         {!isOnline && <motion.div initial={{
@@ -105,21 +91,6 @@ export function HabitList() {
             <div className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg">
               <WifiOff className="h-4 w-4" />
               <span className="text-sm font-medium">Offline Mode</span>
-            </div>
-          </motion.div>}
-        {networkQuality === 'poor' && isOnline && <motion.div initial={{
-        opacity: 0,
-        y: -20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} exit={{
-        opacity: 0,
-        y: -20
-      }} className="absolute top-0 left-1/2 -translate-x-1/2 z-50">
-            <div className="flex items-center gap-2 bg-orange-500 text-white px-4 py-2 rounded-full shadow-lg">
-              <RefreshCw className="h-4 w-4" />
-              <span className="text-sm font-medium">Slow Connection</span>
             </div>
           </motion.div>}
         {isFetching && <motion.div initial={{

@@ -5,13 +5,8 @@ import { ProgressIndicator } from "./ProgressIndicator";
 import { WelcomeMessage } from "./WelcomeMessage";
 import { useQuestionnaire } from "./useQuestionnaire";
 import { questions } from "./questionnaireData";
-import { useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
 export function OnboardingQuestionnaire() {
-  const navigate = useNavigate();
   const {
     currentQuestionIndex,
     currentQuestion,
@@ -25,62 +20,6 @@ export function OnboardingQuestionnaire() {
     startSubscriptionFlow,
     getPrimaryGoal
   } = useQuestionnaire();
-
-  // Make sure user is authenticated
-  useEffect(() => {
-    const checkAuthentication = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session) {
-          console.log("User not authenticated, redirecting to login");
-          toast.error("Please sign in to continue");
-          navigate("/auth");
-          return;
-        }
-        
-        // User is authenticated, check if they should see the questionnaire
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        if (user) {
-          console.log("Checking onboarding access for user:", user.id);
-          
-          // Check if user has already completed the quiz
-          const { data: quizResponses } = await supabase
-            .from('user_quiz_responses')
-            .select('id')
-            .eq('user_id', user.id)
-            .maybeSingle();
-
-          // Check subscription status
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('is_subscribed, subscription_status')
-            .eq('id', user.id)
-            .maybeSingle();
-
-          const hasCompletedQuiz = !!quizResponses;
-          const hasActiveSubscription = profile?.is_subscribed || 
-            ['active', 'trialing'].includes(profile?.subscription_status || '');
-
-          console.log("Has completed quiz:", hasCompletedQuiz);
-          console.log("Has active subscription:", hasActiveSubscription);
-
-          // If user has already completed the quiz AND has an active subscription,
-          // redirect them to the home page
-          if (hasCompletedQuiz && hasActiveSubscription) {
-            toast.info("You've already completed onboarding");
-            navigate("/");
-          }
-        }
-      } catch (error) {
-        console.error("Error checking user status:", error);
-        toast.error("An error occurred while checking your account status");
-      }
-    };
-
-    checkAuthentication();
-  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 via-gray-900 to-black p-4 overflow-hidden">
@@ -112,7 +51,7 @@ export function OnboardingQuestionnaire() {
               transition={{ delay: 0.3, duration: 0.4 }}
             >
               <p className="text-gray-300 mt-3 mb-4">
-                Complete this quiz to start your free trial ({currentQuestionIndex + 1}/{questionsLength})
+                Let's personalize your experience ({currentQuestionIndex + 1}/{questionsLength})
               </p>
               <ProgressIndicator 
                 totalSteps={questionsLength} 

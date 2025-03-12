@@ -1,70 +1,107 @@
 
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Crown, Sparkles } from "lucide-react";
-import { PremiumFeatureItem } from "./PremiumFeatureItem";
+import { Star, Info } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { PremiumFeatureSection } from "./PremiumFeatureSection";
 import { SubscribeButton } from "./SubscribeButton";
-import { AppleSubscriptionInfo } from "../subscription/AppleSubscriptionInfo";
 
 interface PricingCardProps {
-  features: string[];
+  features: {
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+  }[];
   premiumChallenges: {
     title: string;
     description: string;
+    icon: React.ReactNode;
   }[];
 }
 
 export function PricingCard({ features, premiumChallenges }: PricingCardProps) {
   return (
-    <Card className="bg-black/80 shadow-xl border-[#333] backdrop-blur relative overflow-hidden">
-      <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-      <div className="absolute -top-20 -right-20 w-[300px] h-[300px] bg-purple-500/30 rounded-full blur-3xl transform rotate-45" />
-      <div className="absolute -bottom-20 -left-20 w-[250px] h-[250px] bg-blue-500/20 rounded-full blur-3xl" />
-      
-      <CardHeader className="relative z-10">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent flex items-center gap-2">
-            <Sparkles className="h-6 w-6 text-blue-400" />
-            Premium
-          </CardTitle>
-          <div className="bg-[#222] p-1 px-2 rounded-full text-xs font-medium text-white border border-white/10">
-            3-Day Free Trial
-          </div>
-        </div>
-        <CardDescription className="text-gray-400">Take your habit journey to the next level</CardDescription>
-      </CardHeader>
-      
-      <CardContent className="relative z-10 space-y-6">
-        <div className="flex items-baseline mb-4">
-          <span className="text-5xl font-bold bg-gradient-to-r from-white via-purple-200 to-blue-300 bg-clip-text text-transparent">$9.99</span>
-          <span className="text-gray-400 ml-2">/month</span>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.2 }}
+    >
+      <Card className="p-8 bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-md border border-purple-700/30 shadow-xl rounded-xl overflow-hidden relative">
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-transparent to-purple-600/10"
+          animate={{ 
+            backgroundPosition: ["0% 0%", "100% 100%"],
+          }}
+          transition={{ 
+            duration: 15, 
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+          style={{ backgroundSize: "200% 200%" }}
+        />
         
-        {/* Subscription button at the top */}
-        <SubscribeButton />
-        
-        {/* Simple divider */}
-        <div className="h-[1px] w-full bg-gray-800 my-4"></div>
-        
-        <PremiumFeatureSection title="Everything you get">
-          {features.map((feature, index) => (
-            <PremiumFeatureItem key={index} feature={feature} />
-          ))}
-        </PremiumFeatureSection>
-        
-        <PremiumFeatureSection title="Premium Challenges" icon={<Crown className="h-5 w-5 text-yellow-400" />}>
-          {premiumChallenges.map((challenge, index) => (
-            <div key={index} className="mb-3">
-              <h4 className="font-medium text-white">{challenge.title}</h4>
-              <p className="text-gray-400 text-sm">{challenge.description}</p>
+        <div className="relative z-10 space-y-6">
+          <div className="text-center space-y-2">
+            <div className="flex justify-center items-baseline gap-2">
+              <motion.span 
+                className="font-bold text-white text-5xl"
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ 
+                  type: "spring", 
+                  stiffness: 400, 
+                  damping: 10, 
+                  delay: 0.4 
+                }}
+              >
+                $9.99
+              </motion.span>
+              <span className="text-gray-400">/month</span>
             </div>
-          ))}
-        </PremiumFeatureSection>
-        
-        <AppleSubscriptionInfo />
-      </CardContent>
-    </Card>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="flex items-center justify-center gap-1 text-yellow-400 my-1"
+            >
+              <Star className="h-4 w-4 fill-yellow-400" />
+              <Star className="h-4 w-4 fill-yellow-400" />
+              <Star className="h-4 w-4 fill-yellow-400" />
+              <Star className="h-4 w-4 fill-yellow-400" />
+              <Star className="h-4 w-4 fill-yellow-400" />
+            </motion.div>
+          </div>
+
+          <PremiumFeatureSection 
+            title="Premium Features"
+            features={features}
+            titleGradient="from-blue-300 to-purple-300"
+          />
+
+          <PremiumFeatureSection 
+            title="Exclusive Premium Challenges"
+            features={premiumChallenges}
+            titleGradient="from-orange-300 to-red-300"
+            variant="challenge"
+          />
+
+          <SubscribeButton />
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="space-y-3 border-t border-gray-800 pt-4"
+          >
+            <p className="text-sm text-gray-400 text-center">
+              You'll be charged $9.99 monthly. Cancel anytime.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+              <Info className="w-4 h-4" />
+              <p>Secure payment processing by Stripe</p>
+            </div>
+          </motion.div>
+        </div>
+      </Card>
+    </motion.div>
   );
 }

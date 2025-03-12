@@ -7,7 +7,6 @@ import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
 
 interface SignInFormProps {
   onToggleForm: () => void;
@@ -82,40 +81,25 @@ export const SignInForm = ({
     e.preventDefault();
     if (isLoading) return;
     if (!email || !password) {
-      toast.error("Please fill in all fields");
+      handleError({
+        message: "Please fill in all fields"
+      });
       return;
     }
-    
     setIsLoading(true);
-    console.log("Attempting sign in with:", { email });
-    
     try {
       const {
         data,
         error
       } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email,
         password
       });
-      
-      console.log("Sign in response:", { 
-        success: !!data.session, 
-        error: error?.message || null,
-        session: data.session ? "Session exists" : "No session"
-      });
-      
       if (error) throw error;
-      
       if (data.session) {
-        toast.success("Successfully signed in!");
-        console.log("Redirecting to home page");
         navigate("/");
-      } else {
-        throw new Error("No session returned after sign in");
       }
     } catch (error: any) {
-      console.error("Sign in error:", error);
-      toast.error(error?.message || "Failed to sign in. Please check your credentials.");
       handleError(error);
     } finally {
       setIsLoading(false);

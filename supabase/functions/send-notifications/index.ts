@@ -1,7 +1,5 @@
-
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4"
-import { format } from "https://esm.sh/date-fns@3.3.1"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,28 +20,8 @@ serve(async (req) => {
     // Get current time in UTC
     const now = new Date()
     const currentHour = now.getUTCHours()
-    const todayDate = format(now, 'yyyy-MM-dd')
 
-    // If it's midnight (00:00), we should reset habit completion status only (not streaks)
-    if (currentHour === 0) {
-      console.log("It's midnight! Resetting habit completion status...")
-      const { error: resetError } = await supabaseClient
-        .from('habits')
-        .update({ 
-          completed: false,
-          // We don't modify the streak here, just reset completion status
-        })
-        .eq('completed', true)
-        .lt('updated_at', `${todayDate}T00:00:00`)
-      
-      if (resetError) {
-        console.error("Error resetting habit completion status:", resetError)
-      } else {
-        console.log("Successfully reset habit completion status")
-      }
-    }
-
-    // Continue with normal notification logic
+    // Fetch notifications that should be sent at this hour
     const { data: notifications, error: notificationsError } = await supabaseClient
       .from('habit_notifications')
       .select(`
@@ -56,14 +34,14 @@ serve(async (req) => {
 
     if (notificationsError) throw notificationsError
 
+    // Send notifications (for now, just log them)
     console.log(`Sending ${notifications?.length ?? 0} notifications`)
     
+    // In a real implementation, you would integrate with a notification service here
+    // For example, using web push notifications or email
+
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        count: notifications?.length ?? 0,
-        resetPerformed: currentHour === 0
-      }),
+      JSON.stringify({ success: true, count: notifications?.length ?? 0 }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,

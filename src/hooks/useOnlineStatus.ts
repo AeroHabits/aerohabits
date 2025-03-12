@@ -191,36 +191,32 @@ export function useOnlineStatus() {
           
           // Only track network changes if quality changed
           if (prev.quality !== quality) {
-            if (quality === 'poor') {
-              trackNetworkChange('poor', { 
-                latency: medianLatency,
-                downlinkSpeed,
-                reliability
-              });
-            } else if (quality === 'good') {
-              trackNetworkChange('good', { 
-                latency: medianLatency,
-                downlinkSpeed,
-                reliability
-              });
-            }
+            trackNetworkChange(quality, { 
+              latency: medianLatency,
+              downlinkSpeed,
+              reliability
+            });
           }
           
           return newDetails;
         });
       } else if (isOnline) {
         // All pings failed but we're still "online" according to the browser
-        setConnectionDetails(prev => ({
-          ...prev,
-          quality: 'poor',
-          lastChecked: Date.now(),
-          reliability: calculateReliability([...pingHistory, ...pingResults])
-        }));
+        setConnectionDetails(prev => {
+          const newDetails = {
+            ...prev,
+            quality: 'poor',
+            lastChecked: Date.now(),
+            reliability: calculateReliability([...pingHistory, ...pingResults])
+          };
           
-        // Track network change if quality changed
-        if (connectionDetails.quality !== 'poor') {
-          trackNetworkChange('poor');
-        }
+          // Track network change if quality changed
+          if (prev.quality !== 'poor') {
+            trackNetworkChange('poor');
+          }
+          
+          return newDetails;
+        });
       }
     } catch (error) {
       trackError(
@@ -229,7 +225,7 @@ export function useOnlineStatus() {
         { severity: 'low', silent: true }
       );
     }
-  }, [isOnline, pingEndpoint, pingHistory, calculateReliability, trackError, connectionDetails.quality]);
+  }, [isOnline, pingEndpoint, pingHistory, calculateReliability, trackError]);
 
   // Set up the connection quality check interval
   useEffect(() => {

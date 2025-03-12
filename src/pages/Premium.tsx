@@ -5,37 +5,11 @@ import { useNavigate } from "react-router-dom";
 import { GradientBackground } from "@/components/premium/GradientBackground";
 import { PremiumHeader } from "@/components/premium/PremiumHeader";
 import { PricingCard } from "@/components/premium/PricingCard";
+import { premiumFeatures, premiumChallenges } from "@/data/premium-features";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { SubscriptionTerms } from "@/components/premium/SubscriptionTerms";
 
 export default function Premium() {
   const navigate = useNavigate();
-  
-  // Define features as simple strings
-  const premiumFeatures = [
-    "Advanced tracking with detailed insights",
-    "Personalized AI recommendations",
-    "Priority customer support",
-    "Track unlimited habits",
-    "Weekly and monthly progress reports",
-    "Custom reminders and notifications"
-  ];
-  
-  // Define challenges with title and description
-  const premiumChallenges = [
-    {
-      title: "Master Challenges",
-      description: "Access exclusive premium difficulty challenges designed to push your limits"
-    },
-    {
-      title: "Custom Challenge Creation",
-      description: "Create personalized challenges tailored to your specific goals and needs"
-    },
-    {
-      title: "Challenge Analytics",
-      description: "Get detailed performance metrics and insights for all your challenges"
-    }
-  ];
 
   return (
     <div className="min-h-screen relative bg-black overflow-hidden">
@@ -61,9 +35,6 @@ export default function Premium() {
             features={premiumFeatures}
             premiumChallenges={premiumChallenges}
           />
-          
-          {/* Add subscription terms with legal details */}
-          <SubscriptionTerms />
         </div>
       </div>
     </div>

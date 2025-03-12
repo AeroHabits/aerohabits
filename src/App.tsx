@@ -14,7 +14,6 @@ import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import { NetworkStatusIndicator } from "./components/NetworkStatusIndicator";
-import { TrialNotificationBanner } from "./components/TrialNotificationBanner";
 
 // Initialize Sentry
 Sentry.init({
@@ -72,7 +71,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       "min-h-screen flex flex-col",
       isMobile && "pb-16" // Add padding at the bottom on mobile to account for the navigation bar
     )}>
-      <TrialNotificationBanner />
       <div className="flex-1">
         {children}
       </div>
