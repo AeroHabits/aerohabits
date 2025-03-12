@@ -91,7 +91,7 @@ export function useQuestionnaire() {
           .from('profiles')
           .update({
             updated_at: new Date().toISOString(),
-            full_name: user.user_metadata.full_name || ''
+            full_name: user.user_meta_data.full_name || ''
           })
           .eq('id', user.id);
         

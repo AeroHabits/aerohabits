@@ -1,8 +1,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Award } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Star, ArrowRight } from "lucide-react";
 
 interface WelcomeMessageProps {
   primaryGoal: string;
@@ -11,92 +10,69 @@ interface WelcomeMessageProps {
 }
 
 export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMessageProps) {
+  const getGoalSpecificMessage = () => {
+    switch (primaryGoal.toLowerCase()) {
+      case "career growth":
+        return "We'll help you build habits that accelerate your professional development.";
+      case "better health":
+        return "We'll help you establish routines that improve your physical and mental wellbeing.";
+      case "learning new skills":
+        return "We'll help you create consistent practice routines to master new abilities.";
+      case "building relationships":
+        return "We'll help you develop habits that strengthen your connections with others.";
+      case "financial stability":
+        return "We'll help you build habits that improve your financial discipline and planning.";
+      default:
+        return "We'll help you build consistent, life-changing habits tailored to your needs.";
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full"
+      className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-8 shadow-xl"
     >
-      <Card className="bg-gradient-to-br from-gray-800/90 to-gray-900 border-gray-700/50 shadow-xl backdrop-blur-sm overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-cyan-600/5 to-teal-600/10 z-0"></div>
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-cyan-600/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-teal-600/10 rounded-full blur-3xl"></div>
+      <div className="text-center space-y-4 mb-6">
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
+          className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto"
+        >
+          <Star className="w-8 h-8 text-white" />
+        </motion.div>
         
-        <CardContent className="pt-6 pb-8 space-y-6 relative z-10">
-          <motion.div 
-            className="flex justify-center mb-6"
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 260, 
-              damping: 20 
-            }}
-          >
-            <div className="p-4 bg-gradient-to-br from-cyan-500/20 to-teal-500/20 rounded-full ring-1 ring-cyan-500/30 shadow-lg">
-              <Award className="w-10 h-10 text-cyan-400" />
-            </div>
-          </motion.div>
-          
-          <div className="text-center space-y-4">
-            <motion.h2 
-              className="text-3xl font-bold text-white"
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.3 }}
-            >
-              Congratulations!
-            </motion.h2>
-            
-            <motion.p 
-              className="text-gray-300 text-lg leading-relaxed"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.3 }}
-            >
-              You've completed the first step toward achieving your goals.
-            </motion.p>
-            
-            <motion.div 
-              className="py-5 px-6 bg-gradient-to-r from-gray-800/80 to-gray-800/40 rounded-lg border border-gray-700/50 shadow-inner my-6"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6, duration: 0.3 }}
-            >
-              <p className="text-gray-200 text-sm leading-relaxed">
-                <span className="font-semibold text-cyan-400">Premium:</span> Advanced tracking, personalized insights, and accountability tools.
-              </p>
-            </motion.div>
-          </div>
-          
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.3 }}
-          >
-            <Button
-              onClick={onContinue}
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white py-6 transition-all shadow-md hover:shadow-lg group"
-              size="lg"
-            >
-              {isLoading ? (
-                "Processing..."
-              ) : (
-                <>
-                  Start Free Trial
-                  <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </>
-              )}
-            </Button>
-            
-            <p className="text-gray-400 text-xs text-center mt-4">
-              3-day free trial. Cancel anytime.
-            </p>
-          </motion.div>
-        </CardContent>
-      </Card>
+        <h2 className="text-2xl font-bold text-white">Perfect! We're Ready to Begin</h2>
+        
+        <p className="text-gray-300">
+          {getGoalSpecificMessage()}
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+          <h3 className="font-medium text-white mb-2">Your 3-Day Free Trial</h3>
+          <p className="text-gray-300 text-sm">
+            Start with full access to all premium features. No commitment required - you can cancel anytime before your trial ends.
+          </p>
+        </div>
+        
+        <Button
+          onClick={onContinue}
+          disabled={isLoading}
+          className="w-full py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg"
+        >
+          {isLoading ? (
+            "Setting up your account..."
+          ) : (
+            <span className="flex items-center justify-center gap-2">
+              Start Your Free Trial <ArrowRight className="w-4 h-4" />
+            </span>
+          )}
+        </Button>
+      </div>
     </motion.div>
   );
 }
