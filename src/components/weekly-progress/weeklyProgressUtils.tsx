@@ -1,6 +1,7 @@
 
 import { format, parseISO, subDays, startOfDay, endOfDay, startOfWeek, isWithinInterval, isSameDay } from "date-fns";
 import { Flame, Star, Rocket, Calendar } from "lucide-react";
+import React from "react";
 
 export type DayData = {
   day: string;
