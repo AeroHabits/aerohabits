@@ -1,7 +1,6 @@
 
 import { format, parseISO, subDays, startOfDay, endOfDay, startOfWeek, isWithinInterval, isSameDay } from "date-fns";
 import { Flame, Star, Rocket, Calendar } from "lucide-react";
-import { ReactNode } from "react";
 
 export type DayData = {
   day: string;
@@ -52,7 +51,7 @@ export function getEmoji(percentage: number): string {
 }
 
 // Get icon component based on percentage
-export function getStatusIcon(percentage: number): ReactNode {
+export function getStatusIcon(percentage: number) {
   if (percentage >= 80) return <Flame className="h-5 w-5 text-orange-400" />;
   if (percentage >= 50) return <Star className="h-5 w-5 text-yellow-400" />;
   if (percentage > 0) return <Rocket className="h-5 w-5 text-blue-400" />;
