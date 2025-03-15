@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
-import { format, startOfDay, subDays, isAfter, parseISO } from "date-fns";
+import { format, startOfDay, parseISO, isAfter, isBefore, subDays } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -25,6 +25,8 @@ export function ChallengeProgress({
 
   useEffect(() => {
     const checkProgress = async () => {
+      if (!userChallengeId) return;
+      
       // Format today's date in UTC to match the database format
       const today = startOfDay(new Date());
       const yesterday = subDays(today, 1);
@@ -47,11 +49,16 @@ export function ChallengeProgress({
       setIsCompletedToday(!!completedToday);
 
       // If there are completions, check for missed days
-      if (completions && completions.length > 0) {
+      if (completions && completions.length > 0 && completions[0].completed_date) {
         const lastCompletionDate = parseISO(completions[0].completed_date);
         
         // If the last completion was before yesterday, it means a day was missed
-        if (isAfter(yesterday, lastCompletionDate)) {
+        if (isAfter(yesterday, lastCompletionDate) && 
+            // Only reset if the challenge has been started (has at least one completion)
+            // and if the last completion wasn't on the start date
+            completions.length > 0 && 
+            (startDate ? !isBefore(lastCompletionDate, parseISO(startDate)) : true)) {
+          
           // Reset the challenge
           const { error: resetError } = await supabase
             .from('challenge_completions')
@@ -79,10 +86,8 @@ export function ChallengeProgress({
       }
     };
 
-    if (userChallengeId) {
-      checkProgress();
-    }
-  }, [userChallengeId, onProgressUpdate]);
+    checkProgress();
+  }, [userChallengeId, onProgressUpdate, startDate]);
 
   const progress = (daysCompleted / totalDays) * 100;
 

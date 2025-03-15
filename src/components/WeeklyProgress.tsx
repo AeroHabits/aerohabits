@@ -4,25 +4,44 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "./ui/card";
 import { motion } from "framer-motion";
 import { BarChart3, Trophy, Flame, Star, Rocket, Calendar, Check, Sparkles } from "lucide-react";
-import { format, subDays, startOfDay, endOfDay, startOfWeek, isWithinInterval } from "date-fns";
+import { format, parseISO, subDays, startOfDay, endOfDay, startOfWeek, isWithinInterval, isSameDay } from "date-fns";
 import { Progress } from "./ui/progress";
 
 export function WeeklyProgress() {
-  const { data: habits } = useQuery({
-    queryKey: ["habits"],
+  const { data: habits, isLoading } = useQuery({
+    queryKey: ["weekly-habits"],
     queryFn: async () => {
+      // Get the current week's start date (Monday)
+      const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
+      
+      // Format dates for the query
+      const formattedWeekStart = format(weekStart, 'yyyy-MM-dd');
+      const formattedToday = format(new Date(), 'yyyy-MM-dd');
+      
+      // Get habits updated in the last 7 days
       const { data, error } = await supabase
         .from("habits")
-        .select("*")
-        .order("created_at", { ascending: false });
+        .select(`
+          *,
+          habit_categories (
+            id,
+            name,
+            color,
+            icon
+          )
+        `)
+        .gte('updated_at', formattedWeekStart)
+        .lte('updated_at', formattedToday + 'T23:59:59')
+        .order('updated_at', { ascending: false });
       
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error("Error fetching weekly habits:", error);
+        throw error;
+      }
+      
+      return data || [];
     },
   });
-
-  // Get the start of the current week
-  const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 }); // Start from Monday
 
   // Generate data for the current week
   const weeklyData = Array.from({ length: 7 }, (_, index) => {
@@ -30,9 +49,9 @@ export function WeeklyProgress() {
     const dayStart = startOfDay(date);
     const dayEnd = endOfDay(date);
     
-    // Filter habits for this day
+    // Filter habits for this specific day
     const dayHabits = habits?.filter(habit => {
-      const habitDate = new Date(habit.updated_at);
+      const habitDate = parseISO(habit.updated_at);
       return isWithinInterval(habitDate, { start: dayStart, end: dayEnd });
     }) || [];
     
@@ -56,7 +75,7 @@ export function WeeklyProgress() {
       total,
       percentage: total > 0 ? Math.round((completed / total) * 100) : 0,
       emoji: getEmoji(),
-      isToday: format(date, 'yyyy-MM-dd') === format(new Date(), 'yyyy-MM-dd')
+      isToday: isSameDay(date, new Date())
     };
   });
 
@@ -80,6 +99,22 @@ export function WeeklyProgress() {
     if (percentage > 0) return "from-blue-400 to-indigo-500";
     return "from-gray-500 to-gray-600";
   };
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 border border-white/10 shadow-2xl rounded-xl">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-800 rounded w-1/3"></div>
+          <div className="h-4 bg-gray-800 rounded w-1/2"></div>
+          <div className="grid gap-4 md:grid-cols-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-32 bg-gray-800 rounded"></div>
+            ))}
+          </div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <motion.div
