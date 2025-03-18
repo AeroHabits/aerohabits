@@ -12,6 +12,9 @@ export function Footer() {
           <Link to="/privacy" className="hover:text-foreground transition-colors">
             Privacy Policy
           </Link>
+          <Link to="/support" className="hover:text-foreground transition-colors">
+            Support
+          </Link>
           <span>© {new Date().getFullYear()} AEROHABITS</span>
         </div>
       </div>
