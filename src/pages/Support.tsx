@@ -24,12 +24,7 @@ const Support = () => {
         )}
       >
         <div className="flex justify-between items-center">
-          <div className="bg-black/50 px-5 py-3 rounded-xl shadow-lg">
-            <PageHeader 
-              title="Support" 
-              description="Get help with AEROHABITS" 
-            />
-          </div>
+          <PageHeader title="Support" description="Get help with AEROHABITS" />
           <UserMenu />
         </div>
 
@@ -39,19 +34,19 @@ const Support = () => {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="max-w-4xl mx-auto space-y-8"
         >
-          <Card className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-purple-500/20 shadow-xl">
+          <Card className="bg-gradient-to-br from-gray-900/80 to-black/80 border border-purple-500/20 shadow-xl">
             <CardHeader>
               <CardTitle className="text-2xl text-white flex items-center gap-2">
                 <HeartHandshake className="h-6 w-6 text-purple-400" />
                 How Can We Help You?
               </CardTitle>
-              <CardDescription className="text-white text-opacity-95 font-medium">
+              <CardDescription className="text-gray-200">
                 We're here to assist you with any questions or issues you might have with AEROHABITS.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
-                <Card className="bg-white/20 border border-white/20 hover:bg-white/25 transition-colors">
+                <Card className="bg-white/10 border border-white/10 hover:bg-white/15 transition-colors">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl flex items-center gap-2 text-white">
                       <Mail className="h-5 w-5 text-blue-400" />
@@ -59,19 +54,19 @@ const Support = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-white font-medium">
+                    <p className="text-gray-200">
                       For personal assistance, please email us at:
                     </p>
                     <a 
                       href="mailto:Aerohabits@gmail.com" 
-                      className="text-blue-100 font-bold block mt-2 hover:text-white hover:underline transition-colors"
+                      className="text-blue-300 font-medium block mt-2 hover:text-blue-200 transition-colors"
                     >
                       Aerohabits@gmail.com
                     </a>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/20 border border-white/20 hover:bg-white/25 transition-colors">
+                <Card className="bg-white/10 border border-white/10 hover:bg-white/15 transition-colors">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl flex items-center gap-2 text-white">
                       <FileQuestion className="h-5 w-5 text-emerald-400" />
@@ -79,11 +74,11 @@ const Support = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-white font-medium">
+                    <p className="text-gray-200">
                       Check our frequently asked questions for quick answers to common questions.
                     </p>
                     <div className="mt-4">
-                      <Button variant="glass" size="sm" className="w-full font-bold text-white">
+                      <Button variant="glass" size="sm" className="w-full text-white">
                         View FAQs
                       </Button>
                     </div>
@@ -91,12 +86,12 @@ const Support = () => {
                 </Card>
               </div>
 
-              <div className="mt-6 bg-gradient-to-r from-purple-900/60 to-blue-900/60 rounded-lg p-6 border border-white/20">
-                <h3 className="text-xl text-white font-bold mb-3 flex items-center gap-2">
+              <div className="mt-6 bg-gradient-to-r from-purple-900/40 to-blue-900/40 rounded-lg p-6 border border-white/10">
+                <h3 className="text-xl text-white font-medium mb-3 flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-purple-400" />
                   We're Here For You
                 </h3>
-                <p className="text-white font-medium">
+                <p className="text-gray-200">
                   Our support team is available Monday through Friday, 9AM to 5PM EST.
                   We usually respond to all inquiries within 24 hours.
                 </p>
@@ -105,7 +100,7 @@ const Support = () => {
                     variant="premium"
                     size="wide"
                     onClick={() => window.location.href = "mailto:Aerohabits@gmail.com"}
-                    className="text-white font-bold"
+                    className="text-white"
                   >
                     <Mail className="mr-2" /> 
                     Contact Support
@@ -113,7 +108,7 @@ const Support = () => {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="border-t border-white/20 pt-4 text-white font-medium text-sm">
+            <CardFooter className="border-t border-white/10 pt-4 text-gray-300 text-sm">
               Thank you for using AEROHABITS. We're committed to providing you with the best support possible.
             </CardFooter>
           </Card>
