@@ -24,7 +24,10 @@ const Support = () => {
         )}
       >
         <div className="flex justify-between items-center">
-          <PageHeader title="Support" description="Get help with AEROHABITS" />
+          <PageHeader 
+            title="Support" 
+            description="Get help with AEROHABITS" 
+          />
           <UserMenu />
         </div>
 
@@ -40,13 +43,13 @@ const Support = () => {
                 <HeartHandshake className="h-6 w-6 text-purple-400" />
                 How Can We Help You?
               </CardTitle>
-              <CardDescription className="text-gray-200">
+              <CardDescription className="text-white text-opacity-90">
                 We're here to assist you with any questions or issues you might have with AEROHABITS.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
-                <Card className="bg-white/10 border border-white/10 hover:bg-white/15 transition-colors">
+                <Card className="bg-white/15 border border-white/15 hover:bg-white/20 transition-colors">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl flex items-center gap-2 text-white">
                       <Mail className="h-5 w-5 text-blue-400" />
@@ -54,19 +57,19 @@ const Support = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-200">
+                    <p className="text-white text-opacity-90">
                       For personal assistance, please email us at:
                     </p>
                     <a 
                       href="mailto:Aerohabits@gmail.com" 
-                      className="text-blue-300 font-medium block mt-2 hover:text-blue-200 transition-colors"
+                      className="text-blue-200 font-medium block mt-2 hover:text-blue-100 transition-colors"
                     >
                       Aerohabits@gmail.com
                     </a>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-white/10 border border-white/10 hover:bg-white/15 transition-colors">
+                <Card className="bg-white/15 border border-white/15 hover:bg-white/20 transition-colors">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-xl flex items-center gap-2 text-white">
                       <FileQuestion className="h-5 w-5 text-emerald-400" />
@@ -74,11 +77,11 @@ const Support = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-200">
+                    <p className="text-white text-opacity-90">
                       Check our frequently asked questions for quick answers to common questions.
                     </p>
                     <div className="mt-4">
-                      <Button variant="glass" size="sm" className="w-full text-white">
+                      <Button variant="glass" size="sm" className="w-full font-semibold text-white">
                         View FAQs
                       </Button>
                     </div>
@@ -86,12 +89,12 @@ const Support = () => {
                 </Card>
               </div>
 
-              <div className="mt-6 bg-gradient-to-r from-purple-900/40 to-blue-900/40 rounded-lg p-6 border border-white/10">
+              <div className="mt-6 bg-gradient-to-r from-purple-900/50 to-blue-900/50 rounded-lg p-6 border border-white/15">
                 <h3 className="text-xl text-white font-medium mb-3 flex items-center gap-2">
                   <MessageSquare className="h-5 w-5 text-purple-400" />
                   We're Here For You
                 </h3>
-                <p className="text-gray-200">
+                <p className="text-white text-opacity-90">
                   Our support team is available Monday through Friday, 9AM to 5PM EST.
                   We usually respond to all inquiries within 24 hours.
                 </p>
@@ -100,7 +103,7 @@ const Support = () => {
                     variant="premium"
                     size="wide"
                     onClick={() => window.location.href = "mailto:Aerohabits@gmail.com"}
-                    className="text-white"
+                    className="text-white font-semibold"
                   >
                     <Mail className="mr-2" /> 
                     Contact Support
@@ -108,7 +111,7 @@ const Support = () => {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="border-t border-white/10 pt-4 text-gray-300 text-sm">
+            <CardFooter className="border-t border-white/15 pt-4 text-white text-opacity-80 text-sm">
               Thank you for using AEROHABITS. We're committed to providing you with the best support possible.
             </CardFooter>
           </Card>
