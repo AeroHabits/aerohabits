@@ -5,24 +5,38 @@ import { Wifi, WifiOff, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { toast } from "sonner";
 
 export function NetworkStatusIndicator() {
   const connectionStatus = useDetailedConnectionStatus();
   const [showDetails, setShowDetails] = useState(false);
   
-  // Only display the component when not online or when connection is poor
-  const shouldDisplay = !connectionStatus.isOnline || connectionStatus.quality === 'poor';
+  // Only display the component when not online
+  const shouldDisplay = !connectionStatus.isOnline;
+  const isPoorConnection = connectionStatus.isOnline && connectionStatus.quality === 'poor';
+  
+  // Notify of poor connection with toast instead of permanent UI element
+  useEffect(() => {
+    // Only show toast for poor connection once it's confirmed
+    if (isPoorConnection && connectionStatus.latency !== null) {
+      toast.warning("Poor network connection detected", {
+        description: "Some features may be slower than usual",
+        duration: 5000,
+        id: "poor-connection" // Prevent duplicate toasts
+      });
+    }
+  }, [isPoorConnection, connectionStatus.quality]);
   
   // Auto-hide the component after a delay when connection is restored
   useEffect(() => {
-    if (connectionStatus.isOnline && connectionStatus.quality !== 'poor') {
+    if (connectionStatus.isOnline) {
       const timeoutId = setTimeout(() => {
         setShowDetails(false);
-      }, 5000);
+      }, 3000);
       
       return () => clearTimeout(timeoutId);
     }
-  }, [connectionStatus.isOnline, connectionStatus.quality]);
+  }, [connectionStatus.isOnline]);
   
   if (!shouldDisplay && !showDetails) return null;
   
@@ -34,9 +48,7 @@ export function NetworkStatusIndicator() {
             variant="outline"
             className={cn(
               "fixed bottom-20 right-4 z-50 flex items-center gap-1.5 px-3 py-1.5 cursor-pointer transition-all duration-300 hover:scale-105",
-              !connectionStatus.isOnline && "bg-red-100 text-red-700 border-red-300",
-              connectionStatus.isOnline && connectionStatus.quality === 'poor' && "bg-amber-100 text-amber-700 border-amber-300",
-              connectionStatus.isOnline && connectionStatus.quality !== 'poor' && "bg-green-100 text-green-700 border-green-300"
+              !connectionStatus.isOnline && "bg-red-100 text-red-700 border-red-300"
             )}
             onClick={() => setShowDetails(!showDetails)}
           >
@@ -44,20 +56,6 @@ export function NetworkStatusIndicator() {
               <>
                 <WifiOff className="w-3.5 h-3.5" />
                 <span className="text-xs font-medium">Offline</span>
-              </>
-            )}
-            
-            {connectionStatus.isOnline && connectionStatus.quality === 'poor' && (
-              <>
-                <AlertTriangle className="w-3.5 h-3.5" />
-                <span className="text-xs font-medium">Poor Connection</span>
-              </>
-            )}
-            
-            {connectionStatus.isOnline && connectionStatus.quality !== 'poor' && (
-              <>
-                <Wifi className="w-3.5 h-3.5" />
-                <span className="text-xs font-medium">Online</span>
               </>
             )}
           </Badge>
@@ -94,12 +92,6 @@ export function NetworkStatusIndicator() {
             {!connectionStatus.isOnline && (
               <p className="text-xs text-red-600 mt-2">
                 Working offline. Changes will sync when connection is restored.
-              </p>
-            )}
-            
-            {connectionStatus.isOnline && connectionStatus.quality === 'poor' && (
-              <p className="text-xs text-amber-600 mt-2">
-                Using power-saving mode. Non-critical operations delayed.
               </p>
             )}
           </div>

@@ -19,9 +19,9 @@ export const LATENCY_THRESHOLDS = {
   ACCEPTABLE: 500 // Under 500ms is acceptable, over is poor
 };
 
-// Sample endpoints to ping for connection testing
+// Updated ping endpoints that are more reliable and CORS-friendly
 export const PING_ENDPOINTS = [
-  'https://www.google.com',
-  'https://www.cloudflare.com',
-  'https://www.fastly.com',
+  '/favicon.ico', // Local endpoint - much more reliable
+  'https://api.github.com/zen', // GitHub's lightweight endpoint
+  'https://httpbin.org/status/200', // Simple status endpoint
 ];
