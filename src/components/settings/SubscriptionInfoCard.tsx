@@ -3,10 +3,41 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useSubscription } from "@/hooks/useSubscription";
-import { SubscriptionCard } from "@/components/settings/SubscriptionCard";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export function SubscriptionInfoCard() {
   const { isLoading, profile, isSubscribed } = useSubscription();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleSubscribe = async () => {
+    try {
+      setIsProcessing(true);
+      
+      toast.info("Subscription feature is currently unavailable");
+      // This will be replaced with the Apple in-app purchase flow later
+    } catch (error) {
+      console.error('Error starting subscription:', error);
+      toast.error('Failed to start subscription. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    try {
+      setIsProcessing(true);
+      
+      toast.info("Please contact support to manage your subscription");
+      // This will be replaced with the Apple subscription management flow later
+    } catch (error) {
+      console.error('Error opening subscription management:', error);
+      toast.error('Failed to open subscription management. Please try again.');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <Card className="bg-white/10 backdrop-blur-sm border-white/20 overflow-hidden mb-6">
@@ -49,21 +80,36 @@ export function SubscriptionInfoCard() {
             </div>
 
             <Separator className="my-4 bg-white/10" />
-            
-            {isSubscribed ? (
-              <div className="text-xs text-gray-400">
-                <p>Subscription status: <span className="text-green-400">{profile?.subscription_status || 'Active'}</span></p>
-              </div>
-            ) : (
-              <p className="text-xs text-gray-400 italic">
-                Coming soon: Subscribe directly through Apple for a seamless experience.
-              </p>
-            )}
 
-            {/* Include the SubscriptionCard component for additional functionality if needed */}
-            <div className="mt-6">
-              <SubscriptionCard />
-            </div>
+            {isSubscribed ? (
+              <>
+                <div className="text-xs text-gray-400 mb-4">
+                  <p>Subscription status: <span className="text-green-400">{profile?.subscription_status || 'Active'}</span></p>
+                </div>
+                <Button
+                  onClick={handleManageSubscription}
+                  disabled={isProcessing}
+                  variant="premium"
+                  className="w-full font-medium"
+                >
+                  {isProcessing ? "Processing..." : "Manage Subscription"}
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-xs text-gray-400 italic mb-4">
+                  Coming soon: Subscribe directly through Apple for a seamless experience.
+                </p>
+                <Button
+                  onClick={handleSubscribe}
+                  disabled={isProcessing}
+                  variant="premium"
+                  className="w-full font-medium shadow-lg"
+                >
+                  {isProcessing ? "Processing..." : "Subscribe Now"}
+                </Button>
+              </>
+            )}
           </>
         )}
         
