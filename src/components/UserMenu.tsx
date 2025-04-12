@@ -9,7 +9,6 @@ import { UserPoints } from "./user/UserPoints";
 import { UserAvatar } from "./user/UserAvatar";
 import { UserDropdownContent } from "./user/UserDropdownContent";
 import { motion } from "framer-motion";
-import { useToast } from "@/hooks/use-toast";
 
 export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
@@ -19,7 +18,6 @@ export function UserMenu() {
     total_points: number;
   } | null>(null);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,8 +31,6 @@ export function UserMenu() {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchProfile(session.user.id);
-      } else {
-        setProfile(null);
       }
     });
 
@@ -57,22 +53,8 @@ export function UserMenu() {
   };
 
   const handleSignOut = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      toast({
-        title: "Signed out",
-        description: "You have been successfully signed out.",
-      });
-      navigate("/auth");
-    } catch (error) {
-      console.error("Error signing out:", error);
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
-    }
+    await supabase.auth.signOut();
+    navigate("/auth");
   };
 
   if (!user) {

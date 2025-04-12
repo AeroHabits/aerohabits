@@ -10,11 +10,11 @@ import {
 } from "@/components/ui/toast"
 
 export function Toaster() {
-  const { toasts, dismissToast } = useToast()
+  const { toasts } = useToast()
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, ...props }, index) {
+      {toasts.map(function ({ id, title, description, action, ...props }) {
         return (
           <Toast 
             key={id} 
@@ -27,10 +27,8 @@ export function Toaster() {
                 <ToastDescription className="text-gray-600 dark:text-gray-300">{description}</ToastDescription>
               )}
             </div>
-            <ToastClose 
-              onClick={() => dismissToast(index)}
-              className="absolute top-2 right-2 rounded-md p-1 text-gray-500 opacity-60 transition-opacity hover:opacity-100 focus:opacity-100" 
-            />
+            {action}
+            <ToastClose className="absolute top-2 right-2 rounded-md p-1 text-gray-500 opacity-60 transition-opacity hover:opacity-100 focus:opacity-100" />
           </Toast>
         )
       })}
