@@ -1,7 +1,8 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { useErrorTracking } from "@/hooks/useErrorTracking";
+import { useConnectionPool } from "@/hooks/database/useConnectionPool";
+import { useQueryCache } from "@/hooks/database/useQueryCache";
 import { PostgrestQueryBuilder } from "@supabase/postgrest-js";
 
 // Type definitions for the query builder
@@ -30,11 +31,10 @@ interface QueryOptions {
 export function useDatabaseOptimizer() {
   const { measureAsync } = usePerformanceMonitoring();
   const { trackError } = useErrorTracking();
+  const { acquireConnection, releaseConnection } = useConnectionPool();
+  const queryCache = useQueryCache();
   
   // In-memory query cache
-  const queryCache = new Map<string, { data: any; timestamp: number; cacheTime: number }>();
-  
-  // Clear expired cache entries
   const clearExpiredCache = () => {
     const now = Date.now();
     queryCache.forEach((value, key) => {
@@ -75,19 +75,19 @@ export function useDatabaseOptimizer() {
       timeout = 10000 // Default 10 seconds
     } = options;
     
-    // Check cache for read queries
     const cacheKey = generateCacheKey(table, method, options);
-    if (method === 'select' && cacheTime > 0) {
-      const cached = queryCache.get(cacheKey);
-      if (cached && (Date.now() - cached.timestamp < cached.cacheTime * 1000)) {
-        console.log(`Using cached data for ${table}`, { cached: true });
-        return cached.data;
+    
+    // Try cache first for SELECT operations
+    if (method === 'select') {
+      const cached = queryCache.get<T>(cacheKey);
+      if (cached) {
+        console.log(`Cache hit for ${table}`, { cached: true });
+        return cached;
       }
     }
-    
-    // Set up abort controller for timeout
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    // Acquire connection from pool
+    await acquireConnection();
     
     try {
       let queryBuilder;
@@ -176,24 +176,20 @@ export function useDatabaseOptimizer() {
         return data;
       }, { table, method, hasFilters: Object.keys(filters).length > 0 });
       
-      // Cache the result for read queries
-      if (method === 'select' && cacheTime > 0 && result) {
-        queryCache.set(cacheKey, {
-          data: result,
-          timestamp: Date.now(),
-          cacheTime
-        });
+      // Cache results for SELECT operations
+      if (method === 'select' && result) {
+        queryCache.set(cacheKey, result, options.cacheTime ? options.cacheTime * 1000 : undefined);
       }
-      
-      return returnData ? result : null as any;
-    } catch (error: any) {
+
+      return result;
+    } catch (error) {
       return trackError(error, `Database ${method} on ${table}`, {
         severity: method === 'select' ? 'medium' : 'high',
         context: { table, method, options },
         fallbackData: [] as any
       });
     } finally {
-      clearTimeout(timeoutId);
+      releaseConnection();
     }
   };
   
@@ -243,6 +239,8 @@ export function useDatabaseOptimizer() {
   
   return {
     query: optimizedQuery,
-    batchProcess
+    batchProcess,
+    clearCache: queryCache.clear,
+    invalidateCache: queryCache.invalidate
   };
 }
