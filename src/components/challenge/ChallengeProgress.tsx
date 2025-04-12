@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
-import { format, startOfDay, parseISO, isAfter, isBefore, subDays } from "date-fns";
+import { format, startOfDay, parseISO, isAfter, isBefore, subDays, isToday } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -45,7 +45,12 @@ export function ChallengeProgress({
       }
 
       // Check if completed today
-      const completedToday = completions?.some(c => c.completed_date === todayStr);
+      const completedToday = completions?.some(c => {
+        // Parse the completion date and check if it's today
+        const completionDate = parseISO(c.completed_date);
+        return isToday(completionDate);
+      });
+      
       setIsCompletedToday(!!completedToday);
 
       // If there are completions, check for missed days

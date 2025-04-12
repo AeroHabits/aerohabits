@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Habit } from "@/types";
-import { isToday, isYesterday, startOfDay } from "date-fns";
+import { isToday, isYesterday, startOfDay, isSameDay } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
 import { useLocalStorage } from "./useLocalStorage";
 
@@ -56,14 +55,39 @@ export function useHabitOperations() {
     try {
       const today = startOfDay(new Date());
       const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
-      const maintainedStreak = lastUpdate && (isYesterday(lastUpdate) || isToday(lastUpdate));
+      
+      // Fixed streak calculation logic:
+      // 1. If completing a habit, check if it's already completed (no streak change)
+      // 2. If it's not already completed:
+      //    - If last update was yesterday or it's still the same day, add to streak
+      //    - Otherwise, reset streak to 1 (starting fresh)
+      // 3. If uncompleting a habit, decrease streak by 1
+      
+      let newStreak = habit.streak || 0;
+      
+      if (!habit.completed) {
+        // Completing the habit
+        if (lastUpdate) {
+          if (isYesterday(lastUpdate) || isSameDay(lastUpdate, today)) {
+            // Continuing streak from yesterday or updating today's entry
+            newStreak += 1;
+          } else {
+            // Starting a new streak
+            newStreak = 1;
+          }
+        } else {
+          // First time completing - start with 1
+          newStreak = 1;
+        }
+      } else {
+        // Uncompleting the habit
+        newStreak = Math.max(0, newStreak - 1);
+      }
       
       const updatedHabit = {
         ...habit,
         completed: !habit.completed,
-        streak: !habit.completed 
-          ? (maintainedStreak ? (habit.streak || 0) + 1 : 1)
-          : Math.max(0, (habit.streak || 0) - 1),
+        streak: newStreak,
         updated_at: new Date().toISOString()
       };
 
