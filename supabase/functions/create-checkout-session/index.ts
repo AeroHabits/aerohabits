@@ -16,7 +16,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { priceId, returnUrl, includeTrialPeriod = false } = await req.json();
+    const { priceId, returnUrl } = await req.json();
     
     // Verify these parameters exist
     if (!priceId || !returnUrl) {
@@ -71,8 +71,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // For iOS apps, we'll return a response indicating that the app should use StoreKit
-    // The frontend will handle initiating the purchase through StoreKit
+    // For iOS apps, return a response indicating that the app should use StoreKit
     return new Response(
       JSON.stringify({ 
         success: true, 

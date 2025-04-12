@@ -8,7 +8,6 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { syncSubscriptionStatus } from "@/utils/subscription/syncSubscription";
 import { isRunningInIOSApp, openIOSSubscriptionManagement } from "@/utils/subscription/iosDetection";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 
 export function SubscriptionCard() {
   const [isLoading, setIsLoading] = useState(false);
@@ -26,23 +25,7 @@ export function SubscriptionCard() {
         openIOSSubscriptionManagement();
         toast.info("Opening subscription settings...");
       } else {
-        // For web, use the customer portal function
-        const {
-          data,
-          error
-        } = await supabase.functions.invoke('create-customer-portal', {
-          body: { returnUrl: window.location.origin + '/settings' }
-        });
-        
-        if (error) throw error;
-        
-        if (data?.url) {
-          window.location.href = data.url;
-        } else if (data?.shouldUseAppStore) {
-          toast.info("Please manage your subscription through the App Store Settings");
-        } else {
-          throw new Error('No portal URL returned');
-        }
+        toast.info("Please manage your subscription through the App Store Settings");
       }
     } catch (error) {
       console.error('Error opening subscription management:', error);

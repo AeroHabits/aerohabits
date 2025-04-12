@@ -28,23 +28,8 @@ export function SubscriptionActions({
         triggerIOSPurchase('premium_subscription_monthly');
         toast.info("Opening App Store purchase...");
       } else {
-        // For web, use the existing flow
-        const {
-          data,
-          error
-        } = await supabase.functions.invoke('create-checkout-session', {
-          body: {
-            priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-            returnUrl: window.location.origin + '/settings',
-            includeTrialPeriod: false
-          }
-        });
-        
-        if (error) throw error;
-        
-        if (data.shouldUseAppStore) {
-          toast.info("Please purchase through the App Store");
-        }
+        // For web, inform the user
+        toast.info("In-app purchases are only available on iOS devices");
       }
     } catch (error) {
       console.error('Error starting subscription:', error);
@@ -66,21 +51,7 @@ export function SubscriptionActions({
         openIOSSubscriptionManagement();
         toast.info("Opening subscription settings...");
       } else {
-        // For web, use the updated customer portal function
-        const {
-          data,
-          error
-        } = await supabase.functions.invoke('create-customer-portal', {
-          body: {
-            returnUrl: window.location.origin + '/settings'
-          }
-        });
-        
-        if (error) throw error;
-        
-        if (data.shouldUseAppStore) {
-          toast.info("Please manage your subscription through the App Store Settings");
-        }
+        toast.info("Please manage your subscription through the App Store Settings");
       }
     } catch (error) {
       console.error('Error opening subscription management:', error);

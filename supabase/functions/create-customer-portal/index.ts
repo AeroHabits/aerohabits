@@ -1,7 +1,6 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
-import Stripe from 'https://esm.sh/stripe@12.0.0?target=deno';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -21,7 +20,6 @@ serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
 
     if (!supabaseUrl || !supabaseKey) {
       return new Response(JSON.stringify({ error: 'Missing Supabase credentials' }), {
@@ -43,13 +41,10 @@ serve(async (req) => {
       });
     }
     
-    const { data: body } = await req.json();
-    const returnUrl = body.returnUrl || 'https://yourapp.com/settings';
-    
-    // Get user profile to check if they have a Stripe customer ID
+    // Get user profile to check if they have an App Store subscription
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .select('stripe_customer_id, app_store_subscription_id')
+      .select('app_store_subscription_id')
       .eq('id', session.user.id)
       .single();
     
@@ -61,35 +56,9 @@ serve(async (req) => {
       });
     }
     
-    // Check if subscription is from App Store
-    if (profile.app_store_subscription_id) {
-      console.log('User has App Store subscription');
-      return new Response(JSON.stringify({ shouldUseAppStore: true }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
-    }
-    
-    // No Stripe secret key or Stripe customer ID indicates we're in development or the user doesn't have a subscription
-    if (!stripeSecretKey || !profile.stripe_customer_id) {
-      console.log('Missing Stripe credentials or customer ID');
-      return new Response(JSON.stringify({ error: 'Stripe not configured or no subscription found' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
-    }
-    
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2022-11-15',
-    });
-    
-    // Create a Stripe customer portal session
-    const session = await stripe.billingPortal.sessions.create({
-      customer: profile.stripe_customer_id,
-      return_url: returnUrl,
-    });
-    
-    return new Response(JSON.stringify({ url: session.url }), {
+    // Return response indicating to use App Store for subscription management
+    console.log('User has App Store subscription or needs to use App Store');
+    return new Response(JSON.stringify({ shouldUseAppStore: true }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });

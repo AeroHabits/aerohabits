@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Crown, Sparkles, Star, Zap } from "lucide-react";
+import { Crown, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
@@ -27,7 +27,7 @@ export function SubscribeButton() {
       const {
         data,
         error
-      } = await supabase.from('profiles').select('subscription_status, is_subscribed, subscription_id').eq('id', user.id).single();
+      } = await supabase.from('profiles').select('subscription_status, is_subscribed, app_store_subscription_id').eq('id', user.id).single();
       if (error) throw error;
       return data;
     }
