@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -23,10 +24,7 @@ const Support = () => {
         )}
       >
         <div className="flex justify-between items-center">
-          <PageHeader>
-            <h1 className="text-2xl font-bold text-white">Support</h1>
-            <p className="text-gray-300">Get help with AEROHABITS</p>
-          </PageHeader>
+          <PageHeader title="Support" description="Get help with AEROHABITS" />
           <UserMenu />
         </div>
 
