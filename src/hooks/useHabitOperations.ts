@@ -1,9 +1,8 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Habit } from "@/types";
-import { isToday, isYesterday, startOfDay, isSameDay, parseISO, isAfter } from "date-fns";
+import { isToday, isYesterday, startOfDay, isSameDay, parseISO, isAfter, addHours } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
 import { useLocalStorage } from "./useLocalStorage";
 
@@ -55,14 +54,19 @@ export function useHabitOperations() {
 
     try {
       const today = startOfDay(new Date());
-      const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
+      const now = new Date();
+      const lastUpdate = habit.updated_at ? new Date(habit.updated_at) : null;
       
-      // Improved streak calculation logic:
+      // Enforce 8-hour delay between streak days
+      const MIN_HOURS_BETWEEN_STREAK_DAYS = 8;
+      
+      // Improved streak calculation logic with 8-hour delay requirement:
       // 1. If the habit is already completed today, uncompleting it reduces the streak
       // 2. If the habit is not completed:
-      //    a. If last completed yesterday, increment streak (continuing)
+      //    a. If last completed was yesterday and at least 8 hours have passed, increment streak
       //    b. If last completed today (same day update), increment streak
       //    c. If last completed was earlier than yesterday, start fresh with streak of 1
+      //    d. If last completed was yesterday but less than 8 hours have passed, show a message
       
       let newStreak = habit.streak || 0;
       
@@ -70,11 +74,27 @@ export function useHabitOperations() {
       if (!habit.completed) {
         // We are completing the habit now
         if (lastUpdate) {
-          // Check if the last update was yesterday or today
-          if (isYesterday(lastUpdate)) {
-            // Continuing streak from yesterday
-            newStreak += 1;
-          } else if (isSameDay(lastUpdate, today)) {
+          const lastUpdateDay = startOfDay(lastUpdate);
+          
+          // Check if the last update was yesterday
+          if (isYesterday(lastUpdateDay)) {
+            // If completed yesterday, check if 8 hours have passed since last completion
+            const minimumTimeRequired = addHours(lastUpdate, MIN_HOURS_BETWEEN_STREAK_DAYS);
+            
+            if (isAfter(now, minimumTimeRequired)) {
+              // At least 8 hours have passed, continue the streak
+              newStreak += 1;
+            } else {
+              // Less than 8 hours have passed since yesterday's completion
+              // Still allow completion but notify the user about streak rules
+              toast({
+                title: "Streak Notice",
+                description: `You need to wait at least 8 hours between completions to increase your streak. Your streak will remain at ${newStreak}.`,
+                duration: 5000,
+              });
+              // Keep the streak the same
+            }
+          } else if (isSameDay(lastUpdateDay, today)) {
             // Already updated today, but may have uncompleted it
             newStreak += 1;
           } else {
