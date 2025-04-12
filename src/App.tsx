@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Settings from './pages/Settings';
@@ -7,8 +8,7 @@ import Premium from './pages/Premium';
 import { AppHeader } from './components/layout/AppHeader';
 import { PageHeader } from './components/layout/PageHeader';
 import { ToastProvider } from "./hooks/use-toast";
-import { ToastContainer } from "./components/ui/toast-notification";
-import { ToastContext } from './hooks/use-toast';
+import { Toaster } from "./components/ui/toaster";
 
 function App() {
   return (
@@ -28,11 +28,7 @@ function App() {
             </div>
           </div>
         </Router>
-        <ToastContext.Consumer>
-          {({ toasts, dismissToast }) => (
-            <ToastContainer toasts={toasts} dismissToast={dismissToast} />
-          )}
-        </ToastContext.Consumer>
+        <Toaster />
       </div>
     </ToastProvider>
   );
