@@ -2,6 +2,8 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Star, ArrowRight } from "lucide-react";
+import { isRunningInIOSApp, triggerIOSPurchase } from "@/utils/subscription/iosDetection";
+import { toast } from "sonner";
 
 interface WelcomeMessageProps {
   primaryGoal: string;

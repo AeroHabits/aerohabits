@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { questions } from "./questionnaireData";
+import { isRunningInIOSApp, triggerIOSPurchase } from "@/utils/subscription/iosDetection";
 
 export function useQuestionnaire() {
   const navigate = useNavigate();
@@ -57,17 +58,18 @@ export function useQuestionnaire() {
           return;
         }
 
-        // Create checkout session with trial period enabled
-        const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-          body: {
-            priceId: 'price_1Qsw84LDj4yzbQfIQkQ8igHs',
-            returnUrl: window.location.origin + '/habits',
-            includeTrialPeriod: true
-          }
-        });
+        // Check if running in iOS app
+        const isIOS = isRunningInIOSApp();
         
-        if (error) throw error;
-        window.location.href = data.url;
+        if (isIOS) {
+          // Initiate App Store purchase
+          triggerIOSPurchase('premium_monthly_subscription');
+          toast.info("Starting in-app purchase...");
+        } else {
+          // For web version, navigate to premium page
+          toast.info("Please use the iOS app to make a purchase or continue with web version");
+          navigate('/premium');
+        }
       } else {
         throw new Error("User not authenticated");
       }
