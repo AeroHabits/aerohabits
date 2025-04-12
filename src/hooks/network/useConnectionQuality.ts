@@ -22,21 +22,14 @@ export function useConnectionQuality() {
     reliability: 100,
   });
   
-  // Less aggressive network quality check
+  // Less aggressive network quality check - only track connection status
+  // for analytics and critical errors, not UI display
   const checkConnectionQuality = useCallback(async () => {
     if (!isOnline) return;
     
     try {
-      // Start with Network Information API if available
-      let downlinkSpeed = null;
-      if ('connection' in navigator) {
-        const conn = (navigator as any).connection;
-        if (conn && conn.downlink) {
-          downlinkSpeed = conn.downlink; // In Mbps
-        }
-      }
-      
-      // Only ping the local endpoint first for better reliability
+      // We'll only do minimal connection checks for analytics
+      // and background processes, no user-facing UI
       const latency = await pingEndpoint(PING_ENDPOINTS[0]);
       const pingResult = { success: latency !== null, timestamp: Date.now() };
       
@@ -44,76 +37,33 @@ export function useConnectionQuality() {
       updatePingHistory([pingResult]);
       const reliability = calculateReliability([...pingHistory, pingResult]);
       
-      // If we have latency measurement, determine quality
-      if (latency !== null) {
-        // Determine quality based on latency
-        let quality: ConnectionStatus['quality'] = 'good';
-        if (latency > LATENCY_THRESHOLDS.ACCEPTABLE) {
-          quality = 'poor';
-        } else if (latency > LATENCY_THRESHOLDS.GOOD) {
-          quality = 'acceptable';
-        }
-        
-        // Only update if quality has changed or it's been a while since last update
-        const shouldUpdate = 
-          connectionDetails.quality !== quality ||
-          Date.now() - connectionDetails.lastChecked > 60000; // 1 minute
+      // Only track major connection state changes
+      if (latency === null && connectionDetails.quality !== 'offline' && connectionDetails.isOnline) {
+        setConnectionDetails(prev => {
+          const newDetails: ConnectionStatus = {
+            ...prev,
+            quality: 'offline',
+            lastChecked: Date.now(),
+            reliability
+          };
           
-        if (shouldUpdate) {
-          setConnectionDetails(prev => {
-            const newDetails: ConnectionStatus = {
-              ...prev,
-              latency,
-              quality,
-              downlinkSpeed,
-              lastChecked: Date.now(),
-              reliability
-            };
-            
-            // Only track significant network changes
-            if (prev.quality !== quality && (quality === 'poor' || prev.quality === 'poor')) {
-              let networkStatus: 'online' | 'offline' | 'poor' | 'good';
-              
-              if (quality === 'poor') {
-                networkStatus = 'poor';
-              } else if (quality === 'good') {
-                networkStatus = 'good';
-              } else {
-                networkStatus = 'online';
-              }
-              
-              trackNetworkChange(networkStatus, { 
-                latency,
-                downlinkSpeed,
-                reliability
-              });
-            }
-            
-            return newDetails;
-          });
-        }
-      } else if (isOnline && connectionDetails.quality !== 'poor') {
-        // Ping failed but we're still "online" - don't immediately assume poor connection
-        // Try one more endpoint before determining quality
-        const backupLatency = await pingEndpoint(PING_ENDPOINTS[1]);
-        
-        if (backupLatency === null) {
-          setConnectionDetails(prev => {
-            const newDetails: ConnectionStatus = {
-              ...prev,
-              quality: 'poor',
-              lastChecked: Date.now(),
-              reliability: calculateReliability([...pingHistory, pingResult])
-            };
-            
-            // Track network change if quality changed
-            if (prev.quality !== 'poor') {
-              trackNetworkChange('poor');
-            }
-            
-            return newDetails;
-          });
-        }
+          trackNetworkChange('offline');
+          return newDetails;
+        });
+      } else if (latency !== null && !connectionDetails.isOnline) {
+        setConnectionDetails(prev => {
+          const newDetails: ConnectionStatus = {
+            ...prev,
+            isOnline: true,
+            latency,
+            quality: 'good', // Assume good by default
+            lastChecked: Date.now(),
+            reliability
+          };
+          
+          trackNetworkChange('online');
+          return newDetails;
+        });
       }
     } catch (error) {
       trackError(
@@ -132,26 +82,24 @@ export function useConnectionQuality() {
     connectionDetails
   ]);
 
-  // Much less frequent connection quality checks
+  // Greatly reduced frequency of connection checks - only checking
+  // when the browser reports connection changes, not on a timer
   useEffect(() => {
-    // Initial check with a delay to avoid false positives during app startup
+    // Check once on component mount with a longer delay
     const initialCheckDelay = setTimeout(() => {
       checkConnectionQuality();
-    }, 5000);
+    }, 10000);
     
-    // Greatly reduced check frequency to reduce network noise
-    const checkInterval = 120000; // Check only once every 2 minutes
+    // No regular interval checks - only check when online/offline events occur
     
-    const intervalId = setInterval(() => {
-      if (isOnline) {
-        checkConnectionQuality();
-      }
-    }, checkInterval);
-
     return () => {
       clearTimeout(initialCheckDelay);
-      clearInterval(intervalId);
     };
+  }, [checkConnectionQuality]);
+
+  // Add an effect to check when online status changes
+  useEffect(() => {
+    checkConnectionQuality();
   }, [isOnline, checkConnectionQuality]);
 
   return { 
