@@ -11,7 +11,7 @@ type ToastProps = {
 
 type ToastContextType = {
   toast: (props: ToastProps) => void;
-  toasts: ToastProps[];
+  toasts: (ToastProps & { id: string })[];
   dismissToast: (index: number) => void;
 };
 
