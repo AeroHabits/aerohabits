@@ -49,7 +49,6 @@ export function SubscriptionCard({
         <SubscriptionStatus 
           isSubscribed={profile?.is_subscribed}
           status={profile?.subscription_status}
-          currentPeriodEnd={profile?.current_period_end}
           isLoading={isLoading}
         />
 
