@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -6,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SettingsHeader } from "@/components/settings/SettingsHeader";
 import { NotificationsCard } from "@/components/settings/NotificationsCard";
 import { LegalCard } from "@/components/settings/LegalCard";
+import { SubscriptionInfoCard } from "@/components/settings/SubscriptionInfoCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { UserMenu } from "@/components/UserMenu";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -158,6 +158,10 @@ export default function Settings() {
         </div>
         
         <SettingsHeader loading={loading} />
+        
+        {/* Add the SubscriptionInfoCard component here */}
+        <SubscriptionInfoCard />
+        
         <NotificationsCard 
           settings={settings}
           updateSetting={updateSetting}
