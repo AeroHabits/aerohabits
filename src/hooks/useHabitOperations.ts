@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Habit } from "@/types";
-import { isToday, isYesterday, startOfDay, isSameDay } from "date-fns";
+import { isToday, isYesterday, startOfDay, isSameDay, parseISO, isAfter } from "date-fns";
 import { useOfflineSync } from "./useOfflineSync";
 import { useLocalStorage } from "./useLocalStorage";
 
@@ -56,31 +57,38 @@ export function useHabitOperations() {
       const today = startOfDay(new Date());
       const lastUpdate = habit.updated_at ? startOfDay(new Date(habit.updated_at)) : null;
       
-      // Fixed streak calculation logic:
-      // 1. If completing a habit, check if it's already completed (no streak change)
-      // 2. If it's not already completed:
-      //    - If last update was yesterday or it's still the same day, add to streak
-      //    - Otherwise, reset streak to 1 (starting fresh)
-      // 3. If uncompleting a habit, decrease streak by 1
+      // Improved streak calculation logic:
+      // 1. If the habit is already completed today, uncompleting it reduces the streak
+      // 2. If the habit is not completed:
+      //    a. If last completed yesterday, increment streak (continuing)
+      //    b. If last completed today (same day update), increment streak
+      //    c. If last completed was earlier than yesterday, start fresh with streak of 1
       
       let newStreak = habit.streak || 0;
       
+      // Check if we're completing or uncompleting
       if (!habit.completed) {
-        // Completing the habit
+        // We are completing the habit now
         if (lastUpdate) {
-          if (isYesterday(lastUpdate) || isSameDay(lastUpdate, today)) {
-            // Continuing streak from yesterday or updating today's entry
+          // Check if the last update was yesterday or today
+          if (isYesterday(lastUpdate)) {
+            // Continuing streak from yesterday
+            newStreak += 1;
+          } else if (isSameDay(lastUpdate, today)) {
+            // Already updated today, but may have uncompleted it
             newStreak += 1;
           } else {
-            // Starting a new streak
+            // Last update was older than yesterday
+            // We're starting a new streak
             newStreak = 1;
           }
         } else {
-          // First time completing - start with 1
+          // First time ever completing this habit
           newStreak = 1;
         }
       } else {
-        // Uncompleting the habit
+        // We are uncompleting a previously completed habit
+        // Decrease streak, but don't go below 0
         newStreak = Math.max(0, newStreak - 1);
       }
       
