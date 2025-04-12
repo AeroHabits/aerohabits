@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 import { useErrorTracking } from "@/hooks/useErrorTracking";
@@ -34,18 +35,8 @@ export function useDatabaseOptimizer() {
   const { acquireConnection, releaseConnection } = useConnectionPool();
   const queryCache = useQueryCache();
   
-  // In-memory query cache
-  const clearExpiredCache = () => {
-    const now = Date.now();
-    queryCache.forEach((value, key) => {
-      if (now - value.timestamp > value.cacheTime * 1000) {
-        queryCache.delete(key);
-      }
-    });
-  };
-  
-  // Run cache cleanup periodically
-  setInterval(clearExpiredCache, 60000); // Every minute
+  // We don't need to manually clear expired cache entries
+  // The useQueryCache hook automatically checks for expired entries on get()
   
   // Generate a cache key from query parameters
   const generateCacheKey = (
