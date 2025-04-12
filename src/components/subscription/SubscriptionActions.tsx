@@ -1,6 +1,5 @@
 
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 interface SubscriptionActionsProps {
@@ -19,8 +18,7 @@ export function SubscriptionActions({
     try {
       setIsLoading(true);
       
-      // Direct to premium page
-      window.location.href = '/premium';
+      toast.info("Subscription feature is currently unavailable");
     } catch (error) {
       console.error('Error starting subscription:', error);
       toast.error('Failed to start subscription. Please try again.');

@@ -1,19 +1,16 @@
 
-import { Crown, Calendar } from "lucide-react";
+import { Crown } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { format } from "date-fns";
 
 interface SubscriptionStatusProps {
   isSubscribed: boolean | null;
   status: string | null;
-  currentPeriodEnd: string | null;
   isLoading: boolean;
 }
 
 export function SubscriptionStatus({ 
   isSubscribed, 
-  status, 
-  currentPeriodEnd,
+  status,
   isLoading 
 }: SubscriptionStatusProps) {
   
@@ -23,11 +20,6 @@ export function SubscriptionStatus({
     
     if (status === 'active') return 'Premium Active';
     return status;
-  };
-
-  const getNextBillingDate = () => {
-    if (!currentPeriodEnd) return null;
-    return format(new Date(currentPeriodEnd), 'MMMM d, yyyy');
   };
 
   return (
@@ -45,15 +37,6 @@ export function SubscriptionStatus({
         </span>
         <span className="text-gray-400 text-xl">/month</span>
       </div>
-
-      {isSubscribed && status === 'active' && currentPeriodEnd && (
-        <Alert className="bg-green-900/40 border border-green-500/30 backdrop-blur-sm">
-          <Calendar className="h-5 w-5 text-green-400" />
-          <AlertDescription className="text-white text-base">
-            Your next payment is on {getNextBillingDate()}
-          </AlertDescription>
-        </Alert>
-      )}
     </>
   );
 }

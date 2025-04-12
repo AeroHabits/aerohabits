@@ -4,7 +4,6 @@ import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -30,7 +29,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     requestAppTrackingTransparency();
   }, []);
 
-  const { data: profile, refetch } = useQuery({
+  const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -38,7 +37,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_subscribed, subscription_status, trial_end_date')
+        .select('is_subscribed, subscription_status')
         .eq('id', user.id)
         .single();
 
@@ -67,14 +66,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     return () => subscription.unsubscribe();
   }, []);
-
-  // Add URL parameter check
-  useEffect(() => {
-    if (location.search.includes('success=true')) {
-      refetch(); // Force a profile refetch when returning from successful payment
-      toast.success("Your subscription has been activated successfully!");
-    }
-  }, [location.search, refetch]);
 
   if (isLoading) {
     return (
@@ -107,25 +98,6 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // If user is authenticated and on the onboarding path, allow them to continue
   if (isOnboardingRoute) {
     return <>{children}</>;
-  }
-
-  // Only check subscription status for authenticated users on non-onboarding paths
-  if (profile) {
-    const isSubscriptionActive = profile.subscription_status === 'active';
-    const isInTrialPeriod = profile.trial_end_date && new Date(profile.trial_end_date) > new Date();
-    const hasActiveAccess = isSubscriptionActive || isInTrialPeriod;
-    
-    // Don't redirect if:
-    // 1. User has active subscription or is in trial period OR
-    // 2. Already on premium page OR
-    // 3. Just completed payment (success=true in URL)
-    const isOnPremiumOrPaymentFlow = location.pathname === '/premium' || 
-                                    location.search.includes('success=true');
-                         
-    if (!hasActiveAccess && !isOnPremiumOrPaymentFlow) {
-      toast.error("Please subscribe to continue using the app.");
-      return <Navigate to="/premium" replace />;
-    }
   }
 
   return <>{children}</>;

@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 export interface SubscriptionProfile {
   is_subscribed: boolean | null;
   subscription_status: string | null;
-  current_period_end: string | null;
 }
 
 export function useSubscription() {
@@ -26,7 +25,7 @@ export function useSubscription() {
       // Query the database for subscription fields
       const { data, error } = await supabase
         .from('profiles')
-        .select('is_subscribed, subscription_status, current_period_end')
+        .select('is_subscribed, subscription_status')
         .eq('id', user.id)
         .single();
         

@@ -10,7 +10,6 @@ import Challenges from "@/pages/Challenges";
 import Settings from "@/pages/Settings";
 import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
-import Premium from "@/pages/Premium";
 import Onboarding from "@/pages/Onboarding";
 import Support from "@/pages/Support";
 
@@ -21,7 +20,6 @@ export function AppRoutes() {
       <Route path="/auth" element={<Auth />} />
       <Route path="/terms" element={<Terms />} />
       <Route path="/privacy" element={<Privacy />} />
-      <Route path="/premium" element={<Premium />} />
       <Route path="/support" element={<Support />} />
       
       {/* Protected routes */}
