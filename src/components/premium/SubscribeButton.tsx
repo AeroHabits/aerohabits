@@ -27,7 +27,7 @@ export function SubscribeButton() {
       const {
         data,
         error
-      } = await supabase.from('profiles').select('subscription_status, is_subscribed, app_store_subscription_id').eq('id', user.id).single();
+      } = await supabase.from('profiles').select('subscription_status, is_subscribed').eq('id', user.id).single();
       if (error) throw error;
       return data;
     }

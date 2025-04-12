@@ -14,10 +14,11 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, ...props }) {
+      {toasts.map(function ({ id, title, description, variant = "default", ...props }) {
         return (
           <Toast 
             key={id} 
+            variant={variant === "success" ? "default" : variant}
             {...props}
             className="fixed top-4 right-4 z-50 min-w-[300px] bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 shadow-lg rounded-lg"
           >

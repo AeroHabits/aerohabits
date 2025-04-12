@@ -6,7 +6,6 @@ export interface SubscriptionProfile {
   is_subscribed: boolean | null;
   subscription_status: string | null;
   current_period_end: string | null;
-  app_store_subscription_id?: string | null;
 }
 
 export function useSubscription() {
