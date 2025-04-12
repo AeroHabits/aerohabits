@@ -6,7 +6,6 @@ import { Crown, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { isRunningInIOSApp, triggerIOSPurchase } from "@/utils/subscription/iosDetection";
 
 export function SubscribeButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -53,20 +52,12 @@ export function SubscribeButton() {
       }
       
       if (hasActiveSubscription) {
-        // For iOS: Redirect to subscription management in Settings app
-        toast.info('Please manage your subscription in your device settings');
+        toast.info('You already have an active subscription');
         return;
       }
 
-      // Trigger StoreKit purchase flow with product ID
-      const isIOS = isRunningInIOSApp();
-      
-      if (isIOS) {
-        triggerIOSPurchase('premium_monthly_subscription');
-        toast.info('Starting in-app purchase...');
-      } else {
-        toast.info('In-app purchases are only available on iOS devices');
-      }
+      // Redirect to premium page for now
+      window.location.href = '/premium';
       
     } catch (error) {
       console.error('Error initiating subscription:', error);

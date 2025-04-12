@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { questions } from "./questionnaireData";
-import { isRunningInIOSApp, triggerIOSPurchase } from "@/utils/subscription/iosDetection";
 
 export function useQuestionnaire() {
   const navigate = useNavigate();
@@ -58,18 +57,9 @@ export function useQuestionnaire() {
           return;
         }
 
-        // Check if running in iOS app
-        const isIOS = isRunningInIOSApp();
+        // Navigate to premium page
+        navigate('/premium');
         
-        if (isIOS) {
-          // Initiate App Store purchase
-          triggerIOSPurchase('premium_monthly_subscription');
-          toast.info("Starting in-app purchase...");
-        } else {
-          // For web version, navigate to premium page
-          toast.info("Please use the iOS app to make a purchase or continue with web version");
-          navigate('/premium');
-        }
       } else {
         throw new Error("User not authenticated");
       }

@@ -23,7 +23,6 @@ export async function updateUserSubscription(
     const { error } = await supabaseAdmin
       .from('profiles')
       .update({
-        app_store_subscription_id: subscriptionId,
         subscription_status: status,
         is_subscribed: is_subscribed,
         trial_end_date: trialEnd,
@@ -46,7 +45,7 @@ export async function findUserByCustomerId(customerId) {
     const { data, error } = await supabaseAdmin
       .from('profiles')
       .select('id')
-      .eq('app_store_customer_id', customerId)
+      .eq('customer_id', customerId)
       .single();
       
     if (error) throw error;

@@ -41,24 +41,7 @@ serve(async (req) => {
       });
     }
     
-    // Get user profile to check if they have an App Store subscription
-    const { data: profile, error: profileError } = await supabaseAdmin
-      .from('profiles')
-      .select('app_store_subscription_id')
-      .eq('id', session.user.id)
-      .single();
-    
-    if (profileError) {
-      console.error('Error getting user profile:', profileError);
-      return new Response(JSON.stringify({ error: 'Error retrieving user profile' }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      });
-    }
-    
-    // Return response indicating to use App Store for subscription management
-    console.log('User has App Store subscription or needs to use App Store');
-    return new Response(JSON.stringify({ shouldUseAppStore: true }), {
+    return new Response(JSON.stringify({ message: 'Subscription management is currently unavailable' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });

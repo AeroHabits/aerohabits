@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { isRunningInIOSApp, triggerIOSPurchase, openIOSSubscriptionManagement } from "@/utils/subscription/iosDetection";
 
 interface SubscriptionActionsProps {
   isSubscribed: boolean | null;
@@ -20,17 +19,8 @@ export function SubscriptionActions({
     try {
       setIsLoading(true);
       
-      // Check if running in iOS app
-      const isIOS = isRunningInIOSApp();
-      
-      if (isIOS) {
-        // For iOS, initiate the purchase through the native app
-        triggerIOSPurchase('premium_subscription_monthly');
-        toast.info("Opening App Store purchase...");
-      } else {
-        // For web, inform the user
-        toast.info("In-app purchases are only available on iOS devices");
-      }
+      // Direct to premium page
+      window.location.href = '/premium';
     } catch (error) {
       console.error('Error starting subscription:', error);
       toast.error('Failed to start subscription. Please try again.');
@@ -43,16 +33,7 @@ export function SubscriptionActions({
     try {
       setIsLoading(true);
       
-      // Check if running in iOS app
-      const isIOS = isRunningInIOSApp();
-      
-      if (isIOS) {
-        // For iOS, open the App Store subscription management
-        openIOSSubscriptionManagement();
-        toast.info("Opening subscription settings...");
-      } else {
-        toast.info("Please manage your subscription through the App Store Settings");
-      }
+      toast.info("Please contact support to manage your subscription");
     } catch (error) {
       console.error('Error opening subscription management:', error);
       toast.error('Failed to open subscription management. Please try again.');

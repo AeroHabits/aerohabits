@@ -1,32 +1,24 @@
 
+// This file is intentionally emptied as we're removing iOS-specific code
+// The functions below are stubs to avoid breaking imports until they can be properly removed
+
 /**
  * Helper function to detect if the app is running in iOS environment
  */
 export const isRunningInIOSApp = (): boolean => {
-  return window.navigator.userAgent.includes('iPhone') || 
-         window.navigator.userAgent.includes('iPad') || 
-         (window as any).webkit?.messageHandlers?.storeKit !== undefined;
+  return false;
 };
 
 /**
  * Triggers the StoreKit interface for iOS in-app purchases
  */
 export const triggerIOSPurchase = (productId: string): void => {
-  if ((window as any).webkit?.messageHandlers?.storeKit) {
-    (window as any).webkit.messageHandlers.storeKit.postMessage({
-      action: 'purchase',
-      productId
-    });
-  }
+  console.log('iOS in-app purchase functionality removed');
 };
 
 /**
  * Opens the iOS subscription management interface
  */
 export const openIOSSubscriptionManagement = (): void => {
-  if ((window as any).webkit?.messageHandlers?.storeKit) {
-    (window as any).webkit.messageHandlers.storeKit.postMessage({
-      action: 'manageSubscriptions'
-    });
-  }
+  console.log('iOS subscription management functionality removed');
 };

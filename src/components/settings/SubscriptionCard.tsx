@@ -6,7 +6,6 @@ import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { syncSubscriptionStatus } from "@/utils/subscription/syncSubscription";
-import { isRunningInIOSApp, openIOSSubscriptionManagement } from "@/utils/subscription/iosDetection";
 import { toast } from "sonner";
 
 export function SubscriptionCard() {
@@ -16,17 +15,7 @@ export function SubscriptionCard() {
   const handleManageSubscription = async () => {
     try {
       setIsLoading(true);
-      
-      // Check if running in iOS app
-      const isIOS = isRunningInIOSApp();
-      
-      if (isIOS) {
-        // For iOS, open the App Store subscription management
-        openIOSSubscriptionManagement();
-        toast.info("Opening subscription settings...");
-      } else {
-        toast.info("Please manage your subscription through the App Store Settings");
-      }
+      toast.info("Please contact support to manage your subscription");
     } catch (error) {
       console.error('Error opening subscription management:', error);
       toast.error('Failed to open subscription management. Please try again.');

@@ -47,7 +47,7 @@ const handler = async (req: Request): Promise<Response> => {
 
     const { data: profileData, error: profileError } = await supabaseClient
       .from('profiles')
-      .select('app_store_subscription_id, is_subscribed, subscription_status')
+      .select('is_subscribed, subscription_status')
       .eq('id', user.id)
       .single();
 
@@ -58,9 +58,6 @@ const handler = async (req: Request): Promise<Response> => {
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
-
-    // This function now only checks the database for any updates
-    // In a real implementation, you would query Apple's subscription status
     
     return new Response(
       JSON.stringify({
