@@ -13,22 +13,26 @@ interface State {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  key: number; // Add a key to force re-render when needed
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,
     error: null,
-    errorInfo: null
+    errorInfo: null,
+    key: 0
   };
 
-  public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error, errorInfo: null };
+  public static getDerivedStateFromError(error: Error): Partial<State> {
+    return { hasError: true, error };
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log the error to Sentry
-    Sentry.captureException(error, { extra: { reactErrorInfo: errorInfo } });
+    // Only log the error to Sentry if we're online to avoid queue buildup
+    if (navigator.onLine) {
+      Sentry.captureException(error, { extra: { reactErrorInfo: errorInfo } });
+    }
     
     // Update state to include error info
     this.setState({ errorInfo });
@@ -38,24 +42,18 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private handleReset = () => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
-    window.location.reload();
+    // Clear the error state and increment key to force children to remount
+    this.setState({ 
+      hasError: false, 
+      error: null, 
+      errorInfo: null,
+      key: this.state.key + 1 
+    });
   };
 
   private handleReport = () => {
     // Show Sentry feedback dialog
     Sentry.showReportDialog();
-    
-    // Optional: Could also send to your own support email through API
-    if (this.state.error && navigator.onLine) {
-      // In real implementation, you'd send the error to your backend
-      console.log("Sending error report to support team", {
-        error: this.state.error.message,
-        stack: this.state.error.stack,
-        userAgent: navigator.userAgent,
-        timestamp: new Date().toISOString()
-      });
-    }
   };
 
   public render() {
@@ -66,7 +64,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <AlertTitle className="text-[#6E59A5]">Something went wrong</AlertTitle>
             <AlertDescription className="mt-2 text-gray-600">
               <p className="mb-2">{this.state.error?.message || 'An unexpected error occurred'}</p>
-              <p className="text-sm text-gray-500">We've recorded this issue and our team is working on a fix.</p>
+              <p className="text-sm text-gray-500">The app has been reset. Please try again.</p>
             </AlertDescription>
             <div className="mt-4 flex space-x-4">
               <Button
@@ -90,6 +88,7 @@ export class ErrorBoundary extends Component<Props, State> {
       );
     }
 
-    return this.props.children;
+    // Render children with the key to force remount when needed
+    return <div key={this.state.key}>{this.props.children}</div>;
   }
 }

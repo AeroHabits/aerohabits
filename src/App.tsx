@@ -22,37 +22,39 @@ const NetworkStatusIndicator = lazy(() =>
   }))
 );
 
-// Initialize Sentry with reduced options
+// Create query client with optimized settings
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 60000,
+      refetchOnWindowFocus: false,
+      gcTime: 10 * 60 * 1000,
+    },
+  },
+});
+
+// Lightweight Sentry config to reduce overhead
 Sentry.init({
   dsn: "https://7f41f5a0a9c0c2d9f8b6e3a1d4c5b2a8@o4506779798454272.ingest.sentry.io/4506779799502848",
   integrations: [
     new Sentry.BrowserTracing({
       tracePropagationTargets: [/^https:\/\/areohabits\.com/],
     }),
-    new Sentry.Replay({
-      maskAllText: true,
-      blockAllMedia: true,
-    }),
   ],
-  tracesSampleRate: 0.1, // Reduce from 1.0 to 0.1
-  replaysSessionSampleRate: 0.05, // Reduce from 0.1 to 0.05
-  replaysOnErrorSampleRate: 0.5, // Reduce from 1.0 to 0.5
-});
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 60000, // Increase from 30000 to 60000
-      refetchOnWindowFocus: false,
-      gcTime: 10 * 60 * 1000, // 10 minutes
-    },
+  tracesSampleRate: 0.05, // Further reduce sample rate
+  beforeSend(event) {
+    // Don't send events in development
+    if (window.location.hostname === 'localhost') {
+      return null;
+    }
+    return event;
   },
 });
 
 // Wrap the app with Sentry's error boundary
 const SentryErrorBoundary = Sentry.withErrorBoundary(ErrorBoundary, {
-  showDialog: false, // Don't show dialog by default
+  showDialog: false,
 });
 
 // Memoized analytics tracker component
@@ -67,15 +69,19 @@ const AnalyticsTracker = memo(() => {
     }
   }, [isOnline]);
 
-  // Track page views
+  // Track page views with debouncing to prevent excessive calls
   useEffect(() => {
     if (isOnline) {
-      trackPageView(location.pathname);
+      const timeoutId = setTimeout(() => {
+        trackPageView(location.pathname);
+      }, 300);
+      return () => clearTimeout(timeoutId);
     }
   }, [location, isOnline]);
 
   return null;
 });
+AnalyticsTracker.displayName = 'AnalyticsTracker';
 
 // Layout component to handle common layout elements
 const Layout = memo(({ children }: { children: React.ReactNode }) => {
@@ -85,13 +91,13 @@ const Layout = memo(({ children }: { children: React.ReactNode }) => {
   return (
     <div className={cn(
       "min-h-screen flex flex-col",
-      isMobile && "pb-16" // Add padding at the bottom on mobile to account for the navigation bar
+      isMobile && "pb-16"
     )}>
       <div className="flex-1">
         {children}
       </div>
       <Footer />
-      <BottomNav />
+      {isMobile && <BottomNav />}
       {isOnline && (
         <Suspense fallback={null}>
           <NetworkStatusIndicator />
@@ -100,6 +106,7 @@ const Layout = memo(({ children }: { children: React.ReactNode }) => {
     </div>
   );
 });
+Layout.displayName = 'Layout';
 
 const App = () => (
   <SentryErrorBoundary>

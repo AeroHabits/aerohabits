@@ -1,5 +1,5 @@
 
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Index from "@/pages/Index";
 import Auth from "@/pages/Auth";
@@ -12,73 +12,114 @@ import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Onboarding from "@/pages/Onboarding";
 import Support from "@/pages/Support";
+import { lazy, Suspense, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+// Loading fallback component
+const RouteLoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="rounded-full h-12 w-12 border-b-2 border-white animate-spin"></div>
+  </div>
+);
 
 export function AppRoutes() {
+  const location = useLocation();
+  
+  // Reset scroll position on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
+
   return (
-    <Routes>
-      {/* Non-protected routes */}
-      <Route path="/auth" element={<Auth />} />
-      <Route path="/terms" element={<Terms />} />
-      <Route path="/privacy" element={<Privacy />} />
-      <Route path="/support" element={<Support />} />
-      
-      {/* Protected routes */}
-      <Route
-        path="/onboarding"
-        element={
-          <ProtectedRoute>
-            <Onboarding />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <Index />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/habits"
-        element={
-          <ProtectedRoute>
-            <Habits />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/goals"
-        element={
-          <ProtectedRoute>
-            <Goals />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/journey"
-        element={
-          <ProtectedRoute>
-            <Journey />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/challenges"
-        element={
-          <ProtectedRoute>
-            <Challenges />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/settings"
-        element={
-          <ProtectedRoute>
-            <Settings />
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Non-protected routes */}
+        <Route path="/auth" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Auth />
+          </motion.div>
+        } />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/privacy" element={<Privacy />} />
+        <Route path="/support" element={<Support />} />
+        
+        {/* Protected routes */}
+        <Route
+          path="/onboarding"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Onboarding />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Index />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/habits"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Habits />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/goals"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Goals />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/journey"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Journey />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/challenges"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Challenges />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Settings />
+              </Suspense>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </AnimatePresence>
   );
 }
