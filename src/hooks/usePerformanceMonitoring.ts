@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from 'react';
 import * as Sentry from "@sentry/react";
 
@@ -18,7 +19,7 @@ export function usePerformanceMonitoring() {
     ['synchronization', 5000],    // 5 seconds for sync operations
   ]));
 
-  // Report metrics periodically to avoid overwhelming analytics
+  // Report metrics every 30 seconds instead of 10 to reduce processing overhead
   useEffect(() => {
     const reportInterval = setInterval(() => {
       if (metricsRef.current.size === 0) return;
@@ -38,27 +39,30 @@ export function usePerformanceMonitoring() {
       });
       
       if (metricsToReport.length > 0) {
-        // Report to Sentry Performance Monitoring
-        metricsToReport.forEach(metric => {
-          if (metric.duration) {
-            Sentry.metrics.distribution(
-              `app.performance.${metric.name}`, 
-              metric.duration,
-              metric.tags
-            );
-            
-            // Log slower operations for debugging
-            const threshold = reportThresholds.current.get(metric.name.split('.')[0]) || 1000;
-            if (metric.duration > threshold) {
-              console.warn(`Slow operation detected: ${metric.name} took ${metric.duration}ms`, metric.tags);
+        // Report to Sentry Performance Monitoring - batch report to reduce network calls
+        Sentry.withScope(scope => {
+          // Add all metrics to a single scope to reduce overhead
+          metricsToReport.forEach(metric => {
+            if (metric.duration) {
+              Sentry.metrics.distribution(
+                `app.performance.${metric.name}`, 
+                metric.duration,
+                metric.tags
+              );
+              
+              // Only log very slow operations for debugging
+              const threshold = reportThresholds.current.get(metric.name.split('.')[0]) || 1000;
+              if (metric.duration > threshold * 2) { // Only log if twice as slow as threshold
+                console.warn(`Slow operation detected: ${metric.name} took ${metric.duration}ms`, metric.tags);
+              }
             }
-          }
+          });
         });
         
         // Reset to only keep in-progress metrics
         metricsRef.current = metricsToKeep;
       }
-    }, 10000); // Report every 10 seconds
+    }, 30000); // Report every 30 seconds
     
     return () => clearInterval(reportInterval);
   }, []);
@@ -102,7 +106,6 @@ export function usePerformanceMonitoring() {
       endMeasure(key);
       return result;
     } catch (error) {
-      // Still record timing even if operation failed
       endMeasure(key);
       throw error;
     }

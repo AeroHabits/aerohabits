@@ -9,63 +9,78 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
 import { BottomNav } from "./components/layout/BottomNav";
-import { useEffect } from "react";
-import { trackPageView, initAnalytics } from "./lib/analytics"; // Updated import path
+import { useEffect, lazy, Suspense, memo } from "react";
+import { trackPageView, initAnalytics } from "./lib/analytics";
 import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
-import { NetworkStatusIndicator } from "./components/NetworkStatusIndicator";
 
-// Initialize Sentry
+// Lazy load non-critical components
+const NetworkStatusIndicator = lazy(() => 
+  import("./components/NetworkStatusIndicator").then(module => ({ 
+    default: module.NetworkStatusIndicator 
+  }))
+);
+
+// Initialize Sentry with reduced options
 Sentry.init({
   dsn: "https://7f41f5a0a9c0c2d9f8b6e3a1d4c5b2a8@o4506779798454272.ingest.sentry.io/4506779799502848",
   integrations: [
     new Sentry.BrowserTracing({
-      tracePropagationTargets: ["localhost", /^https:\/\/areohabits\.com/],
+      tracePropagationTargets: [/^https:\/\/areohabits\.com/],
     }),
-    new Sentry.Replay(),
+    new Sentry.Replay({
+      maskAllText: true,
+      blockAllMedia: true,
+    }),
   ],
-  tracesSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
+  tracesSampleRate: 0.1, // Reduce from 1.0 to 0.1
+  replaysSessionSampleRate: 0.05, // Reduce from 0.1 to 0.05
+  replaysOnErrorSampleRate: 0.5, // Reduce from 1.0 to 0.5
 });
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: 1,
-      staleTime: 30000,
+      staleTime: 60000, // Increase from 30000 to 60000
       refetchOnWindowFocus: false,
+      gcTime: 10 * 60 * 1000, // 10 minutes
     },
   },
 });
 
 // Wrap the app with Sentry's error boundary
 const SentryErrorBoundary = Sentry.withErrorBoundary(ErrorBoundary, {
-  showDialog: true,
+  showDialog: false, // Don't show dialog by default
 });
 
-// Enhanced analytics tracker component
-const AnalyticsTracker = () => {
+// Memoized analytics tracker component
+const AnalyticsTracker = memo(() => {
   const location = useLocation();
   const isOnline = useOnlineStatus();
 
   // Initialize analytics on mount
   useEffect(() => {
-    initAnalytics();
-  }, []);
+    if (isOnline) {
+      initAnalytics();
+    }
+  }, [isOnline]);
 
   // Track page views
   useEffect(() => {
-    trackPageView(location.pathname);
-  }, [location]);
+    if (isOnline) {
+      trackPageView(location.pathname);
+    }
+  }, [location, isOnline]);
 
   return null;
-};
+});
 
 // Layout component to handle common layout elements
-const Layout = ({ children }: { children: React.ReactNode }) => {
+const Layout = memo(({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
+  const isOnline = useOnlineStatus();
   
   return (
     <div className={cn(
@@ -77,10 +92,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       </div>
       <Footer />
       <BottomNav />
-      <NetworkStatusIndicator />
+      {isOnline && (
+        <Suspense fallback={null}>
+          <NetworkStatusIndicator />
+        </Suspense>
+      )}
     </div>
   );
-};
+});
 
 const App = () => (
   <SentryErrorBoundary>

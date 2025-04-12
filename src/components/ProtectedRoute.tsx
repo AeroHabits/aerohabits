@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
@@ -14,21 +14,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const location = useLocation();
 
-  // Handle app tracking transparency for iOS
-  useEffect(() => {
-    // This would be replaced with actual implementation when using Capacitor
-    // For demonstration purposes only - in production, use Capacitor plugins
-    const requestAppTrackingTransparency = async () => {
-      if (navigator.userAgent.includes('iPhone') || navigator.userAgent.includes('iPad')) {
-        console.log('Would request App Tracking Transparency permission on real iOS device');
-        // In a real implementation with Capacitor:
-        // const { status } = await Plugins.AppTrackingTransparency.requestPermission();
-      }
-    };
-
-    requestAppTrackingTransparency();
-  }, []);
-
+  // Reduced profile refetch frequency to improve performance
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -45,16 +31,26 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       return data;
     },
     enabled: isAuthenticated,
-    refetchInterval: 5000, // Refetch every 5 seconds to catch subscription updates
-    staleTime: 0, // Consider data always stale to ensure fresh checks
+    refetchInterval: 60000, // Refetch every minute instead of every 5 seconds
+    staleTime: 30000, // Consider data stale after 30 seconds
   });
+
+  // Memoize the auth check to prevent unnecessary rerenders
+  const checkAuth = useCallback(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Auth check error:", error);
+      setIsLoading(false);
+      setIsAuthenticated(false);
+    }
+  }, []);
 
   useEffect(() => {
     // Check for existing session on component mount
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAuthenticated(!!session);
-      setIsLoading(false);
-    });
+    checkAuth();
 
     // Listen for auth state changes
     const {
@@ -65,22 +61,18 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [checkAuth]);
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
           className="flex flex-col items-center"
         >
-          <motion.div 
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-white"
-          />
+          <div className="rounded-full h-12 w-12 border-b-2 border-white animate-spin"></div>
           <p className="text-white mt-4">Loading your habits...</p>
         </motion.div>
       </div>

@@ -9,6 +9,10 @@ import { WeeklySummaryStats } from "./weekly-progress/WeeklySummaryStats";
 import { WeeklyProgressHeader } from "./weekly-progress/WeeklyProgressHeader";
 import { WeeklyProgressSkeleton } from "./weekly-progress/WeeklyProgressSkeleton";
 import { generateWeeklyData, calculateWeeklyTotals } from "./weekly-progress/weeklyProgressUtils";
+import { memo } from "react";
+
+// Memoize the day progress cards to prevent unnecessary rerenders
+const MemoizedDayProgressCard = memo(DayProgressCard);
 
 export function WeeklyProgress() {
   const { data: habits, isLoading } = useQuery({
@@ -25,12 +29,14 @@ export function WeeklyProgress() {
       const { data, error } = await supabase
         .from("habits")
         .select(`
-          *,
+          id,
+          title,
+          completed,
+          updated_at,
           habit_categories (
             id,
             name,
-            color,
-            icon
+            color
           )
         `)
         .gte('updated_at', formattedWeekStart)
@@ -44,6 +50,7 @@ export function WeeklyProgress() {
       
       return data || [];
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   if (isLoading) {
@@ -58,20 +65,20 @@ export function WeeklyProgress() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      transition={{ duration: 0.2 }}
       className="relative"
+      // Remove expensive background blur effects
+      style={{ willChange: 'auto' }} // Optimize for browser rendering
     >
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-indigo-900/30 via-purple-900/30 to-blue-900/30 blur-xl -z-10"></div>
-      
-      <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 border border-white/10 hover:border-white/20 transition-all duration-300 shadow-2xl rounded-xl overflow-hidden">
+      <Card className="p-6 bg-gradient-to-br from-gray-900/90 to-gray-800/90 border border-white/10 transition-colors duration-300 shadow-xl rounded-xl overflow-hidden">
         <div className="space-y-6">
           <WeeklyProgressHeader weeklyPercentage={weeklyPercentage} />
           
           <div className="grid gap-4 md:grid-cols-2">
             {weeklyData.map((day, index) => (
-              <DayProgressCard key={day.day} day={day} index={index} />
+              <MemoizedDayProgressCard key={day.day} day={day} index={index} />
             ))}
           </div>
           

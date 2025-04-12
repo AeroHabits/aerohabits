@@ -1,8 +1,7 @@
 
 import { Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { useState, useCallback } from "react";
 import { SubscriptionStatus } from "./SubscriptionStatus";
 import { SubscriptionActions } from "./SubscriptionActions";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -18,30 +17,18 @@ export function SubscriptionCard({
   const [isLoadingState, setIsLoadingState] = useState(false);
   const { profile, isLoading: profileLoading, refetch } = useSubscription();
 
-  const handleSyncSubscription = () => {
+  const handleSyncSubscription = useCallback(() => {
     syncSubscriptionStatus(refetch, setIsLoadingState);
-  };
+  }, [refetch]);
 
   const isLoading = externalLoading || isLoadingState || profileLoading;
 
   return (
     <Card className="bg-gradient-to-br from-gray-800 via-gray-900 to-black border-gray-700 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:20px_20px]" />
-      <motion.div 
-        className="absolute -top-32 -right-32 w-64 h-64 bg-purple-500/30 rounded-full blur-3xl" 
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3]
-        }} 
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
       <CardHeader className="border-b border-gray-700/50 relative">
         <CardTitle className="text-2xl font-normal text-white flex items-center gap-3">
-          <Sparkles className="h-6 w-6 text-yellow-400 animate-pulse" />
+          <Sparkles className="h-6 w-6 text-yellow-400" />
           Premium Membership
         </CardTitle>
       </CardHeader>
