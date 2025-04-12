@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { SettingsHeader } from "@/components/settings/SettingsHeader";
 import { NotificationsCard } from "@/components/settings/NotificationsCard";
 import { LegalCard } from "@/components/settings/LegalCard";
-import { SubscriptionCard } from "@/components/settings/SubscriptionCard";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { UserMenu } from "@/components/UserMenu";
 
@@ -104,7 +103,6 @@ export default function Settings() {
         </div>
         
         <SettingsHeader loading={loading} />
-        <SubscriptionCard />
         <NotificationsCard 
           settings={settings}
           updateSetting={updateSetting}

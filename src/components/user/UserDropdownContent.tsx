@@ -7,9 +7,8 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { UserProfile } from "../UserProfile";
-import { Crown, Settings, LogOut } from "lucide-react";
+import { Settings, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 
 interface UserDropdownContentProps {
   user: User;
@@ -53,20 +52,6 @@ export function UserDropdownContent({
       >
         <Settings className="h-4 w-4 text-gray-600 dark:text-gray-400" />
         <span>Settings</span>
-      </DropdownMenuItem>
-      <DropdownMenuItem
-        className="cursor-pointer flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md m-1 px-2 py-1.5 transition-colors duration-200 font-medium text-blue-600 dark:text-blue-400"
-        onClick={() => navigate("/premium")}
-      >
-        <div className="relative">
-          <Crown className="h-4 w-4 text-yellow-500" />
-          <motion.div 
-            className="absolute inset-0 rounded-full bg-yellow-400/30" 
-            animate={{ scale: [1, 1.2, 1], opacity: [0.7, 0.4, 0.7] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        </div>
-        <span>Premium Features</span>
       </DropdownMenuItem>
       <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-800" />
       <DropdownMenuItem
