@@ -1,6 +1,7 @@
 
 import { supabase } from "@/integrations/supabase/client";
 import { TableNames, QueryMethod, QueryOptions } from "./types";
+import { applyFilters } from "./filterUtils";
 
 /**
  * Creates and configures a query builder based on the method and options
@@ -33,25 +34,8 @@ export function createQueryBuilder(
         queryBuilder = supabase.from(table).select(`${select}${relationsStr}`);
       }
       
-      // Apply filters
-      Object.entries(filters).forEach(([key, value]) => {
-        if (Array.isArray(value)) {
-          queryBuilder = queryBuilder.in(key, value);
-        } else if (value !== null && typeof value === 'object') {
-          // Handle special operators like gt, lt, etc.
-          Object.entries(value).forEach(([op, val]) => {
-            if (op === 'gt') queryBuilder = queryBuilder.gt(key, val as any);
-            else if (op === 'gte') queryBuilder = queryBuilder.gte(key, val as any);
-            else if (op === 'lt') queryBuilder = queryBuilder.lt(key, val as any);
-            else if (op === 'lte') queryBuilder = queryBuilder.lte(key, val as any);
-            else if (op === 'like') queryBuilder = queryBuilder.like(key, `%${val}%`);
-            else if (op === 'ilike') queryBuilder = queryBuilder.ilike(key, `%${val}%`);
-            else if (op === 'neq') queryBuilder = queryBuilder.neq(key, val as any);
-          });
-        } else {
-          queryBuilder = queryBuilder.eq(key, value);
-        }
-      });
+      // Apply filters using the extracted utility function
+      queryBuilder = applyFilters(queryBuilder, filters);
       
       // Add pagination
       queryBuilder = queryBuilder
@@ -73,9 +57,7 @@ export function createQueryBuilder(
       
       // Apply conditions if provided
       if (conditions) {
-        Object.entries(conditions).forEach(([key, value]) => {
-          queryBuilder = queryBuilder.eq(key, value);
-        });
+        queryBuilder = applyFilters(queryBuilder, conditions);
       }
       break;
     }
@@ -83,9 +65,8 @@ export function createQueryBuilder(
     case 'delete': {
       queryBuilder = supabase.from(table).delete();
       
-      Object.entries(filters).forEach(([key, value]) => {
-        queryBuilder = queryBuilder.eq(key, value);
-      });
+      // Apply filters using the extracted utility function
+      queryBuilder = applyFilters(queryBuilder, filters);
       break;
     }
     

@@ -1,5 +1,5 @@
 
-import { PostgrestQueryBuilder } from "@supabase/postgrest-js";
+import { PostgrestQueryBuilder, PostgrestFilterBuilder } from "@supabase/postgrest-js";
 
 // Type definitions for the query builder
 export type TableNames = 'habits' | 'goals' | 'challenges' | 'profiles' | 'habit_categories';
