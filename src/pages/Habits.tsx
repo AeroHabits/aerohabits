@@ -5,9 +5,10 @@ import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Sparkles, Star, Flame } from "lucide-react";
+
 const Habits = () => {
   const isMobile = useIsMobile();
-  return <div className="min-h-screen bg-gradient-to-br from-blue-950 via-purple-900 to-blue-900 overflow-hidden">
+  return <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-blue-900 overflow-hidden">
       {/* Enhanced floating elements for visual excitement */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 opacity-30">
         <div className="absolute top-10 right-10 w-36 h-36 bg-blue-400 rounded-full filter blur-[100px] animate-float" />
@@ -38,7 +39,7 @@ const Habits = () => {
       }} transition={{
         duration: 0.7,
         delay: 0.2
-      }} className="bg-black/20 backdrop-blur-lg rounded-2xl p-6 md:p-8 shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-300">
+      }} className="bg-black/30 backdrop-blur-lg rounded-2xl p-6 md:p-8 shadow-2xl border border-white/10 hover:border-white/20 transition-all duration-300">
           <div className="mb-8 text-center">
             <motion.div initial={{
             scale: 0.8,
@@ -57,8 +58,8 @@ const Habits = () => {
             
             <h2 className="text-3xl font-bold text-white mb-3">
               <span className="relative">
-                <span className="text-gradient bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 text-indigo-50">Create Daily Habits</span>
-                <motion.span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300" initial={{
+                <span className="text-gradient bg-gradient-to-r from-indigo-300 via-purple-300 to-blue-300 text-indigo-50">Create Daily Habits</span>
+                <motion.span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-indigo-300 via-purple-300 to-blue-300" initial={{
                 width: "0%"
               }} animate={{
                 width: "100%"
