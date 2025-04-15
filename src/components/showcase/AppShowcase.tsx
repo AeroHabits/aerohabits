@@ -1,7 +1,6 @@
 
 import { motion } from "framer-motion";
 import { Star, Target, Flame, Award } from "lucide-react";
-import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
 export function AppShowcase() {
@@ -9,28 +8,32 @@ export function AppShowcase() {
 
   const features = [
     {
-      icon: <Star className="h-6 w-6 text-yellow-500" />,
+      icon: <Star className="h-7 w-7 text-amber-400" />,
       title: "Track Daily Habits",
       description: "Build lasting habits with daily tracking and reminders",
-      route: "/habits"
+      route: "/habits",
+      gradient: "from-amber-500/20 via-amber-400/10 to-amber-300/5"
     },
     {
-      icon: <Flame className="h-6 w-6 text-orange-500" />,
+      icon: <Flame className="h-7 w-7 text-orange-400" />,
       title: "Join Challenges",
       description: "Participate in community challenges",
-      route: "/challenges"
+      route: "/challenges",
+      gradient: "from-orange-500/20 via-orange-400/10 to-orange-300/5"
     },
     {
-      icon: <Target className="h-6 w-6 text-blue-500" />,
+      icon: <Target className="h-7 w-7 text-blue-400" />,
       title: "Set Goals",
       description: "Define and achieve your personal goals",
-      route: "/goals"
+      route: "/goals",
+      gradient: "from-blue-500/20 via-blue-400/10 to-blue-300/5"
     },
     {
-      icon: <Award className="h-6 w-6 text-purple-500" />,
+      icon: <Award className="h-7 w-7 text-purple-400" />,
       title: "Track Progress",
       description: "Visualize your journey with detailed statistics",
-      route: "/journey"
+      route: "/journey",
+      gradient: "from-purple-500/20 via-purple-400/10 to-purple-300/5"
     }
   ];
 
@@ -39,27 +42,51 @@ export function AppShowcase() {
   };
 
   return (
-    <div className="py-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="py-8">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {features.map((feature, index) => (
           <motion.div
             key={feature.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            transition={{ 
+              delay: index * 0.1,
+              duration: 0.4,
+              type: "spring",
+              stiffness: 100
+            }}
             onClick={() => handleCardClick(feature.route)}
+            className="group cursor-pointer"
           >
-            <Card className="p-4 bg-white/10 backdrop-blur-sm border-white/20 hover:bg-white/20 transition-all cursor-pointer">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-white/10">
-                  {feature.icon}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white">{feature.title}</h3>
-                  <p className="text-sm text-white/70">{feature.description}</p>
-                </div>
+            <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-xl border border-white/10 shadow-2xl transition-all duration-300 hover:border-white/20 hover:shadow-lg hover:shadow-blue-500/10">
+              {/* Gradient Background */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-60 group-hover:opacity-100 transition-opacity duration-300`} />
+              
+              {/* Content */}
+              <div className="relative p-6 h-full">
+                <motion.div 
+                  className="flex flex-col items-start gap-4"
+                  whileHover={{ scale: 1.02 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 shadow-inner group-hover:border-white/20 transition-all duration-300">
+                    {feature.icon}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-white tracking-tight">
+                      {feature.title}
+                    </h3>
+                    <p className="text-sm text-blue-100/70 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+                </motion.div>
+                
+                {/* Hover Effect */}
+                <div className="absolute inset-0 bg-gradient-to-t from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
-            </Card>
+            </div>
           </motion.div>
         ))}
       </div>
