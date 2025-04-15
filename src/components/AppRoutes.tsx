@@ -12,21 +12,13 @@ import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Onboarding from "@/pages/Onboarding";
 import Support from "@/pages/Support";
-import { lazy, Suspense, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { lazy, Suspense, useEffect } from "react";
+import { AnimatePresence } from "framer-motion";
 
 // Detect iOS platform
 const isIOS = typeof navigator !== 'undefined' && 
   (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
-
-// iOS-optimized animations - simpler and fewer props
-const getPageTransition = () => ({
-  initial: isIOS ? { opacity: 0 } : { opacity: 0 },
-  animate: isIOS ? { opacity: 1 } : { opacity: 1 },
-  exit: isIOS ? { opacity: 0 } : { opacity: 0 },
-  transition: isIOS ? { duration: 0.15 } : { duration: 0.2 }
-});
 
 // Loading fallback component - optimized for iOS
 const RouteLoadingFallback = () => (
@@ -37,7 +29,11 @@ const RouteLoadingFallback = () => (
 
 export function AppRoutes() {
   const location = useLocation();
-  const pageTransition = useMemo(() => getPageTransition(), []);
+  
+  // Log route changes to help with debugging
+  useEffect(() => {
+    console.log("Route changed to:", location.pathname);
+  }, [location.pathname]);
   
   // Reset scroll position on route change
   useEffect(() => {
@@ -45,13 +41,13 @@ export function AppRoutes() {
   }, [location.pathname]);
 
   return (
-    <AnimatePresence mode={isIOS ? "sync" : "wait"}>
+    <AnimatePresence mode="wait" initial={false}>
       <Routes location={location} key={location.pathname}>
         {/* Non-protected routes */}
         <Route path="/auth" element={
-          <motion.div {...pageTransition}>
+          <Suspense fallback={<RouteLoadingFallback />}>
             <Auth />
-          </motion.div>
+          </Suspense>
         } />
         <Route path="/terms" element={<Terms />} />
         <Route path="/privacy" element={<Privacy />} />
