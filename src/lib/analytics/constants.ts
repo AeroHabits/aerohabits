@@ -9,7 +9,8 @@ export const EVENT_CATEGORIES = {
   NETWORK: 'network',
   HABIT: 'habit',
   GOAL: 'goal',
-  CHALLENGE: 'challenge'
+  CHALLENGE: 'challenge',
+  WEB_VITALS: 'web_vitals' // Added WEB_VITALS category
 } as const;
 
 // Define event actions for consistent tracking
@@ -32,7 +33,8 @@ export const EVENT_ACTIONS = {
   CACHE_HIT: 'cache_hit',
   CACHE_MISS: 'cache_miss',
   NETWORK_CHANGE: 'network_change',
-  BATCH_OPERATION: 'batch_operation'
+  BATCH_OPERATION: 'batch_operation',
+  MEASURE: 'measure' // Added MEASURE action
 } as const;
 
 // Track sampling rates to avoid overwhelming analytics in high-traffic situations
@@ -45,5 +47,6 @@ export const SAMPLING_RATES = {
   NETWORK: 0.5,          // Track 50% of network events
   HABIT: 0.8,            // Track 80% of habit actions
   GOAL: 0.8,             // Track 80% of goal actions
-  CHALLENGE: 0.8         // Track 80% of challenge actions
+  CHALLENGE: 0.8,        // Track 80% of challenge actions
+  WEB_VITALS: 0.3        // Track 30% of web vitals metrics
 };

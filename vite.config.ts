@@ -28,7 +28,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     // Production optimizations
-    target: 'es2015', // Target modern browsers
+    target: 'es2021', // Updated target to support modern JS features like replaceAll
     cssMinify: true,
     minify: 'terser',
     terserOptions: {

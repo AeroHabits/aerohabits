@@ -48,8 +48,8 @@ export const reportWebVitals = (metric: Metric) => {
     return;
   }
 
-  // Format the metric for analytics
-  const name = metric.name.replaceAll('-', '_');
+  // Format the metric for analytics - using replace with regex instead of replaceAll
+  const name = metric.name.replace(/-/g, '_');
   const value = Math.round(metric.name === 'CLS' ? metric.value * 1000 : metric.value);
 
   trackEvent(
