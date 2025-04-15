@@ -14,6 +14,7 @@ import { trackPageView, initAnalytics } from "./lib/analytics";
 import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
+import { usePrefetch } from "./hooks/usePrefetch";
 
 // Lazy load non-critical components with increased delay for iOS
 const NetworkStatusIndicator = lazy(() => 
@@ -79,6 +80,13 @@ const AnalyticsTracker = memo(() => {
 });
 AnalyticsTracker.displayName = 'AnalyticsTracker';
 
+// PrefetchHandler for route prefetching
+const PrefetchHandler = memo(() => {
+  usePrefetch(); // Use our prefetching hook
+  return null;
+});
+PrefetchHandler.displayName = 'PrefetchHandler';
+
 // Layout component to handle common layout elements
 const Layout = memo(({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
@@ -138,6 +146,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <AnalyticsTracker />
+            <PrefetchHandler />
             <Layout>
               <AppRoutes />
             </Layout>
