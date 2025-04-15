@@ -26,29 +26,38 @@ interface StatCardProps {
   value: string | number;
   description: string;
   delay: number;
+  gradient: string;
 }
 
-const StatCard = ({ icon, title, value, description, delay }: StatCardProps) => (
+const StatCard = ({ icon, title, value, description, delay, gradient }: StatCardProps) => (
   <motion.div
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.3, delay }}
+    transition={{ duration: 0.5, delay }}
+    whileHover={{ scale: 1.02 }}
+    className="group"
   >
     <Dialog>
       <DialogTrigger asChild>
-        <Card className="p-6 flex items-center space-x-4 bg-gradient-to-br from-slate-900/90 to-slate-800/90 border border-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer shadow-2xl hover:shadow-xl">
-          <div className="p-3 rounded-lg bg-black/30">
-            {icon}
-          </div>
-          <div>
-            <h3 className="font-semibold text-white/90 text-lg">{title}</h3>
-            <p className="text-3xl font-bold text-white">{value}</p>
+        <Card className={`relative overflow-hidden cursor-pointer transition-all duration-500 ${gradient}`}>
+          <div className="absolute inset 0 bg-gradient-to-br from 0 via-white/5 to-transparent opacity-0 group-hover:opacity 100 transition-opacity duration-500" />
+          <div className="relative p-6 flex items-start space-x-4">
+            <div className="p-3 rounded-xl bg-white/10 backdrop-blur-xl">
+              {icon}
+            </div>
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-white/70">{title}</p>
+              <div className="space-y-1">
+                <h3 className="text-3xl font-bold tracking-tight text-white">{value}</h3>
+                <p className="text-sm text-white/60">{description}</p>
+              </div>
+            </div>
           </div>
         </Card>
       </DialogTrigger>
-      <DialogContent className="bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-xl border border-white/10">
+      <DialogContent className="bg-slate-900/95 backdrop-blur-xl border-white/10">
         <DialogHeader>
-          <DialogTitle className="text-white font-bold text-xl">{title}</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-white">{title}</DialogTitle>
           <DialogDescription className="text-white/80">
             {description}
           </DialogDescription>
@@ -68,45 +77,51 @@ export function StatsGrid({
 }: StatsGridProps) {
   const stats = [
     {
-      icon: <Trophy className="h-10 w-10 text-amber-400" />,
+      icon: <Trophy className="h-8 w-8 text-amber-300" />,
       title: "Total Habits",
       value: totalHabits,
-      description: "The total number of habits you're currently tracking. Each habit represents a step towards your personal growth.",
+      description: "Active habits you're currently tracking",
+      gradient: "bg-gradient-to-br from-amber-500/20 to-amber-900/30",
       delay: 0
     },
     {
-      icon: <Flame className="h-10 w-10 text-rose-400" />,
+      icon: <Flame className="h-8 w-8 text-rose-400" />,
       title: "Current Streak",
       value: `${currentStreak} Days`,
-      description: "Your ongoing streak of consistently maintaining your habits. Keep it up to build lasting change!",
+      description: "Keep the momentum going!",
+      gradient: "bg-gradient-to-br from-rose-500/20 to-rose-900/30",
       delay: 0.1
     },
     {
-      icon: <Target className="h-10 w-10 text-sky-400" />,
+      icon: <Target className="h-8 w-8 text-blue-400" />,
       title: "Completion Rate",
       value: `${completionRate}%`,
-      description: "Your overall success rate in completing your habits. This percentage reflects your dedication to self-improvement.",
+      description: "Your success rate in habit completion",
+      gradient: "bg-gradient-to-br from-blue-500/20 to-blue-900/30",
       delay: 0.2
     },
     {
-      icon: <Calendar className="h-10 w-10 text-emerald-400" />,
+      icon: <Calendar className="h-8 w-8 text-emerald-400" />,
       title: "Weekly Progress",
       value: `${weeklyProgress}%`,
-      description: "Your habit completion rate for this week. Track your weekly momentum to stay motivated.",
+      description: "This week's completion rate",
+      gradient: "bg-gradient-to-br from-emerald-500/20 to-emerald-900/30",
       delay: 0.3
     },
     {
-      icon: <CheckCircle2 className="h-10 w-10 text-violet-400" />,
+      icon: <CheckCircle2 className="h-8 w-8 text-violet-400" />,
       title: "Monthly Average",
       value: `${monthlyAverage}%`,
-      description: "Your average habit completion rate over the past month. A great indicator of your long-term consistency.",
+      description: "Your 30-day completion average",
+      gradient: "bg-gradient-to-br from-violet-500/20 to-violet-900/30",
       delay: 0.4
     },
     {
-      icon: <TrendingUp className="h-10 w-10 text-fuchsia-400" />,
+      icon: <TrendingUp className="h-8 w-8 text-fuchsia-400" />,
       title: "Best Streak",
       value: `${bestStreak} Days`,
-      description: "Your longest streak of consistent habit completion. Can you beat your personal best?",
+      description: "Your longest habit streak",
+      gradient: "bg-gradient-to-br from-fuchsia-500/20 to-fuchsia-900/30",
       delay: 0.5
     }
   ];
