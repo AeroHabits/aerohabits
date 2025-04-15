@@ -3,9 +3,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { type ConfigEnv } from "vite";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }: ConfigEnv) => ({
   server: {
     host: "::",
     port: 8080,
@@ -26,16 +27,20 @@ export default defineConfig(({ mode }) => ({
     minify: 'terser',
     terserOptions: {
       compress: {
-        drop_console: mode === 'production' ? {
+        // Fix the typing issue by using correct format for drop_console
+        ...(mode === 'production' ? {
+          drop_console: true,
           pure_funcs: ['console.debug', 'console.log']
-        } : false,
+        } : {
+          drop_console: false
+        }),
         drop_debugger: mode === 'production'
       }
     },
     rollupOptions: {
       output: {
-        // Optimize asset chunking using function form as recommended
-        manualChunks: (id) => {
+        // Using function form for manualChunks as recommended
+        manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
               return 'react-vendor';
