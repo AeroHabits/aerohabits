@@ -9,7 +9,6 @@ interface UserAvatarProps {
   profile: { 
     full_name: string; 
     avatar_url?: string | null;
-    total_points?: number | null;
   } | null;
 }
 
@@ -36,12 +35,6 @@ export function UserAvatar({ user, profile }: UserAvatarProps) {
           </AvatarFallback>
         </div>
       </Avatar>
-      <motion.div
-        className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      />
     </motion.div>
   );
 }

@@ -1,11 +1,11 @@
+
 import { User } from "@supabase/supabase-js";
-import { ProfileEditor } from "./ProfileEditor";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 
-type Profile = { full_name: string; avatar_url: string | null } | null;
+type Profile = { full_name: string } | null;
 
 interface UserProfileProps {
   user: User;
@@ -34,7 +34,7 @@ export function UserProfile({ user, profile, setProfile }: UserProfileProps) {
       return;
     }
 
-    setProfile(prev => prev ? { ...prev, full_name: newName } : null);
+    setProfile(prev => prev ? { full_name: newName } : null);
     setIsEditing(false);
     toast({
       title: "Success",
