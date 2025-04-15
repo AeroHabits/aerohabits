@@ -14,7 +14,6 @@ export default defineConfig(({ mode }) => ({
     react({ 
       // Speed up production builds with these optimizations
       plugins: mode === 'production' ? [
-        // Remove emotion plugin since it's not installed
         ['swc-plugin-react-remove-properties', { properties: ['data-testid', 'data-cy'] }]
       ] : []
     }),
