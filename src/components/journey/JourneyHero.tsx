@@ -6,7 +6,7 @@ export function JourneyHero() {
   return (
     <div className="relative overflow-hidden">
       <div className="relative px-8 py-16 md:px-12 md:py-20">
-        {/* Premium gradient background */}
+        {/* Enhanced gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-blue-500/10">
           <motion.div
             className="absolute inset-0"
@@ -44,7 +44,7 @@ export function JourneyHero() {
             ))}
           </motion.div>
 
-          {/* Refined title with elegant animation */}
+          {/* Enhanced title with elegant animation */}
           <motion.div 
             className="text-center space-y-6"
             initial={{ opacity: 0 }}

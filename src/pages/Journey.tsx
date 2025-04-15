@@ -15,9 +15,10 @@ const Journey = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black">
-      {/* Refined backdrop elements */}
+      {/* Enhanced backdrop elements */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/5 to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-500/10 via-transparent to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 h-2/3 bg-gradient-to-t from-black/50 to-transparent" />
       </div>
 
@@ -41,7 +42,7 @@ const Journey = () => {
           transition={{ delay: 0.2 }}
           className="relative"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 to-slate-950/80 backdrop-blur-xl rounded-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-900/90 to-slate-950/80 backdrop-blur-xl rounded-3xl" />
           <div className="relative rounded-3xl overflow-hidden border border-white/[0.05] shadow-2xl">
             <JourneyHero />
             <div className="mt-10 space-y-10 p-8">
@@ -53,7 +54,6 @@ const Journey = () => {
                 monthlyAverage={stats.monthlyAverage}
                 bestStreak={stats.bestStreak}
               />
-              {/* Removed WeeklyProgress component */}
             </div>
           </div>
         </motion.div>
