@@ -12,7 +12,6 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(), // Using react-swc without problematic plugins
-    splitVendorChunkPlugin(), // Split chunks for better caching
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -33,12 +32,24 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        // Optimize asset chunking
-        manualChunks: {
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-toast', '@radix-ui/react-dialog'],
-          'motion-vendor': ['framer-motion'],
-          'data-vendor': ['@tanstack/react-query']
+        // Optimize asset chunking using function form as recommended
+        manualChunks: (id) => {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('framer-motion')) {
+              return 'motion-vendor';
+            }
+            if (id.includes('@tanstack/react-query')) {
+              return 'data-vendor';
+            }
+            // Default vendor chunk for other node_modules
+            return 'vendor';
+          }
         }
       }
     },
