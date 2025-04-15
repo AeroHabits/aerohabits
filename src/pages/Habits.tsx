@@ -1,3 +1,4 @@
+
 import { HabitList } from "@/components/HabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -11,7 +12,7 @@ const Habits = () => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
-      {/* Refined floating elements */}
+      {/* Enhanced floating elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
         <div className="absolute top-10 right-10 w-96 h-96 bg-blue-500/5 rounded-full filter blur-[120px] animate-float" />
         <div className="absolute bottom-40 left-20 w-80 h-80 bg-indigo-500/5 rounded-full filter blur-[100px] animate-float" />
@@ -72,7 +73,7 @@ const Habits = () => {
         </motion.div>
       </motion.div>
       
-      {/* Refined floating sparkle effects */}
+      {/* Enhanced floating sparkle effects */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

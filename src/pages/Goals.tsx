@@ -1,3 +1,4 @@
+
 import { GoalForm } from "@/components/GoalForm";
 import { GoalList } from "@/components/GoalList";
 import { useQuery } from "@tanstack/react-query";
@@ -69,7 +70,7 @@ const Goals = () => {
       transition={{ duration: 0.3 }}
       className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-800 to-gray-950 overflow-hidden"
     >
-      {/* Background decoration */}
+      {/* Enhanced background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-40 -left-20 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl"></div>
         <div className="absolute bottom-40 -right-20 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl"></div>
