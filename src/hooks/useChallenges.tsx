@@ -76,9 +76,18 @@ export function useChallenges() {
 
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, challengeId) => {
       queryClient.invalidateQueries({ queryKey: ["user-challenges"] });
-      toast.success("Successfully joined the challenge! Let's crush this goal together! 💪");
+      
+      // Find the challenge to show its points in the toast
+      const challenge = challenges?.find(c => c.id === challengeId);
+      const pointsMessage = challenge?.reward_points 
+        ? `Complete this challenge to earn ${challenge.reward_points} points!` 
+        : '';
+      
+      toast.success(`Successfully joined the challenge! ${pointsMessage}`, {
+        description: "Let's crush this goal together! 💪"
+      });
     },
     onError: (error: Error) => {
       toast.error(error.message || "Failed to join the challenge");

@@ -8,12 +8,14 @@ import { User } from "@supabase/supabase-js";
 import { UserAvatar } from "./user/UserAvatar";
 import { UserDropdownContent } from "./user/UserDropdownContent";
 import { motion } from "framer-motion";
+import { Trophy } from "lucide-react";
 
 export function UserMenu() {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<{ 
     full_name: string; 
     avatar_url: string | null;
+    total_points: number | null;
   } | null>(null);
   const navigate = useNavigate();
 
@@ -38,7 +40,7 @@ export function UserMenu() {
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("full_name, avatar_url")
+      .select("full_name, avatar_url, total_points")
       .eq("id", userId)
       .single();
 
@@ -80,6 +82,18 @@ export function UserMenu() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
+      {profile?.total_points !== null && profile?.total_points !== undefined && (
+        <motion.div 
+          className="hidden md:flex items-center gap-1 bg-gradient-to-r from-amber-400/20 to-amber-600/20 px-2 py-1 rounded-md"
+          initial={{ scale: 0.9 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.2 }}
+        >
+          <Trophy size={14} className="text-amber-400" />
+          <span className="text-amber-300 font-medium text-sm">{profile.total_points} points</span>
+        </motion.div>
+      )}
+
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full p-0">

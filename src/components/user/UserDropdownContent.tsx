@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { UserProfile } from "../UserProfile";
-import { Settings, LogOut } from "lucide-react";
+import { Settings, LogOut, Trophy } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface UserDropdownContentProps {
@@ -15,10 +15,12 @@ interface UserDropdownContentProps {
   profile: { 
     full_name: string; 
     avatar_url: string | null;
+    total_points: number | null;
   } | null;
   setProfile: React.Dispatch<React.SetStateAction<{
     full_name: string;
     avatar_url: string | null;
+    total_points: number | null;
   } | null>>;
   onSignOut: () => Promise<void>;
 }
@@ -42,6 +44,13 @@ export function UserDropdownContent({
           profile={profile}
           setProfile={setProfile}
         />
+        
+        {profile?.total_points !== null && profile?.total_points !== undefined && (
+          <div className="flex items-center gap-1 mt-1 px-2 py-1 bg-amber-500/10 rounded-md">
+            <Trophy size={14} className="text-amber-400" />
+            <span className="text-amber-300 text-sm">{profile.total_points} points earned</span>
+          </div>
+        )}
       </DropdownMenuLabel>
       <DropdownMenuSeparator className="bg-gray-200 dark:bg-gray-800" />
       <DropdownMenuItem
