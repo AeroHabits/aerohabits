@@ -12,7 +12,7 @@ export function ChallengeHero() {
       className="relative overflow-hidden rounded-2xl"
     >
       <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black p-8 md:p-12">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;utf8,<svg width=\"20\" height=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"10\" cy=\"10\" r=\"1\" fill=\"rgba(255,255,255,0.05)\"/></svg>')] opacity-20" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iMSIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvc3ZnPg==')] opacity-20" />
         
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
