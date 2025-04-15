@@ -29,6 +29,9 @@ export function DisplayBadge({ badge, index }: DisplayBadgeProps) {
     }
   };
 
+  // Debug information
+  console.log('Rendering badge:', JSON.stringify(badge, null, 2));
+
   return (
     <motion.div
       key={badge.id}
@@ -53,23 +56,23 @@ export function DisplayBadge({ badge, index }: DisplayBadgeProps) {
               : <Lock className="h-6 w-6 text-white/70" />
             }
           </div>
-          <div className="flex-1">
+          <div className="flex-1 overflow-hidden">
             <div className="flex items-center gap-2">
-              <span className="text-white font-semibold">{badge.name}</span>
+              <span className="text-white font-semibold">{badge.name || "Unknown Badge"}</span>
               {'points_required' in badge && !badge.isUnlocked && (
                 <span className="text-xs px-2 py-0.5 rounded-full bg-white/20 text-white font-medium">
                   {badge.points_required} pts needed
                 </span>
               )}
             </div>
-            <p className="text-sm text-white/80">{badge.description}</p>
+            <p className="text-sm text-white/80">{badge.description || "No description available"}</p>
           </div>
         </div>
       </div>
       {badge.isUnlocked && (
         <div className="absolute top-2 right-2">
           <span className="text-xs px-2 py-0.5 rounded-full bg-white/20 text-white font-medium">
-            {badge.unlockMessage}
+            {badge.unlockMessage || "Unlocked!"}
           </span>
         </div>
       )}

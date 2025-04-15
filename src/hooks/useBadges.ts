@@ -51,7 +51,7 @@ export const useBadges = () => {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        console.error("No user found");
+        console.log("No user found, returning empty array for user badges");
         return []; // Return empty array instead of throwing error
       }
 
@@ -65,6 +65,7 @@ export const useBadges = () => {
         throw error;
       }
 
+      console.log("User badges fetched:", data?.length);
       return data as UserBadge[];
     },
     retry: 3,
@@ -77,7 +78,7 @@ export const useBadges = () => {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        console.error("No user found");
+        console.log("No user found, returning empty array for purchased badges");
         return []; // Return empty array instead of throwing error
       }
 
@@ -100,6 +101,7 @@ export const useBadges = () => {
         throw error;
       }
 
+      console.log("Purchased badges fetched:", data?.length);
       return data as PurchasedBadge[];
     },
     retry: 3,
@@ -114,6 +116,11 @@ export const useBadges = () => {
   const isLoading = isLoadingBadges || isLoadingUserBadges || isLoadingPurchased;
   const error = badgesError || userBadgesError || purchasedError;
 
+  // Debug information to help troubleshoot
+  console.log('Badges data:', badges?.length);
+  console.log('UserBadges data:', userBadges?.length);
+  console.log('PurchasedBadges data:', purchasedBadges?.length);
+
   const combinedBadges = !isLoading && !error ? [
     ...(badges?.map(badge => ({
       id: badge.id,
@@ -125,14 +132,16 @@ export const useBadges = () => {
       points_required: badge.points_required
     })) ?? []),
     ...(purchasedBadges?.filter(pb => pb.badge != null).map(pb => ({
-      id: pb.badge.id,
-      name: pb.badge.name,
-      description: pb.badge.description,
-      badge_type: pb.badge.badge_type,
+      id: pb.badge?.id || `purchased-${pb.badge_id}`,
+      name: pb.badge?.name || "Purchased Badge",
+      description: pb.badge?.description || "A badge you purchased from the store",
+      badge_type: pb.badge?.badge_type || "beginner",
       isUnlocked: true,
       unlockMessage: 'Purchased!'
     })) ?? [])
   ] : [];
+
+  console.log('Combined badges:', combinedBadges?.length);
 
   const refetchAll = () => {
     refetchBadges();

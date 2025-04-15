@@ -1,6 +1,7 @@
 
 import { Separator } from "@/components/ui/separator";
 import { BadgesList } from "./BadgesList";
+import { Loader2 } from "lucide-react";
 
 interface BadgeTabContentProps {
   badges: Array<{
@@ -25,11 +26,14 @@ export function BadgeTabContent({ badges, isLoading }: BadgeTabContentProps) {
       </div>
       <Separator className="bg-white/10 mb-4" />
       {isLoading ? (
-        <div className="text-center py-8 text-white/60">
-          Loading badges...
+        <div className="flex flex-col items-center justify-center py-8">
+          <Loader2 className="h-8 w-8 text-white/60 animate-spin mb-2" />
+          <p className="text-center text-white/60">
+            Loading badges...
+          </p>
         </div>
       ) : (
-        <BadgesList badges={badges} />
+        <BadgesList badges={badges || []} />
       )}
     </div>
   );
