@@ -3,7 +3,6 @@ import { ChallengeList } from "@/components/ChallengeList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { BadgeDisplay } from "@/components/badges/BadgeDisplay";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
@@ -22,9 +21,8 @@ const Challenges = () => {
           <UserMenu />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <motion.div
-            className="lg:col-span-2"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -34,26 +32,16 @@ const Challenges = () => {
             </div>
           </motion.div>
           
-          <div className="space-y-6">
+          {!isMobile && (
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="hidden lg:block"
             >
-              <BadgeDisplay />
+              <AppShowcase />
             </motion.div>
-            
-            {!isMobile && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="hidden lg:block"
-              >
-                <AppShowcase />
-              </motion.div>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>

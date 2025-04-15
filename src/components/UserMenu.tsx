@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { DropdownMenu, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { User } from "@supabase/supabase-js";
-import { UserPoints } from "./user/UserPoints";
 import { UserAvatar } from "./user/UserAvatar";
 import { UserDropdownContent } from "./user/UserDropdownContent";
 import { motion } from "framer-motion";
@@ -15,7 +14,6 @@ export function UserMenu() {
   const [profile, setProfile] = useState<{ 
     full_name: string; 
     avatar_url: string | null;
-    total_points: number;
   } | null>(null);
   const navigate = useNavigate();
 
@@ -40,7 +38,7 @@ export function UserMenu() {
   const fetchProfile = async (userId: string) => {
     const { data, error } = await supabase
       .from("profiles")
-      .select("full_name, avatar_url, total_points")
+      .select("full_name, avatar_url")
       .eq("id", userId)
       .single();
 
@@ -82,8 +80,6 @@ export function UserMenu() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
-      <UserPoints points={profile?.total_points || 0} />
-
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full p-0">
