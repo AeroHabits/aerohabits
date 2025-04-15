@@ -40,7 +40,7 @@ export function HabitCard({
 }: HabitCardProps) {
   const LucideIcon = category?.icon ? (icons as any)[category.icon] : Star;
 
-  // Show toast when streak is broken
+  // iOS-optimized streak notification
   if (streak_broken && last_streak && last_streak > 0) {
     toast.warning(
       <div className="flex flex-col gap-2">
@@ -65,42 +65,46 @@ export function HabitCard({
       className="h-full"
     >
       <Card className={cn(
-        "relative overflow-hidden transition-all duration-300 h-full flex flex-col",
+        "relative overflow-hidden transition-all duration-300 h-full",
         completed 
-          ? "bg-gradient-to-br from-blue-900/80 to-indigo-900/80 border-blue-500/30" 
+          ? "bg-gradient-to-br from-slate-800/90 to-slate-900/90 border-blue-500/30" 
           : "bg-gradient-to-br from-slate-900/90 to-slate-800/90 border-white/10",
-        "border hover:border-white/20",
-        "shadow-lg hover:shadow-xl"
+        "backdrop-blur-xl border shadow-xl hover:shadow-2xl",
+        "group"
       )}>
-        <div className="p-6 flex flex-col h-full">
+        <div className="p-6 flex flex-col h-full relative z-10">
           <div className="flex justify-between items-start mb-4">
-            <div className="space-y-1">
-              <div className="flex items-center gap-2">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2.5">
                 {category && (
                   <div 
-                    className="p-1.5 rounded-lg"
-                    style={{ backgroundColor: `${category.color}30` }}
+                    className="p-2 rounded-xl shadow-lg"
+                    style={{ 
+                      backgroundColor: `${category.color}15`,
+                      boxShadow: `0 0 20px ${category.color}10`
+                    }}
                   >
                     <LucideIcon 
-                      className="h-4 w-4"
+                      className="h-5 w-5"
                       style={{ color: category.color }}
                     />
                   </div>
                 )}
-                <h3 className="font-semibold text-lg text-white/90">{title}</h3>
+                <h3 className="font-semibold text-xl text-white/90 tracking-tight">{title}</h3>
               </div>
               {description && (
-                <p className="text-white/80">{description}</p>
+                <p className="text-white/70 text-sm font-medium">{description}</p>
               )}
               {category && (
                 <span 
-                  className="text-sm px-2 py-1 rounded-full inline-flex items-center mt-2" 
+                  className="text-xs px-3 py-1 rounded-full inline-flex items-center gap-1.5 font-medium" 
                   style={{ 
-                    backgroundColor: `${category.color}30`,
-                    color: category.color
+                    backgroundColor: `${category.color}15`,
+                    color: category.color,
+                    boxShadow: `0 0 15px ${category.color}10`
                   }}
                 >
-                  <LucideIcon className="h-3 w-3 mr-1" />
+                  <LucideIcon className="h-3.5 w-3.5" />
                   {category.name}
                 </span>
               )}
@@ -110,9 +114,9 @@ export function HabitCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-white/60 hover:text-red-400 hover:bg-red-400/10 rounded-full"
+                  className="text-white/40 hover:text-red-400 hover:bg-red-500/10 rounded-xl"
                 >
-                  <Trash2 className="h-5 w-5" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
@@ -138,36 +142,36 @@ export function HabitCard({
           
           <div className="flex-grow"></div>
           
-          <div className="flex items-center justify-between mt-4">
+          <div className="flex items-center justify-between mt-4 gap-3">
             <div className="flex items-center space-x-2">
               {streak > 0 && (
-                <div className="flex items-center space-x-1 text-blue-300">
-                  <Trophy className="h-5 w-5" />
-                  <span className="font-medium text-white/90">{streak} day streak!</span>
+                <div className="flex items-center gap-1.5 text-blue-300/90 bg-blue-500/10 px-3 py-1.5 rounded-full">
+                  <Trophy className="h-4 w-4" />
+                  <span className="font-medium text-sm">{streak} day streak!</span>
                 </div>
               )}
               {streak_broken && last_streak && last_streak > 0 && (
-                <div className="flex items-center space-x-1 text-yellow-300">
-                  <AlertCircle className="h-5 w-5" />
-                  <span className="font-medium text-white/90">Start again!</span>
+                <div className="flex items-center gap-1.5 text-yellow-300/90 bg-yellow-500/10 px-3 py-1.5 rounded-full">
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="font-medium text-sm">Start again!</span>
                 </div>
               )}
             </div>
             <Button
               onClick={onToggle}
-              variant={completed ? "success" : "glass"}
-              size="pill"
+              variant={completed ? "default" : "secondary"}
+              size="sm"
               className={cn(
-                "transition-all duration-300",
+                "transition-all duration-300 rounded-xl shadow-lg",
                 completed 
-                  ? "" 
-                  : ""
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-none" 
+                  : "bg-white/5 hover:bg-white/10 text-white/90"
               )}
             >
               {completed ? (
-                <div className="flex items-center space-x-2">
-                  <CheckCircle className="h-5 w-5 text-white" />
-                  <span>Completed!</span>
+                <div className="flex items-center gap-1.5">
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Complete</span>
                 </div>
               ) : (
                 "Complete"
@@ -176,17 +180,27 @@ export function HabitCard({
           </div>
         </div>
         
-        {/* Achievement ribbon for streaks */}
+        {/* Refined achievement ribbon */}
         {streak >= 7 && (
-          <div className="absolute -right-12 top-6 bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-12 py-1 rotate-45 transform text-sm font-semibold shadow-lg">
+          <div className="absolute -right-12 top-7 bg-gradient-to-r from-blue-500/90 to-indigo-600/90 text-white px-14 py-1 rotate-45 transform text-xs font-medium shadow-lg backdrop-blur-sm">
             Champion!
           </div>
         )}
         
-        {/* Visual indicator for completed status */}
+        {/* Subtle completion indicator */}
         {completed && (
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-400"></div>
+          <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-400/50 via-blue-500/50 to-indigo-500/50"></div>
         )}
+        
+        {/* Background glow effect */}
+        <div 
+          className="absolute inset-0 opacity-50 transition-opacity duration-300 group-hover:opacity-100"
+          style={{
+            background: completed 
+              ? 'radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, transparent 70%)' 
+              : 'radial-gradient(circle at center, rgba(255, 255, 255, 0.03) 0%, transparent 70%)'
+          }}
+        />
       </Card>
     </motion.div>
   );
