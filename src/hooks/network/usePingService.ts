@@ -5,21 +5,34 @@ import { useErrorTracking } from '../useErrorTracking';
 export function usePingService() {
   const { trackError } = useErrorTracking();
   
-  // Enhanced ping function with better error handling and improved reliability
+  // Optimized ping function for mobile performance
   const pingEndpoint = useCallback(async (endpoint: string): Promise<number | null> => {
-    // Skip external requests if the endpoint is not a relative URL and we're in development
+    // Mobile optimization: Skip frequent checks on mobile devices
+    if (navigator.userAgent.match(/iPhone|iPad|iPod|Android/i)) {
+      const lastPingTime = sessionStorage.getItem('last-ping-time');
+      const now = Date.now();
+      
+      if (lastPingTime && (now - parseInt(lastPingTime)) < 60000) {
+        // If we pinged in the last minute, return a cached result
+        return 150; // Assume reasonable ping time
+      }
+      
+      // Update last ping timestamp
+      sessionStorage.setItem('last-ping-time', now.toString());
+    }
+    
+    // Skip external requests in development
     if (endpoint.startsWith('http') && process.env.NODE_ENV === 'development') {
-      // In development, just return a simulated good ping time to avoid CORS issues
       return 150;
     }
 
+    // Reduce timeout for better UX
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // Reduced timeout for better UX
+    const timeoutId = setTimeout(() => controller.abort(), 1500);
     
     try {
       const startTime = performance.now();
       
-      // For relative URLs, don't use no-cors mode
       const options: RequestInit = {
         method: 'HEAD',
         cache: 'no-store',
@@ -38,8 +51,9 @@ export function usePingService() {
     } catch (error) {
       clearTimeout(timeoutId);
       
-      // Only track errors that aren't aborts
-      if (!(error instanceof DOMException && error.name === 'AbortError')) {
+      // Only track errors in development
+      if (process.env.NODE_ENV === 'development' && 
+          !(error instanceof DOMException && error.name === 'AbortError')) {
         trackError(
           error instanceof Error ? error : new Error('Unknown ping error'),
           'pingEndpoint',

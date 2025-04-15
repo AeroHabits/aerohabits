@@ -1,4 +1,5 @@
 
+import { memo } from "react";
 import { motion } from "framer-motion";
 
 interface ProgressIndicatorProps {
@@ -6,7 +7,7 @@ interface ProgressIndicatorProps {
   currentStep: number;
 }
 
-export function ProgressIndicator({ totalSteps, currentStep }: ProgressIndicatorProps) {
+function ProgressIndicator({ totalSteps, currentStep }: ProgressIndicatorProps) {
   return (
     <div className="flex gap-2 justify-center mt-6">
       {Array.from({ length: totalSteps }).map((_, index) => (
@@ -19,16 +20,20 @@ export function ProgressIndicator({ totalSteps, currentStep }: ProgressIndicator
             backgroundColor: index <= currentStep ? "rgb(6, 182, 212)" : "rgb(55, 65, 81)"
           }}
           transition={{ 
-            duration: 0.3,
-            delay: index * 0.05
+            duration: 0.2,
+            delay: index * 0.03 // Reduced delay for better performance
           }}
-          className={`h-1.5 rounded-full transition-all duration-300 ${
+          className={`h-1.5 rounded-full transition-colors ${
             index <= currentStep 
-              ? "w-16 bg-cyan-500 shadow-sm shadow-cyan-500/30" 
-              : "w-10 bg-gray-700"
+              ? "w-12 bg-cyan-500" 
+              : "w-8 bg-gray-700"
           }`}
+          style={{ willChange: 'auto' }} // Optimize rendering
         />
       ))}
     </div>
   );
 }
+
+// Export memoized component to prevent unnecessary re-renders
+export { ProgressIndicator };

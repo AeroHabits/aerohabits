@@ -12,26 +12,20 @@ export type NetworkQuality = 'good' | 'poor' | 'offline';
 
 export function useNetworkQuality(isOnline: boolean) {
   const [networkQuality, setNetworkQuality] = useState<NetworkQuality>(getNetworkQuality());
-  const [lastPingTime, setLastPingTime] = useState<number | null>(null);
   
   // Update network quality when online status changes
   useEffect(() => {
     setNetworkQuality(getNetworkQuality());
     
-    // Setup periodic network quality check
+    // Check less frequently on mobile
+    const isMobile = navigator.userAgent.match(/iPhone|iPad|iPod|Android/i);
+    const checkInterval = isMobile ? 60000 : 30000; // 1 minute on mobile, 30 seconds otherwise
+    
+    // Setup periodic network quality check with reduced frequency
     const intervalId = setInterval(() => {
       // Check connection quality
       setNetworkQuality(getNetworkQuality());
-      
-      // If navigator.connection is not available, measure ping time
-      if (isOnline && !('connection' in navigator)) {
-        checkPingTime().then(pingTime => {
-          if (pingTime !== null) {
-            setLastPingTime(pingTime);
-          }
-        });
-      }
-    }, 30000); // Check every 30 seconds
+    }, checkInterval);
     
     return () => clearInterval(intervalId);
   }, [isOnline]);
@@ -67,50 +61,6 @@ export const getNetworkQuality = (): NetworkQuality => {
     }
   }
   
-  // Tertiary check: Use localStorage to check previous measurements
-  try {
-    const storedPingTime = localStorage.getItem('network_last_ping_time');
-    if (storedPingTime) {
-      const pingTime = parseInt(storedPingTime, 10);
-      if (pingTime > 500) { // Over 500ms ping time
-        return 'poor';
-      }
-    }
-  } catch (error) {
-    console.warn('Error reading network quality from localStorage:', error);
-  }
-  
-  // Default assessment
+  // Default assessment for better mobile performance
   return 'good';
-};
-
-// Helper function to measure network performance via simple ping
-const checkPingTime = async (): Promise<number | null> => {
-  try {
-    const start = performance.now();
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 3000);
-    
-    await fetch('/favicon.ico', {
-      method: 'HEAD',
-      cache: 'no-store',
-      signal: controller.signal
-    });
-    
-    clearTimeout(timeoutId);
-    const pingTime = Math.round(performance.now() - start);
-    
-    // Store for future reference
-    try {
-      localStorage.setItem('network_last_ping_time', pingTime.toString());
-      localStorage.setItem('network_last_check', Date.now().toString());
-    } catch (error) {
-      console.warn('Error saving network quality to localStorage:', error);
-    }
-    
-    return pingTime;
-  } catch (error) {
-    console.warn('Error measuring network ping time:', error);
-    return null;
-  }
 };
