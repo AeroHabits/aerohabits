@@ -11,12 +11,7 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react({ 
-      // Speed up production builds with these optimizations
-      plugins: mode === 'production' ? [
-        ['swc-plugin-react-remove-properties', { properties: ['data-testid', 'data-cy'] }]
-      ] : []
-    }),
+    react(), // Using react-swc without problematic plugins
     splitVendorChunkPlugin(), // Split chunks for better caching
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
