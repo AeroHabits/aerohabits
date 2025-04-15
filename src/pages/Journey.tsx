@@ -53,7 +53,7 @@ const Journey = () => {
                 monthlyAverage={stats.monthlyAverage}
                 bestStreak={stats.bestStreak}
               />
-              <WeeklyProgress />
+              {/* Removed WeeklyProgress component */}
             </div>
           </div>
         </motion.div>
