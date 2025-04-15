@@ -9,8 +9,11 @@ export function JourneyHero() {
         {/* Premium gradient background */}
         <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-blue-500/10">
           <motion.div
-            className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\"20\" height=\"20\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M0 0h20v20H0z\" fill=\"none\"/%3E%3Cpath d=\"M10 10l5-5M15 10l-5-5M10 15l5-5M5 10l5-5\" stroke=\"%23fff\" stroke-opacity=\".05\" stroke-width=\".5\"/%3E%3C/svg%3E')]"
-            style={{ backgroundSize: "20px 20px" }}
+            className="absolute inset-0"
+            style={{ 
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h20v20H0z' fill='none'/%3E%3Cpath d='M10 10l5-5M15 10l-5-5M10 15l5-5M5 10l5-5' stroke='%23fff' stroke-opacity='.05' stroke-width='.5'/%3E%3C/svg%3E")`,
+              backgroundSize: "20px 20px" 
+            }}
             animate={{
               backgroundPosition: ["0px 0px", "20px 20px"],
             }}
