@@ -15,12 +15,10 @@ interface UserDropdownContentProps {
   profile: { 
     full_name: string; 
     avatar_url: string | null;
-    total_points: number;
   } | null;
   setProfile: React.Dispatch<React.SetStateAction<{
     full_name: string;
     avatar_url: string | null;
-    total_points: number;
   } | null>>;
   onSignOut: () => Promise<void>;
 }

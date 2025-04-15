@@ -8,7 +8,6 @@ interface UserAvatarProps {
   profile: { 
     full_name: string; 
     avatar_url: string | null;
-    total_points: number;
   } | null;
 }
 
