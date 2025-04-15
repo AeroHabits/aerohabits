@@ -58,9 +58,9 @@ export function AppShowcase() {
             onClick={() => handleCardClick(feature.route)}
             className="group cursor-pointer"
           >
-            <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-xl border border-white/10 shadow-2xl transition-all duration-300 hover:border-white/20 hover:shadow-lg hover:shadow-blue-500/10">
-              {/* Gradient Background */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-60 group-hover:opacity-100 transition-opacity duration-300`} />
+            <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-300 hover:border-white/40 hover:shadow-lg hover:shadow-blue-500/20">
+              {/* Gradient Background - Increased opacity for better visibility */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-80 group-hover:opacity-100 transition-opacity duration-300`} />
               
               {/* Content */}
               <div className="relative p-6 h-full">
@@ -69,22 +69,25 @@ export function AppShowcase() {
                   whileHover={{ scale: 1.02 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <div className="p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 shadow-inner group-hover:border-white/20 transition-all duration-300">
+                  {/* Icon container - Improved contrast */}
+                  <div className="p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-inner group-hover:border-white/30 transition-all duration-300">
                     {feature.icon}
                   </div>
                   
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-white tracking-tight">
+                    {/* Title - Increased font size and added text shadow for better visibility */}
+                    <h3 className="text-xl font-bold text-white tracking-tight drop-shadow-md">
                       {feature.title}
                     </h3>
-                    <p className="text-sm text-blue-100/70 leading-relaxed">
+                    {/* Description - Increased opacity and contrast */}
+                    <p className="text-sm text-white/90 leading-relaxed font-medium">
                       {feature.description}
                     </p>
                   </div>
                 </motion.div>
                 
-                {/* Hover Effect */}
-                <div className="absolute inset-0 bg-gradient-to-t from-white/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Hover Effect - Enhanced for better visibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>
           </motion.div>
