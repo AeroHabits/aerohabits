@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { useHabitOperations } from "./useHabitOperations";
@@ -12,6 +12,11 @@ export function useHabits() {
   const [habitToDelete, setHabitToDelete] = useState<string | null>(null);
   const { deleteHabit, toggleHabit, addHabit } = useHabitOperations();
   const { debouncedSync, isOnline, isSyncing } = useOfflineSync();
+  
+  // Detect iOS platform
+  const isIOS = useMemo(() => typeof navigator !== 'undefined' && 
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)), []); 
   
   // Use our new hooks
   const { networkQuality, getStaleTime } = useNetworkQuality(isOnline);
@@ -36,18 +41,15 @@ export function useHabits() {
       try {
         // Check if we should use offline data
         if (shouldSkipNetworkRequest()) {
-          console.log(`Using cached habits due to ${!isOnline ? 'offline' : 'poor network'} status`);
           return loadOfflineHabits();
         }
 
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          console.log("No authenticated user found");
           return loadOfflineHabits();
         }
 
-        // Use connection pooling for better performance
-        const startTime = performance.now();
+        // iOS-optimized - eliminate timing logs and reduce operations
         const { data: habitsData, error: habitsError } = await supabase
           .from('habits')
           .select(`
@@ -61,11 +63,7 @@ export function useHabits() {
           `)
           .order('created_at', { ascending: false });
 
-        const queryTime = performance.now() - startTime;
-        console.log(`Habits query completed in ${queryTime.toFixed(2)}ms`);
-
         if (habitsError) {
-          console.error('Error fetching habits:', habitsError);
           return loadOfflineHabits();
         }
         
@@ -76,29 +74,27 @@ export function useHabits() {
         saveOfflineHabits(habitsData || []);
         return habitsData || [];
       } catch (error) {
-        console.error('Error in habits query:', error);
         return loadOfflineHabits();
       }
     },
     retry: shouldRetry,
     staleTime: getStaleTime(),
-    refetchOnWindowFocus: networkQuality === 'good', // Only refetch automatically on good connections
-    refetchInterval: networkQuality === 'good' ? 60000 : false, // Refresh every minute on good connections
+    // For iOS, minimize background refreshes to improve performance
+    refetchOnWindowFocus: isIOS ? false : (networkQuality === 'good'),
+    refetchInterval: isIOS ? false : (networkQuality === 'good' ? 60000 : false),
+    // iOS-specific optimization: increase cache time
+    gcTime: isIOS ? 5 * 60 * 1000 : undefined,
   });
 
-  // Sync when coming back online and handle connection quality changes
+  // Only sync when really needed for iOS devices
   useEffect(() => {
-    if (isOnline) {
+    if (isOnline && !isSyncing && !isIOS) {
       // Adjust sync strategy based on network quality
       if (networkQuality === 'good') {
         debouncedSync();
-      } else if (networkQuality === 'poor') {
-        // On poor connections, ensure critical operations sync first
-        // This will be handled by the priority system in useOfflineSync
-        console.log('Poor network detected, prioritizing critical sync operations');
       }
     }
-  }, [isOnline, networkQuality, debouncedSync]);
+  }, [isOnline, networkQuality, debouncedSync, isSyncing, isIOS]);
 
   return {
     habits,
@@ -113,7 +109,7 @@ export function useHabits() {
     refetch,
     isFetching,
     isOnline,
-    networkQuality,  // Expose network quality to UI for potential indicators
-    isSyncing        // Expose sync status for UI indicators
+    networkQuality,
+    isSyncing
   };
 }

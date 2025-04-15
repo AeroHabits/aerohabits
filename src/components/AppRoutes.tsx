@@ -12,18 +12,32 @@ import Terms from "@/pages/Terms";
 import Privacy from "@/pages/Privacy";
 import Onboarding from "@/pages/Onboarding";
 import Support from "@/pages/Support";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Loading fallback component
+// Detect iOS platform
+const isIOS = typeof navigator !== 'undefined' && 
+  (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
+// iOS-optimized animations - simpler and fewer props
+const getPageTransition = () => ({
+  initial: isIOS ? { opacity: 0 } : { opacity: 0 },
+  animate: isIOS ? { opacity: 1 } : { opacity: 1 },
+  exit: isIOS ? { opacity: 0 } : { opacity: 0 },
+  transition: isIOS ? { duration: 0.15 } : { duration: 0.2 }
+});
+
+// Loading fallback component - optimized for iOS
 const RouteLoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-    <div className="rounded-full h-12 w-12 border-b-2 border-white animate-spin"></div>
+    <div className={isIOS ? "rounded-full h-10 w-10 border-b-2 border-white animate-spin" : "rounded-full h-12 w-12 border-b-2 border-white animate-spin"}></div>
   </div>
 );
 
 export function AppRoutes() {
   const location = useLocation();
+  const pageTransition = useMemo(() => getPageTransition(), []);
   
   // Reset scroll position on route change
   useEffect(() => {
@@ -31,16 +45,11 @@ export function AppRoutes() {
   }, [location.pathname]);
 
   return (
-    <AnimatePresence mode="wait">
+    <AnimatePresence mode={isIOS ? "sync" : "wait"}>
       <Routes location={location} key={location.pathname}>
         {/* Non-protected routes */}
         <Route path="/auth" element={
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
+          <motion.div {...pageTransition}>
             <Auth />
           </motion.div>
         } />
@@ -48,7 +57,7 @@ export function AppRoutes() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/support" element={<Support />} />
         
-        {/* Protected routes */}
+        {/* Protected routes - optimize suspense for iOS */}
         <Route
           path="/onboarding"
           element={

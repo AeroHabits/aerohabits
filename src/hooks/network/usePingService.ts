@@ -5,16 +5,27 @@ import { useErrorTracking } from '../useErrorTracking';
 export function usePingService() {
   const { trackError } = useErrorTracking();
   
-  // Optimized ping function for mobile performance
+  // iOS-optimized ping function
   const pingEndpoint = useCallback(async (endpoint: string): Promise<number | null> => {
+    // iOS detection
+    const isIOS = typeof navigator !== 'undefined' && 
+      (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+    
+    // Skip pings entirely on iOS for better performance
+    if (isIOS) {
+      // Return a fake consistent ping time
+      return 100;
+    }
+    
     // Mobile optimization: Skip frequent checks on mobile devices
     if (navigator.userAgent.match(/iPhone|iPad|iPod|Android/i)) {
       const lastPingTime = sessionStorage.getItem('last-ping-time');
       const now = Date.now();
       
-      if (lastPingTime && (now - parseInt(lastPingTime)) < 60000) {
-        // If we pinged in the last minute, return a cached result
-        return 150; // Assume reasonable ping time
+      if (lastPingTime && (now - parseInt(lastPingTime)) < 120000) { // 2 minutes
+        // If we pinged in the last 2 minutes, return a cached result
+        return 100;
       }
       
       // Update last ping timestamp
@@ -22,13 +33,13 @@ export function usePingService() {
     }
     
     // Skip external requests in development
-    if (endpoint.startsWith('http') && process.env.NODE_ENV === 'development') {
+    if ((endpoint.startsWith('http') && process.env.NODE_ENV === 'development') || isIOS) {
       return 150;
     }
 
     // Reduce timeout for better UX
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 1500);
+    const timeoutId = setTimeout(() => controller.abort(), 1000); // Shorter timeout
     
     try {
       const startTime = performance.now();

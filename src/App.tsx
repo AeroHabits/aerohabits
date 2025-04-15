@@ -9,27 +9,32 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
 import { BottomNav } from "./components/layout/BottomNav";
-import { useEffect, lazy, Suspense, memo } from "react";
+import { useEffect, lazy, Suspense, memo, useState } from "react";
 import { trackPageView, initAnalytics } from "./lib/analytics";
 import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 
-// Lazy load non-critical components
+// Lazy load non-critical components with increased delay for iOS
 const NetworkStatusIndicator = lazy(() => 
   import("./components/NetworkStatusIndicator").then(module => ({ 
     default: module.NetworkStatusIndicator 
   }))
 );
 
-// Create query client with optimized settings
+// Detect iOS platform
+const isIOS = typeof navigator !== 'undefined' && 
+  (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
+// Create query client with optimized settings for iOS
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
-      staleTime: 60000,
+      retry: isIOS ? 0 : 1, // No retries on iOS to reduce network attempts
+      staleTime: isIOS ? 120000 : 60000, // 2 minutes stale time on iOS, 1 minute elsewhere
       refetchOnWindowFocus: false,
-      gcTime: 10 * 60 * 1000,
+      gcTime: isIOS ? 15 * 60 * 1000 : 10 * 60 * 1000, // Longer cache on iOS
     },
   },
 });
@@ -42,10 +47,11 @@ Sentry.init({
       tracePropagationTargets: [/^https:\/\/areohabits\.com/],
     }),
   ],
-  tracesSampleRate: 0.05, // Further reduce sample rate
+  tracesSampleRate: isIOS ? 0.01 : 0.05, // Further reduce sample rate on iOS
   beforeSend(event) {
-    // Don't send events in development
-    if (window.location.hostname === 'localhost') {
+    // Don't send events in development or on iOS unless critical errors
+    if (window.location.hostname === 'localhost' || 
+        (isIOS && event.level !== 'fatal')) {
       return null;
     }
     return event;
@@ -61,23 +67,32 @@ const SentryErrorBoundary = Sentry.withErrorBoundary(ErrorBoundary, {
 const AnalyticsTracker = memo(() => {
   const location = useLocation();
   const isOnline = useOnlineStatus();
+  const [initialized, setInitialized] = useState(false);
 
-  // Initialize analytics on mount
+  // Initialize analytics on mount - only once and delayed for iOS
   useEffect(() => {
-    if (isOnline) {
-      initAnalytics();
-    }
-  }, [isOnline]);
-
-  // Track page views with debouncing to prevent excessive calls
-  useEffect(() => {
-    if (isOnline) {
+    if (isOnline && !initialized) {
+      const delay = isIOS ? 3000 : 0; // Delay analytics init on iOS
       const timeoutId = setTimeout(() => {
-        trackPageView(location.pathname);
-      }, 300);
+        initAnalytics();
+        setInitialized(true);
+      }, delay);
       return () => clearTimeout(timeoutId);
     }
-  }, [location, isOnline]);
+  }, [isOnline, initialized]);
+
+  // Track page views with debouncing and sampling for iOS
+  useEffect(() => {
+    if (isOnline && initialized) {
+      // For iOS, add sampling to reduce analytics events
+      if (isIOS && Math.random() > 0.5) return; // Only track 50% of pageviews on iOS
+      
+      const timeoutId = setTimeout(() => {
+        trackPageView(location.pathname);
+      }, isIOS ? 1000 : 300); // Longer debounce for iOS
+      return () => clearTimeout(timeoutId);
+    }
+  }, [location, isOnline, initialized]);
 
   return null;
 });
@@ -98,7 +113,8 @@ const Layout = memo(({ children }: { children: React.ReactNode }) => {
       </div>
       <Footer />
       {isMobile && <BottomNav />}
-      {isOnline && (
+      {/* Only show network indicator when necessary and not on iOS */}
+      {isOnline && !isIOS && (
         <Suspense fallback={null}>
           <NetworkStatusIndicator />
         </Suspense>

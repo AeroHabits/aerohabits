@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useCallback } from "react";
 import { Habit, Goal, Challenge } from "@/types";
 
 const STORAGE_KEYS = {
@@ -16,18 +17,27 @@ const IMPORTANCE_LEVELS = {
   LOW: 0       // Easily regenerated content
 };
 
+// iOS-optimized TTL values
 const getTTL = (importance: number) => {
+  // iOS detection
+  const isIOS = typeof navigator !== 'undefined' && 
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
+  // Extend cache durations for iOS devices
+  const multiplier = isIOS ? 2 : 1;  // Double cache duration on iOS
+
   switch (importance) {
     case IMPORTANCE_LEVELS.CRITICAL:
-      return 7 * 24 * 60 * 60 * 1000; // 7 days
+      return multiplier * 7 * 24 * 60 * 60 * 1000; // 7-14 days
     case IMPORTANCE_LEVELS.HIGH:
-      return 3 * 24 * 60 * 60 * 1000; // 3 days
+      return multiplier * 3 * 24 * 60 * 60 * 1000; // 3-6 days
     case IMPORTANCE_LEVELS.NORMAL:
-      return 24 * 60 * 60 * 1000;     // 24 hours
+      return multiplier * 24 * 60 * 60 * 1000;     // 24-48 hours
     case IMPORTANCE_LEVELS.LOW:
-      return 6 * 60 * 60 * 1000;      // 6 hours
+      return multiplier * 6 * 60 * 60 * 1000;      // 6-12 hours
     default:
-      return 24 * 60 * 60 * 1000;     // Default: 24 hours
+      return multiplier * 24 * 60 * 60 * 1000;     // Default: 24-48 hours
   }
 };
 
@@ -39,8 +49,16 @@ interface CacheStats {
 }
 
 export function useLocalStorage() {
-  const updateCacheStats = (key: string) => {
+  // iOS detection
+  const isIOS = typeof navigator !== 'undefined' && 
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+
+  const updateCacheStats = useCallback((key: string) => {
     try {
+      // Skip stats tracking on iOS for better performance unless in development
+      if (isIOS && process.env.NODE_ENV !== 'development') return;
+
       const statsJson = localStorage.getItem(STORAGE_KEYS.CACHE_STATS);
       const stats: CacheStats = statsJson ? JSON.parse(statsJson) : {};
       
@@ -51,12 +69,18 @@ export function useLocalStorage() {
       
       localStorage.setItem(STORAGE_KEYS.CACHE_STATS, JSON.stringify(stats));
     } catch (e) {
-      console.error('Error updating cache stats:', e);
+      // Silent error in production
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error updating cache stats:', e);
+      }
     }
-  };
+  }, [isIOS]);
 
-  const cleanupCache = () => {
+  const cleanupCache = useCallback(() => {
     try {
+      // Run cleanup less frequently on iOS
+      if (isIOS && Math.random() > 0.02) return; // 2% chance on iOS vs 5% normally
+
       const statsJson = localStorage.getItem(STORAGE_KEYS.CACHE_STATS);
       if (!statsJson) return;
       
@@ -65,7 +89,9 @@ export function useLocalStorage() {
       const oneWeekAgo = now - (7 * 24 * 60 * 60 * 1000);
       
       Object.entries(stats).forEach(([key, stat]) => {
-        if (stat.lastAccessed < oneWeekAgo && stat.accessCount < 5) {
+        // More conservative cleanup on iOS - only remove really old or unused items
+        const threshold = isIOS ? 2 : 5; // Higher threshold for iOS
+        if (stat.lastAccessed < oneWeekAgo && stat.accessCount < threshold) {
           localStorage.removeItem(key);
           delete stats[key];
         }
@@ -73,15 +99,19 @@ export function useLocalStorage() {
       
       localStorage.setItem(STORAGE_KEYS.CACHE_STATS, JSON.stringify(stats));
     } catch (e) {
-      console.error('Error cleaning up cache:', e);
+      // Silent error in production
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Error cleaning up cache:', e);
+      }
     }
-  };
+  }, [isIOS]);
 
-  if (Math.random() < 0.05) {
+  // Less frequent cleanup for iOS
+  if (!isIOS && Math.random() < 0.05 || isIOS && Math.random() < 0.02) {
     cleanupCache();
   }
 
-  const loadFromStorage = <T>(key: string, importance: number = IMPORTANCE_LEVELS.NORMAL): T | null => {
+  const loadFromStorage = useCallback(<T>(key: string, importance: number = IMPORTANCE_LEVELS.NORMAL): T | null => {
     const stored = localStorage.getItem(key);
     if (!stored) return null;
     
@@ -100,9 +130,9 @@ export function useLocalStorage() {
     } catch {
       return null;
     }
-  };
+  }, [updateCacheStats]);
 
-  const saveToStorage = <T>(key: string, data: T, importance: number = IMPORTANCE_LEVELS.NORMAL) => {
+  const saveToStorage = useCallback(<T>(key: string, data: T, importance: number = IMPORTANCE_LEVELS.NORMAL) => {
     localStorage.setItem(key, JSON.stringify({
       data,
       timestamp: Date.now(),
@@ -110,25 +140,25 @@ export function useLocalStorage() {
     }));
     
     updateCacheStats(key);
-  };
+  }, [updateCacheStats]);
 
-  const loadOfflineHabits = () => 
-    loadFromStorage<Habit[]>(STORAGE_KEYS.HABITS, IMPORTANCE_LEVELS.CRITICAL) || [];
+  const loadOfflineHabits = useCallback(() => 
+    loadFromStorage<Habit[]>(STORAGE_KEYS.HABITS, IMPORTANCE_LEVELS.CRITICAL) || [], [loadFromStorage]);
   
-  const saveOfflineHabits = (habits: Habit[]) => 
-    saveToStorage(STORAGE_KEYS.HABITS, habits, IMPORTANCE_LEVELS.CRITICAL);
+  const saveOfflineHabits = useCallback((habits: Habit[]) => 
+    saveToStorage(STORAGE_KEYS.HABITS, habits, IMPORTANCE_LEVELS.CRITICAL), [saveToStorage]);
   
-  const loadOfflineGoals = () => 
-    loadFromStorage<Goal[]>(STORAGE_KEYS.GOALS, IMPORTANCE_LEVELS.HIGH) || [];
+  const loadOfflineGoals = useCallback(() => 
+    loadFromStorage<Goal[]>(STORAGE_KEYS.GOALS, IMPORTANCE_LEVELS.HIGH) || [], [loadFromStorage]);
   
-  const saveOfflineGoals = (goals: Goal[]) => 
-    saveToStorage(STORAGE_KEYS.GOALS, goals, IMPORTANCE_LEVELS.HIGH);
+  const saveOfflineGoals = useCallback((goals: Goal[]) => 
+    saveToStorage(STORAGE_KEYS.GOALS, goals, IMPORTANCE_LEVELS.HIGH), [saveToStorage]);
   
-  const loadOfflineChallenges = () => 
-    loadFromStorage<Challenge[]>(STORAGE_KEYS.CHALLENGES, IMPORTANCE_LEVELS.NORMAL) || [];
+  const loadOfflineChallenges = useCallback(() => 
+    loadFromStorage<Challenge[]>(STORAGE_KEYS.CHALLENGES, IMPORTANCE_LEVELS.NORMAL) || [], [loadFromStorage]);
   
-  const saveOfflineChallenges = (challenges: Challenge[]) => 
-    saveToStorage(STORAGE_KEYS.CHALLENGES, challenges, IMPORTANCE_LEVELS.NORMAL);
+  const saveOfflineChallenges = useCallback((challenges: Challenge[]) => 
+    saveToStorage(STORAGE_KEYS.CHALLENGES, challenges, IMPORTANCE_LEVELS.NORMAL), [saveToStorage]);
 
   return {
     loadFromStorage,

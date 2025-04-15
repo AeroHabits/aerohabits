@@ -9,18 +9,27 @@ interface PerformanceMetric {
   tags?: Record<string, string | number | boolean>;
 }
 
+// Platform-aware performance monitoring
 export function usePerformanceMonitoring() {
   const metricsRef = useRef<Map<string, PerformanceMetric>>(new Map());
   const reportThresholds = useRef<Map<string, number>>(new Map([
-    ['dataFetch', 2000],          // 2 seconds for data fetches
-    ['rendering', 500],           // 500ms for rendering operations
-    ['interaction', 100],         // 100ms for user interactions
-    ['processing', 1000],         // 1 second for data processing
-    ['synchronization', 5000],    // 5 seconds for sync operations
+    ['dataFetch', 1000],       // 1 second for data fetches (reduced from 2s)
+    ['rendering', 300],        // 300ms for rendering operations (reduced from 500ms)
+    ['interaction', 50],       // 50ms for user interactions (reduced from 100ms)
+    ['processing', 500],       // 500ms for data processing (reduced from 1s)
+    ['synchronization', 3000], // 3 seconds for sync operations (reduced from 5s)
   ]));
 
-  // Report metrics every 30 seconds instead of 10 to reduce processing overhead
+  // Detect iOS platform
+  const isIOS = useRef(typeof navigator !== 'undefined' && 
+    (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1))
+  );
+
+  // Report metrics every 60 seconds on mobile to reduce background processing and battery usage
   useEffect(() => {
+    if (!isIOS.current) return; // Only apply iOS-specific optimizations if on iOS
+    
     const reportInterval = setInterval(() => {
       if (metricsRef.current.size === 0) return;
       
@@ -31,7 +40,11 @@ export function usePerformanceMonitoring() {
       metricsRef.current.forEach((metric, key) => {
         // Only report completed metrics
         if (metric.duration !== undefined) {
-          metricsToReport.push(metric);
+          // For iOS, only report metrics that exceed thresholds to reduce analytics load
+          const threshold = reportThresholds.current.get(metric.name.split('.')[0]) || 500;
+          if (metric.duration > threshold) {
+            metricsToReport.push(metric);
+          }
         } else {
           // Keep in-progress metrics
           metricsToKeep.set(key, metric);
@@ -44,15 +57,18 @@ export function usePerformanceMonitoring() {
           // Add all metrics to a single scope to reduce overhead
           metricsToReport.forEach(metric => {
             if (metric.duration) {
-              Sentry.metrics.distribution(
-                `app.performance.${metric.name}`, 
-                metric.duration,
-                metric.tags
-              );
+              // Use sampling for iOS devices - only send 20% of metrics
+              if (Math.random() < 0.2) {
+                Sentry.metrics.distribution(
+                  `app.performance.${metric.name}`, 
+                  metric.duration,
+                  metric.tags
+                );
+              }
               
-              // Only log very slow operations for debugging
-              const threshold = reportThresholds.current.get(metric.name.split('.')[0]) || 1000;
-              if (metric.duration > threshold * 2) { // Only log if twice as slow as threshold
+              // Only log extremely slow operations for debugging
+              const threshold = reportThresholds.current.get(metric.name.split('.')[0]) || 500;
+              if (metric.duration > threshold * 3) { // Only log if three times as slow as threshold
                 console.warn(`Slow operation detected: ${metric.name} took ${metric.duration}ms`, metric.tags);
               }
             }
@@ -62,7 +78,7 @@ export function usePerformanceMonitoring() {
         // Reset to only keep in-progress metrics
         metricsRef.current = metricsToKeep;
       }
-    }, 30000); // Report every 30 seconds
+    }, 60000); // Report every 60 seconds on mobile instead of 30s
     
     return () => clearInterval(reportInterval);
   }, []);
