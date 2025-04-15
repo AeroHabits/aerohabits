@@ -9,7 +9,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { Footer } from "./components/Footer";
 import { AppRoutes } from "./components/AppRoutes";
 import { BottomNav } from "./components/layout/BottomNav";
-import { useEffect, lazy, Suspense, memo, useState } from "react";
+import { useEffect, lazy, Suspense, memo, useState, useMemo } from "react";
 import { trackPageView, initAnalytics } from "./lib/analytics";
 import { useIsMobile } from "./hooks/use-mobile";
 import { cn } from "./lib/utils";
@@ -27,8 +27,8 @@ const isIOS = typeof navigator !== 'undefined' &&
   (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
-// Create query client with optimized settings for iOS
-const queryClient = new QueryClient({
+// Create optimized query client with performance settings
+const createQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
       retry: isIOS ? 0 : 1, // No retries on iOS to reduce network attempts
@@ -36,25 +36,6 @@ const queryClient = new QueryClient({
       refetchOnWindowFocus: false,
       gcTime: isIOS ? 15 * 60 * 1000 : 10 * 60 * 1000, // Longer cache on iOS
     },
-  },
-});
-
-// Lightweight Sentry config to reduce overhead
-Sentry.init({
-  dsn: "https://7f41f5a0a9c0c2d9f8b6e3a1d4c5b2a8@o4506779798454272.ingest.sentry.io/4506779799502848",
-  integrations: [
-    new Sentry.BrowserTracing({
-      tracePropagationTargets: [/^https:\/\/areohabits\.com/],
-    }),
-  ],
-  tracesSampleRate: isIOS ? 0.01 : 0.05, // Further reduce sample rate on iOS
-  beforeSend(event) {
-    // Don't send events in development or on iOS unless critical errors
-    if (window.location.hostname === 'localhost' || 
-        (isIOS && event.level !== 'fatal')) {
-      return null;
-    }
-    return event;
   },
 });
 
@@ -114,7 +95,7 @@ const Layout = memo(({ children }: { children: React.ReactNode }) => {
       <Footer />
       {isMobile && <BottomNav />}
       {/* Only show network indicator when necessary and not on iOS */}
-      {isOnline && !isIOS && (
+      {!isOnline && !isIOS && (
         <Suspense fallback={null}>
           <NetworkStatusIndicator />
         </Suspense>
@@ -124,21 +105,47 @@ const Layout = memo(({ children }: { children: React.ReactNode }) => {
 });
 Layout.displayName = 'Layout';
 
-const App = () => (
-  <SentryErrorBoundary>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnalyticsTracker />
-          <Layout>
-            <AppRoutes />
-          </Layout>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </SentryErrorBoundary>
-);
+const App = () => {
+  // Create query client once to prevent recreation on renders
+  const queryClient = useMemo(() => createQueryClient(), []);
+
+  // Initialize Sentry with optimized configuration
+  useEffect(() => {
+    Sentry.init({
+      dsn: "https://7f41f5a0a9c0c2d9f8b6e3a1d4c5b2a8@o4506779798454272.ingest.sentry.io/4506779799502848",
+      integrations: [
+        new Sentry.BrowserTracing({
+          tracePropagationTargets: [/^https:\/\/areohabits\.com/],
+        }),
+      ],
+      tracesSampleRate: isIOS ? 0.01 : 0.05, // Further reduce sample rate on iOS
+      beforeSend(event) {
+        // Don't send events in development or on iOS unless critical errors
+        if (window.location.hostname === 'localhost' || 
+            (isIOS && event.level !== 'fatal')) {
+          return null;
+        }
+        return event;
+      },
+    });
+  }, []);
+
+  return (
+    <SentryErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AnalyticsTracker />
+            <Layout>
+              <AppRoutes />
+            </Layout>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </SentryErrorBoundary>
+  );
+};
 
 export default App;

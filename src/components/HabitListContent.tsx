@@ -1,7 +1,13 @@
 
+import { memo, useMemo } from "react";
 import { motion } from "framer-motion";
 import { HabitCard } from "./HabitCard";
 import type { Habit } from "@/types";
+
+// Detect iOS platform
+const isIOS = typeof navigator !== 'undefined' && 
+  (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
 
 interface HabitListContentProps {
   habits: Habit[];
@@ -10,23 +16,52 @@ interface HabitListContentProps {
   setHabitToDelete: (id: string | null) => void;
 }
 
-export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete }: HabitListContentProps) {
+// Memoized component to prevent unnecessary re-renders
+export const HabitListContent = memo(function HabitListContent({ 
+  habits, 
+  onToggle, 
+  onDelete, 
+  setHabitToDelete 
+}: HabitListContentProps) {
+  // Create animation variants based on device
+  const containerVariants = useMemo(() => ({
+    hidden: {},
+    visible: { 
+      transition: { 
+        staggerChildren: isIOS ? 0.05 : 0.1, 
+        delayChildren: isIOS ? 0.05 : 0.1 
+      }
+    }
+  }), []);
+  
+  const itemVariants = useMemo(() => ({
+    hidden: { opacity: 0, y: isIOS ? 10 : 30 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { 
+        duration: isIOS ? 0.3 : 0.4, 
+        type: "spring",
+        stiffness: isIOS ? 200 : 100,
+        damping: 15
+      }
+    }
+  }), []);
+
   return (
-    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-      {habits.map((habit, index) => (
+    <motion.div 
+      className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      {habits.map((habit) => (
         <motion.div
           key={habit.id}
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ 
-            duration: 0.4, 
-            delay: index * 0.1,
-            type: "spring",
-            stiffness: 100
-          }}
+          variants={itemVariants}
           whileHover={{ y: -8, transition: { duration: 0.2 } }}
-          className="h-full"
+          layout // Enable smooth transitions when list changes
+          className="h-full will-change-transform"
         >
           <HabitCard
             id={habit.id}
@@ -42,6 +77,8 @@ export function HabitListContent({ habits, onToggle, onDelete, setHabitToDelete 
           />
         </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
-}
+});
+
+HabitListContent.displayName = "HabitListContent";

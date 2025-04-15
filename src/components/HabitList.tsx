@@ -9,8 +9,7 @@ import { Loader2, WifiOff } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "./ui/button";
-import { useRef, useCallback, memo } from "react";
+import { useRef, useCallback, memo, useEffect } from "react";
 
 // Detect iOS platform
 const isIOS = typeof navigator !== 'undefined' && 
@@ -19,6 +18,21 @@ const isIOS = typeof navigator !== 'undefined' &&
 
 // Memoize HabitListContent for performance
 const MemoizedHabitListContent = memo(HabitListContent);
+
+// Optimized animations based on platform
+const getAnimationConfig = () => {
+  return isIOS ? { 
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.2 }
+  } : {
+    initial: { opacity: 0, y: -20 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -20 },
+    transition: { duration: 0.4 }
+  };
+};
 
 export function HabitList() {
   const {
@@ -97,6 +111,15 @@ export function HabitList() {
     touchStartY.current = 0;
     pullDistance.current = 0;
   }, [refetch]);
+
+  // Enable priority loading for habits
+  useEffect(() => {
+    document.body.dataset.loadPriority = "high";
+    
+    return () => {
+      delete document.body.dataset.loadPriority;
+    };
+  }, []);
   
   if (isLoading) {
     return <HabitListLoading />;
@@ -106,16 +129,7 @@ export function HabitList() {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
 
-  // iOS optimized animations: simpler and fewer
-  const simpleAnimation = isIOS ? { 
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 }
-  } : {
-    initial: { opacity: 0, y: -20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 }
-  };
+  const animationConfig = getAnimationConfig();
   
   return (
     <div 
@@ -126,7 +140,7 @@ export function HabitList() {
     >
       <AnimatePresence>
         {!isOnline && (
-          <motion.div {...simpleAnimation} className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+          <motion.div {...animationConfig} className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
             <div className="flex items-center gap-2 bg-yellow-500 text-white px-4 py-2 rounded-full shadow-lg">
               <WifiOff className="h-4 w-4" />
               <span className="text-sm font-medium">Offline Mode</span>
@@ -136,7 +150,7 @@ export function HabitList() {
         
         {/* Only show refresh indicator when actually fetching */}
         {isFetching && (
-          <motion.div {...simpleAnimation} className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
+          <motion.div {...animationConfig} className="fixed top-4 left-1/2 -translate-x-1/2 z-50">
             <div className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="text-sm font-medium">Refreshing...</span>
