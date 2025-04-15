@@ -12,28 +12,28 @@ export function AppShowcase() {
       title: "Track Daily Habits",
       description: "Build lasting habits with daily tracking and reminders",
       route: "/habits",
-      gradient: "from-amber-500/20 via-amber-400/10 to-amber-300/5"
+      gradient: "from-amber-500/30 via-amber-400/20 to-amber-300/10"
     },
     {
       icon: <Flame className="h-7 w-7 text-orange-400" />,
       title: "Join Challenges",
       description: "Participate in community challenges",
       route: "/challenges",
-      gradient: "from-orange-500/20 via-orange-400/10 to-orange-300/5"
+      gradient: "from-orange-500/30 via-orange-400/20 to-orange-300/10"
     },
     {
       icon: <Target className="h-7 w-7 text-blue-400" />,
       title: "Set Goals",
       description: "Define and achieve your personal goals",
       route: "/goals",
-      gradient: "from-blue-500/20 via-blue-400/10 to-blue-300/5"
+      gradient: "from-blue-500/30 via-blue-400/20 to-blue-300/10"
     },
     {
       icon: <Award className="h-7 w-7 text-purple-400" />,
       title: "Track Progress",
       description: "Visualize your journey with detailed statistics",
       route: "/journey",
-      gradient: "from-purple-500/20 via-purple-400/10 to-purple-300/5"
+      gradient: "from-purple-500/30 via-purple-400/20 to-purple-300/10"
     }
   ];
 
@@ -42,57 +42,65 @@ export function AppShowcase() {
   };
 
   return (
-    <div className="py-8">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="py-12"
+    >
+      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
         {features.map((feature, index) => (
           <motion.div
             key={feature.title}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ 
-              delay: index * 0.1,
-              duration: 0.4,
+              delay: index * 0.15,
+              duration: 0.5,
               type: "spring",
               stiffness: 100
             }}
             onClick={() => handleCardClick(feature.route)}
             className="group cursor-pointer"
           >
-            <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-xl border border-white/20 shadow-2xl transition-all duration-300 hover:border-white/40 hover:shadow-lg hover:shadow-blue-500/20">
-              {/* Gradient Background - Increased opacity for better visibility */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-80 group-hover:opacity-100 transition-opacity duration-300`} />
+            <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-xl bg-black/20 border border-white/30 shadow-xl transition-all duration-300 hover:border-white/50 hover:shadow-2xl hover:shadow-blue-500/30 hover:translate-y-[-4px]">
+              {/* Enhanced Gradient Background with better opacity */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-100 group-hover:opacity-100 transition-all duration-300`} />
+              
+              {/* Light Effect */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,_rgba(255,255,255,0.2),_transparent_50%)] opacity-40 group-hover:opacity-70 transition-opacity duration-300"></div>
               
               {/* Content */}
-              <div className="relative p-6 h-full">
+              <div className="relative p-8 h-full">
                 <motion.div 
-                  className="flex flex-col items-start gap-4"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ duration: 0.2 }}
+                  className="flex flex-col items-start gap-5"
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 15 }}
                 >
-                  {/* Icon container - Improved contrast */}
-                  <div className="p-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 shadow-inner group-hover:border-white/30 transition-all duration-300">
+                  {/* Improved Icon container with better contrast */}
+                  <div className="p-4 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 shadow-lg group-hover:border-white/40 group-hover:bg-white/20 transition-all duration-300">
                     {feature.icon}
                   </div>
                   
-                  <div className="space-y-2">
-                    {/* Title - Increased font size and added text shadow for better visibility */}
-                    <h3 className="text-xl font-bold text-white tracking-tight drop-shadow-md">
+                  <div className="space-y-3">
+                    {/* Enhanced title with stronger text shadow */}
+                    <h3 className="text-xl font-bold text-white tracking-tight drop-shadow-[0_2px_3px_rgba(0,0,0,0.3)]">
                       {feature.title}
                     </h3>
-                    {/* Description - Increased opacity and contrast */}
-                    <p className="text-sm text-white/90 leading-relaxed font-medium">
+                    {/* Enhanced description with increased contrast */}
+                    <p className="text-sm text-white leading-relaxed font-medium drop-shadow-sm">
                       {feature.description}
                     </p>
                   </div>
                 </motion.div>
                 
-                {/* Hover Effect - Enhanced for better visibility */}
-                <div className="absolute inset-0 bg-gradient-to-t from-white/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                {/* Enhanced Hover Effect with better visibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-white/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </div>
             </div>
           </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
