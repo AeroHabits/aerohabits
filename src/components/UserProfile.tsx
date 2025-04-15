@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
+import { ProfileEditor } from "./ProfileEditor";
 
 type Profile = { full_name: string } | null;
 
