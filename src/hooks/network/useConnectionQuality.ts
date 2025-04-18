@@ -7,17 +7,11 @@ import { useErrorTracking } from '../useErrorTracking';
 import { trackNetworkChange } from '@/lib/analytics/networkTracking';
 import { ConnectionStatus, LATENCY_THRESHOLDS, PING_ENDPOINTS } from './types';
 
-// iOS-specific optimizations
 export function useConnectionQuality() {
   const { isOnline } = useNetworkEvents();
   const { pingEndpoint } = usePingService();
   const { pingHistory, calculateReliability, updatePingHistory } = useReliabilityTracker();
   const { trackError } = useErrorTracking();
-  
-  // Detect iOS platform
-  const isIOS = typeof navigator !== 'undefined' && 
-    (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
   
   const [connectionDetails, setConnectionDetails] = useState<ConnectionStatus>({
     isOnline: window.navigator.onLine,
@@ -28,33 +22,12 @@ export function useConnectionQuality() {
     reliability: 100,
   });
   
-  // Ultra-minimal network checking for iOS
   const checkConnectionQuality = useCallback(async () => {
     if (!isOnline) return;
     
     try {
-      // Only check on connection status changes for iOS
-      if (isIOS) {
-        // For iOS, just update online/offline status without pings for better performance
-        if (connectionDetails.isOnline !== isOnline) {
-          setConnectionDetails(prev => ({
-            ...prev,
-            isOnline,
-            quality: isOnline ? 'good' : 'offline',
-            lastChecked: Date.now(),
-          }));
-          
-          trackNetworkChange(isOnline ? 'online' : 'offline');
-        }
-        
-        // Skip expensive ping operations on iOS
-        return;
-      }
-      
-      // For other platforms, do the minimal ping
       const latency = await pingEndpoint(PING_ENDPOINTS[0]);
       
-      // Only update state if connection status actually changed
       if (latency === null && connectionDetails.isOnline) {
         setConnectionDetails(prev => ({
           ...prev,
@@ -76,26 +49,22 @@ export function useConnectionQuality() {
         trackNetworkChange('online');
       }
     } catch (error) {
-      // Silent error handling to prevent excessive logs
       if (process.env.NODE_ENV === 'development') {
         console.error('Network check error:', error);
       }
     }
-  }, [isOnline, pingEndpoint, connectionDetails, isIOS]);
+  }, [isOnline, pingEndpoint, connectionDetails]);
 
-  // Only check on ACTUAL network status changes
   useEffect(() => {
-    // For iOS, use a much longer initial delay to avoid startup impact
     const initialCheckDelay = setTimeout(() => {
       checkConnectionQuality();
-    }, isIOS ? 30000 : 15000); // 30 seconds for iOS, 15 seconds for others
+    }, 15000);
     
     return () => {
       clearTimeout(initialCheckDelay);
     };
-  }, [checkConnectionQuality, isIOS]);
+  }, [checkConnectionQuality]);
 
-  // Check when online status actually changes, not on a timer
   useEffect(() => {
     checkConnectionQuality();
   }, [isOnline, checkConnectionQuality]);

@@ -1,4 +1,3 @@
-
 import { Routes, Route, useLocation } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Index from "@/pages/Index";
@@ -15,15 +14,10 @@ import Support from "@/pages/Support";
 import { lazy, Suspense, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 
-// Detect iOS platform
-const isIOS = typeof navigator !== 'undefined' && 
-  (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
-
-// Loading fallback component - optimized for iOS
+// Loading fallback component
 const RouteLoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-    <div className={isIOS ? "rounded-full h-10 w-10 border-b-2 border-white animate-spin" : "rounded-full h-12 w-12 border-b-2 border-white animate-spin"}></div>
+    <div className="rounded-full h-12 w-12 border-b-2 border-white animate-spin"></div>
   </div>
 );
 
@@ -53,7 +47,7 @@ export function AppRoutes() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/support" element={<Support />} />
         
-        {/* Protected routes - optimize suspense for iOS */}
+        {/* Protected routes */}
         <Route
           path="/onboarding"
           element={

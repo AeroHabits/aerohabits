@@ -12,7 +12,7 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
     port: 8080,
   },
   plugins: [
-    react(), // Using react-swc without problematic plugins
+    react(),
     mode === 'development' && componentTagger(),
   ].filter(Boolean),
   resolve: {
@@ -21,13 +21,11 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
     },
   },
   build: {
-    // Production optimizations
-    target: 'es2021', // Updated target to support modern JS features like replaceAll
+    target: 'es2021',
     cssMinify: true,
     minify: 'terser',
     terserOptions: {
       compress: {
-        // Fix the typing issue by using correct format for drop_console
         ...(mode === 'production' ? {
           drop_console: true,
           pure_funcs: ['console.debug', 'console.log']
@@ -39,7 +37,6 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
     },
     rollupOptions: {
       output: {
-        // Using function form for manualChunks as recommended
         manualChunks(id) {
           if (id.includes('node_modules')) {
             if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
@@ -54,7 +51,6 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
             if (id.includes('@tanstack/react-query')) {
               return 'data-vendor';
             }
-            // Default vendor chunk for other node_modules
             return 'vendor';
           }
         }

@@ -1,4 +1,3 @@
-
 import { useState, useCallback } from "react";
 import { Habit, Goal, Challenge } from "@/types";
 
@@ -11,33 +10,24 @@ const STORAGE_KEYS = {
 } as const;
 
 const IMPORTANCE_LEVELS = {
-  CRITICAL: 3, // User-specific data that must be preserved
-  HIGH: 2,     // Important app data
-  NORMAL: 1,   // Regular content
-  LOW: 0       // Easily regenerated content
+  CRITICAL: 3,
+  HIGH: 2,
+  NORMAL: 1,
+  LOW: 0
 };
 
-// iOS-optimized TTL values
 const getTTL = (importance: number) => {
-  // iOS detection
-  const isIOS = typeof navigator !== 'undefined' && 
-    (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
-
-  // Extend cache durations for iOS devices
-  const multiplier = isIOS ? 2 : 1;  // Double cache duration on iOS
-
   switch (importance) {
     case IMPORTANCE_LEVELS.CRITICAL:
-      return multiplier * 7 * 24 * 60 * 60 * 1000; // 7-14 days
+      return 7 * 24 * 60 * 60 * 1000;
     case IMPORTANCE_LEVELS.HIGH:
-      return multiplier * 3 * 24 * 60 * 60 * 1000; // 3-6 days
+      return 3 * 24 * 60 * 60 * 1000;
     case IMPORTANCE_LEVELS.NORMAL:
-      return multiplier * 24 * 60 * 60 * 1000;     // 24-48 hours
+      return 24 * 60 * 60 * 1000;
     case IMPORTANCE_LEVELS.LOW:
-      return multiplier * 6 * 60 * 60 * 1000;      // 6-12 hours
+      return 6 * 60 * 60 * 1000;
     default:
-      return multiplier * 24 * 60 * 60 * 1000;     // Default: 24-48 hours
+      return 24 * 60 * 60 * 1000;
   }
 };
 
