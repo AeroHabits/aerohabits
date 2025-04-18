@@ -23,7 +23,7 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
   build: {
     target: 'es2021',
     cssMinify: true,
-    minify: 'terser', // Fixed: Changed from string to valid option
+    minify: 'terser' as const, // Fixed: Type assertion to make TypeScript happy
     terserOptions: {
       compress: {
         // Properly typed terser options
