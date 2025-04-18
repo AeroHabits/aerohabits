@@ -16,26 +16,21 @@ import { cn } from "./lib/utils";
 import { useOnlineStatus } from "./hooks/useOnlineStatus";
 import { usePrefetch } from "./hooks/usePrefetch";
 
-// Lazy load non-critical components with increased delay for iOS
+// Lazy load non-critical components
 const NetworkStatusIndicator = lazy(() => 
   import("./components/NetworkStatusIndicator").then(module => ({ 
     default: module.NetworkStatusIndicator 
   }))
 );
 
-// Detect iOS platform
-const isIOS = typeof navigator !== 'undefined' && 
-  (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
-
 // Create optimized query client with performance settings
 const createQueryClient = () => new QueryClient({
   defaultOptions: {
     queries: {
-      retry: isIOS ? 0 : 1, // No retries on iOS to reduce network attempts
-      staleTime: isIOS ? 120000 : 60000, // 2 minutes stale time on iOS, 1 minute elsewhere
+      retry: 1,
+      staleTime: 60000, // 1 minute stale time
       refetchOnWindowFocus: false,
-      gcTime: isIOS ? 15 * 60 * 1000 : 10 * 60 * 1000, // Longer cache on iOS
+      gcTime: 10 * 60 * 1000, // 10 minutes
     },
   },
 });
@@ -46,35 +41,28 @@ const AnalyticsTracker = memo(() => {
   const isOnline = useOnlineStatus();
   const [initialized, setInitialized] = useState(false);
 
-  // Initialize analytics on mount - only once and delayed for iOS
+  // Initialize analytics on mount - only once
   useEffect(() => {
     if (isOnline && !initialized) {
-      const delay = isIOS ? 3000 : 0; // Delay analytics init on iOS
-      const timeoutId = setTimeout(() => {
-        try {
-          initAnalytics();
-          setInitialized(true);
-        } catch (err) {
-          console.error("Failed to initialize analytics:", err);
-        }
-      }, delay);
-      return () => clearTimeout(timeoutId);
+      try {
+        initAnalytics();
+        setInitialized(true);
+      } catch (err) {
+        console.error("Failed to initialize analytics:", err);
+      }
     }
   }, [isOnline, initialized]);
 
-  // Track page views with debouncing and sampling for iOS
+  // Track page views with debouncing
   useEffect(() => {
     if (isOnline && initialized) {
-      // For iOS, add sampling to reduce analytics events
-      if (isIOS && Math.random() > 0.5) return; // Only track 50% of pageviews on iOS
-      
       const timeoutId = setTimeout(() => {
         try {
           trackPageView(location.pathname);
         } catch (err) {
           console.error("Failed to track page view:", err);
         }
-      }, isIOS ? 1000 : 300); // Longer debounce for iOS
+      }, 300);
       return () => clearTimeout(timeoutId);
     }
   }, [location, isOnline, initialized]);
@@ -105,8 +93,7 @@ const Layout = memo(({ children }: { children: React.ReactNode }) => {
       </div>
       <Footer />
       {isMobile && <BottomNav />}
-      {/* Only show network indicator when necessary and not on iOS */}
-      {!isOnline && !isIOS && (
+      {!isOnline && (
         <Suspense fallback={null}>
           <NetworkStatusIndicator />
         </Suspense>
@@ -151,11 +138,10 @@ const App = () => {
             tracePropagationTargets: [/^https:\/\/areohabits\.com/],
           }),
         ],
-        tracesSampleRate: isIOS ? 0.01 : 0.05, // Further reduce sample rate on iOS
+        tracesSampleRate: 0.05,
         beforeSend(event) {
-          // Don't send events in development or on iOS unless critical errors
-          if (window.location.hostname === 'localhost' || 
-              (isIOS && event.level !== 'fatal')) {
+          // Don't send events in development
+          if (window.location.hostname === 'localhost') {
             return null;
           }
           return event;

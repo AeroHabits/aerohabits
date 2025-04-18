@@ -1,18 +1,21 @@
+
 import { Routes, Route, useLocation } from "react-router-dom";
 import { ProtectedRoute } from "./ProtectedRoute";
-import Index from "@/pages/Index";
-import Auth from "@/pages/Auth";
-import Habits from "@/pages/Habits";
-import Goals from "@/pages/Goals";
-import Journey from "@/pages/Journey";
-import Challenges from "@/pages/Challenges";
-import Settings from "@/pages/Settings";
-import Terms from "@/pages/Terms";
-import Privacy from "@/pages/Privacy";
-import Onboarding from "@/pages/Onboarding";
-import Support from "@/pages/Support";
 import { lazy, Suspense, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
+
+// Lazy load all page components for better performance
+const Index = lazy(() => import("@/pages/Index"));
+const Auth = lazy(() => import("@/pages/Auth"));
+const Habits = lazy(() => import("@/pages/Habits"));
+const Goals = lazy(() => import("@/pages/Goals"));
+const Journey = lazy(() => import("@/pages/Journey"));
+const Challenges = lazy(() => import("@/pages/Challenges"));
+const Settings = lazy(() => import("@/pages/Settings"));
+const Terms = lazy(() => import("@/pages/Terms"));
+const Privacy = lazy(() => import("@/pages/Privacy"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const Support = lazy(() => import("@/pages/Support"));
 
 // Loading fallback component
 const RouteLoadingFallback = () => (
@@ -43,9 +46,21 @@ export function AppRoutes() {
             <Auth />
           </Suspense>
         } />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/support" element={<Support />} />
+        <Route path="/terms" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <Terms />
+          </Suspense>
+        } />
+        <Route path="/privacy" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <Privacy />
+          </Suspense>
+        } />
+        <Route path="/support" element={
+          <Suspense fallback={<RouteLoadingFallback />}>
+            <Support />
+          </Suspense>
+        } />
         
         {/* Protected routes */}
         <Route

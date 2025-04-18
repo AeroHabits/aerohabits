@@ -11,27 +11,15 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useRef, useCallback, memo, useEffect } from "react";
 
-// Detect iOS platform
-const isIOS = typeof navigator !== 'undefined' && 
-  (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
-  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
-
 // Memoize HabitListContent for performance
 const MemoizedHabitListContent = memo(HabitListContent);
 
-// Optimized animations based on platform
-const getAnimationConfig = () => {
-  return isIOS ? { 
-    initial: { opacity: 0 },
-    animate: { opacity: 1 },
-    exit: { opacity: 0 },
-    transition: { duration: 0.2 }
-  } : {
-    initial: { opacity: 0, y: -20 },
-    animate: { opacity: 1, y: 0 },
-    exit: { opacity: 0, y: -20 },
-    transition: { duration: 0.4 }
-  };
+// Optimized animations
+const animationConfig = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.2 }
 };
 
 export function HabitList() {
@@ -48,7 +36,7 @@ export function HabitList() {
     isOnline
   } = useHabits();
   
-  // Load profile data with iOS optimizations
+  // Load profile data with optimizations
   const { data: profile } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
@@ -57,9 +45,8 @@ export function HabitList() {
       const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
       return data;
     },
-    staleTime: isIOS ? 300000 : 60000, // 5 minutes on iOS vs 1 minute
+    staleTime: 60000, // 1 minute
     enabled: !isLoading, // Only load profile after habits are loaded
-    refetchOnWindowFocus: !isIOS // Disable refetch on window focus for iOS
   });
   
   const isMobile = useIsMobile();
@@ -69,7 +56,7 @@ export function HabitList() {
   const pullDistance = useRef(0);
   const lastRefreshTime = useRef(0);
   const PULL_THRESHOLD = 100;
-  const MIN_REFRESH_INTERVAL = isIOS ? 5000 : 2000; // Longer interval on iOS
+  const MIN_REFRESH_INTERVAL = 2000;
   
   // Optimized touch handlers
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
@@ -83,16 +70,11 @@ export function HabitList() {
     const currentY = e.touches[0].clientY;
     pullDistance.current = currentY - touchStartY.current;
     
-    // Throttle UI updates on iOS for better performance
     if (pullDistance.current > 0 && pullDistance.current < PULL_THRESHOLD) {
-      // Skip preventDefault on iOS for better scrolling performance
-      if (!isIOS) e.preventDefault();
+      e.preventDefault();
       
       const element = e.currentTarget as HTMLDivElement;
-      // iOS optimization: only update transform every 2px of movement
-      if (!isIOS || Math.round(pullDistance.current) % 2 === 0) {
-        element.style.transform = `translateY(${pullDistance.current}px)`;
-      }
+      element.style.transform = `translateY(${pullDistance.current}px)`;
     }
   }, []);
   
@@ -128,8 +110,6 @@ export function HabitList() {
   if (habits.length === 0) {
     return <HabitListEmpty onAddHabit={addHabit} />;
   }
-
-  const animationConfig = getAnimationConfig();
   
   return (
     <div 
@@ -171,7 +151,7 @@ export function HabitList() {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: isIOS ? 0.1 : 0.3 }}
+          transition={{ delay: 0.2 }}
           className="mt-12 max-w-xl mx-auto"
         >
           <AddHabitForm onAddHabit={addHabit} />

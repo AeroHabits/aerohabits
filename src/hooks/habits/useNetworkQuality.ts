@@ -17,11 +17,10 @@ export function useNetworkQuality(isOnline: boolean) {
   useEffect(() => {
     setNetworkQuality(getNetworkQuality());
     
-    // Check less frequently on mobile
-    const isMobile = navigator.userAgent.match(/iPhone|iPad|iPod|Android/i);
-    const checkInterval = isMobile ? 60000 : 30000; // 1 minute on mobile, 30 seconds otherwise
+    // Check network quality periodically
+    const checkInterval = 30000; // 30 seconds
     
-    // Setup periodic network quality check with reduced frequency
+    // Setup periodic network quality check
     const intervalId = setInterval(() => {
       // Check connection quality
       setNetworkQuality(getNetworkQuality());
@@ -61,6 +60,6 @@ export const getNetworkQuality = (): NetworkQuality => {
     }
   }
   
-  // Default assessment for better mobile performance
+  // Default assessment for better performance
   return 'good';
 };

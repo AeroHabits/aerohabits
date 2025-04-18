@@ -13,11 +13,6 @@ export function useHabits() {
   const { deleteHabit, toggleHabit, addHabit } = useHabitOperations();
   const { debouncedSync, isOnline, isSyncing } = useOfflineSync();
   
-  // Detect iOS platform
-  const isIOS = useMemo(() => typeof navigator !== 'undefined' && 
-    (/iPad|iPhone|iPod/.test(navigator.userAgent) || 
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)), []); 
-  
   // Use our new hooks
   const { networkQuality, getStaleTime } = useNetworkQuality(isOnline);
   const { 
@@ -49,7 +44,7 @@ export function useHabits() {
           return loadOfflineHabits();
         }
 
-        // iOS-optimized - eliminate timing logs and reduce operations
+        // Simplified query to reduce overhead
         const { data: habitsData, error: habitsError } = await supabase
           .from('habits')
           .select(`
@@ -79,22 +74,22 @@ export function useHabits() {
     },
     retry: shouldRetry,
     staleTime: getStaleTime(),
-    // For iOS, minimize background refreshes to improve performance
-    refetchOnWindowFocus: isIOS ? false : (networkQuality === 'good'),
-    refetchInterval: isIOS ? false : (networkQuality === 'good' ? 60000 : false),
-    // iOS-specific optimization: increase cache time
-    gcTime: isIOS ? 5 * 60 * 1000 : undefined,
+    // Optimize background refreshes
+    refetchOnWindowFocus: networkQuality === 'good',
+    refetchInterval: networkQuality === 'good' ? 60000 : false,
+    // Increase cache time for better performance
+    gcTime: 5 * 60 * 1000,
   });
 
-  // Only sync when really needed for iOS devices
+  // Only sync when really needed
   useEffect(() => {
-    if (isOnline && !isSyncing && !isIOS) {
+    if (isOnline && !isSyncing) {
       // Adjust sync strategy based on network quality
       if (networkQuality === 'good') {
         debouncedSync();
       }
     }
-  }, [isOnline, networkQuality, debouncedSync, isSyncing, isIOS]);
+  }, [isOnline, networkQuality, debouncedSync, isSyncing]);
 
   return {
     habits,

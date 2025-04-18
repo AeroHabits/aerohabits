@@ -26,33 +26,24 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
     minify: 'terser',
     terserOptions: {
       compress: {
+        // Properly typed terser options
         ...(mode === 'production' ? {
           drop_console: true,
-          pure_funcs: ['console.debug', 'console.log']
+          drop_debugger: true,
         } : {
-          drop_console: false
-        }),
-        drop_debugger: mode === 'production'
-      }
+          drop_console: false,
+          drop_debugger: false
+        })
+      },
+      mangle: true
     },
     rollupOptions: {
       output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom') || id.includes('react-router-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui-vendor';
-            }
-            if (id.includes('framer-motion')) {
-              return 'motion-vendor';
-            }
-            if (id.includes('@tanstack/react-query')) {
-              return 'data-vendor';
-            }
-            return 'vendor';
-          }
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'ui-vendor': ['@radix-ui'],
+          'motion-vendor': ['framer-motion'],
+          'data-vendor': ['@tanstack/react-query']
         }
       }
     },
