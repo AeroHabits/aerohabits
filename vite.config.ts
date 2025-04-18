@@ -18,10 +18,14 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Map specific Radix UI components individually rather than the whole package
+      // Map specific Radix UI components individually
       "@radix-ui/react-avatar": path.resolve(__dirname, "./node_modules/@radix-ui/react-avatar"),
       "@radix-ui/react-dialog": path.resolve(__dirname, "./node_modules/@radix-ui/react-dialog"),
       "@radix-ui/react-dropdown-menu": path.resolve(__dirname, "./node_modules/@radix-ui/react-dropdown-menu"),
+      "@radix-ui/react-label": path.resolve(__dirname, "./node_modules/@radix-ui/react-label"),
+      "@radix-ui/react-slot": path.resolve(__dirname, "./node_modules/@radix-ui/react-slot"),
+      "@radix-ui/react-toast": path.resolve(__dirname, "./node_modules/@radix-ui/react-toast"),
+      "@radix-ui/react-tooltip": path.resolve(__dirname, "./node_modules/@radix-ui/react-tooltip"),
     },
   },
   build: {

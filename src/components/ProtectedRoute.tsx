@@ -4,6 +4,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -12,20 +13,41 @@ interface ProtectedRouteProps {
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [authError, setAuthError] = useState<string | null>(null);
   const location = useLocation();
   const initialCheckComplete = useRef(false);
+  const authRetryCount = useRef(0);
 
-  // Use memo to prevent unnecessary rerenders
+  // Check authentication status
   const checkAuth = useCallback(async () => {
     if (initialCheckComplete.current) return;
     
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      
+      if (error && authRetryCount.current < 2) {
+        authRetryCount.current += 1;
+        console.warn("Auth check retry:", authRetryCount.current, error);
+        // Wait a moment and try again
+        setTimeout(checkAuth, 1000);
+        return;
+      }
+      
+      if (error) {
+        console.error("Auth check failed:", error);
+        setAuthError(error.message);
+        setIsLoading(false);
+        setIsAuthenticated(false);
+        initialCheckComplete.current = true;
+        return;
+      }
+      
       setIsAuthenticated(!!session);
       setIsLoading(false);
       initialCheckComplete.current = true;
     } catch (error) {
       console.error("Auth check error:", error);
+      setAuthError(error instanceof Error ? error.message : "Authentication check failed");
       setIsLoading(false);
       setIsAuthenticated(false);
       initialCheckComplete.current = true;
@@ -41,9 +63,15 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   useEffect(() => {
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setIsAuthenticated(!!session);
       setIsLoading(false);
+      
+      if (event === 'SIGNED_IN') {
+        toast.success("Successfully signed in");
+      } else if (event === 'SIGNED_OUT') {
+        toast.info("You have been signed out");
+      }
     });
 
     return () => {
@@ -52,7 +80,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }, []);
 
   // Fetch profile data only when authenticated and not during initial loading
-  const { data: profile } = useQuery({
+  const { data: profile, error: profileError } = useQuery({
     queryKey: ['profile'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -68,10 +96,22 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       return data;
     },
     enabled: isAuthenticated && !isLoading,
-    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes instead of every minute
+    refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
     staleTime: 4 * 60 * 1000, // Consider data stale after 4 minutes
     retry: 1, // Only retry once to prevent excessive API calls
   });
+  
+  // Show error toast for profile errors
+  useEffect(() => {
+    if (profileError) {
+      console.error("Profile fetch error:", profileError);
+      
+      // Only show toast for critical errors
+      if (isAuthenticated) {
+        toast.error("Failed to load profile data. Some features may be limited.");
+      }
+    }
+  }, [profileError, isAuthenticated]);
   
   // Spinner component
   const LoadingSpinner = () => (
@@ -88,6 +128,30 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       </motion.div>
     </div>
   );
+
+  // Show error state
+  if (authError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black p-4">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 max-w-md">
+          <h2 className="text-red-700 text-lg font-semibold mb-2">Authentication Error</h2>
+          <p className="text-red-600 mb-4">{authError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
+          >
+            Try Again
+          </button>
+          <button
+            onClick={() => window.location.href = '/auth'}
+            className="ml-2 bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded transition-colors"
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return <LoadingSpinner />;
