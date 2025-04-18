@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { useNavigate } from "react-router-dom";
+import { PasswordStrengthMeter } from "./PasswordStrengthMeter";
 
 interface SignUpFormProps {
   onToggleForm: () => void;
@@ -74,15 +74,18 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
           required
           disabled={isLoading}
         />
-        <FormInput
-          id="password"
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          disabled={isLoading}
-        />
+        <div>
+          <FormInput
+            id="password"
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            disabled={isLoading}
+          />
+          <PasswordStrengthMeter password={password} />
+        </div>
         <Button 
           type="submit" 
           className="w-full bg-black hover:bg-gray-800 text-white transition-colors" 
