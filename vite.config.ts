@@ -18,8 +18,10 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-      // Handle direct @radix-ui imports by pointing to a specific component
-      "@radix-ui": path.resolve(__dirname, "./node_modules/@radix-ui"),
+      // Map specific Radix UI components individually rather than the whole package
+      "@radix-ui/react-avatar": path.resolve(__dirname, "./node_modules/@radix-ui/react-avatar"),
+      "@radix-ui/react-dialog": path.resolve(__dirname, "./node_modules/@radix-ui/react-dialog"),
+      "@radix-ui/react-dropdown-menu": path.resolve(__dirname, "./node_modules/@radix-ui/react-dropdown-menu"),
     },
   },
   build: {
@@ -43,7 +45,15 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          'ui-vendor': [
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-label',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-toast',
+            '@radix-ui/react-tooltip'
+          ],
           'motion-vendor': ['framer-motion'],
           'data-vendor': ['@tanstack/react-query']
         }
