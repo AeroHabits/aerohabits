@@ -18,12 +18,14 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // Handle direct @radix-ui imports by pointing to a specific component
+      "@radix-ui": path.resolve(__dirname, "./node_modules/@radix-ui"),
     },
   },
   build: {
     target: 'es2021',
     cssMinify: true,
-    minify: 'terser' as const, // Fixed: Type assertion to make TypeScript happy
+    minify: 'terser' as const, // Type assertion to make TypeScript happy
     terserOptions: {
       compress: {
         // Properly typed terser options
@@ -41,7 +43,7 @@ export default defineConfig(({ mode }: ConfigEnv) => ({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': ['@radix-ui'],
+          'ui-vendor': ['@radix-ui/react-avatar', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
           'motion-vendor': ['framer-motion'],
           'data-vendor': ['@tanstack/react-query']
         }
