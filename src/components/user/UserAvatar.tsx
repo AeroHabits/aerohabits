@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { Trophy } from "lucide-react";
 
 interface UserAvatarProps {
   user: User;
@@ -46,8 +47,11 @@ export function UserAvatar({
             decoding="async" 
           />
         ) : (
-          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-indigo-600">
+          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
             {initials}
+            <span className="absolute -bottom-1 -right-1 bg-amber-400 rounded-full p-0.5 shadow-lg border border-amber-500">
+              <Trophy size={10} className="text-amber-800" />
+            </span>
           </AvatarFallback>
         )}
       </Avatar>
