@@ -41,11 +41,11 @@ export function UserAvatar({
         "border-2 border-white/20"
       )}>
         <AvatarFallback className="relative w-full h-full flex items-center justify-center p-0 overflow-hidden bg-blue-500">
-          {/* Gold house icon design */}
+          {/* Blue background with centered gold house icon */}
           <div className="absolute inset-0 rounded-full bg-blue-500"></div>
           
-          {/* Gold house icon */}
-          <div className="absolute right-0 bottom-0 w-2/3 h-2/3 flex items-center justify-center">
+          {/* Centered gold house icon */}
+          <div className="absolute inset-0 flex items-center justify-center">
             <Home size={16} className="text-amber-400" />
           </div>
           
