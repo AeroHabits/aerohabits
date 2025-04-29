@@ -27,17 +27,21 @@ export function UserAvatar({
   return <motion.div 
     whileHover={{
       scale: isIOS ? 1.02 : 1.05
-    }} // Reduced animation for iOS
+    }}
     whileTap={{
       scale: isIOS ? 0.98 : 0.95
-    }} // Reduced animation for iOS
+    }}
     transition={{
       duration: isIOS ? 0.2 : 0.3
-    }} // Faster transition for iOS
+    }}
     className="relative inline-block"
   >
-      <Avatar className={cn("h-10 w-10 border-2 border-white/20 shadow-lg", "overflow-visible" // Ensure content is not cut off
-    )}>
+      <Avatar className={cn(
+        "h-10 w-10 overflow-visible",
+        "bg-gradient-to-br from-gray-900 to-gray-700",
+        "backdrop-blur-lg shadow-lg",
+        "border-2 border-white/20"
+      )}>
         {profile?.avatar_url && !imageError ? (
           <AvatarImage 
             src={profile.avatar_url} 
@@ -45,13 +49,29 @@ export function UserAvatar({
             onError={() => setImageError(true)} 
             loading="lazy" 
             decoding="async" 
+            className="backdrop-blur-sm"
           />
         ) : (
-          <AvatarFallback className="bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
-            {initials}
-            <span className="absolute -bottom-1 -right-1 bg-amber-400 rounded-full p-0.5 shadow-lg border border-amber-500">
-              <Trophy size={10} className="text-amber-800" />
-            </span>
+          <AvatarFallback className="relative w-full h-full flex items-center justify-center">
+            {/* Sophisticated inner content with layered design */}
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-indigo-700/90 rounded-full"></div>
+            
+            {/* Subtle geometric pattern */}
+            <div className="absolute inset-0 opacity-10">
+              <div className="absolute top-0 right-0 w-6 h-6 bg-white/30 rounded-full transform translate-x-1/4 -translate-y-1/4"></div>
+              <div className="absolute bottom-0 left-0 w-4 h-4 bg-white/20 rounded-full transform -translate-x-1/4 translate-y-1/4"></div>
+            </div>
+            
+            {/* User initials with professional styling */}
+            <span className="relative text-sm font-semibold text-white">{initials}</span>
+            
+            {/* Achievement indicator positioned in a more balanced way */}
+            <div className="absolute -bottom-1 -right-1 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full p-1 shadow-xl border border-amber-600/50 flex items-center justify-center">
+              <Trophy size={8} className="text-amber-900" />
+            </div>
+            
+            {/* Subtle highlight effect */}
+            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 rounded-full"></div>
           </AvatarFallback>
         )}
       </Avatar>
