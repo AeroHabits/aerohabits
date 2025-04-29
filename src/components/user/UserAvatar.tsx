@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { Trophy } from "lucide-react";
+import { GraduationCap } from "lucide-react";
 
 interface UserAvatarProps {
   user: User;
@@ -38,8 +38,7 @@ export function UserAvatar({
   >
       <Avatar className={cn(
         "h-10 w-10 overflow-visible",
-        "bg-gradient-to-br from-gray-900 to-gray-700",
-        "backdrop-blur-lg shadow-lg",
+        "shadow-lg",
         "border-2 border-white/20"
       )}>
         {profile?.avatar_url && !imageError ? (
@@ -52,28 +51,43 @@ export function UserAvatar({
             className="backdrop-blur-sm"
           />
         ) : (
-          <AvatarFallback className="relative w-full h-full flex items-center justify-center">
-            {/* Sophisticated inner content with layered design */}
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-600/80 to-indigo-700/90 rounded-full"></div>
+          <AvatarFallback className="relative w-full h-full flex items-center justify-center p-0 overflow-hidden">
+            {/* Hexagonal design with professional styling */}
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-blue-700 clip-hexagon"></div>
             
-            {/* Subtle geometric pattern */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute top-0 right-0 w-6 h-6 bg-white/30 rounded-full transform translate-x-1/4 -translate-y-1/4"></div>
-              <div className="absolute bottom-0 left-0 w-4 h-4 bg-white/20 rounded-full transform -translate-x-1/4 translate-y-1/4"></div>
+            {/* Subtle inner border */}
+            <div className="absolute inset-[1px] bg-gradient-to-br from-indigo-500 to-blue-600 clip-hexagon"></div>
+            
+            {/* Inner highlight */}
+            <div className="absolute inset-0 opacity-30 clip-hexagon">
+              <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent"></div>
             </div>
             
-            {/* User initials with professional styling */}
-            <span className="relative text-sm font-semibold text-white">{initials}</span>
-            
-            {/* Achievement indicator positioned in a more balanced way */}
-            <div className="absolute -bottom-1 -right-1 bg-gradient-to-br from-amber-400 to-amber-500 rounded-full p-1 shadow-xl border border-amber-600/50 flex items-center justify-center">
-              <Trophy size={8} className="text-amber-900" />
+            {/* Professional looking achievement icon */}
+            <div className="absolute -bottom-1 -right-1 bg-amber-400 rounded-full p-1 shadow-md border border-amber-500 z-10">
+              <GraduationCap size={8} className="text-amber-900" />
             </div>
             
-            {/* Subtle highlight effect */}
-            <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/5 to-white/10 rounded-full"></div>
+            {/* User initials with professional positioning */}
+            <div className="relative z-[1] flex items-center justify-center w-full h-full">
+              <span className="text-sm font-medium text-white tracking-wider">{initials}</span>
+            </div>
+            
+            {/* Radial glow */}
+            <div className="absolute inset-0 bg-radial-glow pointer-events-none clip-hexagon"></div>
           </AvatarFallback>
         )}
       </Avatar>
+      
+      {/* We need to add these utility classes to the global CSS */}
+      <style jsx global>{`
+        .clip-hexagon {
+          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .bg-radial-glow {
+          background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+        }
+      `}</style>
     </motion.div>;
 }
