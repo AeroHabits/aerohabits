@@ -1,4 +1,5 @@
 
+import React from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,7 +36,7 @@ export function QuestionCard({
             transition={{ duration: 0.3 }}
             className="p-3 bg-[#2A2F3C]/70 rounded-full border border-[#403E43]"
           >
-            {question.icon && React.cloneElement(question.icon, { className: "w-8 h-8 text-[#9b87f5]" })}
+            {question.icon}
           </motion.div>
         </div>
         
