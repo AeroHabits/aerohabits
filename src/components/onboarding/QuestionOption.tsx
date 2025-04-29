@@ -18,7 +18,7 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
-      className="flex items-center space-x-3 bg-[#2A2F3C]/70 hover:bg-[#323744]/80 border border-[#403E43] hover:border-[#9b87f5]/50 transition-all p-4 rounded-lg cursor-pointer shadow-md group"
+      className="flex items-center space-x-3 bg-slate-700/70 hover:bg-slate-600/80 border border-slate-600 hover:border-blue-500/50 transition-all p-4 rounded-lg cursor-pointer shadow-md group"
       onClick={() => onCheckedChange(option, !isChecked)}
     >
       <div className="flex justify-center items-center">
@@ -26,14 +26,14 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
           id={`${id}-${option}`}
           checked={isChecked}
           onCheckedChange={(checked) => onCheckedChange(option, checked === true)}
-          className="border-[#9b87f5]/50 data-[state=checked]:bg-[#9b87f5] data-[state=checked]:text-white group-hover:border-[#9b87f5]"
-          onClick={(e) => e.stopPropagation()} // Prevent triggering parent click when clicking directly on checkbox
+          className="border-blue-500/50 data-[state=checked]:bg-blue-500 data-[state=checked]:text-white group-hover:border-blue-400"
+          onClick={(e) => e.stopPropagation()} 
         />
       </div>
       <Label 
         htmlFor={`${id}-${option}`}
         className="text-white font-medium cursor-pointer w-full"
-        onClick={(e) => e.stopPropagation()} // Prevent triggering parent click when clicking directly on label
+        onClick={(e) => e.stopPropagation()} 
       >
         {option}
       </Label>

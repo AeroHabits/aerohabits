@@ -32,14 +32,14 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-gradient-to-br from-[#1F2A47] to-[#1A1F2C] border border-[#403E43]/50 hover:border-[#9b87f5]/50 rounded-xl p-8 shadow-xl"
+      className="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/50 hover:border-indigo-500/30 rounded-xl p-8 shadow-xl"
     >
       <div className="text-center space-y-4 mb-6">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
-          className="w-16 h-16 bg-gradient-to-br from-[#7b6acd] to-[#9b87f5] rounded-full flex items-center justify-center mx-auto"
+          className="w-16 h-16 bg-gradient-to-br from-indigo-600 to-blue-500 rounded-full flex items-center justify-center mx-auto"
         >
           <Star className="w-8 h-8 text-white" />
         </motion.div>
@@ -52,7 +52,7 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
       </div>
 
       <div className="space-y-6">
-        <div className="bg-[#2A2F3C]/70 rounded-lg p-4 border border-[#403E43]">
+        <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
           <h3 className="font-medium text-white mb-2">Your 3-Day Free Trial</h3>
           <p className="text-gray-300 text-sm">
             Start with full access to all premium features. No commitment required - you can cancel anytime before your trial ends.
@@ -62,7 +62,7 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
         <Button
           onClick={onContinue}
           disabled={isLoading}
-          className="w-full py-6 bg-gradient-to-r from-[#7b6acd] to-[#9b87f5] hover:from-[#6b5abd] hover:to-[#8a76e4] text-white font-medium rounded-lg"
+          className="w-full py-6 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-medium rounded-lg"
         >
           {isLoading ? (
             "Setting up your account..."

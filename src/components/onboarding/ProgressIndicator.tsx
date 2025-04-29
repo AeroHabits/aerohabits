@@ -17,23 +17,22 @@ function ProgressIndicator({ totalSteps, currentStep }: ProgressIndicatorProps) 
           animate={{ 
             opacity: 1, 
             scale: 1,
-            backgroundColor: index <= currentStep ? "rgb(155, 135, 245)" : "rgb(55, 65, 81)"
+            backgroundColor: index <= currentStep ? "rgb(79, 70, 229)" : "rgb(71, 85, 105)"
           }}
           transition={{ 
             duration: 0.2,
-            delay: index * 0.03 // Reduced delay for better performance
+            delay: index * 0.03
           }}
           className={`h-1.5 rounded-full transition-colors ${
             index <= currentStep 
-              ? "w-12 bg-[#9b87f5]" 
-              : "w-8 bg-gray-700"
+              ? "w-12 bg-indigo-600" 
+              : "w-8 bg-slate-600"
           }`}
-          style={{ willChange: 'auto' }} // Optimize rendering
+          style={{ willChange: 'auto' }}
         />
       ))}
     </div>
   );
 }
 
-// Export memoized component to prevent unnecessary re-renders
 export { ProgressIndicator };

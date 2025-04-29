@@ -13,7 +13,7 @@ export const questions: QuestionItem[] = [
   {
     id: "primary_goal",
     question: "What is your primary goal in life right now?",
-    icon: <Target className="w-6 h-6 text-purple-500" />,
+    icon: <Target className="w-6 h-6 text-indigo-400" />,
     options: [
       "Career growth",
       "Better health",
@@ -25,7 +25,7 @@ export const questions: QuestionItem[] = [
   {
     id: "biggest_challenge",
     question: "What's your biggest challenge in building consistent habits?",
-    icon: <ListChecks className="w-6 h-6 text-blue-500" />,
+    icon: <ListChecks className="w-6 h-6 text-blue-400" />,
     options: [
       "Lack of time",
       "Staying motivated",
@@ -37,7 +37,7 @@ export const questions: QuestionItem[] = [
   {
     id: "time_commitment",
     question: "How much time can you commit daily to your habits?",
-    icon: <Clock className="w-6 h-6 text-emerald-500" />,
+    icon: <Clock className="w-6 h-6 text-cyan-400" />,
     options: [
       "5-10 minutes",
       "15-20 minutes",
@@ -49,7 +49,7 @@ export const questions: QuestionItem[] = [
   {
     id: "motivation",
     question: "What motivates you most to achieve your goals?",
-    icon: <Heart className="w-6 h-6 text-rose-500" />,
+    icon: <Heart className="w-6 h-6 text-sky-400" />,
     options: [
       "Personal growth",
       "Family",

@@ -33,8 +33,7 @@ export function OnboardingQuestionnaire() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 overflow-hidden">
-      {/* Optimize gradients by using simpler backgrounds on mobile */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/10 to-transparent pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/10 to-transparent pointer-events-none"></div>
       <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-blue-900/10 to-transparent pointer-events-none"></div>
       
       <motion.div
@@ -42,7 +41,7 @@ export function OnboardingQuestionnaire() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="max-w-lg w-full relative z-10"
-        style={{ willChange: 'auto' }} // Optimize rendering
+        style={{ willChange: 'auto' }}
       >
         <div className="mb-8 text-center">
           <motion.h1 
@@ -51,7 +50,7 @@ export function OnboardingQuestionnaire() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.3 }}
           >
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#9b87f5] to-[#7b6acd]">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-blue-500">
               Welcome to AeroHabits
             </span>
           </motion.h1>
