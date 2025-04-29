@@ -6,7 +6,6 @@ import { AnimatedUnderline } from "./AnimatedUnderline";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
-import { UserAvatar } from "../user/UserAvatar";
 
 export function AppHero() {
   const {
@@ -39,10 +38,6 @@ export function AppHero() {
 
       <div className="relative max-w-4xl mx-auto">
         <div className="flex flex-col items-center space-y-12">
-          <div className="flex justify-center items-center mb-4">
-            {user && profile && <UserAvatar user={user} profile={profile} />}
-          </div>
-          
           <HeroTitle />
           
           <AnimatedUnderline />
