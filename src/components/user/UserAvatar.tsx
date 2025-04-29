@@ -3,7 +3,7 @@ import { User } from "@supabase/supabase-js";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { GraduationCap } from "lucide-react";
 
 interface UserAvatarProps {
@@ -23,6 +23,25 @@ export function UserAvatar({
 
   // iOS detection for animation optimization
   const isIOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  
+  // Add CSS styles when component mounts
+  useEffect(() => {
+    // Check if styles already exist to avoid duplicates
+    if (!document.getElementById('hexagon-styles')) {
+      const styleEl = document.createElement('style');
+      styleEl.id = 'hexagon-styles';
+      styleEl.textContent = `
+        .clip-hexagon {
+          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+        }
+        
+        .bg-radial-glow {
+          background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+        }
+      `;
+      document.head.appendChild(styleEl);
+    }
+  }, []);
   
   return <motion.div 
     whileHover={{
@@ -78,16 +97,6 @@ export function UserAvatar({
           </AvatarFallback>
         )}
       </Avatar>
-      
-      {/* We need to add these utility classes to the global CSS */}
-      <style jsx global>{`
-        .clip-hexagon {
-          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        }
-        
-        .bg-radial-glow {
-          background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-        }
-      `}</style>
     </motion.div>;
 }
+
