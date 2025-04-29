@@ -4,12 +4,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { GraduationCap } from "lucide-react";
+import { Home } from "lucide-react";
 
 interface UserAvatarProps {
   user: User;
   profile: {
-    full_name: string;
+    full_name?: string;
     avatar_url?: string | null;
   } | null;
 }
@@ -19,29 +19,9 @@ export function UserAvatar({
   profile
 }: UserAvatarProps) {
   const [imageError, setImageError] = useState(false);
-  const initials = profile?.full_name?.split(" ").map(n => n[0]).join("").toUpperCase() || user.email?.[0].toUpperCase() || "?";
-
+  
   // iOS detection for animation optimization
   const isIOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  
-  // Add CSS styles when component mounts
-  useEffect(() => {
-    // Check if styles already exist to avoid duplicates
-    if (!document.getElementById('hexagon-styles')) {
-      const styleEl = document.createElement('style');
-      styleEl.id = 'hexagon-styles';
-      styleEl.textContent = `
-        .clip-hexagon {
-          clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        }
-        
-        .bg-radial-glow {
-          background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
-        }
-      `;
-      document.head.appendChild(styleEl);
-    }
-  }, []);
   
   return <motion.div 
     whileHover={{
@@ -60,43 +40,18 @@ export function UserAvatar({
         "shadow-lg",
         "border-2 border-white/20"
       )}>
-        {profile?.avatar_url && !imageError ? (
-          <AvatarImage 
-            src={profile.avatar_url} 
-            alt={profile.full_name || "User"} 
-            onError={() => setImageError(true)} 
-            loading="lazy" 
-            decoding="async" 
-            className="backdrop-blur-sm"
-          />
-        ) : (
-          <AvatarFallback className="relative w-full h-full flex items-center justify-center p-0 overflow-hidden">
-            {/* Hexagonal design with professional styling */}
-            <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-blue-700 clip-hexagon"></div>
-            
-            {/* Subtle inner border */}
-            <div className="absolute inset-[1px] bg-gradient-to-br from-indigo-500 to-blue-600 clip-hexagon"></div>
-            
-            {/* Inner highlight */}
-            <div className="absolute inset-0 opacity-30 clip-hexagon">
-              <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent"></div>
-            </div>
-            
-            {/* Professional looking achievement icon */}
-            <div className="absolute -bottom-1 -right-1 bg-amber-400 rounded-full p-1 shadow-md border border-amber-500 z-10">
-              <GraduationCap size={8} className="text-amber-900" />
-            </div>
-            
-            {/* User initials with professional positioning */}
-            <div className="relative z-[1] flex items-center justify-center w-full h-full">
-              <span className="text-sm font-medium text-white tracking-wider">{initials}</span>
-            </div>
-            
-            {/* Radial glow */}
-            <div className="absolute inset-0 bg-radial-glow pointer-events-none clip-hexagon"></div>
-          </AvatarFallback>
-        )}
+        <AvatarFallback className="relative w-full h-full flex items-center justify-center p-0 overflow-hidden bg-blue-500">
+          {/* Gold house icon design */}
+          <div className="absolute inset-0 rounded-full bg-blue-500"></div>
+          
+          {/* Gold house icon */}
+          <div className="absolute right-0 bottom-0 w-2/3 h-2/3 flex items-center justify-center">
+            <Home size={16} className="text-amber-400" />
+          </div>
+          
+          {/* Subtle highlight */}
+          <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent rounded-t-full"></div>
+        </AvatarFallback>
       </Avatar>
     </motion.div>;
 }
-
