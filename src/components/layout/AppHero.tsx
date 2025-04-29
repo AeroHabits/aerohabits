@@ -1,8 +1,9 @@
+
 import { motion } from "framer-motion";
 import { useProfileLoader } from "./ProfileLoader";
 import { HeroTitle } from "./HeroTitle";
 import { AnimatedUnderline } from "./AnimatedUnderline";
-import { ArrowRight } from "lucide-react";
+
 export function AppHero() {
   const {
     data: profile
@@ -29,7 +30,7 @@ export function AppHero() {
       }} />
       </div>
 
-      <div className="relative max-w-3xl mx-auto space-y-8">
+      <div className="relative max-w-3xl mx-auto space-y-10">
         <HeroTitle />
         
         <AnimatedUnderline />
@@ -43,29 +44,9 @@ export function AppHero() {
       }} transition={{
         delay: 0.4,
         duration: 0.6
-      }} className="text-lg md:text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed font-light tracking-wide">
+      }} className="text-lg md:text-xl text-gray-100 max-w-2xl mx-auto leading-relaxed font-light tracking-wide pb-6">
           Track your custom habits, build consistency, and achieve your highest potential.
         </motion.p>
-
-        {/* Enhanced buttons with more professional styling */}
-        <motion.div initial={{
-        opacity: 0,
-        y: 20
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        delay: 0.6,
-        duration: 0.6
-      }} className="flex flex-col sm:flex-row justify-center gap-4 pt-6">
-          <button className="group flex items-center justify-center gap-2 px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-            <span>Get Started</span>
-            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </button>
-          <button className="px-8 py-3 bg-transparent hover:bg-gray-800/50 border border-gray-600 hover:border-gray-500 text-gray-100 font-medium rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
-            Learn More
-          </button>
-        </motion.div>
       </div>
     </motion.div>;
 }
