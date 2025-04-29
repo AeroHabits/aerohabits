@@ -6,7 +6,11 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 import { ProfileEditor } from "./ProfileEditor";
 
-type Profile = { full_name: string } | null;
+type Profile = { 
+  full_name: string; 
+  avatar_url: string | null;
+  total_points: number;
+} | null;
 
 interface UserProfileProps {
   user: User;
@@ -35,7 +39,7 @@ export function UserProfile({ user, profile, setProfile }: UserProfileProps) {
       return;
     }
 
-    setProfile(prev => prev ? { full_name: newName } : null);
+    setProfile(prev => prev ? { ...prev, full_name: newName } : null);
     setIsEditing(false);
     toast({
       title: "Success",
@@ -53,12 +57,15 @@ export function UserProfile({ user, profile, setProfile }: UserProfileProps) {
         />
       ) : (
         <>
-          <span>{profile?.full_name || user.email}</span>
+          <div className="flex flex-col items-start">
+            <span className="font-medium text-gray-800 dark:text-gray-200">{profile?.full_name || user.email}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 truncate max-w-[180px]">{user.email}</span>
+          </div>
           <Button
             onClick={() => setIsEditing(true)}
             variant="ghost"
             size="sm"
-            className="h-6 px-2"
+            className="h-6 px-2 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             Edit
           </Button>
