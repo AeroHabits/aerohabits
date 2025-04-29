@@ -18,7 +18,7 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
-      className="flex items-center space-x-3 bg-gradient-to-r from-gray-800/80 to-gray-800/40 hover:from-gray-700/80 hover:to-gray-700/40 border border-gray-700/50 transition-all p-4 rounded-lg cursor-pointer shadow-md group"
+      className="flex items-center space-x-3 bg-[#2A2F3C]/70 hover:bg-[#323744]/80 border border-[#403E43] hover:border-[#9b87f5]/50 transition-all p-4 rounded-lg cursor-pointer shadow-md group"
       onClick={() => onCheckedChange(option, !isChecked)}
     >
       <div className="flex justify-center items-center">
@@ -26,7 +26,7 @@ export function QuestionOption({ id, option, isChecked, onCheckedChange }: Quest
           id={`${id}-${option}`}
           checked={isChecked}
           onCheckedChange={(checked) => onCheckedChange(option, checked === true)}
-          className="text-cyan-500 border-cyan-400/50 data-[state=checked]:bg-cyan-600 data-[state=checked]:text-white group-hover:border-cyan-400"
+          className="border-[#9b87f5]/50 data-[state=checked]:bg-[#9b87f5] data-[state=checked]:text-white group-hover:border-[#9b87f5]"
           onClick={(e) => e.stopPropagation()} // Prevent triggering parent click when clicking directly on checkbox
         />
       </div>

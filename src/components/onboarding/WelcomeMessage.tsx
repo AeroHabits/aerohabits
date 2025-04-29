@@ -32,14 +32,14 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700 rounded-xl p-8 shadow-xl"
+      className="bg-gradient-to-br from-[#1F2A47] to-[#1A1F2C] border border-[#403E43]/50 hover:border-[#9b87f5]/50 rounded-xl p-8 shadow-xl"
     >
       <div className="text-center space-y-4 mb-6">
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ type: "spring", stiffness: 300, delay: 0.2 }}
-          className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto"
+          className="w-16 h-16 bg-gradient-to-br from-[#7b6acd] to-[#9b87f5] rounded-full flex items-center justify-center mx-auto"
         >
           <Star className="w-8 h-8 text-white" />
         </motion.div>
@@ -52,7 +52,7 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
       </div>
 
       <div className="space-y-6">
-        <div className="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+        <div className="bg-[#2A2F3C]/70 rounded-lg p-4 border border-[#403E43]">
           <h3 className="font-medium text-white mb-2">Your 3-Day Free Trial</h3>
           <p className="text-gray-300 text-sm">
             Start with full access to all premium features. No commitment required - you can cancel anytime before your trial ends.
@@ -62,7 +62,7 @@ export function WelcomeMessage({ primaryGoal, onContinue, isLoading }: WelcomeMe
         <Button
           onClick={onContinue}
           disabled={isLoading}
-          className="w-full py-6 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium rounded-lg"
+          className="w-full py-6 bg-gradient-to-r from-[#7b6acd] to-[#9b87f5] hover:from-[#6b5abd] hover:to-[#8a76e4] text-white font-medium rounded-lg"
         >
           {isLoading ? (
             "Setting up your account..."
