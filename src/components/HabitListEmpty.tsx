@@ -1,10 +1,11 @@
 
+
 import { AddHabitForm } from "./AddHabitForm";
 import { motion } from "framer-motion";
 import { Calendar, PlusCircle } from "lucide-react";
 
 interface HabitListEmptyProps {
-  onAddHabit: (habit: { title: string; description: string; category?: string }) => void;
+  onAddHabit: (habit: { title: string; description: string; category_id?: string }) => void;
 }
 
 export function HabitListEmpty({ onAddHabit }: HabitListEmptyProps) {
@@ -29,7 +30,7 @@ export function HabitListEmpty({ onAddHabit }: HabitListEmptyProps) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="max-w-md mx-auto bg-white/5 p-6 rounded-xl border border-white/10 shadow-lg"
+        className="max-w-md mx-auto"
       >
         <div className="flex items-center gap-2 mb-4">
           <PlusCircle className="h-5 w-5 text-blue-400" />
