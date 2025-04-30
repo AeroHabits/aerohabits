@@ -27,10 +27,18 @@ export function UserAvatar({
       initial={{ scale: 0.95 }}
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.05 }}
-      transition={{ duration: 0.2 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ 
+        type: "spring", 
+        stiffness: 400, 
+        damping: 15
+      }}
     >
       {isPyramidSuitableForImage ? (
-        <div className="h-full w-full overflow-hidden">
+        <motion.div 
+          className="h-full w-full overflow-hidden"
+          whileHover={{ filter: "brightness(1.05)" }}
+        >
           <div 
             className="w-10 h-10 relative group"
             style={{
@@ -38,21 +46,29 @@ export function UserAvatar({
               overflow: 'hidden'
             }}
           >
-            {/* Glowing edge effect */}
-            <div className="absolute inset-0 bg-gradient-to-b from-blue-300/20 to-purple-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            {/* Ambient glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-b from-indigo-400/30 via-purple-500/20 to-blue-600/30 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
+            
+            {/* Sharp edge highlight */}
+            <div className="absolute inset-0 z-10" style={{
+              background: `
+                linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 5%, rgba(255,255,255,0) 95%, rgba(255,255,255,0.2) 100%)
+              `,
+              opacity: 0.4
+            }}></div>
             
             {/* User image */}
             <img
               src={profile.avatar_url}
               alt={profile?.full_name || "User"}
               onError={() => setImageError(true)}
-              className="object-cover w-full h-full transition-all duration-300"
+              className="object-cover w-full h-full transition-all duration-300 z-0"
             />
           </div>
-        </div>
+        </motion.div>
       ) : (
-        <div className="group">
-          {/* Base pyramid with more professional gradient */}
+        <div className="group cursor-pointer">
+          {/* Premium outer pyramid */}
           <div 
             className={cn(
               "h-0 w-0",
@@ -60,34 +76,57 @@ export function UserAvatar({
               "border-r-[20px] border-r-transparent",
               "border-b-[36px]",
               "flex items-center justify-center relative",
-              "border-b-blue-500 transition-all duration-300 group-hover:border-b-indigo-400"
+              "transition-all duration-300"
             )}
+            style={{
+              borderBottomColor: '#3B82F6',
+              filter: "drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3))",
+            }}
           >
-            {/* Inner gradient effect */}
+            {/* Premium inner pyramid with gradient */}
             <div 
               className="absolute inset-0 h-0 w-0 
                          border-l-[18px] border-l-transparent
                          border-r-[18px] border-r-transparent
-                         border-b-[33px]
-                         border-b-indigo-600/40" 
-              style={{ filter: "blur(0.5px)" }}
+                         border-b-[33px]"
+              style={{ 
+                borderBottomColor: 'rgba(79, 70, 229, 0.6)',
+                background: `
+                  linear-gradient(to bottom, 
+                  rgba(79, 70, 229, 0.2) 0%, 
+                  rgba(124, 58, 237, 0.4) 50%,
+                  rgba(99, 102, 241, 0.6) 100%)
+                `
+              }}
             />
             
-            {/* Subtle shine effect */}
+            {/* Premium shine effect */}
             <div 
               className="absolute inset-0 h-0 w-0
                          border-l-[20px] border-l-transparent
                          border-r-[20px] border-r-transparent
                          border-b-[36px]
-                         border-b-transparent"
+                         group-hover:opacity-100 opacity-60
+                         transition-opacity duration-500"
               style={{ 
-                background: "linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%)",
-                opacity: 0.6
+                background: "linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 50%)",
+                filter: "blur(0.5px)"
               }}
             />
             
-            {/* Initials */}
-            <div className="relative bottom-[-22px] text-blue-50 font-medium text-xs tracking-wide">
+            {/* Side shimmer effects */}
+            <div className="absolute inset-0 h-0 w-0
+                           border-l-[20px] border-l-transparent
+                           border-r-[20px] border-r-transparent
+                           border-b-[36px]
+                           opacity-0 group-hover:opacity-30
+                           transition-opacity duration-700">
+              <div className="absolute inset-0 animate-shimmer"></div>
+            </div>
+            
+            {/* Initials with improved typography */}
+            <div className="relative bottom-[-22px] text-blue-50 font-medium text-xs tracking-wide"
+                 style={{ textShadow: "0 1px 2px rgba(0,0,0,0.2)" }}>
               {initials}
             </div>
           </div>
