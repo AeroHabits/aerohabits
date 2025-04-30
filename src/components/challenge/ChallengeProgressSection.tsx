@@ -2,6 +2,7 @@
 import { ChallengeProgress } from "./ChallengeProgress";
 import { ChallengePointsMessage } from "./ChallengePointsMessage";
 import { ChallengeResetButton } from "./ChallengeResetButton";
+import { ChallengeStreakMilestone } from "./ChallengeStreakMilestone";
 
 interface ChallengeProgressSectionProps {
   daysCompleted: number;
@@ -27,7 +28,7 @@ export function ChallengeProgressSection({
   totalCompletions = 0
 }: ChallengeProgressSectionProps) {
   return (
-    <>
+    <div className="space-y-4">
       <ChallengeProgress
         daysCompleted={daysCompleted}
         totalDays={totalDays}
@@ -47,6 +48,7 @@ export function ChallengeProgressSection({
         onReset={onProgressUpdate}
         totalCompletions={totalCompletions}
       />
-    </>
+      <ChallengeStreakMilestone completionCount={totalCompletions} />
+    </div>
   );
 }
