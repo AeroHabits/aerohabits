@@ -67,69 +67,82 @@ export function UserAvatar({
           </div>
         </motion.div>
       ) : (
-        <div className="group cursor-pointer">
-          {/* Premium outer pyramid */}
+        <div className="group relative cursor-pointer">
+          {/* Premium pyramid with enhanced 3D effect */}
           <div 
-            className={cn(
-              "h-0 w-0",
-              "border-l-[20px] border-l-transparent",
-              "border-r-[20px] border-r-transparent",
-              "border-b-[36px]",
-              "flex items-center justify-center relative",
-              "transition-all duration-300"
-            )}
+            className="h-0 w-0 relative"
             style={{
-              borderBottomColor: '#3B82F6',
-              filter: "drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3))",
+              borderLeft: '20px solid transparent',
+              borderRight: '20px solid transparent',
+              borderBottom: '36px solid #3B82F6',
+              filter: "drop-shadow(0 4px 6px rgba(59, 130, 246, 0.4))",
+              transform: "perspective(800px) rotateX(10deg)",
             }}
           >
-            {/* Premium inner pyramid with gradient */}
+            {/* Inner pyramid with enhanced gradient */}
             <div 
-              className="absolute inset-0 h-0 w-0 
-                         border-l-[18px] border-l-transparent
-                         border-r-[18px] border-r-transparent
-                         border-b-[33px]"
+              className="absolute top-px left-[-18px] h-0 w-0"
               style={{ 
-                borderBottomColor: 'rgba(79, 70, 229, 0.6)',
+                borderLeft: '18px solid transparent',
+                borderRight: '18px solid transparent',
+                borderBottom: '33px solid rgba(79, 70, 229, 0.8)',
                 background: `
                   linear-gradient(to bottom, 
-                  rgba(79, 70, 229, 0.2) 0%, 
-                  rgba(124, 58, 237, 0.4) 50%,
-                  rgba(99, 102, 241, 0.6) 100%)
+                  rgba(99, 102, 241, 0.9) 0%, 
+                  rgba(79, 70, 229, 0.8) 40%,
+                  rgba(67, 56, 202, 0.9) 100%)
                 `
               }}
             />
             
-            {/* Premium shine effect */}
+            {/* Enhanced shine effect */}
             <div 
-              className="absolute inset-0 h-0 w-0
-                         border-l-[20px] border-l-transparent
-                         border-r-[20px] border-r-transparent
-                         border-b-[36px]
+              className="absolute top-0 left-[-20px] h-0 w-0
                          group-hover:opacity-100 opacity-60
                          transition-opacity duration-500"
               style={{ 
-                background: "linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 50%)",
+                borderLeft: '20px solid transparent',
+                borderRight: '20px solid transparent',
+                borderBottom: '36px solid transparent',
+                background: "linear-gradient(135deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%)",
                 filter: "blur(0.5px)"
               }}
             />
             
-            {/* Side shimmer effects */}
-            <div className="absolute inset-0 h-0 w-0
-                           border-l-[20px] border-l-transparent
-                           border-r-[20px] border-r-transparent
-                           border-b-[36px]
-                           opacity-0 group-hover:opacity-30
-                           transition-opacity duration-700">
+            {/* Animated shimmer effect */}
+            <div 
+              className="absolute top-0 left-[-20px] h-0 w-0
+                           opacity-0 group-hover:opacity-40
+                           transition-opacity duration-700"
+              style={{ 
+                borderLeft: '20px solid transparent',
+                borderRight: '20px solid transparent',
+                borderBottom: '36px solid transparent',
+              }}
+            >
               <div className="absolute inset-0 animate-shimmer"></div>
             </div>
             
-            {/* Initials with improved typography */}
-            <div className="relative bottom-[-22px] text-blue-50 font-medium text-xs tracking-wide"
-                 style={{ textShadow: "0 1px 2px rgba(0,0,0,0.2)" }}>
+            {/* Improved initials with better positioning */}
+            <div 
+              className="absolute top-[14px] left-[-7px] w-14 text-center text-blue-50 font-medium text-xs tracking-wide"
+              style={{ 
+                textShadow: "0 1px 2px rgba(0,0,0,0.3)",
+                fontWeight: 600,
+                letterSpacing: "0.05em"
+              }}
+            >
               {initials}
             </div>
           </div>
+          
+          {/* Subtle ground reflection */}
+          <div 
+            className="absolute -bottom-1 left-[-12px] w-24 h-1 opacity-30 blur-sm"
+            style={{
+              background: "radial-gradient(ellipse at center, rgba(99, 102, 241, 0.6) 0%, transparent 70%)"
+            }}
+          ></div>
         </div>
       )}
     </motion.div>

@@ -38,8 +38,8 @@ const Index = () => {
       
       <div
         className={cn(
-          "container mx-auto px-4 pt-8 pb-4 md:py-8 space-y-4 md:space-y-6 max-w-7xl",
-          isMobile && "pb-20"
+          "container mx-auto px-4 md:py-8 space-y-4 md:space-y-6 max-w-7xl",
+          isMobile ? "pt-safe-top pb-20" : "pt-8 pb-4"
         )}
       >
         {/* Top navigation area with header and profile menu */}
