@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useProfileLoader } from "./ProfileLoader";
 import { HeroTitle } from "./HeroTitle";
 import { AnimatedUnderline } from "./AnimatedUnderline";
+import { UserAvatar } from "../user/UserAvatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
@@ -51,6 +52,23 @@ export function AppHero() {
             Track your custom habits, build consistency, and achieve your highest potential 
             through our sophisticated habit tracking system designed for professionals.
           </motion.p>
+          
+          {user && profile && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              className="mt-6"
+            >
+              <UserAvatar 
+                user={user} 
+                profile={{
+                  full_name: profile.full_name || '',
+                  avatar_url: profile.avatar_url
+                }} 
+              />
+            </motion.div>
+          )}
         </div>
       </div>
     </motion.div>
