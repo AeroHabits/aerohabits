@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { ChallengeCompletion } from "./ChallengeCompletion";
+import { ChallengeStreakMilestone } from "./ChallengeStreakMilestone";
 import { format, startOfDay, parseISO, isAfter, isBefore, subDays, isToday } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ export function ChallengeProgress({
   onProgressUpdate
 }: ChallengeProgressProps) {
   const [isCompletedToday, setIsCompletedToday] = useState(false);
+  const [completionCount, setCompletionCount] = useState(0);
 
   useEffect(() => {
     const checkProgress = async () => {
@@ -52,6 +54,23 @@ export function ChallengeProgress({
       });
       
       setIsCompletedToday(!!completedToday);
+
+      // Check total completions for this challenge
+      const { data: userChallengeData } = await supabase
+        .from('user_challenges')
+        .select('challenge_id')
+        .eq('id', userChallengeId)
+        .single();
+
+      if (userChallengeData) {
+        const { data: completedChallenges } = await supabase
+          .from('user_challenges')
+          .select('id')
+          .eq('challenge_id', userChallengeData.challenge_id)
+          .eq('is_completed', true);
+
+        setCompletionCount(completedChallenges?.length || 0);
+      }
 
       // If there are completions, check for missed days
       if (completions && completions.length > 0 && completions[0].completed_date) {
@@ -110,6 +129,7 @@ export function ChallengeProgress({
         onComplete={onProgressUpdate}
         isCompleted={isCompletedToday}
       />
+      <ChallengeStreakMilestone completionCount={completionCount} />
     </div>
   );
 }

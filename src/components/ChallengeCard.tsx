@@ -45,9 +45,13 @@ export function ChallengeCard({
   const [progressData, setProgressData] = useState<{
     daysCompleted: number;
     startDate: string | null;
+    isCompleted: boolean;
+    totalCompletions: number;
   }>({
     daysCompleted: 0,
     startDate: null,
+    isCompleted: false,
+    totalCompletions: 0
   });
 
   useEffect(() => {
@@ -60,23 +64,39 @@ export function ChallengeCard({
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Get current challenge data
     const { data } = await supabase
       .from('user_challenges')
       .select('*')
       .eq('challenge_id', challenge.id)
       .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
       .maybeSingle();
 
     if (data) {
+      // Get completions for this specific user_challenge
       const { data: completions } = await supabase
         .from('challenge_completions')
         .select('*')
         .eq('user_challenge_id', data.id);
-
+      
+      // Get total number of times user has completed this challenge
+      const { data: totalCompletionsData, error: countError } = await supabase
+        .from('user_challenges')
+        .select('id')
+        .eq('challenge_id', challenge.id)
+        .eq('user_id', user.id)
+        .eq('is_completed', true);
+      
+      const totalCompletions = totalCompletionsData ? totalCompletionsData.length : 0;
+      
       setUserChallengeId(data.id);
       setProgressData({
         daysCompleted: completions?.length || 0,
         startDate: data.start_date,
+        isCompleted: data.is_completed || false,
+        totalCompletions
       });
     }
   };
@@ -100,6 +120,7 @@ export function ChallengeCard({
             rewardPoints={challenge.reward_points}
             isHovered={isHovered}
             sequenceOrder={sequenceOrder}
+            completionCount={progressData.totalCompletions}
           />
         </CardHeader>
         <CardContent className="space-y-3">
@@ -117,8 +138,11 @@ export function ChallengeCard({
               totalDays={challenge.duration_days}
               startDate={progressData.startDate}
               userChallengeId={userChallengeId}
+              challengeId={challenge.id}
               onProgressUpdate={fetchProgress}
               rewardPoints={challenge.reward_points}
+              isCompleted={progressData.isCompleted}
+              totalCompletions={progressData.totalCompletions}
             />
           )}
         </CardContent>

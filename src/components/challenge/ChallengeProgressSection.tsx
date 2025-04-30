@@ -1,13 +1,18 @@
+
 import { ChallengeProgress } from "./ChallengeProgress";
 import { ChallengePointsMessage } from "./ChallengePointsMessage";
+import { ChallengeResetButton } from "./ChallengeResetButton";
 
 interface ChallengeProgressSectionProps {
   daysCompleted: number;
   totalDays: number;
   startDate: string | null;
   userChallengeId: string;
+  challengeId: string;
   onProgressUpdate: () => void;
   rewardPoints: number | null;
+  isCompleted?: boolean;
+  totalCompletions?: number;
 }
 
 export function ChallengeProgressSection({
@@ -15,8 +20,11 @@ export function ChallengeProgressSection({
   totalDays,
   startDate,
   userChallengeId,
+  challengeId,
   onProgressUpdate,
-  rewardPoints
+  rewardPoints,
+  isCompleted = false,
+  totalCompletions = 0
 }: ChallengeProgressSectionProps) {
   return (
     <>
@@ -31,6 +39,13 @@ export function ChallengeProgressSection({
         rewardPoints={rewardPoints}
         daysCompleted={daysCompleted}
         totalDays={totalDays}
+      />
+      <ChallengeResetButton
+        userChallengeId={userChallengeId}
+        challengeId={challengeId}
+        isCompleted={isCompleted}
+        onReset={onProgressUpdate}
+        totalCompletions={totalCompletions}
       />
     </>
   );
