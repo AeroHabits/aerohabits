@@ -19,21 +19,5 @@ export function UserAvatar({
 
   // iOS detection for animation optimization
   const isIOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  return <motion.div whileHover={{
-    scale: isIOS ? 1.02 : 1.05
-  }} // Reduced animation for iOS
-  whileTap={{
-    scale: isIOS ? 0.98 : 0.95
-  }} // Reduced animation for iOS
-  transition={{
-    duration: isIOS ? 0.2 : 0.3
-  }} // Faster transition for iOS
-  className="relative inline-block">
-      <Avatar className={cn("h-10 w-10 border-2 border-white/20 shadow-lg", "overflow-visible" // Ensure content is not cut off
-    )}>
-        {profile?.avatar_url && !imageError ? <AvatarImage src={profile.avatar_url} alt={profile.full_name || "User"} onError={() => setImageError(true)} loading="lazy" decoding="async" /> : <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full">
-            
-          </div>}
-      </Avatar>
-    </motion.div>;
+  return;
 }
