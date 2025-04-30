@@ -15,7 +15,7 @@ const IndexContent = memo(() => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="space-y-12 md:space-y-20"
+      className="space-y-8 md:space-y-12"
     >
       <AppHero />
       <AppShowcase />
@@ -38,12 +38,12 @@ const Index = () => {
       
       <div
         className={cn(
-          "container mx-auto px-4 pt-12 pb-4 md:py-8 space-y-6 md:space-y-8 max-w-7xl",
+          "container mx-auto px-4 pt-8 pb-4 md:py-8 space-y-4 md:space-y-6 max-w-7xl",
           isMobile && "pb-20"
         )}
       >
         {/* Top navigation area with header and profile menu */}
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center">
           <PageHeader />
           <div className="flex items-center gap-3">
             <UserMenu />
