@@ -7,7 +7,6 @@ import { AppShowcase } from "@/components/showcase/AppShowcase";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { memo } from "react";
-import { MainNavigationMenu } from "@/components/layout/NavigationMenu";
 
 // Memoize the content component to prevent unnecessary re-renders
 const IndexContent = memo(() => {
@@ -43,11 +42,10 @@ const Index = () => {
           isMobile && "pb-20"
         )}
       >
-        {/* Top navigation area with header and navigation menu */}
+        {/* Top navigation area with header and profile menu */}
         <div className="flex justify-between items-center mb-4">
           <PageHeader />
           <div className="flex items-center gap-3">
-            <MainNavigationMenu />
             <UserMenu />
           </div>
         </div>
