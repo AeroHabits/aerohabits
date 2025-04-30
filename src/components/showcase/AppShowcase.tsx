@@ -62,9 +62,9 @@ export const AppShowcase = memo(() => {
       whileInView="visible"
       viewport={{ once: true, margin: "-50px" }}
       variants={containerVariants}
-      className="py-12 will-change-transform"
+      className="py-12 md:py-16 will-change-transform"
     >
-      <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-4">
         {features.map((feature, index) => (
           <motion.div
             key={feature.title}
@@ -79,7 +79,7 @@ export const AppShowcase = memo(() => {
             className="group cursor-pointer will-change-transform"
             whileHover={{ y: -4 }}
           >
-            <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-xl bg-black/20 border border-white/30 shadow-xl transition-all duration-300 hover:border-white/50 hover:shadow-2xl hover:shadow-blue-500/30">
+            <div className="relative h-full rounded-2xl overflow-hidden backdrop-blur-xl bg-black/30 border border-white/10 shadow-xl transition-all duration-300 hover:border-white/25 hover:shadow-2xl hover:shadow-blue-500/20">
               {/* Optimized Gradient Background */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} opacity-100 transition-all duration-300`} />
               
@@ -88,9 +88,9 @@ export const AppShowcase = memo(() => {
               
               {/* Content */}
               <div className="relative p-8 h-full">
-                <div className="flex flex-col items-start gap-5">
+                <div className="flex flex-col items-start gap-6">
                   {/* Icon container with better contrast */}
-                  <div className="p-4 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 shadow-lg group-hover:border-white/40 group-hover:bg-white/20 transition-all duration-300">
+                  <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 shadow-lg group-hover:border-white/30 group-hover:bg-white/15 transition-all duration-300">
                     {feature.icon}
                   </div>
                   
@@ -100,7 +100,7 @@ export const AppShowcase = memo(() => {
                       {feature.title}
                     </h3>
                     {/* Enhanced description with increased contrast */}
-                    <p className="text-sm text-white leading-relaxed font-medium drop-shadow-sm">
+                    <p className="text-sm text-white/90 leading-relaxed font-medium drop-shadow-sm">
                       {feature.description}
                     </p>
                   </div>

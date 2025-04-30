@@ -15,7 +15,7 @@ const IndexContent = memo(() => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.2 }}
-      className="space-y-8"
+      className="space-y-12 md:space-y-16"
     >
       <AppHero />
       <AppShowcase />
@@ -32,7 +32,7 @@ const Index = () => {
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-x-hidden">
       <div
         className={cn(
-          "container mx-auto px-4 pt-12 pb-4 md:py-6 space-y-6 md:space-y-8 safe-top",
+          "container mx-auto px-4 pt-16 pb-4 md:py-8 space-y-8 md:space-y-10 max-w-7xl",
           isMobile && "pb-20"
         )}
       >

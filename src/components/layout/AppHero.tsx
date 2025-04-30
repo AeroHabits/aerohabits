@@ -2,11 +2,11 @@
 import { motion } from "framer-motion";
 import { useProfileLoader } from "./ProfileLoader";
 import { HeroTitle } from "./HeroTitle";
-import { AnimatedUnderline } from "./AnimatedUnderline";
 import { UserAvatar } from "../user/UserAvatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
+import { cn } from "@/lib/utils";
 
 export function AppHero() {
   const {
@@ -29,19 +29,43 @@ export function AppHero() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      className="relative pt-8 md:pt-16 pb-12 md:pb-24 z-10 px-4 md:px-8"
+      className="relative pt-20 md:pt-28 pb-16 md:pb-32 z-10 px-4 md:px-8"
     >
-      {/* Subtle professional background with gradient */}
+      {/* Enhanced gradient background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-500/10 to-indigo-500/5 opacity-50"></div>
-        <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-gray-900/20 to-transparent"></div>
+        <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-500/10 to-indigo-500/5 opacity-70"></div>
+        <div className="absolute bottom-0 left-0 w-full h-full bg-gradient-to-tr from-gray-900/40 to-transparent"></div>
+        
+        {/* Subtle animated accent */}
+        <motion.div
+          className="absolute -top-32 -right-32 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
+          animate={{
+            opacity: [0.2, 0.3, 0.2],
+            scale: [1, 1.05, 1],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            repeatType: "reverse",
+          }}
+        />
       </div>
 
       <div className="relative max-w-4xl mx-auto">
         <div className="flex flex-col items-center space-y-12">
           <HeroTitle />
           
-          <AnimatedUnderline />
+          <motion.div 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            className="w-full max-w-md mx-auto"
+          >
+            <div className={cn(
+              "h-px bg-gradient-to-r from-transparent via-blue-300/40 to-transparent",
+              "opacity-80"
+            )} />
+          </motion.div>
           
           <motion.p
             initial={{ opacity: 0, y: 10 }}
