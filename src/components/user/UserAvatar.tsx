@@ -23,7 +23,7 @@ export function UserAvatar({
 
   return (
     <motion.div 
-      className="relative h-10 w-10 flex items-center justify-center"
+      className="relative h-14 w-14 flex items-center justify-center" // Increased size from h-10 w-10 to h-14 w-14
       initial={{ scale: 0.95 }}
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.05 }}
@@ -48,7 +48,7 @@ export function UserAvatar({
         </motion.div>
       ) : (
         <div className="relative group cursor-pointer">
-          {/* Premium 3D pyramid with enhanced lighting effects */}
+          {/* Enhanced 3D pyramid with letter inside */}
           <motion.div
             className="relative"
             whileHover={{ 
@@ -62,81 +62,99 @@ export function UserAvatar({
               repeatType: "mirror"
             }}
           >
-            {/* Main pyramid */}
+            {/* Main pyramid - larger size */}
             <div 
-              className="h-0 w-0 relative"
+              className="relative"
               style={{
-                borderLeft: '20px solid transparent',
-                borderRight: '20px solid transparent',
-                borderBottom: '36px solid #3949AB',
-                filter: "drop-shadow(0 4px 8px rgba(25, 118, 210, 0.5))",
+                width: "56px",
+                height: "48px",
+                position: "relative",
                 transform: "perspective(800px) rotateX(15deg)",
               }}
             >
-              {/* Inner pyramid with enhanced gradient */}
-              <div 
-                className="absolute top-px left-[-18px] h-0 w-0 overflow-hidden"
-                style={{ 
-                  borderLeft: '18px solid transparent',
-                  borderRight: '18px solid transparent',
-                  borderBottom: '33px solid transparent',
-                  background: `
-                    linear-gradient(145deg, 
-                    rgba(63, 81, 181, 0.9) 0%, 
-                    rgba(48, 63, 159, 0.8) 40%,
-                    rgba(26, 35, 126, 0.9) 100%)
-                  `
-                }}
-              />
-              
-              {/* Front face highlight */}
-              <div 
-                className="absolute top-0 left-[-20px] h-0 w-0 opacity-80 
-                           group-hover:opacity-100 transition-opacity duration-300"
-                style={{ 
-                  borderLeft: '20px solid transparent',
-                  borderRight: '20px solid transparent',
-                  borderBottom: '36px solid transparent',
-                  background: "linear-gradient(125deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 60%)",
-                }}
-              />
-              
-              {/* Dynamic shimmer effect */}
-              <div 
-                className="absolute top-0 left-[-20px] h-0 w-0
-                           opacity-0 group-hover:opacity-70
-                           transition-opacity duration-700"
-                style={{ 
-                  borderLeft: '20px solid transparent',
-                  borderRight: '20px solid transparent',
-                  borderBottom: '36px solid transparent',
+              {/* Pyramid shape */}
+              <div
+                className="absolute"
+                style={{
+                  width: "0",
+                  height: "0",
+                  borderLeft: '28px solid transparent',
+                  borderRight: '28px solid transparent',
+                  borderBottom: '48px solid #3949AB',
+                  filter: "drop-shadow(0 6px 12px rgba(25, 118, 210, 0.6))",
                 }}
               >
-                <div className="absolute inset-0 animate-shimmer" />
+                {/* Inner gradient for depth */}
+                <div 
+                  className="absolute top-0 left-[-28px]"
+                  style={{ 
+                    width: "0",
+                    height: "0",
+                    borderLeft: '28px solid transparent',
+                    borderRight: '28px solid transparent',
+                    borderBottom: '48px solid transparent',
+                    background: `
+                      linear-gradient(145deg, 
+                      rgba(99, 102, 241, 0.9) 0%, 
+                      rgba(79, 70, 229, 0.8) 40%,
+                      rgba(67, 56, 202, 0.9) 100%)
+                    `
+                  }}
+                />
+                
+                {/* Front face highlight */}
+                <div 
+                  className="absolute top-0 left-[-28px] opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ 
+                    width: "0",
+                    height: "0",
+                    borderLeft: '28px solid transparent',
+                    borderRight: '28px solid transparent',
+                    borderBottom: '48px solid transparent',
+                    background: "linear-gradient(125deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 60%)",
+                  }}
+                />
+                
+                {/* Dynamic shimmer effect */}
+                <div 
+                  className="absolute top-0 left-[-28px] opacity-0 group-hover:opacity-70 transition-opacity duration-700"
+                  style={{ 
+                    width: "0",
+                    height: "0",
+                    borderLeft: '28px solid transparent',
+                    borderRight: '28px solid transparent',
+                    borderBottom: '48px solid transparent',
+                  }}
+                >
+                  <div className="absolute inset-0 animate-shimmer" />
+                </div>
+                
+                {/* Centered initials - positioned directly inside the pyramid */}
+                <div 
+                  className="absolute text-center text-blue-50 font-bold text-lg tracking-wide"
+                  style={{ 
+                    width: "56px",
+                    top: "14px",
+                    left: "-28px",
+                    textShadow: "0 1px 3px rgba(0,0,0,0.5)",
+                    letterSpacing: "0.05em",
+                    zIndex: 10,
+                  }}
+                >
+                  {initials}
+                </div>
               </div>
               
-              {/* Enhanced initials positioning */}
+              {/* Subtle floor reflection */}
               <div 
-                className="absolute top-[14px] left-[-7px] w-14 text-center text-blue-50 font-semibold text-xs tracking-wide"
-                style={{ 
-                  textShadow: "0 1px 3px rgba(0,0,0,0.4)",
-                  letterSpacing: "0.05em",
-                  transform: "perspective(800px) rotateX(-5deg)"
+                className="absolute -bottom-2 left-[-16px] w-[56px] h-1.5 opacity-40"
+                style={{
+                  background: "radial-gradient(ellipse at center, rgba(99, 102, 241, 0.7) 0%, transparent 70%)",
+                  filter: "blur(1px)",
+                  transform: "scaleY(0.5)"
                 }}
-              >
-                {initials}
-              </div>
+              />
             </div>
-            
-            {/* Subtle floor reflection */}
-            <div 
-              className="absolute -bottom-1 left-[-12px] w-24 h-1 opacity-40"
-              style={{
-                background: "radial-gradient(ellipse at center, rgba(99, 102, 241, 0.6) 0%, transparent 70%)",
-                filter: "blur(1px)",
-                transform: "scaleY(0.5)"
-              }}
-            />
           </motion.div>
         </div>
       )}
