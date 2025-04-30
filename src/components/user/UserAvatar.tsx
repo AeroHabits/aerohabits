@@ -23,7 +23,7 @@ export function UserAvatar({
 
   return (
     <motion.div 
-      className="relative h-14 w-14 flex items-center justify-center" // Increased size from h-10 w-10 to h-14 w-14
+      className="relative h-14 w-14 flex items-center justify-center"
       initial={{ scale: 0.95 }}
       animate={{ scale: 1 }}
       whileHover={{ scale: 1.05 }}
@@ -114,20 +114,6 @@ export function UserAvatar({
                     background: "linear-gradient(125deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 60%)",
                   }}
                 />
-                
-                {/* Dynamic shimmer effect */}
-                <div 
-                  className="absolute top-0 left-[-28px] opacity-0 group-hover:opacity-70 transition-opacity duration-700"
-                  style={{ 
-                    width: "0",
-                    height: "0",
-                    borderLeft: '28px solid transparent',
-                    borderRight: '28px solid transparent',
-                    borderBottom: '48px solid transparent',
-                  }}
-                >
-                  <div className="absolute inset-0 animate-shimmer" />
-                </div>
                 
                 {/* Centered initials - positioned directly inside the pyramid */}
                 <div 
