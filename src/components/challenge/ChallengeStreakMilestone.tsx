@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Award, Trophy, Star, Fire } from "lucide-react";
+import { Award, Trophy, Star, Flame } from "lucide-react";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 
