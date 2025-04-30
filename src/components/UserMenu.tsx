@@ -96,7 +96,7 @@ export function UserMenu() {
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-8 w-8 md:h-10 md:w-10 rounded-full p-0">
+          <Button variant="ghost" className="relative h-10 w-10 rounded-none p-0 hover:bg-transparent">
             <UserAvatar user={user} profile={profile} />
           </Button>
         </DropdownMenuTrigger>

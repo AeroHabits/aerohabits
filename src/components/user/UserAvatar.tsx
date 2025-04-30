@@ -20,31 +20,43 @@ export function UserAvatar({
   const [imageError, setImageError] = useState(false);
   const initials = profile?.full_name?.split(" ").map(n => n[0]).join("").toUpperCase() || user.email?.[0].toUpperCase() || "?";
 
-  // iOS detection for animation optimization
-  const isIOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const isPyramidSuitableForImage = !!profile?.avatar_url && !imageError;
 
   return (
-    <Avatar className={cn(
-      "border-2 transition-all duration-300",
-      "border-indigo-400/50 bg-gradient-to-b from-indigo-500/20 to-purple-600/20"
-    )}>
-      {profile?.avatar_url && !imageError ? (
-        <AvatarImage 
-          src={profile.avatar_url} 
-          alt={profile?.full_name || "User"} 
-          onError={() => setImageError(true)}
-          className="object-cover"
-        />
+    <div className="relative h-10 w-10 flex items-center justify-center">
+      {isPyramidSuitableForImage ? (
+        <div className="h-full w-full overflow-hidden">
+          <div 
+            className="w-10 h-10 relative"
+            style={{
+              clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+              overflow: 'hidden'
+            }}
+          >
+            <img
+              src={profile.avatar_url}
+              alt={profile?.full_name || "User"}
+              onError={() => setImageError(true)}
+              className="object-cover w-full h-full"
+            />
+          </div>
+        </div>
       ) : (
-        <AvatarFallback 
+        <div 
           className={cn(
-            "text-blue-100 bg-gradient-to-br from-indigo-600/30 to-purple-700/30",
-            "font-medium"
+            "h-0 w-0",
+            "border-l-[20px] border-l-transparent",
+            "border-r-[20px] border-r-transparent",
+            "border-b-[36px]",
+            "flex items-center justify-center",
+            "border-b-indigo-400 bg-gradient-to-b from-indigo-500/20 to-purple-600/20"
           )}
         >
-          {initials}
-        </AvatarFallback>
+          <div className="relative bottom-[-22px] text-blue-100 font-medium text-xs">
+            {initials}
+          </div>
+        </div>
       )}
-    </Avatar>
+    </div>
   );
 }
