@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { HeroTitle } from "./HeroTitle";
 import { AnimatedUnderline } from "./AnimatedUnderline";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function AppHero() {
@@ -26,7 +26,7 @@ export function AppHero() {
               </motion.p>
             </div>
             
-            {/* CTA buttons */}
+            {/* CTA buttons - enhanced with more engaging styles */}
             <motion.div 
               className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center md:justify-start"
               initial={{ opacity: 0, y: 20 }}
@@ -34,14 +34,40 @@ export function AppHero() {
               transition={{ delay: 0.7, duration: 0.6 }}
             >
               <Link to="/habits">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto">
-                  Get Started <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="relative"
+                >
+                  <Button 
+                    size="lg" 
+                    variant="premium"
+                    className="group relative overflow-hidden shadow-lg hover:shadow-purple-500/20 transition-all duration-300 w-full sm:w-auto"
+                  >
+                    <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-indigo-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                    <span className="relative flex items-center">
+                      Get Started <Sparkles className="ml-1 h-4 w-4 text-indigo-200 animate-pulse" /> <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform duration-300" />
+                    </span>
+                  </Button>
+                </motion.div>
               </Link>
               <Link to="/challenges">
-                <Button variant="outline" size="lg" className="border-blue-400/30 text-blue-100 hover:bg-white/5 w-full sm:w-auto">
-                  Explore Challenges
-                </Button>
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="relative"
+                >
+                  <Button 
+                    variant="glass" 
+                    size="lg" 
+                    className="group relative overflow-hidden hover:shadow-purple-500/10 transition-all duration-300 w-full sm:w-auto"
+                  >
+                    <span className="relative flex items-center">
+                      Explore Challenges
+                      <ArrowRight className="ml-2 h-4 w-4 opacity-70 group-hover:translate-x-1 transition-transform duration-300" />
+                    </span>
+                  </Button>
+                </motion.div>
               </Link>
             </motion.div>
           </div>
