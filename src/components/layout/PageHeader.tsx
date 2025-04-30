@@ -20,7 +20,7 @@ export function PageHeader({ title, description }: PageHeaderProps) {
       transition={{
         duration: 0.3
       }} 
-      className="mb-8"
+      className="mb-6"
     >
       {title ? (
         <div className="space-y-1">
@@ -29,14 +29,14 @@ export function PageHeader({ title, description }: PageHeaderProps) {
         </div>
       ) : (
         <div className="relative flex items-center justify-center">
-          {/* Subtle background with softer colors */}
+          {/* More subtle background effect */}
           <motion.div 
-            className="absolute -inset-1 rounded-lg blur-xl bg-gradient-to-r from-blue-400/10 via-indigo-300/10 to-cyan-300/10 opacity-70"
+            className="absolute -inset-1 rounded-lg blur-xl bg-gradient-to-r from-indigo-800/5 via-blue-800/5 to-purple-800/5 opacity-60"
             animate={{
               background: [
-                "linear-gradient(to right, rgba(96, 165, 250, 0.1), rgba(129, 140, 248, 0.1), rgba(34, 211, 238, 0.1))",
-                "linear-gradient(to right, rgba(34, 211, 238, 0.1), rgba(96, 165, 250, 0.1), rgba(129, 140, 248, 0.1))",
-                "linear-gradient(to right, rgba(129, 140, 248, 0.1), rgba(34, 211, 238, 0.1), rgba(96, 165, 250, 0.1))"
+                "linear-gradient(to right, rgba(79, 70, 229, 0.05), rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05))",
+                "linear-gradient(to right, rgba(147, 51, 234, 0.05), rgba(79, 70, 229, 0.05), rgba(59, 130, 246, 0.05))",
+                "linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(147, 51, 234, 0.05), rgba(79, 70, 229, 0.05))"
               ]
             }}
             transition={{ 
@@ -46,16 +46,16 @@ export function PageHeader({ title, description }: PageHeaderProps) {
             }}
           />
           
-          {/* AEROHABITS text with calm styling */}
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight relative">
-            {/* Main text with subtle gradient */}
+          {/* AEROHABITS text with refined styling */}
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight relative">
+            {/* Main text with subtle effect */}
             <motion.span 
-              className="text-blue-50/90 relative inline-block"
+              className="text-white/90 relative inline-block"
               animate={{ 
                 textShadow: [
-                  "0 0 2px rgba(255, 255, 255, 0.2)",
-                  "0 0 3px rgba(186, 230, 253, 0.3)",
-                  "0 0 2px rgba(255, 255, 255, 0.2)"
+                  "0 0 1px rgba(255, 255, 255, 0.1)",
+                  "0 0 2px rgba(186, 230, 253, 0.2)",
+                  "0 0 1px rgba(255, 255, 255, 0.1)"
                 ]
               }}
               transition={{ duration: 4, repeat: Infinity }}
