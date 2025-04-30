@@ -2,7 +2,7 @@
 import { User } from "@supabase/supabase-js";
 import { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { UserProfile } from "../UserProfile";
-import { Settings, LogOut, Home } from "lucide-react";
+import { Settings, LogOut, Home, CheckSquare } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface UserDropdownContentProps {
@@ -45,6 +45,14 @@ export function UserDropdownContent({
       >
         <Home className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
         <span>Home</span>
+      </DropdownMenuItem>
+      
+      <DropdownMenuItem 
+        onClick={() => navigate("/habits")} 
+        className="cursor-pointer flex items-center gap-2 rounded-md m-1 px-2 py-1.5 transition-colors duration-200 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+      >
+        <CheckSquare className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+        <span>Habits</span>
       </DropdownMenuItem>
       
       <DropdownMenuItem 
