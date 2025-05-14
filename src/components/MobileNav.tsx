@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { List, Target, Trophy, Route } from "lucide-react";
+import { Home, Target, Trophy, Route } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const MobileNav = () => {
@@ -11,7 +11,7 @@ export const MobileNav = () => {
     {
       name: "Habits",
       path: "/",
-      icon: List,
+      icon: Home,
     },
     {
       name: "Challenges",
@@ -34,9 +34,9 @@ export const MobileNav = () => {
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className="md:hidden fixed bottom-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-t border-gray-200 z-50"
+      className="md:hidden fixed bottom-0 left-0 right-0 glass-dark border-t border-[#403E43] shadow-lg z-50 safe-bottom"
     >
-      <div className="flex items-center justify-around h-16">
+      <div className="flex items-center justify-around h-16 max-w-md mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = location.pathname === tab.path;
@@ -48,12 +48,24 @@ export const MobileNav = () => {
               className={cn(
                 "flex flex-col items-center justify-center w-full h-full text-xs space-y-1",
                 isActive
-                  ? "text-blue-600"
-                  : "text-gray-600 hover:text-blue-600 transition-colors"
+                  ? "text-[#9b87f5]"
+                  : "text-[#8E9196] hover:text-[#9b87f5] transition-colors"
               )}
             >
-              <Icon className="h-5 w-5" />
-              <span>{tab.name}</span>
+              <div className="relative">
+                <Icon className={cn(
+                  "h-5 w-5 transition-all duration-300", 
+                  isActive && "animate-pulse"
+                )} />
+                {isActive && (
+                  <motion.div
+                    layoutId="bubble"
+                    className="absolute -inset-1.5 bg-[#9b87f5]/20 rounded-full blur-sm"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+              </div>
+              <span className={isActive ? "font-medium" : ""}>{tab.name}</span>
             </Link>
           );
         })}

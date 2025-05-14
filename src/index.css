@@ -94,6 +94,19 @@
   }
 }
 
+.mt-safe {
+  margin-top: max(env(safe-area-inset-top), 0.5rem);
+}
+
+.mb-safe {
+  margin-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+}
+
+.px-safe {
+  padding-left: max(env(safe-area-inset-left), 1rem);
+  padding-right: max(env(safe-area-inset-right), 1rem);
+}
+
 /* Dark theme specific styles */
 .dark-gradient {
   background: linear-gradient(to bottom right, #1A1F2C, #222736);
