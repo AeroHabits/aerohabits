@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +18,9 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const initialCheckComplete = useRef(false);
   const authRetryCount = useRef(0);
   const initialSignInComplete = useRef(false);
+  
+  // Store the last auth state to prevent repeated toasts
+  const lastAuthState = useRef<string | null>(null);
 
   // Check authentication status
   const checkAuth = useCallback(async () => {
@@ -45,6 +49,13 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       setIsAuthenticated(!!session);
       setIsLoading(false);
       initialCheckComplete.current = true;
+      
+      // If user is already authenticated on initial load, mark sign-in as complete
+      // to prevent the toast from showing on page navigation
+      if (session) {
+        initialSignInComplete.current = true;
+        lastAuthState.current = 'SIGNED_IN';
+      }
     } catch (error) {
       console.error("Auth check error:", error);
       setAuthError(error instanceof Error ? error.message : "Authentication check failed");
@@ -61,24 +72,30 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   // Listen for auth state changes with cleanup
   useEffect(() => {
+    console.log("Setting up auth state listener");
+    
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, "Previous state:", lastAuthState.current);
+      
       setIsAuthenticated(!!session);
       setIsLoading(false);
       
-      // Only show toast on actual auth state changes, not every render
-      if (event === 'SIGNED_IN' && !initialSignInComplete.current) {
+      // Only show toast on actual auth state changes, not every render or navigation
+      if (event === 'SIGNED_IN' && lastAuthState.current !== 'SIGNED_IN') {
         toast.success("Successfully signed in");
+        lastAuthState.current = 'SIGNED_IN';
         initialSignInComplete.current = true;
-      } else if (event === 'SIGNED_OUT') {
+      } else if (event === 'SIGNED_OUT' && lastAuthState.current !== 'SIGNED_OUT') {
         toast.info("You have been signed out");
-        // Reset the flag when user signs out
+        lastAuthState.current = 'SIGNED_OUT';
         initialSignInComplete.current = false;
       }
     });
 
     return () => {
+      console.log("Cleaning up auth state listener");
       subscription.unsubscribe();
     };
   }, []);
