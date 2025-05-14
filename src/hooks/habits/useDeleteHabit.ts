@@ -1,6 +1,6 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useOfflineSync } from "../useOfflineSync";
 import { useLocalStorage } from "../useLocalStorage";
 import { Habit } from "@/types";

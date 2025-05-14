@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
 import { Card } from "@/components/ui/card";
 import { Rocket, Target, Star, Sparkles, Trophy } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { PageHeader } from "@/components/layout/PageHeader";
 

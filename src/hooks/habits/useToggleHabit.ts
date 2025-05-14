@@ -1,4 +1,5 @@
-import { useToast } from "@/components/ui/use-toast";
+
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Habit } from "@/types";
 import { isToday, isYesterday, startOfDay, isSameDay, isAfter, addHours } from "date-fns";

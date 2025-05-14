@@ -1,8 +1,5 @@
 
-// Re-export the toast function from sonner
-import { toast as sonnerToast } from "sonner";
+// Re-export from the hooks folder
+import { useToast, toast } from "@/hooks/use-toast";
 
-// Export the toast API
-export const toast = sonnerToast;
-
-// This file no longer tries to import useToast from toast.tsx
+export { useToast, toast };
