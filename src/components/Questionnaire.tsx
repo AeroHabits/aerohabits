@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 
 export interface QuestionItem {
   id: string;
@@ -107,8 +107,10 @@ export function Questionnaire({
 
   const handleNext = useCallback(() => {
     if (!answers[currentQuestion.id] || answers[currentQuestion.id].length === 0) {
-      toast.error("Selection required", {
-        description: "Please select at least one option to continue"
+      toast({
+        title: "Selection required",
+        description: "Please select at least one option to continue",
+        variant: "destructive"
       });
       return;
     }

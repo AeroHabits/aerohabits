@@ -1,13 +1,14 @@
 
 import { motion } from "framer-motion";
 import { OnboardingQuestionnaire } from "@/components/onboarding/OnboardingQuestionnaire";
-import { toast } from "sonner";
+import { toast } from "@/hooks/use-toast";
 import { useEffect } from "react";
 
 export default function Onboarding() {
   useEffect(() => {
     // Show welcome toast when the component mounts
-    toast.info("Welcome to AeroHabits!", {
+    toast({
+      title: "Welcome to AeroHabits!",
       description: "Let's get started by setting up your profile.",
       duration: 5000,
     });
