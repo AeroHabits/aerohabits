@@ -9,15 +9,11 @@ export const useAuthForm = (initialState: boolean = false) => {
 
   const handleError = (error: any) => {
     const message = error?.message || "An unexpected error occurred. Please try again.";
-    toast.error("Error", {
-      description: message
-    });
+    toast.error(message);
   };
 
   const handleSuccess = (message: string) => {
-    toast.success("Success", {
-      description: message
-    });
+    toast.success(message);
   };
 
   return {
@@ -25,7 +21,6 @@ export const useAuthForm = (initialState: boolean = false) => {
     setIsLoading,
     navigate,
     handleError,
-    handleSuccess,
-    toast
+    handleSuccess
   };
 };

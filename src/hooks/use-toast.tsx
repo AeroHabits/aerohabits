@@ -23,7 +23,7 @@ export const ToastContext = React.createContext<ToastContextType>({
 });
 
 export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
-  const [toasts, setToasts] = useState<(ToastProps & { id: string })[]>([]);
+  const [toasts, setToasts] = React.useState<(ToastProps & { id: string })[]>([]);
 
   const toast = (props: ToastProps) => {
     const id = props.id || Math.random().toString(36).substring(2, 9);
@@ -77,13 +77,5 @@ export const useToast = () => {
   return context;
 };
 
-// Fix the missing React import
-import { useState } from "react";
-
-// Utility function for standalone toast calls
-export const toast = {
-  info: (message: string) => sonnerToast.info(message),
-  error: (message: string) => sonnerToast.error(message),
-  success: (message: string) => sonnerToast.success(message),
-  warning: (message: string) => sonnerToast.warning(message),
-};
+// Export the toast directly for easier usage
+export const toast = sonnerToast;

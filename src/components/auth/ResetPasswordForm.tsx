@@ -6,6 +6,8 @@ import { FormInput } from "./FormInput";
 import { FormWrapper } from "./FormWrapper";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
+import { CheckCircle, AlertCircle } from "lucide-react";
 
 interface ResetPasswordFormProps {
   isLoading: boolean;
@@ -20,11 +22,11 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
     message: string | null;
   }>({ type: null, message: null });
   
-  const { navigate, handleError, handleSuccess } = useAuthForm();
+  const { navigate } = useAuthForm();
 
   const validatePasswords = () => {
     if (!newPassword || !confirmPassword) {
-      handleError({ message: "Please fill in all fields" });
+      toast.error("Please fill in all fields");
       setResetStatus({
         type: "error",
         message: "Please fill in all fields"
@@ -32,7 +34,7 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
       return false;
     }
     if (newPassword !== confirmPassword) {
-      handleError({ message: "Passwords do not match" });
+      toast.error("Passwords do not match");
       setResetStatus({
         type: "error",
         message: "Passwords do not match"
@@ -40,7 +42,7 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
       return false;
     }
     if (newPassword.length < 6) {
-      handleError({ message: "Password must be at least 6 characters long" });
+      toast.error("Password must be at least 6 characters long");
       setResetStatus({
         type: "error",
         message: "Password must be at least 6 characters long"
@@ -61,13 +63,9 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
     setIsLoading(true);
 
     try {
-      console.log("Attempting to reset password");
-      
-      const { error, data } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
-
-      console.log("Password reset response:", { data, error });
 
       if (error) throw error;
 
@@ -75,7 +73,7 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
         type: "success",
         message: "Your password has been reset successfully. You will be redirected to login."
       });
-      handleSuccess("Your password has been reset successfully");
+      toast.success("Your password has been reset successfully");
       
       // Provide some time for the user to see the success message before redirecting
       setTimeout(() => {
@@ -87,16 +85,21 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
         type: "error",
         message: error?.message || "Failed to reset password. Please try again."
       });
-      handleError(error);
+      toast.error(error?.message || "Failed to reset password. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <FormWrapper title="Reset Password">
+    <FormWrapper title="Reset Your Password">
       {resetStatus.type && (
-        <Alert variant={resetStatus.type === "error" ? "destructive" : "default"} className="mb-4">
+        <Alert variant={resetStatus.type === "error" ? "destructive" : "default"} className={`mb-4 ${resetStatus.type === "success" ? "bg-green-50 border-green-200" : ""}`}>
+          {resetStatus.type === "success" ? (
+            <CheckCircle className="h-5 w-5 text-green-600" />
+          ) : (
+            <AlertCircle className="h-5 w-5" />
+          )}
           <AlertTitle>{resetStatus.type === "success" ? "Success" : "Error"}</AlertTitle>
           <AlertDescription>{resetStatus.message}</AlertDescription>
         </Alert>
@@ -110,7 +113,8 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
           value={newPassword}
           onChange={(e) => setNewPassword(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={isLoading || resetStatus.type === "success"}
+          placeholder="Enter your new password"
         />
         <FormInput
           id="confirmPassword"
@@ -119,12 +123,13 @@ export const ResetPasswordForm = ({ isLoading, setIsLoading }: ResetPasswordForm
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           required
-          disabled={isLoading}
+          disabled={isLoading || resetStatus.type === "success"}
+          placeholder="Confirm your new password"
         />
         <Button 
           type="submit" 
           className="w-full bg-black hover:bg-gray-800 text-white transition-colors" 
-          disabled={isLoading}
+          disabled={isLoading || resetStatus.type === "success"}
         >
           {isLoading ? "Processing..." : "Reset Password"}
         </Button>

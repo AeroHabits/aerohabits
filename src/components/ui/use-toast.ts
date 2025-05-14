@@ -1,9 +1,8 @@
 
-import { useToast as useShadcnToast } from "@/components/ui/toast";
+// Re-export the toast function from sonner
 import { toast as sonnerToast } from "sonner";
 
-// Re-export the Shadcn toast hook
-export const useToast = useShadcnToast;
-
-// Re-export a unified toast API that delegates to sonner
+// Export the toast API
 export const toast = sonnerToast;
+
+// This file no longer tries to import useToast from toast.tsx

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -5,8 +6,9 @@ import { FormInput } from "./FormInput";
 import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Mail } from "lucide-react";
 
 interface SignInFormProps {
   onToggleForm: () => void;
@@ -21,54 +23,31 @@ export const SignInForm = ({
 }: SignInFormProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [resetLinkSent, setResetLinkSent] = useState(false);
-  const [passwordResetStatus, setPasswordResetStatus] = useState<{
-    type: "success" | "error" | null;
-    message: string | null;
-  }>({ type: null, message: null });
   
-  const {
-    navigate,
-    handleError,
-    handleSuccess
-  } = useAuthForm();
+  const { navigate } = useAuthForm();
 
-  const handleForgotPassword = async (e: React.MouseEvent) => {
+  const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
       toast.error("Please enter your email address to reset your password");
       return;
     }
+    
     setIsLoading(true);
-    setPasswordResetStatus({ type: null, message: null });
     
     try {
-      // Log the reset request for debugging
-      console.log("Sending password reset to:", email);
-      
-      const {
-        data,
-        error
-      } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth?reset=true`
       });
       
-      console.log("Reset password response:", { data, error });
-      
       if (error) throw error;
       
+      toast.success("Password reset link sent! Please check your email inbox");
       setResetLinkSent(true);
-      setPasswordResetStatus({
-        type: "success",
-        message: "We've sent a password reset link to your email. Please check your inbox and spam folder."
-      });
-      toast.success("Password reset link sent! Please check your email inbox and spam folder");
     } catch (error: any) {
       console.error("Password reset error:", error);
-      setPasswordResetStatus({
-        type: "error", 
-        message: error?.message || "Failed to send reset link. Please try again later."
-      });
       toast.error(error?.message || "Failed to send reset link. Please try again later.");
     } finally {
       setIsLoading(false);
@@ -102,6 +81,67 @@ export const SignInForm = ({
     }
   };
 
+  if (forgotPasswordMode) {
+    return (
+      <FormWrapper title="Reset Your Password">
+        {resetLinkSent ? (
+          <div className="space-y-6">
+            <Alert className="bg-green-50 border-green-200">
+              <Mail className="h-5 w-5 text-green-600" />
+              <AlertTitle className="text-green-800">Check your inbox</AlertTitle>
+              <AlertDescription className="text-green-700">
+                We've sent a password reset link to <strong>{email}</strong>. Please check your email inbox and spam folder.
+              </AlertDescription>
+            </Alert>
+            <Button 
+              type="button" 
+              className="w-full"
+              variant="outline"
+              onClick={() => {
+                setForgotPasswordMode(false);
+                setResetLinkSent(false);
+              }}
+            >
+              Return to Sign In
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleForgotPassword} className="space-y-6">
+            <FormInput 
+              id="email" 
+              label="Email Address" 
+              type="email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value.trim())} 
+              required 
+              disabled={isLoading} 
+              placeholder="Enter your account email"
+            />
+            <div className="space-y-2">
+              <Button 
+                type="submit" 
+                className="w-full bg-black hover:bg-gray-800 text-white transition-colors" 
+                disabled={isLoading}
+              >
+                {isLoading ? "Sending..." : "Send Reset Link"}
+              </Button>
+              
+              <Button 
+                type="button" 
+                variant="ghost" 
+                className="w-full" 
+                onClick={() => setForgotPasswordMode(false)}
+                disabled={isLoading}
+              >
+                Back to Sign In
+              </Button>
+            </div>
+          </form>
+        )}
+      </FormWrapper>
+    );
+  }
+
   return (
     <FormWrapper title="Welcome Back">
       <form onSubmit={handleSignIn} className="space-y-6">
@@ -124,23 +164,17 @@ export const SignInForm = ({
             required 
             disabled={isLoading} 
           />
-          <div className="flex flex-col space-y-3">
-            <button 
-              onClick={handleForgotPassword} 
-              disabled={isLoading} 
-              type="button" 
-              className="text-sm transition-colors duration-200 text-zinc-950 self-start hover:text-gray-600"
-            >
-              Forgot password?
-            </button>
-            
-            {passwordResetStatus.type && (
-              <Alert variant={passwordResetStatus.type === "error" ? "destructive" : "default"} className="mt-2">
-                <AlertTitle>{passwordResetStatus.type === "success" ? "Success" : "Error"}</AlertTitle>
-                <AlertDescription>{passwordResetStatus.message}</AlertDescription>
-              </Alert>
-            )}
-          </div>
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              setForgotPasswordMode(true);
+            }} 
+            disabled={isLoading} 
+            type="button" 
+            className="text-sm transition-colors duration-200 text-zinc-950 self-start hover:text-gray-600"
+          >
+            Forgot password?
+          </button>
         </div>
         <Button 
           type="submit" 
