@@ -8,22 +8,28 @@ import { trackNetworkChange } from '@/lib/analytics/networkTracking';
 import { ConnectionStatus, LATENCY_THRESHOLDS, PING_ENDPOINTS } from './types';
 
 export function useConnectionQuality() {
-  const { isOnline } = useNetworkEvents();
+  // Guard against non-browser environments
+  const isClient = typeof window !== 'undefined';
+  
+  // Only call useNetworkEvents in browser environment
+  const networkEvents = isClient ? useNetworkEvents() : { isOnline: true };
+  const { isOnline } = networkEvents;
+  
   const { pingEndpoint } = usePingService();
   const { pingHistory, calculateReliability, updatePingHistory } = useReliabilityTracker();
   const { trackError } = useErrorTracking();
   
   const [connectionDetails, setConnectionDetails] = useState<ConnectionStatus>({
-    isOnline: window.navigator.onLine,
+    isOnline: isClient ? window.navigator.onLine : true,
     latency: null,
-    quality: window.navigator.onLine ? 'good' : 'offline',
+    quality: isClient && window.navigator.onLine ? 'good' : 'offline',
     downlinkSpeed: null,
     lastChecked: Date.now(),
     reliability: 100,
   });
   
   const checkConnectionQuality = useCallback(async () => {
-    if (!isOnline) return;
+    if (!isOnline || !isClient) return;
     
     try {
       const latency = await pingEndpoint(PING_ENDPOINTS[0]);
@@ -53,9 +59,11 @@ export function useConnectionQuality() {
         console.error('Network check error:', error);
       }
     }
-  }, [isOnline, pingEndpoint, connectionDetails]);
+  }, [isOnline, pingEndpoint, connectionDetails, isClient]);
 
   useEffect(() => {
+    if (!isClient) return;
+    
     const initialCheckDelay = setTimeout(() => {
       checkConnectionQuality();
     }, 15000);
@@ -63,11 +71,13 @@ export function useConnectionQuality() {
     return () => {
       clearTimeout(initialCheckDelay);
     };
-  }, [checkConnectionQuality]);
+  }, [checkConnectionQuality, isClient]);
 
   useEffect(() => {
-    checkConnectionQuality();
-  }, [isOnline, checkConnectionQuality]);
+    if (isClient) {
+      checkConnectionQuality();
+    }
+  }, [isOnline, checkConnectionQuality, isClient]);
 
   return { 
     connectionDetails,

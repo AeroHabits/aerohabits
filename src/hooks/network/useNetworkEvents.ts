@@ -3,9 +3,15 @@ import { useState, useEffect } from 'react';
 import { trackNetworkChange } from '@/lib/analytics/networkTracking';
 
 export function useNetworkEvents() {
-  const [isOnline, setIsOnline] = useState(window.navigator.onLine);
+  // Initialize with current online status, but only in browser environment
+  const [isOnline, setIsOnline] = useState(
+    typeof window !== 'undefined' ? window.navigator.onLine : true
+  );
   
   useEffect(() => {
+    // Skip if not in browser environment
+    if (typeof window === 'undefined') return;
+    
     const handleOnline = () => {
       setIsOnline(true);
       trackNetworkChange('online');

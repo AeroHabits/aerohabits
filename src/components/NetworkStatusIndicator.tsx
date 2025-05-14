@@ -4,6 +4,12 @@ import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export function NetworkStatusIndicator() {
+  // Guard against non-browser environments
+  const isClient = typeof window !== 'undefined';
+  
+  // If not in browser, return null immediately
+  if (!isClient) return null;
+  
   const connectionStatus = useDetailedConnectionStatus();
   const previousStatus = useRef(connectionStatus.isOnline);
   const toastIdRef = useRef<string | number | null>(null);
