@@ -1,5 +1,6 @@
 
 import { updateUserSubscription, findUserByCustomerId } from "./webhookHandlerUtils.ts";
+import { storeReceipt, validateReceipt } from "./receiptHandler.ts";
 
 // Handle purchase completion events from App Store
 export async function handlePurchaseComplete(purchaseData) {
@@ -8,10 +9,30 @@ export async function handlePurchaseComplete(purchaseData) {
   const productId = purchaseData.productId;
   const purchaseDate = purchaseData.purchaseDate;
   const expiresDate = purchaseData.expiresDate;
+  const receiptData = purchaseData.receiptData; // Receipt data from Apple
   
   console.log(`Purchase completed. Transaction: ${transactionId}, Product: ${productId}, User: ${userId}`);
   
   try {
+    // Store receipt in database
+    if (receiptData) {
+      await storeReceipt(
+        userId, 
+        transactionId, 
+        receiptData, 
+        productId,
+        purchaseDate,
+        expiresDate
+      );
+      
+      // Validate receipt with Apple
+      const validationResult = await validateReceipt(receiptData, userId);
+      
+      if (!validationResult.valid) {
+        console.warn(`Receipt validation failed for transaction ${transactionId}`);
+      }
+    }
+    
     // Set subscription status to active
     const status = 'active';
     const isTrialing = false;
