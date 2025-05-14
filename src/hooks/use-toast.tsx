@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { useState } from "react";
+import { toast as sonnerToast } from "sonner";
 
 type ToastProps = {
   title?: string;
@@ -29,6 +29,28 @@ export const ToastProvider = ({ children }: { children: React.ReactNode }) => {
     const id = props.id || Math.random().toString(36).substring(2, 9);
     setToasts((prevToasts) => [...prevToasts, { ...props, id }]);
 
+    // Display using sonner toast
+    const variant = props.variant || "default";
+    if (variant === "destructive") {
+      sonnerToast.error(props.title || '', {
+        description: props.description,
+        duration: props.duration || 5000,
+        id
+      });
+    } else if (variant === "success") {
+      sonnerToast.success(props.title || '', {
+        description: props.description,
+        duration: props.duration || 5000,
+        id
+      });
+    } else {
+      sonnerToast.info(props.title || '', {
+        description: props.description,
+        duration: props.duration || 5000,
+        id
+      });
+    }
+
     // Auto dismiss after duration
     const duration = props.duration || 5000;
     setTimeout(() => {
@@ -55,10 +77,13 @@ export const useToast = () => {
   return context;
 };
 
+// Fix the missing React import
+import { useState } from "react";
+
 // Utility function for standalone toast calls
 export const toast = {
-  info: (message: string) => console.log('Toast info:', message),
-  error: (message: string) => console.log('Toast error:', message),
-  success: (message: string) => console.log('Toast success:', message),
-  warning: (message: string) => console.log('Toast warning:', message),
+  info: (message: string) => sonnerToast.info(message),
+  error: (message: string) => sonnerToast.error(message),
+  success: (message: string) => sonnerToast.success(message),
+  warning: (message: string) => sonnerToast.warning(message),
 };

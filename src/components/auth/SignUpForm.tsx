@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,7 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
   const [fullName, setFullName] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   
-  const { handleError, handleSuccess } = useAuthForm();
+  const { handleError } = useAuthForm();
   const navigate = useNavigate();
 
   // Validate form input
@@ -82,12 +81,12 @@ export const SignUpForm = ({ onToggleForm, isLoading, setIsLoading }: SignUpForm
         // Redirect to the onboarding questionnaire
         navigate('/onboarding');
       } else {
-        handleSuccess("Please check your email to verify your account.");
+        toast.success("Please check your email to verify your account.");
       }
     } catch (error: any) {
       // Set form error for display
       setFormError(error.message || "Failed to create account");
-      handleError(error);
+      toast.error(error.message || "Failed to create account");
     } finally {
       setIsLoading(false);
     }

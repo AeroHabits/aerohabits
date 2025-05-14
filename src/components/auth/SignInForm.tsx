@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,6 +6,7 @@ import { FormWrapper } from "./FormWrapper";
 import { ToggleFormLink } from "./ToggleFormLink";
 import { useAuthForm } from "@/hooks/useAuthForm";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 
 interface SignInFormProps {
   onToggleForm: () => void;
@@ -36,9 +36,7 @@ export const SignInForm = ({
   const handleForgotPassword = async (e: React.MouseEvent) => {
     e.preventDefault();
     if (!email) {
-      handleError({
-        message: "Please enter your email address to reset your password"
-      });
+      toast.error("Please enter your email address to reset your password");
       return;
     }
     setIsLoading(true);
@@ -64,14 +62,14 @@ export const SignInForm = ({
         type: "success",
         message: "We've sent a password reset link to your email. Please check your inbox and spam folder."
       });
-      handleSuccess("Password reset link sent! Please check your email inbox and spam folder");
+      toast.success("Password reset link sent! Please check your email inbox and spam folder");
     } catch (error: any) {
       console.error("Password reset error:", error);
       setPasswordResetStatus({
         type: "error", 
         message: error?.message || "Failed to send reset link. Please try again later."
       });
-      handleError(error);
+      toast.error(error?.message || "Failed to send reset link. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -81,9 +79,7 @@ export const SignInForm = ({
     e.preventDefault();
     if (isLoading) return;
     if (!email || !password) {
-      handleError({
-        message: "Please fill in all fields"
-      });
+      toast.error("Please fill in all fields");
       return;
     }
     setIsLoading(true);
@@ -100,7 +96,7 @@ export const SignInForm = ({
         navigate("/");
       }
     } catch (error: any) {
-      handleError(error);
+      toast.error(error?.message || "Failed to sign in. Please check your credentials.");
     } finally {
       setIsLoading(false);
     }

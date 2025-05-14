@@ -1,26 +1,22 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "./use-toast";
+import { toast } from "sonner";
 
 export const useAuthForm = (initialState: boolean = false) => {
   const [isLoading, setIsLoading] = useState(initialState);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   const handleError = (error: any) => {
     const message = error?.message || "An unexpected error occurred. Please try again.";
-    toast({
-      title: "Error",
-      description: message,
-      variant: "destructive",
+    toast.error("Error", {
+      description: message
     });
   };
 
   const handleSuccess = (message: string) => {
-    toast({
-      title: "Success",
-      description: message,
+    toast.success("Success", {
+      description: message
     });
   };
 
