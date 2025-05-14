@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,6 +16,7 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
   const initialCheckComplete = useRef(false);
   const authRetryCount = useRef(0);
+  const initialSignInComplete = useRef(false);
 
   // Check authentication status
   const checkAuth = useCallback(async () => {
@@ -67,10 +67,14 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       setIsAuthenticated(!!session);
       setIsLoading(false);
       
-      if (event === 'SIGNED_IN') {
+      // Only show toast on actual auth state changes, not every render
+      if (event === 'SIGNED_IN' && !initialSignInComplete.current) {
         toast.success("Successfully signed in");
+        initialSignInComplete.current = true;
       } else if (event === 'SIGNED_OUT') {
         toast.info("You have been signed out");
+        // Reset the flag when user signs out
+        initialSignInComplete.current = false;
       }
     });
 
