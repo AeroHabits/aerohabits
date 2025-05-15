@@ -4,7 +4,11 @@ import { ClipboardList, Sparkles, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export const GoalListEmpty = () => {
+interface GoalListEmptyProps {
+  onCreateGoal: () => void;
+}
+
+export const GoalListEmpty = ({ onCreateGoal }: GoalListEmptyProps) => {
   const isMobile = useIsMobile();
   
   return (
@@ -53,6 +57,7 @@ export const GoalListEmpty = () => {
           <Button 
             variant="outline" 
             className="w-full bg-gradient-to-r from-blue-500/10 to-indigo-500/10 hover:from-blue-500/20 hover:to-indigo-500/20 border-blue-400/20 group"
+            onClick={onCreateGoal}
           >
             <PlusCircle className="h-4 w-4 mr-2 text-blue-400 group-hover:text-blue-300 transition-colors" />
             <span className="font-medium">Create Your First Goal</span>

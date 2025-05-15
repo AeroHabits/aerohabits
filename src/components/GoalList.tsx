@@ -1,9 +1,13 @@
+
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { GoalItem } from "./goals/GoalItem";
 import { GoalListEmpty } from "./goals/GoalListEmpty";
 import { GoalListLoading } from "./goals/GoalListLoading";
+import { GoalForm } from "./GoalForm";
+import { Button } from "./ui/button";
+import { PlusCircle } from "lucide-react";
 
 interface Goal {
   id: string;
@@ -21,6 +25,7 @@ interface GoalListProps {
 export function GoalList({ onGoalUpdated }: GoalListProps) {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
   const { toast } = useToast();
 
   const fetchGoals = async () => {
@@ -122,16 +127,36 @@ export function GoalList({ onGoalUpdated }: GoalListProps) {
     }
   };
 
+  const handleGoalFormSubmit = () => {
+    setShowForm(false);
+    fetchGoals();
+    onGoalUpdated();
+  };
+
   if (isLoading) {
     return <GoalListLoading />;
   }
 
+  if (showForm) {
+    return <GoalForm onSubmit={handleGoalFormSubmit} />;
+  }
+
   if (goals.length === 0) {
-    return <GoalListEmpty />;
+    return <GoalListEmpty onCreateGoal={() => setShowForm(true)} />;
   }
 
   return (
     <div className="space-y-4">
+      <div className="flex justify-end mb-4">
+        <Button 
+          onClick={() => setShowForm(true)} 
+          variant="premium" 
+          className="px-4 py-2"
+        >
+          <PlusCircle className="h-4 w-4 mr-2" />
+          Add New Goal
+        </Button>
+      </div>
       {goals.map((goal) => (
         <GoalItem
           key={goal.id}

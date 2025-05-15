@@ -1,4 +1,3 @@
-
 import { GoalForm } from "@/components/GoalForm";
 import { GoalList } from "@/components/GoalList";
 import { useQuery } from "@tanstack/react-query";
@@ -150,7 +149,6 @@ const Goals = () => {
               <h2 className="text-xl md:text-2xl font-semibold text-white">Your Goals</h2>
             </div>
             <div className="space-y-6">
-              <GoalForm onSubmit={handleGoalChange} />
               <GoalList onGoalUpdated={handleGoalChange} />
             </div>
           </div>

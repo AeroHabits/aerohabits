@@ -7,7 +7,7 @@ import { trackGoalAction } from "@/lib/analytics";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { Target, CircuitBoard } from "lucide-react";
+import { Target, CircuitBoard, ArrowLeft } from "lucide-react";
 
 interface GoalFormProps {
   onSubmit: () => void;
@@ -76,23 +76,36 @@ export function GoalForm({ onSubmit }: GoalFormProps) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <div className="flex items-center justify-center space-x-4 mb-6">
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-          className="p-3 bg-[#8B5CF6] rounded-full shadow-lg"
+      <div className="flex items-center justify-between mb-6">
+        <Button 
+          type="button" 
+          variant="ghost" 
+          size="sm" 
+          className="text-gray-400 hover:text-white"
+          onClick={() => onSubmit()}
         >
-          <Target className="w-6 h-6 text-white" />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-xl font-semibold text-white"
-        >
-          Create New Goal
-        </motion.div>
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back
+        </Button>
+        
+        <div className="flex items-center space-x-4">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="p-3 bg-[#8B5CF6] rounded-full shadow-lg"
+          >
+            <Target className="w-6 h-6 text-white" />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-xl font-semibold text-white"
+          >
+            Create New Goal
+          </motion.div>
+        </div>
       </div>
 
       <div className="space-y-4">
