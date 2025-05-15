@@ -7,8 +7,7 @@ import { useEffect } from "react";
 export default function Onboarding() {
   useEffect(() => {
     // Show welcome toast when the component mounts
-    toast({
-      title: "Welcome to AeroHabits!",
+    toast.info("Welcome to AeroHabits!", {
       description: "Let's get started by setting up your profile.",
       duration: 5000,
     });

@@ -107,10 +107,8 @@ export function Questionnaire({
 
   const handleNext = useCallback(() => {
     if (!answers[currentQuestion.id] || answers[currentQuestion.id].length === 0) {
-      toast({
-        title: "Selection required",
-        description: "Please select at least one option to continue",
-        variant: "destructive"
+      toast.error("Selection required", {
+        description: "Please select at least one option to continue"
       });
       return;
     }
