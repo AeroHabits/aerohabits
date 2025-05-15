@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -73,23 +74,30 @@ export function GoalForm({
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-blue-600/10 rounded-xl blur-3xl -z-10"></div>
       
       <motion.form onSubmit={handleSubmit} className="space-y-6 bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-lg p-8 md:p-10 rounded-xl shadow-2xl border border-indigo-500/30">
-        <div className="flex items-center mb-8 relative">
-          <Button type="button" variant="ghost" size="sm" onClick={() => onSubmit()} className="absolute left-0 text-gray-400 hover:text-white">
-            <ArrowLeft className="w-5 h-5 mr-1" />
-            Back
-          </Button>
+        {/* Fixed header layout to prevent overlap */}
+        <div className="flex flex-col mb-8 relative">
+          {/* Back button now positioned on top */}
+          <div className="mb-4">
+            <Button 
+              type="button" 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => onSubmit()} 
+              className="text-gray-400 hover:text-white"
+            >
+              <ArrowLeft className="w-5 h-5 mr-1" />
+              Back
+            </Button>
+          </div>
           
-          <div className="flex items-center justify-center w-full">
-            
-            <motion.h2 initial={{
-            opacity: 0,
-            x: -10
-          }} animate={{
-            opacity: 1,
-            x: 0
-          }} transition={{
-            delay: 0.2
-          }} className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-purple-200">
+          {/* Title now on its own line below the back button */}
+          <div className="flex justify-center w-full">
+            <motion.h2 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+              className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-200 to-purple-200"
+            >
               Create New Goal
             </motion.h2>
           </div>
