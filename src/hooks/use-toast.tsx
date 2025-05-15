@@ -14,6 +14,7 @@ type ToasterToast = ToastProps & {
   title?: React.ReactNode
   description?: React.ReactNode
   action?: ToastActionElement
+  variant?: "default" | "destructive" | "success"
 }
 
 const actionTypes = {
@@ -153,9 +154,17 @@ export function useToast() {
   }
 }
 
-export function toast({
-  ...props
-}: Omit<ToasterToast, "id">) {
+type ToastOptions = Omit<ToasterToast, "id">;
+
+interface ToastFunction {
+  (props: ToastOptions): string;
+  error: (title: string, options?: Omit<ToastOptions, "title" | "variant">) => string;
+  success: (title: string, options?: Omit<ToastOptions, "title" | "variant">) => string;
+  info: (title: string, options?: Omit<ToastOptions, "title" | "variant">) => string;
+  warning: (title: string, options?: Omit<ToastOptions, "title" | "variant">) => string;
+}
+
+const createToast = (props: ToastOptions): string => {
   const id = crypto.randomUUID()
 
   dispatch({
@@ -174,6 +183,14 @@ export function toast({
 
   return id
 }
+
+export const toast = createToast as ToastFunction;
+
+// Add variants as methods to the toast function
+toast.error = (title, options = {}) => createToast({ title, variant: "destructive", ...options });
+toast.success = (title, options = {}) => createToast({ title, variant: "success", ...options });
+toast.info = (title, options = {}) => createToast({ title, variant: "default", ...options });
+toast.warning = (title, options = {}) => createToast({ title, variant: "default", ...options });
 
 // Also re-export sonner toast for convenience
 export { toast as sonnerToast } from "sonner";
