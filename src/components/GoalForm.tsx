@@ -78,10 +78,10 @@ export function GoalForm({
         <div className="mb-8">
           <Button 
             type="button" 
-            variant="outline"  
+            variant="dark"  
             size="sm" 
             onClick={() => onSubmit()} 
-            className="bg-white/15 hover:bg-white/25 text-white font-medium border-indigo-400/30 hover:border-indigo-400/50"
+            className="ring-2 ring-blue-500 bg-blue-500/20 hover:bg-blue-500/30 text-white font-medium border-blue-500/50"
           >
             <ArrowLeft className="w-5 h-5 mr-1" />
             Back
