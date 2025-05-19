@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -5,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Mail, MessageSquare, FileQuestion, HeartHandshake } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { UserMenu } from "@/components/UserMenu";
 
 const Support = () => {
@@ -18,17 +19,25 @@ const Support = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "container mx-auto px-4 pt-safe pb-4 space-y-6 md:space-y-8",
+          "container mx-auto px-4 pt-12 pb-4 md:py-6 space-y-6 md:space-y-8 safe-top",
           isMobile && "pb-20"
         )}
       >
-        <AppHeader />
+        <div className="flex justify-between items-center">
+          <div className="bg-black/50 px-5 py-3 rounded-xl shadow-lg">
+            <PageHeader 
+              title="Support" 
+              description="Get help with AEROHABITS" 
+            />
+          </div>
+          <UserMenu />
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="max-w-4xl mx-auto space-y-8 mt-6"
+          className="max-w-4xl mx-auto space-y-8"
         >
           <Card className="bg-gradient-to-br from-gray-900/90 to-black/90 border border-purple-500/20 shadow-xl">
             <CardHeader>

@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { OnboardingQuestionnaire } from "@/components/onboarding/OnboardingQuestionnaire";
 import { toast } from "@/hooks/use-toast";
 import { useEffect } from "react";
-import { AppHeader } from "@/components/layout/AppHeader";
 
 export default function Onboarding() {
   useEffect(() => {
@@ -21,9 +20,6 @@ export default function Onboarding() {
       exit={{ opacity: 0 }}
       className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pt-safe"
     >
-      <div className="container mx-auto px-4">
-        <AppHeader />
-      </div>
       <OnboardingQuestionnaire />
     </motion.div>
   );

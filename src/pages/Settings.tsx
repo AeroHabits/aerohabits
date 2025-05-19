@@ -5,7 +5,8 @@ import { NotificationsCard } from "@/components/settings/NotificationsCard";
 import { LegalCard } from "@/components/settings/LegalCard";
 import { SubscriptionInfoCard } from "@/components/settings/SubscriptionInfoCard";
 import { DangerZoneCard } from "@/components/settings/DangerZoneCard";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { UserMenu } from "@/components/UserMenu";
 import { useUserSettings } from "@/hooks/useUserSettings";
 
 export default function Settings() {
@@ -17,7 +18,10 @@ export default function Settings() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className="container max-w-2xl mx-auto px-4 pt-safe py-8">
-        <AppHeader />
+        <div className="flex justify-between items-center mb-8 pt-6">
+          <PageHeader />
+          <UserMenu />
+        </div>
         
         <SettingsHeader loading={loading} />
         

@@ -7,6 +7,8 @@ import { ResetPasswordForm } from "@/components/auth/ResetPasswordForm";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
+import { PageHeader } from "@/components/layout/PageHeader";
+import { toast } from "sonner";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Auth = () => {
@@ -80,16 +82,8 @@ const Auth = () => {
         <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-[#6366F1]/20 rounded-full mix-blend-multiply filter blur-xl opacity-70" style={{ animationDelay: '2s' }} />
       </motion.div>
       
-      <div className="w-full max-w-md space-y-8 z-10 px-4 mt-safe">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center"
-        >
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white relative">
-            AEROHABITS
-          </h1>
-        </motion.div>
+      <div className="w-full max-w-md space-y-8 z-10 px-4">
+        <PageHeader />
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}

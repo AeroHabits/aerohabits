@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
 import { UserMenu } from "@/components/UserMenu";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { memo } from "react";
 
 // Memoize the content component to prevent unnecessary re-renders
@@ -42,7 +42,13 @@ const Index = () => {
           isMobile ? "pt-6 pb-20" : "pt-12 pb-4" // Adjusted padding for better mobile spacing
         )}
       >
-        <AppHeader />
+        {/* Top navigation area with header and profile menu - safer spacing for mobile */}
+        <div className="flex justify-between items-center">
+          <PageHeader />
+          <div className="flex items-center gap-3">
+            <UserMenu />
+          </div>
+        </div>
 
         <IndexContent />
       </div>

@@ -6,7 +6,8 @@ import { useJourneyStats } from "@/hooks/useJourneyStats";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { AppHeader } from "@/components/layout/AppHeader";
+import { UserMenu } from "@/components/UserMenu";
+import { PageHeader } from "@/components/layout/PageHeader";
 
 const Journey = () => {
   const { stats } = useJourneyStats();
@@ -30,13 +31,16 @@ const Journey = () => {
           isMobile && "pb-20"
         )}
       >
-        <AppHeader />
+        <div className="flex justify-between items-center mb-8 pt-6">
+          <PageHeader />
+          <UserMenu />
+        </div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="relative mt-6"
+          className="relative"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-900/90 to-slate-950/80 backdrop-blur-xl rounded-3xl" />
           <div className="relative rounded-3xl overflow-hidden border border-white/[0.05] shadow-2xl">
