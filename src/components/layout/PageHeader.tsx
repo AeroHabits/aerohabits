@@ -19,8 +19,7 @@ export function PageHeader({ title, description }: PageHeaderProps) {
       }} 
       transition={{
         duration: 0.3
-      }} 
-      className="mb-6 mt-safe"
+      }}
     >
       {title ? (
         <div className="space-y-1">

@@ -83,7 +83,9 @@ const Auth = () => {
       </motion.div>
       
       <div className="w-full max-w-md space-y-8 z-10 px-4">
-        <PageHeader />
+        <div className="mt-safe">
+          <PageHeader />
+        </div>
         
         <motion.div
           initial={{ opacity: 0, y: 20 }}

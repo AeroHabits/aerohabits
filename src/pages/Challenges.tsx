@@ -16,7 +16,7 @@ const Challenges = () => {
         "container mx-auto px-4 pt-safe md:py-8",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-between items-center mb-8 pt-6">
+        <div className="flex justify-between items-center mb-8 mt-safe">
           <PageHeader />
           <UserMenu />
         </div>

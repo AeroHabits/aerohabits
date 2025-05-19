@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 
 export default function Privacy() {
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl pt-safe">
+      <div className="mt-safe"></div> {/* Safe area spacer */}
       <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
       
       <div className="prose dark:prose-invert max-w-none">

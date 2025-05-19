@@ -20,6 +20,7 @@ export default function Onboarding() {
       exit={{ opacity: 0 }}
       className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 pt-safe"
     >
+      <div className="mt-safe"></div> {/* Safe area spacer */}
       <OnboardingQuestionnaire />
     </motion.div>
   );
