@@ -1,6 +1,6 @@
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Lock } from "lucide-react";
+import { Crown } from "lucide-react";
 
 interface ChallengeDifficultyTabsProps {
   onDifficultyChange: (difficulty: string) => void;
@@ -26,12 +26,12 @@ export function ChallengeDifficultyTabs({
               key={difficulty}
               value={difficulty}
               onClick={() => onDifficultyChange(difficulty)}
-              disabled={isMaster && !canAccessMaster}
-              className="relative"
+              disabled={false} // Changed from checking canAccessMaster to always enable all tabs
+              className={`relative ${isMaster ? 'bg-gradient-to-r from-purple-600/80 to-indigo-600/80 text-white hover:text-white' : ''}`}
             >
               {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-              {isMaster && !canAccessMaster && (
-                <Lock className="w-3 h-3 ml-1 inline-block" />
+              {isMaster && (
+                <Crown className="w-3.5 h-3.5 ml-1 inline-block text-amber-300" />
               )}
             </TabsTrigger>
           );

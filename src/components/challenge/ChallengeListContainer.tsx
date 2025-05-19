@@ -14,40 +14,26 @@ export function ChallengeListContainer() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("easy");
   const { challenges, userChallenges, userProfile, isLoading, joinChallengeMutation } = useChallenges();
   const [currentChallengeId, setCurrentChallengeId] = useState<string | null>(null);
-  const [canAccessMaster, setCanAccessMaster] = useState(false);
-  const [canAccessSelected, setCanAccessSelected] = useState(true);
+  const [canAccessMaster, setCanAccessMaster] = useState(true); // Changed to true to always allow access
+  const [canAccessSelected, setCanAccessSelected] = useState(true); // Changed to true to always allow access
 
   useEffect(() => {
     const checkDifficultyAccess = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      // Check access for selected difficulty
-      const { data: canAccess, error } = await supabase.rpc('can_access_difficulty', {
-        user_uid: user.id,
-        target_difficulty: selectedDifficulty.toLowerCase()
-      });
-
-      if (error) {
-        console.error('Error checking difficulty access:', error);
-        return;
+      // Set current challenge ID if user has one
+      if (userProfile?.current_challenge_id) {
+        setCurrentChallengeId(userProfile.current_challenge_id);
       }
 
-      setCanAccessSelected(canAccess);
-
-      // Check master access specifically
-      const { data: masterAccess, error: masterError } = await supabase.rpc('can_access_difficulty', {
-        user_uid: user.id,
-        target_difficulty: 'master'
-      });
-
-      if (!masterError) {
-        setCanAccessMaster(!!masterAccess);
-      }
+      // Always allow access to all difficulty levels
+      setCanAccessSelected(true);
+      setCanAccessMaster(true);
     };
 
     checkDifficultyAccess();
-  }, [selectedDifficulty, userChallenges]);
+  }, [selectedDifficulty, userChallenges, userProfile]);
 
   const handleJoinChallenge = async (challengeId: string) => {
     const challenge = challenges?.find(c => c.id === challengeId);
@@ -59,23 +45,8 @@ export function ChallengeListContainer() {
       return;
     }
 
-    // Check if user can access this difficulty level
-    const { data: canAccess, error: accessError } = await supabase.rpc('can_access_difficulty', {
-      user_uid: user.id,
-      target_difficulty: challenge.difficulty.toLowerCase()
-    });
-
-    if (accessError || !canAccess) {
-      toast.error(
-        "Complete Previous Difficulty First!", 
-        {
-          description: "You need to complete 80% of the challenges in your current difficulty level before progressing.",
-          duration: 5000
-        }
-      );
-      return;
-    }
-
+    // Allow joining any challenge regardless of difficulty
+    
     // Update user's current challenge
     const { error: updateError } = await supabase
       .from('profiles')
