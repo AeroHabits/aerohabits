@@ -1,3 +1,4 @@
+
 import { HabitList } from "@/components/HabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -22,11 +23,11 @@ const Habits = () => {
         animate={{ opacity: 1 }} 
         transition={{ duration: 0.7 }}
         className={cn(
-          "container mx-auto px-4 pt-safe pb-32 md:py-16 space-y-8 md:space-y-12 relative z-10", 
+          "container mx-auto px-4 pt-4 pb-32 md:py-16 space-y-8 md:space-y-12 relative z-10", 
           isMobile && "pb-36"
         )}
       >
-        <div className="flex justify-between items-center mb-8 mt-safe">
+        <div className="flex justify-between items-center mb-8">
           <PageHeader />
           <UserMenu />
         </div>

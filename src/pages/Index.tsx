@@ -39,11 +39,11 @@ const Index = () => {
       <div
         className={cn(
           "container mx-auto px-4 space-y-4 md:space-y-6 max-w-7xl",
-          isMobile ? "pt-safe pb-20" : "pt-12 pb-4" // Using pt-safe for mobile
+          isMobile ? "pt-4 pb-20" : "pt-12 pb-4" // Reduced top padding for mobile
         )}
       >
-        {/* Top navigation area with header and profile menu - safer spacing for mobile */}
-        <div className="flex justify-between items-center mt-safe">
+        {/* Top navigation area with header and profile menu */}
+        <div className="flex justify-between items-center">
           <PageHeader />
           <div className="flex items-center gap-3">
             <UserMenu />

@@ -17,8 +17,8 @@ export default function Settings() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-      <div className="container max-w-2xl mx-auto px-4 pt-safe py-8">
-        <div className="flex justify-between items-center mb-8 mt-safe">
+      <div className="container max-w-2xl mx-auto px-4 pt-4 py-8">
+        <div className="flex justify-between items-center mb-8">
           <PageHeader />
           <UserMenu />
         </div>
