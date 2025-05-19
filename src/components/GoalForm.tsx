@@ -10,9 +10,11 @@ import { motion } from "framer-motion";
 import { Target, CircuitBoard, ArrowLeft, Calendar, Clock } from "lucide-react";
 import { DatePicker } from "@/components/ui/date-picker";
 import { cn } from "@/lib/utils";
+
 interface GoalFormProps {
   onSubmit: () => void;
 }
+
 export function GoalForm({
   onSubmit
 }: GoalFormProps) {
@@ -24,6 +26,7 @@ export function GoalForm({
   const {
     toast
   } = useToast();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (title.trim()) {
@@ -61,6 +64,7 @@ export function GoalForm({
       toast.error("Please enter a title for your goal");
     }
   };
+
   return <motion.div initial={{
     opacity: 0,
     y: 20
@@ -69,13 +73,13 @@ export function GoalForm({
     y: 0
   }} transition={{
     duration: 0.5
-  }} className="relative">
+  }} className="relative pt-safe">
       {/* Background glassmorphism effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/5 to-blue-600/10 rounded-xl blur-3xl -z-10"></div>
       
       <motion.form onSubmit={handleSubmit} className="space-y-6 bg-gradient-to-br from-slate-900/95 to-slate-800/95 backdrop-blur-lg p-8 md:p-10 rounded-xl shadow-2xl border border-indigo-500/30">
         {/* Back button with improved visibility */}
-        <div className="mb-8">
+        <div className="mb-8 pt-4">
           <Button 
             type="button" 
             variant="dark"  

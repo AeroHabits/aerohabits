@@ -1,3 +1,4 @@
+
 import { HabitList } from "@/components/HabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -5,8 +6,10 @@ import { cn } from "@/lib/utils";
 import { UserMenu } from "@/components/UserMenu";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Sparkles, Star, Flame } from "lucide-react";
+
 const Habits = () => {
   const isMobile = useIsMobile();
+
   return <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
       {/* Enhanced floating elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
@@ -15,14 +18,16 @@ const Habits = () => {
         <div className="absolute top-1/3 right-1/4 w-64 h-64 bg-purple-500/5 rounded-full filter blur-[90px] animate-pulse" />
       </div>
 
-      <motion.div initial={{
-      opacity: 0
-    }} animate={{
-      opacity: 1
-    }} transition={{
-      duration: 0.7
-    }} className={cn("container mx-auto px-4 pt-16 pb-32 md:py-16 space-y-8 md:space-y-12 safe-top relative z-10", isMobile && "pb-36")}>
-        <div className="flex justify-between items-center mb-8">
+      <motion.div 
+        initial={{ opacity: 0 }} 
+        animate={{ opacity: 1 }} 
+        transition={{ duration: 0.7 }}
+        className={cn(
+          "container mx-auto px-4 pt-safe pb-32 md:py-16 space-y-8 md:space-y-12 relative z-10", 
+          isMobile && "pb-36"
+        )}
+      >
+        <div className="flex justify-between items-center mb-8 pt-6">
           <PageHeader />
           <UserMenu />
         </div>
@@ -100,4 +105,5 @@ const Habits = () => {
       </motion.div>
     </div>;
 };
+
 export default Habits;

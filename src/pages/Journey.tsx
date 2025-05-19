@@ -27,11 +27,11 @@ const Journey = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "container mx-auto px-4 pt-12 pb-6 md:py-8 space-y-8 md:space-y-12 safe-top relative z-10",
+          "container mx-auto px-4 pt-safe pb-6 md:py-8 space-y-8 md:space-y-12 relative z-10",
           isMobile && "pb-20"
         )}
       >
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 pt-6">
           <PageHeader />
           <UserMenu />
         </div>

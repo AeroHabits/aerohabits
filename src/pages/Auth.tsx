@@ -61,7 +61,7 @@ const Auth = () => {
 
   if (renderError) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 pt-safe">
         <Alert variant="destructive" className="max-w-md">
           <AlertDescription>{renderError}</AlertDescription>
         </Alert>
@@ -70,7 +70,7 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black pt-safe">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -82,7 +82,7 @@ const Auth = () => {
         <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-[#6366F1]/20 rounded-full mix-blend-multiply filter blur-xl opacity-70" style={{ animationDelay: '2s' }} />
       </motion.div>
       
-      <div className="w-full max-w-md space-y-8 z-10">
+      <div className="w-full max-w-md space-y-8 z-10 px-4">
         <PageHeader />
         
         <motion.div

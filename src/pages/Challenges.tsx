@@ -13,10 +13,10 @@ const Challenges = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className={cn(
-        "container mx-auto px-4 py-6 md:py-8",
+        "container mx-auto px-4 pt-safe md:py-8",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8 pt-6">
           <PageHeader />
           <UserMenu />
         </div>

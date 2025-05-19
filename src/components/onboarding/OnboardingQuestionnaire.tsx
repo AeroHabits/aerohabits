@@ -32,7 +32,7 @@ export function OnboardingQuestionnaire() {
   const memoizedStartSubscriptionFlow = useCallback(startSubscriptionFlow, [startSubscriptionFlow]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 overflow-hidden pt-safe">
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/10 to-transparent pointer-events-none"></div>
       <div className="absolute top-0 left-0 right-0 h-20 bg-gradient-to-b from-blue-900/10 to-transparent pointer-events-none"></div>
       
@@ -40,7 +40,7 @@ export function OnboardingQuestionnaire() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="max-w-lg w-full relative z-10"
+        className="max-w-lg w-full relative z-10 mt-8"
         style={{ willChange: 'auto' }}
       >
         <div className="mb-8 text-center">
