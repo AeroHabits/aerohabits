@@ -14,7 +14,7 @@ const Journey = () => {
   const isMobile = useIsMobile();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-black overflow-hidden">
       {/* Enhanced backdrop elements */}
       <div className="absolute inset-0 z-0">
         <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 via-purple-500/5 to-transparent" />
@@ -27,11 +27,11 @@ const Journey = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "container mx-auto px-4 pt-safe pb-6 md:py-8 space-y-8 md:space-y-12 relative z-10",
+          "container mx-auto px-4 pt-4 pb-6 md:py-8 space-y-8 md:space-y-12 relative z-10",
           isMobile && "pb-20"
         )}
       >
-        <div className="flex justify-between items-center mb-8 mt-safe">
+        <div className="flex justify-between items-center mb-8">
           <PageHeader />
           <UserMenu />
         </div>
