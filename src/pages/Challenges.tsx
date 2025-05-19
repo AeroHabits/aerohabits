@@ -3,8 +3,7 @@ import { ChallengeList } from "@/components/ChallengeList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { UserMenu } from "@/components/UserMenu";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { AppShowcase } from "@/components/showcase/AppShowcase";
 
 const Challenges = () => {
@@ -13,15 +12,12 @@ const Challenges = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
       <div className={cn(
-        "container mx-auto px-4 pt-safe md:py-8",
+        "container mx-auto px-4 pt-safe",
         isMobile && "pb-24"
       )}>
-        <div className="flex justify-between items-center mb-8 pt-6">
-          <PageHeader />
-          <UserMenu />
-        </div>
+        <AppHeader />
 
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-6 mt-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

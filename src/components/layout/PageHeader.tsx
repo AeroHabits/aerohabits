@@ -20,7 +20,7 @@ export function PageHeader({ title, description }: PageHeaderProps) {
       transition={{
         duration: 0.3
       }} 
-      className="mb-6 mt-safe"
+      className="mb-6 mt-2"
     >
       {title ? (
         <div className="space-y-1">
@@ -46,7 +46,7 @@ export function PageHeader({ title, description }: PageHeaderProps) {
             }}
           />
           
-          {/* AEROHABITS text with refined styling */}
+          {/* Title text */}
           <h1 className="text-3xl md:text-4xl font-bold tracking-tight relative">
             {/* Main text with subtle effect */}
             <motion.span 

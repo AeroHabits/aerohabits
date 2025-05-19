@@ -1,10 +1,8 @@
-
 import { HabitList } from "@/components/HabitList";
 import { motion } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { UserMenu } from "@/components/UserMenu";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { Sparkles, Star, Flame } from "lucide-react";
 
 const Habits = () => {
@@ -27,21 +25,14 @@ const Habits = () => {
           isMobile && "pb-36"
         )}
       >
-        <div className="flex justify-between items-center mb-8 pt-6">
-          <PageHeader />
-          <UserMenu />
-        </div>
+        <AppHeader />
         
-        <motion.div initial={{
-        opacity: 0,
-        y: 30
-      }} animate={{
-        opacity: 1,
-        y: 0
-      }} transition={{
-        duration: 0.7,
-        delay: 0.2
-      }} className="bg-slate-900/50 backdrop-blur-2xl p-8 md:p-10 shadow-2xl border border-white/[0.05] hover:border-white/[0.08] transition-all duration-300 rounded-md">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.7, delay: 0.2 }} 
+          className="bg-slate-900/50 backdrop-blur-2xl p-8 md:p-10 shadow-2xl border border-white/[0.05] hover:border-white/[0.08] transition-all duration-300 rounded-md mt-6"
+        >
           <div className="mb-10 text-center">
             <motion.div initial={{
             scale: 0.8,
