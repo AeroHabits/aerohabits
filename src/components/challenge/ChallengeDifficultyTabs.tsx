@@ -26,8 +26,8 @@ export function ChallengeDifficultyTabs({
               key={difficulty}
               value={difficulty}
               onClick={() => onDifficultyChange(difficulty)}
-              disabled={false} // Changed from checking canAccessMaster to always enable all tabs
-              className={`relative ${isMaster ? 'bg-gradient-to-r from-purple-600/80 to-indigo-600/80 text-white hover:text-white' : ''}`}
+              disabled={false} // All tabs enabled
+              className="relative"
             >
               {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
               {isMaster && (
